@@ -66,16 +66,24 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private fun blockedPermissionKey(permission: String): String = "$BLOCKED_PERMISSION_KEY_PREFIX$permission"
 
   /**
-   * Record whether each permission became permanently denied. A denied result with no rationale to show means the user blocked it.
-   * Anything else clears the flag. This is the only time the denied states are distinguishable,
-   * so we persist the result for later ``getPermissions` calls.
+   * Record whether each permission became permanently denied, and persist it for later `getPermissions`
+   * calls. The request result is the only time the denied states are distinguishable. A plain dismissal
+   * of the first dialog must not be recorded as blocked; see the rationale comparison below.
    */
-  private fun withBlockedTracking(listener: PermissionsResponseListener): PermissionsResponseListener =
-    PermissionsResponseListener { result ->
+  private fun withBlockedTracking(
+    requestedPermissions: Array<out String>,
+    listener: PermissionsResponseListener
+  ): PermissionsResponseListener {
+    
+    val rationaleBefore = requestedPermissions.associateWith { shouldShowRequestPermissionRationale(it) }
+    val askedBefore = requestedPermissions.associateWith { didAsk(it) }
+
+    return PermissionsResponseListener { result ->
       listener.onResult(
         result.mapValues { (permission, response) ->
           if (response.status == PermissionsStatus.DENIED) {
-            val blocked = !shouldShowRequestPermissionRationale(permission)
+            val rationaleAfter = shouldShowRequestPermissionRationale(permission)
+            val blocked = !rationaleAfter && (rationaleBefore[permission] == true || askedBefore[permission] == true)
             setBlocked(permission, blocked)
             PermissionsResponse(response.status, !blocked)
           } else {
@@ -85,6 +93,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         }
       )
     }
+  }
 
   override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
 
@@ -192,10 +201,10 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
           newListener.onResult(mutableMapOf())
           return
         }
-        askForManifestPermissions(permissionsToAsk, withBlockedTracking(newListener))
+        askForManifestPermissions(permissionsToAsk, withBlockedTracking(permissionsToAsk, newListener))
       }
     } else {
-      askForManifestPermissions(permissions, withBlockedTracking(responseListener))
+      askForManifestPermissions(permissions, withBlockedTracking(permissions, responseListener))
     }
   }
 
