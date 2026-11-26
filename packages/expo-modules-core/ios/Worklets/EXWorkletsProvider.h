@@ -29,6 +29,13 @@ NS_SWIFT_NAME(WorkletsProvider)
                                          holderPointer:(const void *)holderPointer
     NS_SWIFT_NAME(uiRuntimePointer(runtimePointer:holderPointer:));
 
+// Returns an opaque handle to the worklet runtime of a holder of `react-native-worklets`, which belongs to the runtime
+// at `runtimePointer`. It makes JSI calls only on that runtime, so it doesn't wait for the lock of the worklet runtime.
+// Returns nil when the holder has no worklet runtime.
+- (nullable id)workletRuntimeHandleWithRuntimePointer:(void *)runtimePointer
+                                        holderPointer:(const void *)holderPointer
+    NS_SWIFT_NAME(workletRuntimeHandle(runtimePointer:holderPointer:));
+
 // Returns an opaque scheduler handle for the worklet runtime with the given `jsi::Runtime` pointer and sets
 // `dispatch` to a `void (*)(void *scheduler, int priority, void (^callback)())` function that runs the callback
 // on the thread of that runtime. Both go to `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)`. The

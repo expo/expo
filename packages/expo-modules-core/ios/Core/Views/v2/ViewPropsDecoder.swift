@@ -174,13 +174,16 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
   /// Reports the props of `Props` among the given prop names, which came without a JavaScript runtime
   /// and weren't decoded. Reports each prop only once.
   public func didSkipProps(_ propNames: [String]) {
+    guard ViewPropsRuntimes.shouldReportSkippedProps() else {
+      return
+    }
     let newlySkipped = reportedSkippedProps.withLock { reported in
       propNames.filter { Props.PropName(rawValue: $0) != nil && reported.insert($0).inserted }
     }
     if !newlySkipped.isEmpty {
       let thread = Thread.isMainThread ? "the main thread" : "the thread '\(Thread.current.name ?? "")'"
       log.warn(
-        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set them from React"
+        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, Expo decodes them in the UI runtime of `react-native-worklets`, so install it and load it, for example through Reanimated. If they're still skipped, call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set them from React"
       )
     }
   }
@@ -191,5 +194,24 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
 /// doesn't include it.
 @usableFromInline
 internal func reportUndecodableProp(_ propName: String, of viewName: String, error: any Error) {
-  log.warn("Can't decode the '\(propName)' prop of '\(viewName)', so it keeps its value: \(error)")
+  guard
+    error is Exceptions.AppContextNotFound
+      || (error as? ChainableException)?.isCausedBy(Exceptions.AppContextNotFound.self) == true
+  else {
+    log.warn("Can't decode the '\(propName)' prop of '\(viewName)', so it keeps its value: \(error)")
+    return
+  }
+  // Without `installOnUIRuntime`, the worklets UI runtime has no app context, and Reanimated sends a decode there on
+  // each frame of an animation.
+  let isFirstReport = reportedPropsWithoutAppContext.withLock { reported in
+    reported.insert("\(viewName).\(propName)").inserted
+  }
+  if isFirstReport {
+    log.warn(
+      "The '\(propName)' prop of '\(viewName)' wasn't applied: its type needs Expo in the JavaScript runtime that decodes it, for example the worklets UI runtime, where Reanimated's animations run. Call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set it from React. Expo logs this only once for each prop"
+    )
+  }
 }
+
+/// The props whose decode needed an app context, as "view.prop", so that each one is reported only once.
+private let reportedPropsWithoutAppContext = Mutex<Set<String>>([])

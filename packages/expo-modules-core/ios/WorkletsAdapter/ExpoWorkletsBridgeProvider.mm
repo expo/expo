@@ -218,6 +218,25 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   return &uiRuntime;
 }
 
+- (nullable id)workletRuntimeHandleWithRuntimePointer:(void *)runtimePointer
+                                        holderPointer:(const void *)holderPointer
+{
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &holderValue = *reinterpret_cast<const jsi::Value *>(holderPointer);
+
+  if (!holderValue.isObject()) {
+    return nil;
+  }
+  std::shared_ptr<worklets::WorkletRuntime> workletRuntime =
+    worklets::getWorkletRuntimeFromHolder(rt, holderValue.getObject(rt));
+  if (!workletRuntime) {
+    return nil;
+  }
+  ExpoWorkletsRuntimeHandle *handle = [[ExpoWorkletsRuntimeHandle alloc] init];
+  handle->runtime = workletRuntime;
+  return handle;
+}
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments
