@@ -40,7 +40,11 @@ class PedometerModule : Module() {
     } catch (_: ClassNotFoundException) {
       false
     }
-    if (isPlayServicesLinked) PedometerPlayServices(androidContext.applicationContext) else null
+    if (isPlayServicesLinked) {
+      PedometerPlayServices(androidContext.applicationContext)
+    } else {
+      null
+    }
   }
 
   @Event(name = "Exponent.pedometerUpdate")
