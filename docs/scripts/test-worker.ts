@@ -584,15 +584,21 @@ async function testRemovedSdkRedirectsAsync(): Promise<void> {
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   console.log('\n--- Testing agent discovery redirects ---');
 
-  const api = await fetch(`${BASE_URL}/api`, { redirect: 'manual' });
-  const apiLocation = api.headers.get('location') ?? '';
+  const { version } = JSON.parse(fs.readFileSync('package.json', 'utf8')) as { version: string };
+  const nativeModulesUrl = `https://api.expo.dev/v2/sdks/${version}/native-modules`;
 
-  if (api.status !== 301 || !apiLocation.includes('/versions/latest')) {
-    throw new Error(
-      `Expected /api to redirect to /versions/latest, got: HTTP ${api.status} -> ${apiLocation}`
-    );
+  for (const from of ['/api', '/api/']) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 302 || location !== nativeModulesUrl) {
+      throw new Error(
+        `Expected ${from} to 302 to ${nativeModulesUrl}, the native modules of the latest SDK in ` +
+          `package.json, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to the SDK ${version} native modules`);
   }
-  console.log('✓ /api redirects to the API reference');
 
   const programmaticAccessPath = '/accounts/programmatic-access/';
   for (const from of ['/developers', '/developers/']) {
