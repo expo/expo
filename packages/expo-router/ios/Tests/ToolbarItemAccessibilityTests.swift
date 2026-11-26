@@ -1,3 +1,4 @@
+import ExpoModulesTestCore
 import Testing
 import UIKit
 
@@ -9,7 +10,7 @@ import UIKit
 struct ToolbarItemAccessibilityTests {
   @Test
   func `accessibility props are applied to the bar button item`() throws {
-    let appContext = AppContext()
+    let appContext = TestAppContext()
     let definition = try #require(
       RouterToolbarModule(appContext: appContext).definition().views["RouterToolbarItemView"]
     )
