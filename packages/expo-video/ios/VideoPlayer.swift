@@ -121,7 +121,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   var currentLiveTimestamp: Double? {
-    guard let currentDate = ref.currentItem?.currentDate() else {
+    guard let currentDate = liveCurrentDate else {
       return nil
     }
     let timeIntervalSince = currentDate.timeIntervalSince1970
@@ -129,12 +129,19 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   var currentOffsetFromLive: Double? {
-    guard let currentDate = ref.currentItem?.currentDate() else {
+    guard let currentDate = liveCurrentDate else {
       return nil
     }
     let timeIntervalSince = currentDate.timeIntervalSince1970
     let unixTime = Date().timeIntervalSince1970
     return unixTime - timeIntervalSince
+  }
+
+  private var liveCurrentDate: Date? {
+    guard let item = ref.currentItem, item.status == .readyToPlay, item.duration.isIndefinite else {
+      return nil
+    }
+    return item.currentDate()
   }
 
   var bufferOptions = BufferOptions() {
