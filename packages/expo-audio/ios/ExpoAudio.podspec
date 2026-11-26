@@ -27,11 +27,11 @@ Pod::Spec.new do |s|
   
   s.source_files = "**/*.{h,m,swift}"
   s.exclude_files = "Tests/**"
-  s.tvos.exclude_files = "**/AudioRecorder.swift",
-                         "**/AudioRecordingRequester.swift",
+  s.tvos.exclude_files = "**/AudioRecordingRequester.swift",
                          "**/RecordingDelegate.swift"
 
   s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.swift'
     test_spec.requires_app_host = false
 

@@ -4,7 +4,7 @@ import AVFoundation
 
 @testable import ExpoAudio
 
-private final class StubRecorder: AVAudioRecorder, @unchecked Sendable {
+final class StubRecorder: AVAudioRecorder, @unchecked Sendable {
   var acceptsRecord = true
 
   override func record() -> Bool {
@@ -20,14 +20,14 @@ private final class StubRecorder: AVAudioRecorder, @unchecked Sendable {
   }
 }
 
-private func makeStubbedRecorder() throws -> AudioRecorder {
+func makeStubbedRecorder() throws -> AudioRecorder {
   let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).m4a")
   let avRecorder = try StubRecorder(url: url, settings: [
     AVFormatIDKey: kAudioFormatMPEG4AAC,
     AVSampleRateKey: 44_100,
     AVNumberOfChannelsKey: 1
   ])
-  let recorder = AudioRecorder(avRecorder, options: RecordingOptions())
+  let recorder = AudioRecorder(avRecorder, options: RecordingOptions(), sessionQueue: DispatchQueue(label: "test"))
   recorder.allowsRecording = true
   return recorder
 }
@@ -130,6 +130,16 @@ struct AudioRecorderSystemPauseTests {
     try recorder.resumeAfterSystemPause()
 
     #expect(!isRecording(recorder))
+  }
+}
+
+@Suite("AudioRecorder status")
+struct AudioRecorderStatusTests {
+  @Test
+  func `reports the file size as an Int`() throws {
+    let recorder = try makeStubbedRecorder()
+
+    #expect(recorder.getRecordingStatus()["fileSize"] is Int)
   }
 }
 #endif

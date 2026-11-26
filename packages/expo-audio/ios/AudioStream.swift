@@ -1,10 +1,22 @@
 import AVFoundation
 import ExpoModulesCore
 
-private let AUDIO_STREAM_BUFFER = "audioStreamBuffer"
-private let AUDIO_STREAM_STATUS = "audioStreamStatus"
+@Record
+struct AudioStreamStatusEvent {
+  var isStreaming: Bool
+}
 
-class AudioStream: SharedObject {
+@Record
+struct AudioStreamBufferEvent {
+  var data: ArrayBuffer
+  var sampleRate: Double
+  var channels: Int
+  var timestamp: Double
+}
+
+@SharedObject
+public final class AudioStream: SharedObject {
+  @JS
   let id = UUID().uuidString
 
   private let requestedSampleRate: Double
@@ -22,12 +34,86 @@ class AudioStream: SharedObject {
   private var fileWriter: AudioStreamFileWriter?
   private let fileWriterQueue = DispatchQueue(label: "expo.audio.filewrite", qos: .default)
   private var fileWriterError: Error?
+  private let sessionQueue: DispatchQueue
+  weak var module: AudioModule?
 
-  init(options: AudioStreamOptions) {
+  @Event("audioStreamStatus")
+  var onAudioStreamStatus: (AudioStreamStatusEvent) -> Void
+
+  @Event("audioStreamBuffer")
+  var onAudioStreamBuffer: (AudioStreamBufferEvent) -> Void
+
+  init(options: AudioStreamOptions, sessionQueue: DispatchQueue) {
+    self.sessionQueue = sessionQueue
     self.requestedSampleRate = options.sampleRate
     self.requestedChannels = options.channels
     self.encoding = options.encoding
     super.init()
+  }
+
+  @JS("sampleRate")
+  var sampleRateFromJS: Double {
+    sampleRate
+  }
+
+  @JS("channels")
+  var channelsFromJS: Int {
+    channels
+  }
+
+  @JS("isStreaming")
+  var isStreamingFromJS: Bool {
+    isStreaming
+  }
+
+  @JS("start")
+  func startFromJS() async throws {
+    #if os(iOS)
+    try AudioRecordingRequester.requirePermission()
+    #endif
+    try await sessionQueue.perform {
+      guard let module = self.module else {
+        throw Exceptions.AppContextLost()
+      }
+      try module.activateRecordingSession { _, deactivateOnFailure in
+        try self.start(deactivateSessionOnFailure: deactivateOnFailure)
+      }
+    }
+  }
+
+  @JS
+  func startFileRecordingAsync(_ options: AudioStreamFileRecordingOptions?) async throws -> AudioStreamFileRecordingStartResult {
+    try await sessionQueue.perform {
+      try self.startFileRecording(options)
+    }
+  }
+
+  private func startFileRecording(_ options: AudioStreamFileRecordingOptions?) throws -> AudioStreamFileRecordingStartResult {
+    let opts = options ?? AudioStreamFileRecordingOptions()
+    let format = opts.format
+    let url: URL
+    if let uri = opts.uri {
+      guard uri.pathExtension.lowercased() == format.fileExtension else {
+        throw AudioStreamFileException(
+          "The URI '\(uri.lastPathComponent)' has extension '.\(uri.pathExtension.lowercased())' but the chosen format is '\(format.rawValue)'. Change the URI extension or the format to match."
+        )
+      }
+      url = uri
+    } else {
+      let baseDir = try AudioUtils.recordingDirectory(for: opts.directory, appContext: appContext)
+      let streamDir = baseDir.appendingPathComponent("AudioStream")
+      try FileManager.default.createDirectory(at: streamDir, withIntermediateDirectories: true)
+      url = streamDir.appendingPathComponent("stream-\(UUID().uuidString).\(format.fileExtension)")
+    }
+    let resolvedUri = try startFileRecording(url: url, format: format)
+    return AudioStreamFileRecordingStartResult(uri: resolvedUri)
+  }
+
+  @JS
+  func stopFileRecordingAsync() async throws -> AudioStreamFileRecordingResult {
+    try await sessionQueue.perform {
+      try self.stopFileRecording()
+    }
   }
 
   func start(deactivateSessionOnFailure: Bool = true) throws {
@@ -229,9 +315,7 @@ class AudioStream: SharedObject {
   }
 
   private func emitStatus() {
-    emit(event: AUDIO_STREAM_STATUS, payload: [
-      "isStreaming": isStreaming
-    ])
+    onAudioStreamStatus(AudioStreamStatusEvent(isStreaming: isStreaming))
   }
 
   private func emitBuffer(buffer: AVAudioPCMBuffer, when: AVAudioTime) {
@@ -277,12 +361,12 @@ class AudioStream: SharedObject {
       return
     }
 
-    emit(event: AUDIO_STREAM_BUFFER, payload: [
-      "data": data,
-      "sampleRate": sampleRate,
-      "channels": channels,
-      "timestamp": timestamp
-    ])
+    onAudioStreamBuffer(AudioStreamBufferEvent(
+      data: data,
+      sampleRate: sampleRate,
+      channels: channels,
+      timestamp: timestamp
+    ))
   }
 
   private func timestampSinceStart(_ when: AVAudioTime) -> Double {
