@@ -2,4 +2,4 @@
 '@expo/ui': patch
 ---
 
-[iOS] Reserve room for the built-in modifiers in `ViewModifierRegistry`, which makes its setup at launch faster.
+[iOS] Make the setup of `ViewModifierRegistry` at launch faster. It reserves room for the built-in modifiers and hashes the name of each modifier once.

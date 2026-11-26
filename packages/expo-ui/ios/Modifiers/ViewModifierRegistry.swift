@@ -1613,10 +1613,9 @@ public class ViewModifierRegistry {
   }
 
   private func register(_ type: String, _ registration: Registration) {
-    if registrations[type] != nil {
+    if registrations.updateValue(registration, forKey: type) != nil {
       log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
     }
-    registrations[type] = registration
   }
 
   /**
