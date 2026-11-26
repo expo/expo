@@ -1,7 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#if !os(macOS)
+#if os(macOS)
+import AppKit
+#else
 import MobileCoreServices
+import UIKit
 #endif
 
 extension NSAttributedString {
