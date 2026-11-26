@@ -215,9 +215,9 @@ describe(patchProjectAsync, () => {
       });
       jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
 
-      await expect(
-        patchProjectAsync('/app', { platforms: ['android'], patchRoot: '/app/cng-patches' })
-      ).rejects.toThrow('git diff failed');
+      await expect(patchProjectAsync('/app', { platforms: ['android'] })).rejects.toThrow(
+        'git diff failed'
+      );
 
       expect(vol.toJSON('/app/cng-patches')).toEqual({
         '/app/cng-patches/android+old.patch': 'old patch',

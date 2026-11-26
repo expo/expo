@@ -51,7 +51,7 @@ export async function patchProjectAsync(
   logLoadedEnv(envInfo);
 
   const { exp } = await getConfig(projectRoot);
-  const patchRoot = options.patchRoot || 'cng-patches';
+  const patchRoot = path.resolve(projectRoot, options.patchRoot || 'cng-patches');
 
   // Warn if the project is attempting to prebuild an unsupported platform (iOS on Windows).
   options.platforms = ensureValidPlatforms(options.platforms);
@@ -90,7 +90,7 @@ async function patchProjectForPlatformAsync({
       backupDir: path.join(workingDirectories.tmpDir, 'patches'),
       patchFileBackups,
     });
-    await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
+    await fs.mkdir(patchRoot, { recursive: true });
 
     debug(`Normalizing native project files for original project`);
     backupFileMappings = await normalizeNativeProjectsAsync({
@@ -134,11 +134,7 @@ async function patchProjectForPlatformAsync({
     originalProjectDir = platformDiffDir;
 
     debug(`Generating patch file`);
-    const patchFilePath = path.join(
-      projectRoot,
-      patchRoot,
-      `${platform}+${templateChecksum}.patch`
-    );
+    const patchFilePath = path.join(patchRoot, `${platform}+${templateChecksum}.patch`);
     logger.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
     await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
     const stat = await fs.stat(patchFilePath);
@@ -248,9 +244,9 @@ async function movePatchFilesAsync({
   patchFileBackups: BackupFileMappings;
 }): Promise<void> {
   for (const file of await getPatchFilesAsync(patchRoot, platform)) {
-    const patchFile = path.resolve(patchRoot, file);
+    const patchFile = path.join(patchRoot, file);
     const backupPath = path.join(backupDir, file);
-    logger.log(`Removing patch file: ${patchFile}`);
+    logger.log(`Moving the old patch file aside: ${patchFile}`);
     await moveAsync(patchFile, backupPath);
     patchFileBackups[patchFile] = backupPath;
   }
@@ -262,6 +258,7 @@ async function restorePatchFilesAsync(patchFileBackups: BackupFileMappings): Pro
     for (const [patchFile, backupPath] of Object.entries(patchFileBackups)) {
       await moveAsync(backupPath, patchFile);
       delete patchFileBackups[patchFile];
+      logger.log(`Restored the old patch file: ${patchFile}`);
     }
     return true;
   } catch (restoreError) {
