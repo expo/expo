@@ -81,9 +81,15 @@ async function patchProjectForPlatformAsync({
   const platformDiffDir = path.join(diffDir, platform);
 
   let backupFileMappings: BackupFileMappings = {};
+  const patchFileBackups: BackupFileMappings = {};
   let originalProjectDir: string | null = null;
   try {
-    await removePatchFilesAsync(patchRoot, platform);
+    await movePatchFilesAsync({
+      patchRoot,
+      platform,
+      backupDir: path.join(workingDirectories.tmpDir, 'patches'),
+      patchFileBackups,
+    });
     await fs.mkdir(path.join(projectRoot, patchRoot), { recursive: true });
 
     debug(`Normalizing native project files for original project`);
@@ -141,9 +147,13 @@ async function patchProjectForPlatformAsync({
       await fs.rm(patchFilePath);
     }
   } catch (error) {
-    if (
-      await restoreOriginalProjectAsync({ platformDir, originalProjectDir, backupFileMappings })
-    ) {
+    const isProjectRestored = await restoreOriginalProjectAsync({
+      platformDir,
+      originalProjectDir,
+      backupFileMappings,
+    });
+    const arePatchFilesRestored = await restorePatchFilesAsync(patchFileBackups);
+    if (isProjectRestored && arePatchFilesRestored) {
       await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
     }
     throw error;
@@ -222,14 +232,48 @@ function formatBackupFileMappings(backupFileMappings: BackupFileMappings): strin
     .join('');
 }
 
-async function removePatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<void> {
-  const patchFiles = (await getPatchFilesAsync(patchRoot, platform)).map((file) =>
-    path.resolve(patchRoot, file)
-  );
-  await Promise.all(
-    patchFiles.map((file) => {
-      logger.log(`Removing patch file: ${file}`);
-      return fs.rm(file, { force: true });
-    })
-  );
+/**
+ * Moves the existing patch files into `backupDir`, so a failed run can put them back.
+ * `patchFileBackups` is filled as each file moves.
+ */
+async function movePatchFilesAsync({
+  patchRoot,
+  platform,
+  backupDir,
+  patchFileBackups,
+}: {
+  patchRoot: string;
+  platform: ModPlatform;
+  backupDir: string;
+  patchFileBackups: BackupFileMappings;
+}): Promise<void> {
+  for (const file of await getPatchFilesAsync(patchRoot, platform)) {
+    const patchFile = path.resolve(patchRoot, file);
+    const backupPath = path.join(backupDir, file);
+    logger.log(`Removing patch file: ${patchFile}`);
+    await moveAsync(patchFile, backupPath);
+    patchFileBackups[patchFile] = backupPath;
+  }
+}
+
+/** Returns `false` when some old patch files are still in the working directory. */
+async function restorePatchFilesAsync(patchFileBackups: BackupFileMappings): Promise<boolean> {
+  try {
+    for (const [patchFile, backupPath] of Object.entries(patchFileBackups)) {
+      await moveAsync(backupPath, patchFile);
+      delete patchFileBackups[patchFile];
+    }
+    return true;
+  } catch (restoreError) {
+    logger.error(
+      chalk.red(
+        `Could not restore the old patch files. ` +
+          `Move each file back manually before you run patch-project again. ` +
+          `A later run deletes them:` +
+          formatBackupFileMappings(patchFileBackups)
+      )
+    );
+    logger.error(restoreError);
+    return false;
+  }
 }

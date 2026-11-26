@@ -3,6 +3,7 @@ import { getConfig } from 'expo/config';
 import { vol } from 'memfs';
 
 import { diffAsync } from '../../gitPatch';
+import { getPatchFilesAsync } from '../../patchFiles';
 import { moveAsync } from '../dir';
 import { generateNativeProjectsAsync } from '../generateNativeProjects';
 import * as logger from '../logger';
@@ -203,6 +204,25 @@ describe(patchProjectAsync, () => {
           'The original project is in /app/.patch-project-tmp/android/diff/android.'
         )
       );
+    });
+
+    it('restores the old patch files when generating the patch fails', async () => {
+      vol.fromJSON({ '/app/cng-patches/android+old.patch': 'old patch' });
+      jest.mocked(getPatchFilesAsync).mockResolvedValueOnce(['android+old.patch']);
+      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
+        vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
+        return 'checksum';
+      });
+      jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
+
+      await expect(
+        patchProjectAsync('/app', { platforms: ['android'], patchRoot: '/app/cng-patches' })
+      ).rejects.toThrow('git diff failed');
+
+      expect(vol.toJSON('/app/cng-patches')).toEqual({
+        '/app/cng-patches/android+old.patch': 'old patch',
+      });
+      expectOriginalNativeProjectRestored();
     });
 
     it('restores the original ios project.pbxproj when generating the patch fails', async () => {
