@@ -25,7 +25,6 @@ import {
   SumType,
   Type,
   TypeIdentifier,
-  TypeIdentifierDefinitionMap,
   TypeKind,
   ViewDeclaration,
 } from '../typeInformation.types';
@@ -199,7 +198,6 @@ const basicTypesConversions = new Map<string, BasicType>([
 
   ['()', BasicType.VOID],
   ['Void', BasicType.VOID],
-  ['Void', BasicType.VOID],
 
   ['Never', BasicType.NEVER],
 
@@ -257,7 +255,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
     if (isEitherTypeIdentifier(parametrizedType.name)) {
       return {
         kind: TypeKind.SUM,
-        type: parametrizedType as SumType,
+        type: { types: parametrizedType.types },
       };
     }
 
@@ -289,7 +287,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
   };
 }
 
-function getStructureFromFile(file: FileType) {
+function getStructureFromFile(file: FileType): Structure | null {
   const command = 'sourcekitten structure --file ' + file.path;
 
   try {
@@ -298,28 +296,38 @@ function getStructureFromFile(file: FileType) {
   } catch (error) {
     console.error('An error occurred while executing the command:', error);
   }
+  return null;
+}
+
+function substringAtOffset(offsetObject: Structure, file: FileType): string {
+  const startIndex = offsetObject['key.offset'];
+  return file.content.substring(startIndex, startIndex + offsetObject['key.length']);
+}
+
+function stripQuotes(str: string): string {
+  return str.replaceAll('"', '');
+}
+
+function stripSelfSuffix(name: string): string {
+  return name.replace(/\.self$/, '');
 }
 
 // Read string straight from file – needed since we can't get cursorinfo for modulename
 function getIdentifierFromOffsetObject(offsetObject: Structure, file: FileType) {
-  const startIndex = offsetObject['key.offset'];
-  const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
-  return file.content.substring(startIndex, endIndex).replaceAll('"', '');
+  return stripQuotes(substringAtOffset(offsetObject, file));
 }
 
 function getLiteralOrResolvedIdentifier(offsetObject: Structure, ctx: ParseContext): string {
   const { namespaces, file } = ctx;
-  const startIndex = offsetObject['key.offset'];
-  const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
-  const literalOrIdentifier = file.content.substring(startIndex, endIndex);
+  const literalOrIdentifier = substringAtOffset(offsetObject, file);
 
   if (literalOrIdentifier.startsWith('"')) {
-    return literalOrIdentifier.replaceAll('"', '');
+    return stripQuotes(literalOrIdentifier);
   }
 
   const parts = literalOrIdentifier.split('.');
 
-  const traverse = (baseObj: namespace | string | null, keys: string[]) => {
+  const traverse = (baseObj: Namespace | string | null, keys: string[]) => {
     let current = baseObj;
     for (const key of keys) {
       if (typeof current === 'string' || current === null) {
@@ -336,12 +344,12 @@ function getLiteralOrResolvedIdentifier(offsetObject: Structure, ctx: ParseConte
 
   const n0 = traverse(namespaces, parts);
   if (typeof n0 === 'string') {
-    return n0.replaceAll('"', '');
+    return stripQuotes(n0);
   }
 
   const n1 = traverse(namespaces[''] || {}, parts);
   if (typeof n1 === 'string') {
-    return n1.replaceAll('"', '');
+    return stripQuotes(n1);
   }
 
   return parts[parts.length - 1] ?? literalOrIdentifier;
@@ -359,6 +367,9 @@ function getInitializerValue(structure: Structure, file: FileType): string | nul
   }
   const valueSubstring = file.content.substring(nameEnd, declarationEnd);
   const indexOfInitializerStart = valueSubstring.indexOf('=');
+  if (indexOfInitializerStart === -1) {
+    return null;
+  }
   const initializer = valueSubstring.slice(indexOfInitializerStart + 1).trim();
 
   if (!isStringLiteral(initializer)) {
@@ -367,15 +378,18 @@ function getInitializerValue(structure: Structure, file: FileType): string | nul
   return initializer;
 }
 
-function hasSubstructure(structure: Structure) {
-  return structure?.['key.substructure'] && structure['key.substructure'].length > 0;
+function hasSubstructure(structure: Structure): boolean {
+  return (structure?.['key.substructure']?.length ?? 0) > 0;
 }
 
 async function findReturnType(structure: Structure, ctx: ParseContext): Promise<string | null> {
+  if (!ctx.typeInference) {
+    return null;
+  }
+
   if (
     structure['key.kind'] === swiftDeclarationKind.varLocal &&
-    structure['key.name'].startsWith('returnValueDeclaration_') &&
-    ctx.typeInference
+    structure['key.name'].startsWith('returnValueDeclaration_')
   ) {
     // TODO(@HubertBer): this return type inference is really costly
     return getTypeOfByteOffsetVariable(structure['key.nameoffset'], ctx.file);
@@ -398,7 +412,7 @@ function getSDKPath(): string | null {
     return cachedSDKPath;
   }
 
-  cachedSDKPath = execSync('xcrun --sdk iphoneos --show-sdk-path')?.toString()?.trim();
+  cachedSDKPath = execSync('xcrun --sdk iphoneos --show-sdk-path').toString().trim();
   if (!cachedSDKPath) {
     console.error(`Couldn't find xcode sdk path!`);
     return null;
@@ -425,7 +439,7 @@ async function extractDeclarationType(structure: Structure, ctx: ParseContext): 
   return getUnresolvedType();
 }
 
-function constructSourcekiitenCursorInfoRequest({
+function constructSourcekittenCursorInfoRequest({
   filePath,
   byteOffset,
   sdkPath,
@@ -463,7 +477,7 @@ async function getTypeOfByteOffsetVariable(
   if (!sdkPath) {
     return null;
   }
-  const yamlRequest = constructSourcekiitenCursorInfoRequest({
+  const yamlRequest = constructSourcekittenCursorInfoRequest({
     filePath: file.path,
     byteOffset,
     sdkPath,
@@ -622,9 +636,9 @@ async function parseModuleClassStructure(
 ): Promise<ClassDeclaration> {
   const { file } = ctx;
   const nestedModuleSubstructure = getClosureBodyStructure(structure)?.['key.substructure'];
-  const nameSubstrucutre = structure['key.substructure']?.[0];
-  const name = nameSubstrucutre
-    ? getIdentifierFromOffsetObject(nameSubstrucutre, file).replace('.self', '')
+  const nameSubstructure = structure['key.substructure']?.[0];
+  const name = nameSubstructure
+    ? stripSelfSuffix(getIdentifierFromOffsetObject(nameSubstructure, file))
     : 'UnnamedClass';
 
   if (!nestedModuleSubstructure) {
@@ -680,9 +694,9 @@ async function parseModuleFunctionSubstructure(
   ctx: ParseContext
 ): Promise<FunctionDeclaration> {
   const definitionParams = substructure['key.substructure'];
-  const nameSubstrucutre = definitionParams[0];
-  const name = nameSubstrucutre
-    ? getIdentifierFromOffsetObject(nameSubstrucutre, ctx.file)
+  const nameSubstructure = definitionParams[0];
+  const name = nameSubstructure
+    ? getIdentifierFromOffsetObject(nameSubstructure, ctx.file)
     : 'UnnamedFunction';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
@@ -728,10 +742,10 @@ async function parseModulePropDeclaration(
   ctx: ParseContext
 ): Promise<PropDeclaration> {
   const definitionParams = substructure['key.substructure'];
-  const nameSubstrucutre = definitionParams[0];
-  const name = nameSubstrucutre
-    ? getIdentifierFromOffsetObject(nameSubstrucutre, ctx.file)
-    : 'UnkownProp';
+  const nameSubstructure = definitionParams[0];
+  const name = nameSubstructure
+    ? getIdentifierFromOffsetObject(nameSubstructure, ctx.file)
+    : 'UnknownProp';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
     types = await parseClosureTypes(definitionParams[1], ctx);
@@ -753,14 +767,13 @@ async function parseModuleViewDeclaration(
   ctx: ParseContext
 ): Promise<ViewDeclaration | null> {
   const { file } = ctx;
-  // The View arguments is a.self for some class a we want.
-  const suffixLength = 5;
-  const nameSubstrucutre = substructure['key.substructure']?.[0];
-  if (!nameSubstrucutre) {
+  // The View argument is `a.self` for some class `a` we want.
+  const nameSubstructure = substructure['key.substructure']?.[0];
+  if (!nameSubstructure) {
     return null;
   }
 
-  const name = getIdentifierFromOffsetObject(nameSubstrucutre, file).slice(0, -suffixLength);
+  const name = stripSelfSuffix(getIdentifierFromOffsetObject(nameSubstructure, file));
   const viewStructure = getClosureBodyStructure(substructure);
   const viewSubstructure = viewStructure?.['key.substructure'];
   if (!viewSubstructure) {
@@ -770,13 +783,10 @@ async function parseModuleViewDeclaration(
   return await parseModuleStructure(viewSubstructure, name, viewStructure['key.offset'], ctx);
 }
 
-function parseModuleEventDeclaration(structure: Structure, events: string[], ctx: ParseContext) {
-  structure['key.substructure'].forEach((substructure) => {
-    const eventName = getLiteralOrResolvedIdentifier(substructure, ctx);
-    if (eventName) {
-      events.push(eventName);
-    }
-  });
+function parseModuleEventDeclaration(structure: Structure, ctx: ParseContext): string[] {
+  return structure['key.substructure']
+    .map((substructure) => getLiteralOrResolvedIdentifier(substructure, ctx))
+    .filter((eventName) => !!eventName);
 }
 
 function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): boolean {
@@ -796,23 +806,17 @@ function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): bool
 
 async function parseRecordStructure(
   recordStructure: Structure,
-  usedTypeIdentifiers: Set<string>,
-  inferredTypeParametersCount: Map<string, number>,
   ctx: ParseContext
 ): Promise<RecordType> {
-  const recordSubstrucutres = recordStructure['key.substructure'].filter(
+  const recordSubstructures = recordStructure['key.substructure'].filter(
     (substructure) =>
       substructure['key.kind'] === swiftDeclarationKind.varInstance &&
       hasFieldAttribute(substructure['key.attributes'], ctx.file)
   );
 
-  const fields = await taskAll(recordSubstrucutres, async (substructure) => {
+  const fields = await taskAll(recordSubstructures, async (substructure) => {
     const type = await extractDeclarationType(substructure, ctx);
     return { type, name: substructure['key.name'] };
-  });
-
-  fields.forEach(({ type }) => {
-    collectTypeIdentifiers(type, usedTypeIdentifiers, inferredTypeParametersCount);
   });
 
   return {
@@ -871,13 +875,13 @@ function parsePropertyString(
   };
 }
 
-type namespace = {
-  [key: string]: namespace | string | null;
+type Namespace = {
+  [key: string]: Namespace | string | null;
 };
 
 type ParseContext = {
   file: FileType;
-  namespaces: { [key: string]: namespace };
+  namespaces: { [key: string]: Namespace };
   typeInference: boolean;
 };
 
@@ -917,9 +921,9 @@ async function parseModuleStructure(
 
     switch (structure['key.name']) {
       case 'Name': {
-        const nameSubstrucutre = structure['key.substructure']?.[0];
-        if (nameSubstrucutre) {
-          moduleClassDeclaration.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
+        const nameSubstructure = structure['key.substructure']?.[0];
+        if (nameSubstructure) {
+          moduleClassDeclaration.name = getIdentifierFromOffsetObject(nameSubstructure, file);
         }
         break;
       }
@@ -978,7 +982,7 @@ async function parseModuleStructure(
         break;
       }
       case 'Events':
-        parseModuleEventDeclaration(structure, moduleClassDeclaration.events, ctx);
+        moduleClassDeclaration.events.push(...parseModuleEventDeclaration(structure, ctx));
         break;
       default:
         console.warn(`Module substructure not supported. ${structure['key.name']}`);
@@ -1005,174 +1009,195 @@ type ParseStructuresOutput = {
 type ParseStructureOptions = {
   file: FileType;
   structure: Structure;
+};
+
+type NamedStructure = {
+  structure: Structure;
   name: string;
 };
 
-function parseStructure(
-  { file, structure, name }: ParseStructureOptions,
-  // Note that instead of returning and merging the enum, record and module arrays, we're just collecting the items in the 3 arrays inside this object.
-  output: ParseStructuresOutput
-) {
-  // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
-  const substructure = structure['key.substructure'];
-  if (!substructure) {
-    return;
-  }
+function parseStructure(options: ParseStructureOptions): ParseStructuresOutput {
+  const { file } = options;
+  const modulesStructures: NamedStructure[] = [];
+  const recordsStructures: Structure[] = [];
+  const enumsStructures: Structure[] = [];
+  const structuresStack: NamedStructure[] = [{ structure: options.structure, name: '' }];
 
-  if (isModuleStructure(structure)) {
-    output.modulesStructures.push({ structure, name });
-  } else if (isRecordStructure(file, structure)) {
-    output.recordsStructures.push(structure);
-  } else if (isEnumStructure(structure)) {
-    output.enumsStructures.push(structure);
-  } else if (Array.isArray(substructure) && substructure.length > 0) {
-    for (const child of substructure) {
-      parseStructure(
-        {
-          file,
-          structure: child,
-          name: structure['key.name'] ?? name,
-        },
-        output
-      );
+  while (structuresStack.length > 0) {
+    const { structure, name } = structuresStack.pop()!;
+    const substructure = structure['key.substructure'];
+    // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
+    if (!substructure) {
+      continue;
+    }
+    if (isModuleStructure(structure)) {
+      modulesStructures.push({ structure, name });
+    } else if (isRecordStructure(file, structure)) {
+      recordsStructures.push(structure);
+    } else if (isEnumStructure(structure)) {
+      enumsStructures.push(structure);
+    } else if (Array.isArray(substructure) && substructure.length > 0) {
+      for (let i = substructure.length - 1; i >= 0; i -= 1) {
+        structuresStack.push({ structure: substructure[i]!, name: structure['key.name'] ?? name });
+      }
     }
   }
+  return { modulesStructures, enumsStructures, recordsStructures };
 }
 
-function getTypeIdentifierDefinitionMap(
-  fileTypeInformation: FileTypeInformation
-): Map<string, IdentifierDefinition> {
+function getTypeIdentifierDefinitionMap({
+  records,
+  enums,
+}: {
+  records: RecordType[];
+  enums: EnumType[];
+}): Map<string, IdentifierDefinition> {
   const typeIdentifierDefinitionMap = new Map<
     string,
     { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
   >([]);
 
-  fileTypeInformation.records.forEach((r) =>
+  records.forEach((r) =>
     typeIdentifierDefinitionMap.set(r.name, { kind: IdentifierKind.RECORD, definition: r })
   );
-  fileTypeInformation.enums.forEach((e) =>
+  enums.forEach((e) =>
     typeIdentifierDefinitionMap.set(e.name, { kind: IdentifierKind.ENUM, definition: e })
   );
 
   return typeIdentifierDefinitionMap;
 }
 
-function collectTypeIdentifiers(
-  type: Type,
-  typeIdentiers: Set<string>,
-  inferredTypeParametersCount: Map<string, number>
-) {
-  switch (type.kind) {
-    case TypeKind.ARRAY:
-    case TypeKind.OPTIONAL:
-      collectTypeIdentifiers(type.type as Type, typeIdentiers, inferredTypeParametersCount);
-      break;
-    case TypeKind.DICTIONARY:
-      collectTypeIdentifiers(
-        (type.type as DictionaryType).key,
-        typeIdentiers,
-        inferredTypeParametersCount
-      );
-      collectTypeIdentifiers(
-        (type.type as DictionaryType).value,
-        typeIdentiers,
-        inferredTypeParametersCount
-      );
-      break;
-    case TypeKind.SUM:
-      for (const t of (type.type as SumType).types) {
-        collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
+function collectTypeIdentifiers(types: Type[]): {
+  usedTypeIdentifiers: Set<string>;
+  inferredTypeParametersCount: Map<string, number>;
+} {
+  const typesStack = [...types];
+  const usedTypeIdentifiers: Set<string> = new Set();
+  const inferredTypeParametersCount: Map<string, number> = new Map();
+
+  while (typesStack.length > 0) {
+    const type = typesStack.pop()!;
+
+    switch (type.kind) {
+      case TypeKind.ARRAY:
+      case TypeKind.OPTIONAL:
+        typesStack.push(type.type as Type);
+        break;
+      case TypeKind.DICTIONARY:
+        typesStack.push((type.type as DictionaryType).key);
+        typesStack.push((type.type as DictionaryType).value);
+        break;
+      case TypeKind.SUM:
+        for (const t of (type.type as SumType).types) {
+          typesStack.push(t);
+        }
+        break;
+      case TypeKind.BASIC:
+        break;
+      case TypeKind.IDENTIFIER:
+        usedTypeIdentifiers.add(type.type as TypeIdentifier);
+        break;
+      case TypeKind.PARAMETRIZED: {
+        const parametrizedType: ParametrizedType = type.type as ParametrizedType;
+        const typename = parametrizedType.name;
+        usedTypeIdentifiers.add(typename);
+        inferredTypeParametersCount.set(
+          typename,
+          Math.max(inferredTypeParametersCount.get(typename) ?? 0, parametrizedType.types.length)
+        );
+        for (const t of (type.type as ParametrizedType).types) {
+          typesStack.push(t);
+        }
+        break;
       }
-      break;
-    case TypeKind.BASIC:
-      break;
-    case TypeKind.IDENTIFIER:
-      typeIdentiers.add(type.type as TypeIdentifier);
-      break;
-    case TypeKind.PARAMETRIZED: {
-      const parametrizedType: ParametrizedType = type.type as ParametrizedType;
-      const typename = parametrizedType.name;
-      typeIdentiers.add(typename);
-      inferredTypeParametersCount.set(
-        typename,
-        Math.max(inferredTypeParametersCount.get(typename) ?? 0, parametrizedType.types.length)
-      );
-      for (const t of (type.type as ParametrizedType).types) {
-        collectTypeIdentifiers(t, typeIdentiers, inferredTypeParametersCount);
-      }
-      break;
     }
   }
+  return {
+    usedTypeIdentifiers,
+    inferredTypeParametersCount,
+  };
 }
 
-function collectModuleTypeIdentifiers(
-  moduleClassDeclaration: ModuleClassDeclaration,
-  fileTypeInformation: FileTypeInformation
-) {
-  const collect = (type: Type) => {
-    collectTypeIdentifiers(
-      type,
-      fileTypeInformation.usedTypeIdentifiers,
-      fileTypeInformation.inferredTypeParametersCount
-    );
-  };
-  const collectArg = (arg: Argument) => {
-    collect(arg.type);
-  };
+function collectModuleTypes(moduleClassDeclarations: ModuleClassDeclaration[]): {
+  usedTypes: Type[];
+  classNames: string[];
+} {
+  const moduleClassDeclarationStack = [...moduleClassDeclarations];
+  const usedTypes: Type[] = [];
+  const classNames: string[] = [];
+
+  const collect = (type: Type) => usedTypes.push(type);
+  const collectArg = (arg: Argument) => collect(arg.type);
   const collectFunction = (functionDeclaration: FunctionDeclaration) => {
     collect(functionDeclaration.returnType);
     functionDeclaration.arguments.forEach(collectArg);
     functionDeclaration.parameters.forEach(collect);
   };
-  moduleClassDeclaration.asyncFunctions.forEach(collectFunction);
-  moduleClassDeclaration.functions.forEach(collectFunction);
-  moduleClassDeclaration.constants.forEach(collectArg);
-  moduleClassDeclaration.properties.forEach(collectArg);
-  moduleClassDeclaration.constructor?.arguments.forEach(collectArg);
-  moduleClassDeclaration.views.forEach((v) => collectModuleTypeIdentifiers(v, fileTypeInformation));
-  moduleClassDeclaration.props.forEach((p) => p.arguments.forEach(collectArg));
-  moduleClassDeclaration.classes.forEach((c) => {
-    fileTypeInformation.declaredTypeIdentifiers.add(c.name);
-    c.asyncMethods.forEach(collectFunction);
-    c.methods.forEach(collectFunction);
-    c.constructor?.arguments.forEach(collectArg);
-    c.properties.forEach(collectArg);
-  });
+
+  while (moduleClassDeclarationStack.length > 0) {
+    const moduleClassDeclaration = moduleClassDeclarationStack.pop()!;
+    moduleClassDeclaration.asyncFunctions.forEach(collectFunction);
+    moduleClassDeclaration.functions.forEach(collectFunction);
+    moduleClassDeclaration.constants.forEach(collectArg);
+    moduleClassDeclaration.properties.forEach(collectArg);
+    moduleClassDeclaration.constructor?.arguments.forEach(collectArg);
+    moduleClassDeclaration.views.forEach((v) => moduleClassDeclarationStack.push(v));
+    moduleClassDeclaration.props.forEach((p) => p.arguments.forEach(collectArg));
+    moduleClassDeclaration.classes.forEach((c) => {
+      classNames.push(c.name);
+      c.asyncMethods.forEach(collectFunction);
+      c.methods.forEach(collectFunction);
+      c.constructor?.arguments.forEach(collectArg);
+      c.properties.forEach(collectArg);
+    });
+  }
+
+  return {
+    usedTypes,
+    classNames,
+  };
 }
 
-function parseNamespaces(
-  structure: Structure,
-  namespaces: { [key: string]: namespace },
-  file: FileType,
-  currentNamespace: namespace
-) {
-  if (
-    isModuleStructure(structure) ||
-    isRecordStructure(file, structure) ||
-    isStructStructure(structure) ||
-    isEnumStructure(structure) ||
-    isClassStructure(structure)
-  ) {
-    const moduleName = structure['key.name'];
-    namespaces[moduleName] = namespaces[moduleName] || {};
-    const ns: namespace = namespaces[moduleName];
-    currentNamespace[moduleName] = ns;
-    structure['key.substructure']?.forEach((substructure) => {
-      parseNamespaces(substructure, namespaces, file, ns);
-    });
-    return;
+function parseNamespaces(structure: Structure, file: FileType): { [key: string]: Namespace } {
+  const rootNamespace: Namespace = {};
+  const namespaces: { [key: string]: Namespace } = { '': rootNamespace };
+  const structuresStack: { structure: Structure; currentNamespace: Namespace }[] = [
+    { structure, currentNamespace: rootNamespace },
+  ];
+  const pushChildren = (children: Structure[] | undefined, childNamespace: Namespace) => {
+    if (!children) {
+      return;
+    }
+    for (let i = children.length - 1; i >= 0; i -= 1) {
+      structuresStack.push({ structure: children[i]!, currentNamespace: childNamespace });
+    }
+  };
+
+  while (structuresStack.length > 0) {
+    const { structure, currentNamespace } = structuresStack.pop()!;
+    if (
+      isModuleStructure(structure) ||
+      isRecordStructure(file, structure) ||
+      isStructStructure(structure) ||
+      isEnumStructure(structure) ||
+      isClassStructure(structure)
+    ) {
+      const moduleName = structure['key.name'];
+      namespaces[moduleName] = namespaces[moduleName] || {};
+      const ns: Namespace = namespaces[moduleName];
+      currentNamespace[moduleName] = ns;
+      pushChildren(structure['key.substructure'], ns);
+    } else if (
+      structure['key.kind'] === swiftDeclarationKind.varStatic ||
+      structure['key.kind'] === swiftDeclarationKind.varGlobal
+    ) {
+      currentNamespace[structure['key.name']] = getInitializerValue(structure, file);
+    } else {
+      pushChildren(structure['key.substructure'], currentNamespace);
+    }
   }
-  if (
-    structure['key.kind'] === swiftDeclarationKind.varStatic ||
-    structure['key.kind'] === swiftDeclarationKind.varGlobal
-  ) {
-    currentNamespace[structure['key.name']] = getInitializerValue(structure, file);
-    return;
-  }
-  const substructures = structure['key.substructure'];
-  substructures?.forEach((substructure) =>
-    parseNamespaces(substructure, namespaces, file, currentNamespace)
-  );
+
+  return namespaces;
 }
 
 export type SwiftFileTypeInformationOptions = {
@@ -1185,39 +1210,20 @@ export async function getSwiftFileTypeInformation(
 ): Promise<FileTypeInformation | null> {
   const file = { path: filePath, content: fs.readFileSync(filePath, 'utf8') };
 
-  const modulesStructures: { name: string; structure: Structure }[] = [];
-  const recordsStructures: Structure[] = [];
-  const enumsStructures: Structure[] = [];
   const fileStructure = getStructureFromFile(file);
-  parseStructure(
-    {
-      file,
-      structure: fileStructure,
-      name: '',
-    },
-    {
-      modulesStructures,
-      recordsStructures,
-      enumsStructures,
-    }
-  );
-  const namespaces: { [key: string]: namespace } = {};
-  namespaces[''] = {};
-  parseNamespaces(fileStructure, namespaces, file, namespaces['']);
+  if (!fileStructure) {
+    return null;
+  }
+  const { modulesStructures, recordsStructures, enumsStructures } = parseStructure({
+    file,
+    structure: fileStructure,
+  });
+  const namespaces = parseNamespaces(fileStructure, file);
 
-  const inferredTypeParametersCount = new Map<string, number>();
-  const moduleClasses: ModuleClassDeclaration[] = [];
-  const moduleTypeIdentifiers = new Set<string>();
-  const declaredTypeIdentifiers = new Set<string>();
-  const recordTypeIdentifiers = new Set<string>();
-  const typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap = new Map();
-  const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
+  const enums = enumsStructures.map(parseEnumStructure);
   const ctx = { namespaces, file, typeInference: options.typeInference };
-  const recordMap = (rd: Structure) => {
-    return parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, ctx);
-  };
 
-  const recordsPromise = taskAll(recordsStructures, recordMap);
+  const recordsPromise = taskAll(recordsStructures, (rd) => parseRecordStructure(rd, ctx));
   const moduleClassDeclarationsPromise = taskAll(
     modulesStructures.filter(({ structure }) => hasSubstructure(structure)),
     ({ structure, name }) => {
@@ -1236,33 +1242,25 @@ export async function getSwiftFileTypeInformation(
     moduleClassDeclarationsPromise,
   ]);
 
-  enums.forEach(({ name }) => {
-    declaredTypeIdentifiers.add(name);
-  });
-  records.forEach(({ name }) => {
-    declaredTypeIdentifiers.add(name);
-  });
+  const { usedTypes, classNames } = collectModuleTypes(moduleClassDeclarations);
+  records.forEach(({ fields }) => fields.forEach(({ type }) => usedTypes.push(type)));
+  const { usedTypeIdentifiers, inferredTypeParametersCount } = collectTypeIdentifiers(usedTypes);
 
-  const fileTypeInformation = {
-    moduleClasses,
+  const declaredTypeIdentifiers = new Set([
+    ...records.map(({ name }) => name),
+    ...enums.map(({ name }) => name),
+    ...classNames,
+  ]);
+
+  return {
+    moduleClasses: moduleClassDeclarations,
     records,
     enums,
-    functions: [],
-    usedTypeIdentifiers: moduleTypeIdentifiers.union(recordTypeIdentifiers),
+    usedTypeIdentifiers,
     declaredTypeIdentifiers,
     inferredTypeParametersCount,
-    typeIdentifierDefinitionMap,
+    typeIdentifierDefinitionMap: getTypeIdentifierDefinitionMap({ records, enums }),
   };
-
-  for (const moduleClassDeclaration of moduleClassDeclarations) {
-    moduleClasses.push(moduleClassDeclaration);
-    collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformation);
-  }
-
-  fileTypeInformation.typeIdentifierDefinitionMap =
-    getTypeIdentifierDefinitionMap(fileTypeInformation);
-
-  return fileTypeInformation;
 }
 
 function removeComments(fileContent: string): string {
@@ -1390,9 +1388,8 @@ export function preprocessSwiftFile(
 // TODO(@HubertBer): This has many problems which may need fixing:
 // - return can be inside a string
 // - the substitution may break the Swift code
-function preprocessReturnStatements(originalFileContent: string): string {
+function preprocessReturnStatements(fileContent: string): string {
   const newFileContent: string[] = [];
-  const fileContent = removeComments(originalFileContent);
   const returnPositions: { start: number; end: number; spacesIndentation: number }[] = [];
   let startPos = 0;
   while (startPos < fileContent.length) {
@@ -1432,11 +1429,11 @@ function preprocessReturnStatements(originalFileContent: string): string {
 
 /**
  * Maps all non-ASCII characters to ASCII strings.
- * @param fileConent A string with Swift code.
+ * @param fileContent A string with Swift code.
  * @returns the fileContent string with each non-ASCII character mapped to an ASCII string.
  */
-function preprocessUnicodeCharacters(fileConent: string): string {
-  return fileConent.replace(/[^\x00-\x7F]/gu, (c) => {
+function preprocessUnicodeCharacters(fileContent: string): string {
+  return fileContent.replace(/[^\x00-\x7F]/gu, (c) => {
     const hex = c.codePointAt(0)?.toString(16)?.toUpperCase() ?? '_';
     return `_u${hex}_`;
   });
