@@ -277,7 +277,12 @@ describe(getConfig, () => {
       );
       expect(() =>
         getConfig('/invalid-plugins/', { pluginMode: 'inspect', skipSDKVersionRequirement: true })
-      ).toThrow('Expected the plugins field to be an array');
+      ).toThrow(
+        expect.objectContaining({
+          code: 'INVALID_CONFIG',
+          message: expect.stringContaining('Expected the plugins field to be an array'),
+        })
+      );
     });
     it(`applies JS plugins`, () => {
       vol.fromJSON(
