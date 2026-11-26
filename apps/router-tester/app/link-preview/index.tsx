@@ -23,6 +23,7 @@ const HomeIndex = () => {
         <CaseLink href="/link-preview/nested" text="Nested" />
         <CaseLink href="/link-preview/performance" text="Performance" />
         <CaseLink href="/link-preview/param" text="Param" />
+        <CaseLink href="/link-preview/reanimated" text="Reanimated" />
       </View>
     </ScrollView>
   );
