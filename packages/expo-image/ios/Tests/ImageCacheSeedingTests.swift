@@ -67,8 +67,9 @@ struct ImageCacheSeedingTests {
     let cacheKey = makeCacheKey()
 
     await storeDataToDisk(imageData, forKey: cacheKey)
-    // Drop the in-memory copy so the query has to hit disk, like a fresh app launch would.
-    SDImageCache.shared.clearMemory()
+    // Drop the in-memory copy so the query has to hit disk, like a fresh app launch would. Only this key: other tests
+    // that run in parallel read the shared memory cache.
+    SDImageCache.shared.removeImageFromMemory(forKey: cacheKey)
     let result = await queryCache(forKey: cacheKey)
 
     #expect(result.image != nil)

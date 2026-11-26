@@ -85,7 +85,7 @@ extension ImageView2 {
   /// Decodes the displayed image again for the current size and props, without events. A running load or downscale
   /// already uses the current size and props when it finishes, so it isn't restarted.
   func redecode() {
-    guard !isLoading, downscaleTask == nil else {
+    guard loadTask == nil, downscaleTask == nil else {
       return
     }
     if let image, image.sd_isAnimated {
