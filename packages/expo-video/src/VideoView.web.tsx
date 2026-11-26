@@ -277,7 +277,7 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
       ref={(newRef) => {
         // This is called with a null value before `player.unmountVideoView` is called,
         // we can't assign null to videoRef if we want to unmount it from the player.
-        if (newRef && !newRef.isEqualNode(videoRef.current)) {
+        if (newRef && newRef !== videoRef.current) {
           videoRef.current = newRef;
           hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
           maybeSetupAudioContext();
