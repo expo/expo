@@ -41,7 +41,7 @@ export function serializeSkippingMods(val: any): any {
 }
 
 function serializeAndEvaluatePlugin(val: any): any {
-  if (['undefined', 'string', 'boolean', 'number', 'bigint'].includes(typeof val)) {
+  if (val === null || ['undefined', 'string', 'boolean', 'number', 'bigint'].includes(typeof val)) {
     return val;
   } else if (typeof val === 'function') {
     return val.name || 'withAnonymous';

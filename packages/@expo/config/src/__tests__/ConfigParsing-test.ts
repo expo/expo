@@ -215,7 +215,7 @@ describe(getConfig, () => {
         {
           'app.config.js': `module.exports = () => ({
             plugins: [
-              ['__missing-plugin', { nested: { root: 'src/routes' } }],
+              ['__missing-plugin', { nested: { root: 'src/routes' }, barStyle: null }],
               function withFailure() { throw new Error('plugin ran'); }
             ]
           });`,
@@ -229,7 +229,7 @@ describe(getConfig, () => {
         pluginMode: 'inspect',
       });
       expect(exp.plugins).toEqual([
-        ['__missing-plugin', { nested: { root: 'src/routes' } }],
+        ['__missing-plugin', { nested: { root: 'src/routes' }, barStyle: null }],
         'withFailure',
       ]);
     });
