@@ -75,10 +75,14 @@ open class DevMenuManager: NSObject {
   public class Callback {
     let name: String
     let shouldCollapse: Bool
+    let icon: String?
+    let group: String?
 
-    init(name: String, shouldCollapse: Bool) {
+    init(name: String, shouldCollapse: Bool, icon: String? = nil, group: String? = nil) {
       self.name = name
       self.shouldCollapse = shouldCollapse
+      self.icon = icon
+      self.group = group
     }
   }
 
