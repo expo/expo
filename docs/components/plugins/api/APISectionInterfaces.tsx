@@ -136,7 +136,10 @@ const renderInterface = (
       <APICommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceFields.length > 0 && (
         <>
-          <Table containerClassName="rounded-none border-0 border-t">
+          <Table
+            layout="stacked"
+            stackedLabel="Type"
+            containerClassName="rounded-none border-0 border-t">
             <APIParamsTableHeadRow mainCellLabel="Property" />
             <tbody>
               {interfaceFields.map(field => renderInterfacePropertyRow(field, sdkVersion))}

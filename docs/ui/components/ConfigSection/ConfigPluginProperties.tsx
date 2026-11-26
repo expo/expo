@@ -17,13 +17,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
   <>
     <H3>Configurable properties</H3>
     {!!children && <P>{children}</P>}
-    <Table
-      className={mergeClasses(
-        '[&_thead]:sr-only',
-        '[&_tbody_tr]:flex [&_tbody_tr]:flex-wrap [&_tbody_tr]:items-center [&_tbody_tr]:gap-x-4 [&_tbody_tr]:gap-y-2 [&_tbody_tr]:p-4',
-        '[&_tbody_tr+tr]:border-t [&_tbody_tr+tr]:border-secondary',
-        '[&_tbody_td]:border-r-0 [&_tbody_td]:p-0'
-      )}>
+    <Table layout="stacked" stackedLabel="Default">
       <TableHead>
         <Row>
           <HeaderCell>Name</HeaderCell>
@@ -37,14 +31,10 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
             <Cell>
               <CODE>{property.name}</CODE>
             </Cell>
-            <Cell
-              className={mergeClasses(
-                "ml-auto text-right text-secondary before:content-['Default:_']",
-                !property.default && 'sr-only'
-              )}>
+            <Cell className={mergeClasses(!property.default && 'sr-only')}>
               {!property.default ? '-' : <CODE>{property.default}</CODE>}
             </Cell>
-            <Cell className="basis-full">
+            <Cell>
               <div className="mb-2 inline-flex empty:hidden">
                 {(property.experimental || property.deprecated) && (
                   <div className="inline-flex flex-row flex-wrap">

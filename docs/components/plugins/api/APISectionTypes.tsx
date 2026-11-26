@@ -56,7 +56,10 @@ const renderTypeDeclarationTable = (
       </CALLOUT>
     ) : undefined}
     <APICommentTextBlock comment={comment} />
-    <Table containerClassName={mergeClasses('mt-0.5 rounded-none border-0 border-t')}>
+    <Table
+      layout="stacked"
+      stackedLabel="Type"
+      containerClassName={mergeClasses('mt-0.5 rounded-none border-0 border-t')}>
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
@@ -91,7 +94,7 @@ const renderTypeMethodEntry = (
         </MONOSPACE>
       </RawH4>
       <APICommentTextBlock comment={comment} />
-      <Table>
+      <Table layout="stacked" stackedLabel="Type">
         <APIParamsTableHeadRow mainCellLabel="Parameter" />
         <tbody>
           {baseSignature.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}

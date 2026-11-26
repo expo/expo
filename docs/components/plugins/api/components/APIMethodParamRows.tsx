@@ -15,7 +15,10 @@ type Props = {
 export function APIMethodParamRows({ parameters, sdkVersion }: Props) {
   const hasDescription = Boolean(parameters.some(param => param.comment));
   return (
-    <Table containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
+    <Table
+      layout="stacked"
+      stackedLabel="Type"
+      containerClassName={mergeClasses(VERTICAL_SPACING, 'mt-0.5')}>
       <APIParamsTableHeadRow hasDescription={hasDescription} mainCellLabel="Parameter" />
       <tbody>
         {parameters?.map(param => (

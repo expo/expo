@@ -117,7 +117,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
           data-text="true"
         >
           <code
-            class="block py-4 text-sm leading-[1.4] text-default w-max min-w-full"
+            class="block py-4 text-[13px] leading-[19.6px] text-default w-max min-w-full"
           >
             <span
               class="code-line"
