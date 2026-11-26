@@ -37,5 +37,5 @@ let package = Package(
       exclude: ["ExpoImage.podspec", "Tests"]
     )
   ],
-  swiftLanguageModes: [.v5]
+  swiftLanguageModes: [.v6]
 )
