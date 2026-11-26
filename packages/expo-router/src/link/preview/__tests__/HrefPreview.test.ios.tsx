@@ -14,6 +14,7 @@ import {
 import { Stack } from '../../../layouts/Stack';
 import type { NavigationProp } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
+import type { Href } from '../../../types';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';
 import { ZoomTransitionEnabler } from '../../zoom/ZoomTransitionEnabler';
@@ -131,7 +132,14 @@ it('renders correct preview for relative path', async () => {
           <HrefPreview href="../foo" />
         </View>
       ),
-      foo: () => <View testID="foo" />,
+      foo: function FooPreview() {
+        const pathname = usePathname();
+        return (
+          <View testID="foo">
+            <Text testID="preview-pathname">{pathname}</Text>
+          </View>
+        );
+      },
       bar: () => <View testID="bar" />,
     },
     { initialUrl: '/inner' }
@@ -140,29 +148,33 @@ it('renders correct preview for relative path', async () => {
   expect(screen.getByTestId('inner')).toBeVisible();
   expect(screen.getByTestId('foo')).toBeVisible();
   expect(screen.queryByTestId('bar')).toBeFalsy();
+  expect(screen.getByTestId('preview-pathname')).toHaveTextContent('/foo');
 });
 
-it('usePathname() returns the correct path', async () => {
-  const FooComponent = () => {
-    const pathname = usePathname();
-    return (
-      <View>
-        <Text testID="pathname">{pathname}</Text>
-      </View>
-    );
-  };
-  await renderRouter({
-    index: () => (
-      <View testID="index">
-        <HrefPreview href="/foo" />
-      </View>
-    ),
-    foo: FooComponent,
-  });
+it.each<Href>(['/foo', { pathname: '/foo', params: { query: 'value' } }])(
+  'usePathname() returns the pathname for %j',
+  async (href) => {
+    const FooComponent = () => {
+      const pathname = usePathname();
+      return (
+        <View>
+          <Text testID="pathname">{pathname}</Text>
+        </View>
+      );
+    };
+    await renderRouter({
+      index: () => (
+        <View testID="index">
+          <HrefPreview href={href} />
+        </View>
+      ),
+      foo: FooComponent,
+    });
 
-  expect(screen.getByTestId('pathname')).toBeVisible();
-  expect(screen.getByTestId('pathname')).toHaveTextContent('/foo');
-});
+    expect(screen.getByTestId('pathname')).toBeVisible();
+    expect(screen.getByTestId('pathname')).toHaveTextContent('/foo');
+  }
+);
 
 it('useSegments() returns the correct path', async () => {
   const FooComponent = () => {
