@@ -91,11 +91,11 @@ export default function ReanimatedLinkPreview() {
         </Link>
         <Link href="/link-preview/reanimated-zoom-dest" asChild>
           <Link.Trigger withAppleZoom>
-            <Pressable testID="reanimated-zoom-move-trigger">
-              <Animated.View style={[styles.trigger, offsetStyle]}>
+            <AnimatedPressable testID="reanimated-zoom-move-trigger" style={offsetStyle}>
+              <View style={styles.trigger}>
                 <Text>Zoom move</Text>
-              </Animated.View>
-            </Pressable>
+              </View>
+            </AnimatedPressable>
           </Link.Trigger>
         </Link>
         <Link href="/link-preview/reanimated-zoom-dest" asChild>
