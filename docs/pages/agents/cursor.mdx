@@ -9,6 +9,7 @@ import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 Cursor is an AI-first code editor built on VS Code. It can edit across multiple files, run terminal commands, and work autonomously with its agent. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Cursor reads directly. It can also check Expo Services and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your Expo Services deployment workflow, and more.
 
@@ -19,6 +20,10 @@ Cursor is an AI-first code editor built on VS Code. It can edit across multiple 
 ### Download Cursor
 
 Download and install Cursor from the [Cursor website](https://cursor.com). For setup details, see the [Cursor documentation](https://cursor.com/docs).
+
+To use Cursor in your terminal, install the Cursor CLI. For other install methods, see the [Cursor CLI documentation](https://cursor.com/docs/cli/installation).
+
+<Terminal cmd={['$ curl https://cursor.com/install -fsS | bash']} />
 
 </Step>
 
@@ -41,13 +46,41 @@ Create a project with the following command or ensure your existing project has 
 
 <Step label="3">
 
-### Set up Expo Skills and the Expo MCP Server
+### Install the Expo plugin
 
-Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo conventions and can work with your Expo Services projects.
+Install the official Expo plugin so Cursor knows Expo conventions and can work with your Expo Services projects. The plugin installs Expo Skills and registers the Expo MCP Server.
+
+<Tabs>
+
+<Tab label="Cursor editor">
+
+Open **Customize** in the Cursor sidebar and find the **Expo** plugin. Select **Install**, then choose a project or user scope.
+
+You can also add the plugin from the [Expo page in the Cursor Marketplace](https://cursor.com/marketplace/expo). That page shows the `/add-plugin expo` command for the Agent panel.
+
+Then sign in to your Expo account. In **Customize**, open the **MCPs** tab and select **Authenticate** next to `expo`. Complete the sign-in in your browser. After the sign-in, `expo` appears under **Connected**.
+
+</Tab>
+
+<Tab label="Cursor CLI">
+
+Start the Cursor CLI:
+
+<Terminal cmd={['$ agent']} />
+
+In the session, type `/plugin` and open the **Marketplace** tab. Search for **Expo**, select the plugin, and select **Install for you (user scope)**.
+
+Then sign in to your Expo account. Type `/mcp` in the session, select **Expo**, and select **Login**. Complete the sign-in in your browser.
+
+</Tab>
+
+</Tabs>
+
+The guides below cover the available skills and everything else the MCP Server can do:
 
 <BoxLink
   title="Expo Skills"
-  description="Install the plugin that teaches agents known-good Expo patterns, and browse the full list of available skills."
+  description="Browse the full list of skills the plugin provides, and see install options for other agents."
   href="/skills/#install-expo-skills"
   Icon={Star06Icon}
 />
@@ -66,6 +99,10 @@ Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo convent
 ### Open your project and start prompting
 
 Open your project in Cursor, then open the Agent panel and describe what you want to do.
+
+With the Cursor CLI, run `agent` from your project root instead:
+
+<Terminal cmd={['$ cd my-app', '', '$ agent']} />
 
 </Step>
 

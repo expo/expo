@@ -85,6 +85,8 @@ export const home = [
         makePage('agents/claude.mdx'),
         makePage('agents/codex.mdx'),
         makePage('agents/cursor.mdx'),
+        makePage('agents/devin.mdx'),
+        makePage('agents/grok-bot.mdx'),
         makePage('agents/grok.mdx'),
       ],
       {

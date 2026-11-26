@@ -4,9 +4,11 @@ sidebar_title: Claude Code
 description: Use Claude Code to build, upgrade, debug, and deploy your Expo and React Native projects.
 ---
 
+import { Button } from '@expo/styleguide';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { ClaudeLogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
@@ -104,6 +106,21 @@ When you start Claude Code in your project, it reads two of the scaffolded files
 Both files are committed to your project, so a developer's Claude Code session starts from the same context.
 
 > **info** Reading **AGENTS.md** directly requires Claude Code v2.1.277 or later. See the [Claude Code documentation](https://code.claude.com/docs/en/memory#agentsmd) for loading rules and availability.
+
+## Use Expo in the Claude apps and Cowork
+
+Expo is also available in the Claude directory. This setup requires no installation on your machine. It works in Claude on the web, desktop, and mobile apps, and in Cowork. Click the following button and follow the prompts to add Expo to your Claude account:
+
+<Button
+  theme="secondary"
+  href="https://claude.ai/directory/expo"
+  openInNewTab
+  className="mb-4"
+  leftSlot={<ClaudeLogoIcon className="icon-md text-button-secondary-icon" />}>
+  {'Add Expo to Claude'}
+</Button>
+
+On a Claude Team or Enterprise plan, an Owner or Primary Owner can enable Expo for the entire organization. See [Expo MCP Server](/mcp/#installation-and-setup) for details.
 
 ## Example prompts
 

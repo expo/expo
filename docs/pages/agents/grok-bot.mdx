@@ -1,0 +1,106 @@
+---
+title: Grok Bot and Expo
+sidebar_title: Grok Bot
+description: Use Grok Bot to build, test, and deploy your Expo and React Native projects.
+---
+
+import { Button } from '@expo/styleguide';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { XAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { Step } from '~/ui/components/Step';
+
+Grok Bot is xAI's AI agent that works on a cloud computer with a browser, a filesystem, and a terminal. You give it tasks in chat on desktop, on mobile, in Slack, or on X. With the official Expo plugin, Grok Bot can use Expo Skills for best practices, fetch documentation from the Expo Model Context Protocol (MCP) Server, check your Expo Services builds and workflows, and more.
+
+## Quick start
+
+<Step label="1">
+
+### Download Grok Bot
+
+Download and install Grok Bot from the [Grok Bot website](https://x.ai/bot). For setup details, see the [Grok Bot documentation](https://docs.x.ai/grok-bot/overview).
+
+</Step>
+
+<Step label="2">
+
+### Add the Expo plugin
+
+The official Expo plugin adds Expo Skills and the Expo MCP Server to Grok Bot. This setup requires no installation in your project. Click the following button to open the Expo plugin page:
+
+<Button
+  theme="secondary"
+  href="https://x.ai/bot/plugin/88596833"
+  openInNewTab
+  className="mb-4"
+  leftSlot={<XAILogoIcon className="icon-md text-button-secondary-icon" />}>
+  {'Add Expo plugin to Grok Bot'}
+</Button>
+
+The page opens the Expo plugin in the Grok Bot app. If your browser asks, allow it to open Grok Bot. Then add the plugin in the app.
+
+</Step>
+
+<Step label="3">
+
+### Sign in to your Expo account
+
+The Expo plugin in Grok Bot has an **Accounts** section. When Grok Bot asks you to connect an account, complete the Expo sign-in in your browser. Grok Bot can then work with the projects that your Expo account can access.
+
+The guides below cover the available skills and everything else the MCP Server can do:
+
+<BoxLink
+  title="Expo Skills"
+  description="Browse the full list of skills the plugin provides, and see install options for other agents."
+  href="/skills/#install-expo-skills"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and Expo Services."
+  href="/mcp/#installation-and-setup"
+  Icon={Star06Icon}
+/>
+
+</Step>
+
+<Step label="4">
+
+### Verify setup
+
+Click the button in step 2 again to open the Expo plugin in Grok Bot. If the setup is correct, **Accounts** shows **Connected** and **Skills** lists the Expo skills.
+
+Then send the following prompt to a Bot to try the plugin:
+
+```text Example prompt
+Search the Expo documentation and tell me how to add tab navigation with Expo Router.
+```
+
+</Step>
+
+## Example prompts
+
+After setup, describe Expo tasks in plain language. For example:
+
+| Task             | Example prompt                                                                    |
+| ---------------- | --------------------------------------------------------------------------------- |
+| Build an app     | Build an Android and iOS app with Expo and React Native.                          |
+| Test an app      | Run and test my app on an Android Emulator or iOS Simulator.                      |
+| Deploy an app    | Build and deploy my mobile app to TestFlight, the App Store, or Google Play.      |
+| Debug a build    | My latest iOS build failed. Read the Expo Build logs and tell me what went wrong. |
+| Automate builds  | Create a workflow with Expo Workflows that builds the app on every pull request.  |
+| Check feedback   | Show TestFlight feedback for my app.                                              |
+| Read Expo's docs | Search the Expo docs for implementing deep linking.                               |
+
+For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
+
+## Related guides
+
+<BoxLink
+  title="Grok Build"
+  description="Set up xAI's terminal agent with Expo, including project context and example prompts."
+  href="/agents/grok/"
+  Icon={XAILogoIcon}
+/>

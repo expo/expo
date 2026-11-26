@@ -14,7 +14,7 @@ Ask the person before you run an install command. Use the command for your agent
 | Agent        | Command                                              |
 | ------------ | ---------------------------------------------------- |
 | Claude Code  | `claude plugin install expo@claude-plugins-official` |
-| Codex        | `codex plugin add expo@openai-curated`               |
+| Codex        | `codex plugin add expo2@openai-curated-remote`       |
 | Other agents | `npx skills add expo/skills`                         |
 
 The Claude Code and Codex plugins also register the Expo MCP Server. The `npx skills` command installs the skills only.

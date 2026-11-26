@@ -7,6 +7,7 @@ description: Use Grok Build to build, upgrade, debug, and deploy your Expo and R
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { XAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -18,9 +19,11 @@ Grok Build is xAI's terminal-based AI coding agent. It can read and write files 
 
 ### Install Grok Build
 
-Install Grok Build, then start it from any project. For other install methods, see the [Grok Build documentation](https://docs.x.ai/build/overview).
+Install Grok Build. For other install methods, see the [Grok Build documentation](https://docs.x.ai/build/overview).
 
 <Terminal cmd={['$ curl -fsSL https://x.ai/cli/install.sh | bash']} />
+
+Then run `grok` one time and sign in. The first session registers the xAI plugin marketplace, which the plugin install in step 3 needs.
 
 </Step>
 
@@ -49,7 +52,7 @@ Install the official Expo plugin so Grok Build knows Expo conventions and can wo
 
 <Terminal cmd={['$ grok plugin install expo --trust']} />
 
-You can also type `/marketplace` inside Grok Build and install `expo` from the catalog.
+You can also type `/marketplace` inside Grok Build and install `expo` from the catalog. The catalog is the [xAI plugin marketplace](https://github.com/xai-org/plugin-marketplace).
 
 Then sign in to your Expo account. Type `/mcps` inside your Grok Build session, select `expo`, and press <kbd>I</kbd>. Grok Build opens the sign-in page in your browser.
 
@@ -118,3 +121,12 @@ After setup, describe Expo tasks in plain language. For example:
 | Verify the UI     | Take a screenshot and verify the blue circle view.                                |
 
 For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
+
+## Related guides
+
+<BoxLink
+  title="Grok Bot"
+  description="Add the Expo plugin to xAI's cloud agent, with example prompts."
+  href="/agents/grok-bot/"
+  Icon={XAILogoIcon}
+/>

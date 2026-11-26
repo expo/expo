@@ -47,9 +47,11 @@ Then run `/mcp` inside your Claude Code session to sign in.
 
 <Tab label="Codex">
 
-Install the Expo plugin, which registers the server and installs [Expo Skills](/skills/):
+Install the Expo plugin, which connects Codex to the server and installs [Expo Skills](/skills/):
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated', '', '$ codex mcp login expo']} />
+<Terminal cmd={['$ codex plugin add expo2@openai-curated-remote']} />
+
+Then sign in to your Expo account. Type `/apps` in a Codex session, search for **Expo2**, and select **Install on ChatGPT**. In the browser window that opens, connect the app and sign in to your Expo account. Then return to Codex and confirm that the install is complete.
 
 </Tab>
 
