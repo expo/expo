@@ -23,6 +23,10 @@ internal enum ViewPropsRuntimes {
   /// Adds an app context whose main runtime can find the worklets UI runtime for the main thread. Call it on the
   /// JavaScript thread of `mainRuntime`.
   static func addAppContext(_ appContext: AppContext, mainRuntime: JavaScriptRuntime) {
+    // Without a host scheduler, the lookup would run on the main thread and use the main runtime there.
+    guard mainRuntime.supportsAsyncScheduling else {
+      return
+    }
     appContexts.withLock { appContexts in
       appContexts.removeAll { $0.appContext == nil }
       appContexts.append(WeakAppContext(appContext: appContext, scheduler: mainRuntime.scheduler))
