@@ -13,14 +13,18 @@ export const NativeToolbarView: React.FC<NativeToolbarViewProps> = ({
   hidden,
   hidesSharedBackground,
   separateBackground,
+  tintColor,
+  variant,
 }) => {
   const id = useId();
   return (
     <RouterToolbarItem
+      barButtonItemStyle={variant}
       hidesSharedBackground={hidesSharedBackground}
       hidden={hidden}
       identifier={id}
-      sharesBackground={!separateBackground}>
+      sharesBackground={!separateBackground}
+      tintColor={tintColor}>
       {children}
     </RouterToolbarItem>
   );
