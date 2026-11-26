@@ -1,5 +1,6 @@
 import process from 'node:process';
 
+import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { getUserAsync } from '../../api/user/user';
 import { env } from '../env';
 import type { Telemetry } from './Telemetry';
@@ -15,7 +16,8 @@ export function getTelemetry(): Telemetry | null {
   if (!telemetry) {
     // Lazy load the telemetry client, only when enabled
     const { Telemetry } = require('./Telemetry') as typeof import('./Telemetry');
-    telemetry = new Telemetry();
+    const session = getAccessToken() ? null : getSession();
+    telemetry = new Telemetry({ userId: session?.sessionSecret ? session.userId : undefined });
 
     // Flush any pending events on exit
     process.once('SIGINT', () => telemetry?.flushOnExit());
@@ -23,9 +25,11 @@ export function getTelemetry(): Telemetry | null {
     process.once('beforeExit', () => telemetry?.flushOnExit());
 
     // Initialize the telemetry
-    getUserAsync()
-      .then((actor) => telemetry?.initialize({ userId: actor?.id ?? null }))
-      .catch(() => telemetry?.initialize({ userId: null }));
+    if (!telemetry.isInitialized) {
+      getUserAsync()
+        .then((actor) => telemetry?.initialize({ userId: actor?.id ?? null }))
+        .catch(() => telemetry?.initialize({ userId: null }));
+    }
   }
 
   return telemetry;
