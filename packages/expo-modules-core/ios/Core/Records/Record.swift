@@ -121,17 +121,7 @@ public extension Record {
   }
 
   func update(withDict dict: Dict, appContext: AppContext) throws {
-    let dictKeys = dict.keys
-
-    try fieldsOf(self).forEach { field in
-      guard let key = field.key else {
-        // This should never happen, but just in case skip fields without the key.
-        return
-      }
-      if dictKeys.contains(key) || field.isRequired {
-        try field.set(dict[key], appContext: appContext)
-      }
-    }
+    try setFields(of: self, withDict: dict, appContext: appContext)
   }
 
   @JavaScriptActor
@@ -205,7 +195,7 @@ internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
  This function now supports inheritance by recursively traversing the superclass hierarchy.
  */
-internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
+internal func fieldsOf(_ record: Any) -> [AnyFieldInternal] {
   let mirror = Mirror(reflecting: record)
   return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
     guard let field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
@@ -245,4 +235,28 @@ internal func recordFieldValueToJSValue(
     return .null()
   }
   return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
+}
+
+/**
+ Sets the `@Field` members of `object` from a dictionary, with the same rules as `Record.update(withDict:)`.
+ A type that only needs to be created from a dictionary can use this instead of adopting `Record`,
+ so it doesn't carry the JavaScript conversion conformances.
+ */
+public func updateFields(of object: Any, withDict dict: [String: Any], appContext: AppContext) throws {
+  try setFields(of: object, withDict: dict, appContext: appContext)
+}
+
+// Internal, so the compiler can't copy `Record.update(withDict:)` into every client module.
+internal func setFields(of object: Any, withDict dict: [String: Any], appContext: AppContext) throws {
+  let dictKeys = dict.keys
+
+  try fieldsOf(object).forEach { field in
+    guard let key = field.key else {
+      // This should never happen, but just in case skip fields without the key.
+      return
+    }
+    if dictKeys.contains(key) || field.isRequired {
+      try field.set(dict[key], appContext: appContext)
+    }
+  }
 }
