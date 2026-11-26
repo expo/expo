@@ -145,13 +145,20 @@ async function patchProjectForPlatformAsync({
       await fs.rm(patchFilePath);
     }
   } catch (error) {
-    const isProjectRestored = await restoreOriginalProjectAsync({
+    const projectRestore = await restoreOriginalProjectAsync({
       platformDir,
       originalProjectDir,
       backupFileMappings,
     });
+    const hadPatchFileBackups = Object.keys(patchFileBackups).length > 0;
     const arePatchFilesRestored = await restorePatchFilesAsync({ newPatchFile, patchFileBackups });
-    if (isProjectRestored && arePatchFilesRestored) {
+    if (projectRestore === 'restored' && arePatchFilesRestored) {
+      // A failed step may already have told the user to delete these directories.
+      logger.log(
+        hadPatchFileBackups
+          ? `Restored the original ${platform} project to ${platformDir} and the old patch files. Do not delete the android or ios directory, or those patch files.`
+          : `Restored the original ${platform} project to ${platformDir}. Do not delete the android or ios directory.`
+      );
       await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
     }
     throw error;
@@ -159,12 +166,21 @@ async function patchProjectForPlatformAsync({
 
   if (!options.clean) {
     debug(`Moving the original native projects back to project root`);
-    if (
-      !(await restoreOriginalProjectAsync({ platformDir, originalProjectDir, backupFileMappings }))
-    ) {
+    const projectRestore = await restoreOriginalProjectAsync({
+      platformDir,
+      originalProjectDir,
+      backupFileMappings,
+    });
+    if (projectRestore === 'move-failed') {
       throw new Error(
         `patch-project created the patch, but could not restore the original native project to ${platformDir}. ` +
           `Follow the steps in the message above to restore it manually.`
+      );
+    }
+    if (projectRestore === 'revert-failed') {
+      throw new Error(
+        `patch-project created the patch, and the original native project is back in ${platformDir}. ` +
+          `Copy each backup over its file, as the message above says, before you run patch-project again.`
       );
     }
   }
@@ -172,8 +188,8 @@ async function patchProjectForPlatformAsync({
 }
 
 /**
- * Returns `false` when some original files are still in the working directory.
- * The caller must then keep that directory.
+ * Returns why the restore stopped.
+ * The caller keeps the working directory unless the result is `restored`.
  */
 async function restoreOriginalProjectAsync({
   platformDir,
@@ -184,7 +200,7 @@ async function restoreOriginalProjectAsync({
   /** Where the original native project is, or `null` when it is already in `platformDir`. */
   originalProjectDir: string | null;
   backupFileMappings: BackupFileMappings;
-}): Promise<boolean> {
+}): Promise<'restored' | 'move-failed' | 'revert-failed'> {
   if (originalProjectDir) {
     try {
       debug(`Restoring the original native projects - originalProjectDir[${originalProjectDir}]`);
@@ -203,7 +219,7 @@ async function restoreOriginalProjectAsync({
         )
       );
       logger.error(moveError);
-      return false;
+      return 'move-failed';
     }
   }
 
@@ -219,9 +235,9 @@ async function restoreOriginalProjectAsync({
       )
     );
     logger.error(revertError);
-    return false;
+    return 'revert-failed';
   }
-  return true;
+  return 'restored';
 }
 
 function formatBackupFileMappings(backupFileMappings: BackupFileMappings): string {

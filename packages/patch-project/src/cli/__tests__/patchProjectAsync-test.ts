@@ -162,6 +162,9 @@ describe(patchProjectAsync, () => {
       );
 
       expectOriginalNativeProjectRestored();
+      expect(logger.log).toHaveBeenCalledWith(
+        'Restored the original android project to /app/android. Do not delete the android or ios directory.'
+      );
     });
 
     it('restores the native project when generating the patch fails', async () => {
@@ -227,6 +230,9 @@ describe(patchProjectAsync, () => {
         '/app/cng-patches/android+old.patch': 'old patch',
       });
       expectOriginalNativeProjectRestored();
+      expect(logger.log).toHaveBeenCalledWith(
+        'Restored the original android project to /app/android and the old patch files. Do not delete the android or ios directory, or those patch files.'
+      );
     });
 
     it('restores the original ios project.pbxproj when generating the patch fails', async () => {
@@ -283,7 +289,7 @@ describe(patchProjectAsync, () => {
         .mockRejectedValueOnce(new Error('revert failed'));
 
       await expect(patchProjectAsync('/app', { platforms: ['ios'] })).rejects.toThrow(
-        'patch-project created the patch, but could not restore the original native project to /app/ios.'
+        'patch-project created the patch, and the original native project is back in /app/ios. Copy each backup over its file, as the message above says, before you run patch-project again.'
       );
 
       expect(vol.readFileSync('/app/ios/app/AppDelegate.swift', 'utf8')).toBe(
