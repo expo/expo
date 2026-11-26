@@ -41,7 +41,7 @@ export class LoaderGraphUpdates {
             'string'
         );
 
-    const update = () => {
+    const queueUpdate = () => {
       const batch = this.pending ?? this.startBatch();
       const queued = batch.updates.get(graphId);
       if (queued) return queued;
@@ -79,8 +79,14 @@ export class LoaderGraphUpdates {
 
     const unlisten = bundler.getDeltaBundler().listen(graph, async () => {
       // The batch handles errors. A direct request for the same graph gets the original rejection.
-      update();
+      queueUpdate();
     });
+    const update = async () => {
+      const result = queueUpdate();
+      // Clear the SSR module cache before the request evaluates its bundle.
+      await this.active;
+      return result;
+    };
     this.graphs.set(graphId, { update, unlisten });
     return update;
   }
