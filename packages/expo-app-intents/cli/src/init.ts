@@ -861,11 +861,11 @@ function findWatchedEntriesCovering(
  * Repointing the plugin does not remove the old directory from `watchedDirectories`, and both
  * directories keep their copy of the scaffold, which breaks the iOS build.
  */
-async function assertDirectoryIsNotAlreadyConfiguredAsync(
+function assertDirectoryIsNotAlreadyConfigured(
   projectRoot: string,
   config: ProjectConfig,
   directory: string
-): Promise<void> {
+): void {
   const pluginEntry = findPluginEntry(config);
   if (!pluginEntry) {
     return;
@@ -957,7 +957,7 @@ export async function runInit(options: InitOptions): Promise<void> {
   const donationEntries = donations ? getDonationEntries(examples, visualIntelligence) : [];
 
   const config = readAppConfig(projectRoot, directory);
-  await assertDirectoryIsNotAlreadyConfiguredAsync(projectRoot, config, directory);
+  assertDirectoryIsNotAlreadyConfigured(projectRoot, config, directory);
   const modifications = getConfigModifications(projectRoot, config, directory);
   warnAboutPrebuildManagedDirectory(directory);
 
