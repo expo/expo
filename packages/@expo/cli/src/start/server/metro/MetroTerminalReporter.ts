@@ -41,6 +41,8 @@ type ClientLogLevel =
   | 'groupEnd'
   | 'debug';
 
+const CDP_LOG_MODE = 'cdp';
+
 declare module '2g' {
   interface EventRegistry {
     'metro:bundling:start': {
@@ -268,7 +270,19 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   shouldFilterClientLog(event: TerminalReportableEvent): boolean {
-    return event.type === 'client_log' && isAppRegistryStartupMessage(event.data);
+    if (event.type !== 'client_log') {
+      return false;
+    }
+    const { mode } = event as { mode?: string };
+    return (
+      isAppRegistryStartupMessage(event.data) ||
+      (env.EXPO_UNSTABLE_CDP_LOGS && isNativeHmrLogMode(mode))
+    );
+  }
+
+  /** Prints a console call read from a connected app over CDP. */
+  logDeviceConsole(log: { level: ClientLogLevel; data: string[]; device?: string }): void {
+    this.update({ type: 'client_log', mode: CDP_LOG_MODE, ...log } as TerminalReportableEvent);
   }
 
   shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
@@ -362,12 +376,13 @@ export class MetroTerminalReporter extends TerminalReporter {
     level?: ClientLogLevel;
     data: unknown[];
     mode?: string;
+    device?: string;
   }) {
     const { level = 'log' } = evt;
     // Apply printf-style format substitution (e.g. %s, %d) that browsers handle
     // natively in console methods but Node/Metro terminal logging does not.
-    const data = applyConsoleFormatting(evt.data);
-    const platformTag = getPlatformTagForClientLog(evt.mode);
+    const data = evt.mode === CDP_LOG_MODE ? evt.data : applyConsoleFormatting(evt.data);
+    const platformTag = evt.device ?? getPlatformTagForClientLog(evt.mode);
     if (level === 'warn' || (level as string) === 'error') {
       let hasStack = false;
       const parsed = data.map((msg) => {
@@ -636,6 +651,10 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
     (/^Running application "main" with appParams:/.test(body[0]) ||
       /^Running "main" with \{/.test(body[0]))
   );
+}
+
+function isNativeHmrLogMode(mode: string | undefined): boolean {
+  return mode !== 'web' && mode !== 'dom' && mode !== CDP_LOG_MODE;
 }
 
 /** Apply printf-style format substitutions (%s, %d, %i, %f, %o, %O) that browsers handle natively */

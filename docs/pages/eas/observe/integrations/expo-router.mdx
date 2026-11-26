@@ -135,6 +135,37 @@ Emitted at most once per screen instance within a session.
 | `routeParams` | `object`  | Resolved route params.                                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
+### Per-route total blocking time (`tbt`)
+
+> **important** This metric is [experimental](/more/release-statuses/#experimental) and requires `expo-observe` 58.1.0 or later. The `experimental_totalBlockingTime` option may change or be removed in a patch release.
+
+**What it measures:** Total time that long tasks blocked the JavaScript thread in the 2 seconds after a navigation action is dispatched. A long task is one that occupies the thread for more than 50ms, and only the time past 50ms counts. The metric is reported in seconds when the window closes. See [Reading navigation metrics together](/eas/observe/reference/metrics/#reading-navigation-metrics-together) for how to interpret it alongside `cold_ttr` and `tti`.
+
+The metric is off by default. Enable it in the integration config:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-router': {
+      experimental_totalBlockingTime: true,
+    },
+  },
+});
+```
+
+The metric is recorded for user navigations after the first screen has focused, so app launch is not included. It is emitted once per screen instance, on the screen's first focus, and only when that focus happens inside the 2-second window.
+
+**Event params:**
+
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname for the navigation.                                     |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).              |
+
 ## View navigation metrics
 
 In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** page. It shows per-route navigation timings with cold and warm time to first render and time to interactive.
