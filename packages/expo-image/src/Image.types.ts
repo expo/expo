@@ -806,6 +806,9 @@ export type ImageTransition = {
    * Locally bundled assets are always instantly available, so both `'memory'` and `'all'` treat
    * them as in-memory cache hits and skip their transition.
    *
+   * On the web, an image is a memory cache hit when the browser already has it in memory (it is
+   * complete once mounted). Its `onLoad` then reports `cacheType: 'memory'`.
+   *
    * @example
    * ```tsx
    * // Fade a list item in the first time it loads, but show it instantly
@@ -820,6 +823,7 @@ export type ImageTransition = {
    * @default 'none'
    * @platform android
    * @platform ios
+   * @platform web
    */
   skipOnCacheHit?: 'none' | 'memory' | 'all' | null;
 };
