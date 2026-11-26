@@ -436,18 +436,21 @@ const getSwiftFrontendPath = async (): Promise<string | null> => {
   }
 };
 
+const sdkPathsByName = new Map<string, Promise<string | null>>();
+
 /**
  * Gets the SDK path for a given SDK name
  */
-const getSdkPath = async (sdkName: string): Promise<string | null> => {
-  try {
-    const result = await spawnAsync('xcrun', ['--sdk', sdkName, '--show-sdk-path'], {
-      stdio: 'pipe',
-    });
-    return result.stdout.trim() || null;
-  } catch {
-    return null;
+const getSdkPath = (sdkName: string): Promise<string | null> => {
+  let sdkPath = sdkPathsByName.get(sdkName);
+  if (!sdkPath) {
+    sdkPath = spawnAsync('xcrun', ['--sdk', sdkName, '--show-sdk-path'], { stdio: 'pipe' }).then(
+      (result) => result.stdout.trim() || null,
+      () => null
+    );
+    sdkPathsByName.set(sdkName, sdkPath);
   }
+  return sdkPath;
 };
 
 /**
@@ -1051,6 +1054,7 @@ const verifySwiftInterfaceTypecheck = async (
   // Modules declared by sibling xcframeworks (external dependencies). Treat
   // them as known so @_exported imports of those modules don't false-positive.
   const dependencyModules = collectModulesFromXcframeworks(dependencyXcframeworkPaths);
+  const sdkPath = slice.sdkName ? await getSdkPath(slice.sdkName) : null;
 
   // Check that each swiftinterface file exists and is non-empty
   const issues: string[] = [];
@@ -1066,7 +1070,8 @@ const verifySwiftInterfaceTypecheck = async (
       const importIssues = await verifySwiftInterfaceImports(
         iface,
         slice.frameworkPath,
-        dependencyModules
+        dependencyModules,
+        sdkPath
       );
       issues.push(...importIssues);
     } catch (err) {
@@ -1185,6 +1190,13 @@ export function findInternalTargetModuleReferences(
 }
 
 /**
+ * Whether the SDK ships `moduleName` as a framework. Cross-import overlays (`_A_B`, which Swift
+ * loads when a module imports both `A` and `B`) ship as frameworks too.
+ */
+const isDeclaredBySdk = (moduleName: string, sdkPath: string): boolean =>
+  fs.existsSync(path.join(sdkPath, 'System', 'Library', 'Frameworks', `${moduleName}.framework`));
+
+/**
  * Verifies that imports in a swiftinterface file are valid.
  * Checks that:
  * 1. Imported modules are either well-known system/SDK modules or defined in the framework's modulemap
@@ -1193,12 +1205,14 @@ export function findInternalTargetModuleReferences(
  * @param swiftInterfacePath Path to the .swiftinterface file
  * @param frameworkPath Path to the framework containing the swiftinterface
  * @param dependencyModules Modules declared by sibling xcframeworks; treated as defined
+ * @param sdkPath SDK of the slice; frameworks it ships are treated as system modules
  * @returns Array of issue descriptions (empty if all imports are valid)
  */
 export const verifySwiftInterfaceImports = async (
   swiftInterfacePath: string,
   frameworkPath: string,
-  dependencyModules: Set<string> = new Set()
+  dependencyModules: Set<string> = new Set(),
+  sdkPath: string | null = null
 ): Promise<string[]> => {
   const issues: string[] = [];
   const content = fs.readFileSync(swiftInterfacePath, 'utf8');
@@ -1366,7 +1380,9 @@ export const verifySwiftInterfaceImports = async (
     }
 
     // Check if the import is valid
-    const isSystemModule = systemModules.has(importedModule);
+    const isSystemModule =
+      systemModules.has(importedModule) ||
+      (sdkPath !== null && isDeclaredBySdk(importedModule, sdkPath));
     const isDefinedInModuleMap = definedModules.has(importedModule);
     const isSameFramework = importedModule === frameworkName;
 
