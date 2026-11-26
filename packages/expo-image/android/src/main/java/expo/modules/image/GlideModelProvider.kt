@@ -21,7 +21,12 @@ data class DecodedModelProvider(
 data class UrlModelProvider(
   private val glideUrl: GlideUrl
 ) : GlideModelProvider {
-  override fun getGlideModel() = GlideUrlWrapper(glideUrl)
+  /** Kept out of the constructor, so it takes no part in the equality that decides whether a source changed. */
+  var devToolsRequestId: String? = null
+
+  override fun getGlideModel() = GlideUrlWrapper(glideUrl).also {
+    it.devToolsRequestId = devToolsRequestId
+  }
 }
 
 data class RawModelProvider(
