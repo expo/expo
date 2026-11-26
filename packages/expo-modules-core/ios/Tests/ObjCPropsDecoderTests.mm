@@ -26,7 +26,6 @@ namespace views = expo::views;
 @property (nonatomic) const void *lastProps;
 @property (nonatomic) const void *lastRuntime;
 @property (nonatomic, nullable) id lastPrevious;
-@property (nonatomic, nullable) NSArray<NSString *> *skippedPropNames;
 @property (nonatomic, nullable) NSArray<NSNumber *> *lastIndexes;
 @property (nonatomic) std::vector<const void *> lastValues;
 @end
@@ -76,9 +75,13 @@ namespace views = expo::views;
   return [self resultWithPrevious:previous];
 }
 
+- (BOOL)withRuntimeForCurrentThread:(NS_NOESCAPE void (^)(const void *runtime))block
+{
+  return NO;
+}
+
 - (void)didSkipProps:(NSArray<NSString *> *)propNames
 {
-  self.skippedPropNames = propNames;
 }
 
 @end
@@ -182,20 +185,6 @@ namespace views = expo::views;
   _objcDecoder.returnsPrevious = NO;
   _objcDecoder.returnsNil = YES;
   XCTAssertTrue(_decoder->decodeValues(*_runtime, values, updated) == updated);
-}
-
-- (void)testPassesTheSkippedPropNames
-{
-  _decoder->didSkipProps(std::vector<std::string_view>{"title", "opacity"});
-
-  XCTAssertEqualObjects(_objcDecoder.skippedPropNames, (@[ @"title", @"opacity" ]));
-}
-
-- (void)testLeavesOutSkippedPropNamesThatArentUTF8
-{
-  _decoder->didSkipProps(std::vector<std::string_view>{"title", "\xff", "opacity"});
-
-  XCTAssertEqualObjects(_objcDecoder.skippedPropNames, (@[ @"title", @"opacity" ]));
 }
 
 @end

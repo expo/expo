@@ -667,6 +667,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // the main runtime runs the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: isMainRuntime)
 
+    if isMainRuntime {
+      // The main runtime is prepared on its own thread, which decodes the props of v2 views that come without a
+      // runtime there, for example from Reanimated's commit hook during a React commit.
+      ViewPropsRuntimes.registerForCurrentThread(runtime)
+    }
+
     // Bind the `@JS` members of the core module.
     try coreModule._decorateModule(object: coreObject, in: runtime)
 

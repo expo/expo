@@ -85,6 +85,10 @@ public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchec
     return decodeValues(valuePointers, indexes, count, runtimePointer, previous)
   }
 
+  public func withRuntimeForCurrentThread(_ block: (UnsafeRawPointer) -> Void) -> Bool {
+    return ViewPropsRuntimes.withRuntimeForCurrentThread(block)
+  }
+
   public func didSkipProps(_ propNames: [String]) {
     skipProps(propNames)
   }

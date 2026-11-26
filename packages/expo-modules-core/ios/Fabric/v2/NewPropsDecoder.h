@@ -12,6 +12,10 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <jsi/jsi.h>
 
+namespace folly {
+struct dynamic;
+} // namespace folly
+
 namespace expo::views {
 
 /**
@@ -119,16 +123,16 @@ public:
   ) const = 0;
 
   /**
-   Called instead of `decodeValues` (or `decode`) for props that come as `folly::dynamic`, without a
-   runtime, for example from Reanimated or React Native's animations. They aren't decoded yet, so the
-   decoded props keep their values. `propNames` may have all keys of the update, the base view props too,
-   so the decoder reports only the ones it would have decoded.
-
-   After `setNativeProps` is called on a view, React Native merges every later React update of that view
-   into `folly::dynamic` too, for as long as the view exists. So until these props are decoded, such a
-   view stops getting React's updates of its own props.
+   Decodes the values of the view's props that came as `folly::dynamic`, without a runtime, each with the
+   index of its name in `propNames`. They come from Reanimated, React Native's animations, and every update
+   of a view after `setNativeProps`. The decoder converts them to JSI values in a runtime that it can use on
+   the current thread, and decodes them as `decodeValues` does. Without such a runtime, it reports the props
+   and returns `previous`.
    */
-  virtual void didSkipProps(const std::vector<std::string_view> &propNames) const = 0;
+  virtual DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &values,
+    const DecodedProps &previous
+  ) const = 0;
 };
 
 } // namespace expo::views

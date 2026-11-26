@@ -45,7 +45,6 @@ namespace {
 class RecordingDecoder final : public views::NewPropsDecoder {
 public:
   mutable int decodeCount = 0;
-  mutable std::vector<std::string> skippedPropNames;
   // When set, a decode returns no decoded props, as a decoder that has nothing to decode may.
   bool returnsNothing = false;
 
@@ -81,17 +80,18 @@ public:
     return record(keys, previous);
   }
 
-  void didSkipProps(const std::vector<std::string_view> &propNames) const override {
-    // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys. Only the decoder's own
-    // props, because the descriptor may pass the other keys too.
-    const auto ownNames = this->propNames();
-    skippedPropNames.clear();
-    for (const auto &name : propNames) {
-      if (std::find(ownNames.begin(), ownNames.end(), name) != ownNames.end()) {
-        skippedPropNames.emplace_back(name);
-      }
+  views::DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &values,
+    const views::DecodedProps &previous
+  ) const override {
+    // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys.
+    const auto ownNames = propNames();
+    std::vector<std::string> keys;
+    for (const auto &[index, value] : values) {
+      keys.push_back(ownNames.at(index));
     }
-    std::sort(skippedPropNames.begin(), skippedPropNames.end());
+    std::sort(keys.begin(), keys.end());
+    return record(keys, previous);
   }
 
 private:
@@ -282,15 +282,16 @@ NSString *joined(const std::vector<std::string> &names) {
   XCTAssertEqual(newViewProps(updated).opacity, 0.5);
 }
 
-- (void)testDynamicPropsAreSkipped
+- (void)testDynamicPropsGoToTheDecoder
 {
   auto created = [self cloneProps:nullptr jsi:"({ title: 'Title' })"];
-  auto rawProps = react::RawProps(folly::dynamic::object("title", "New title")("opacity", 0.5));
+  auto rawProps = react::RawProps(folly::dynamic::object("title", "New title")("opacity", 0.5)("width", 10));
   auto updated = [self cloneProps:created rawProps:&rawProps];
+  RecordedDecode *decode = decodeOf(updated);
 
-  XCTAssertEqual(_decoder->decodeCount, 1);
-  XCTAssertTrue((_decoder->skippedPropNames == std::vector<std::string>{"opacity", "title"}));
-  XCTAssertTrue(newViewProps(updated).decodedProps == newViewProps(created).decodedProps);
+  XCTAssertEqual(_decoder->decodeCount, 2);
+  XCTAssertTrue((decode->keys == std::vector<std::string>{"opacity", "title"}));
+  XCTAssertTrue(decode->previous == newViewProps(created).decodedProps);
   // The base view props are still parsed from `folly::dynamic`.
   XCTAssertEqual(newViewProps(updated).opacity, 0.5);
 }

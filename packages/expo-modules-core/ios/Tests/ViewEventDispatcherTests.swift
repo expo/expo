@@ -145,7 +145,7 @@ struct ViewEventDispatcherTests {
   }
 
   @Test
-  func `props from a new lineage connect their own dispatcher`() throws {
+  func `props decoded without previous props connect their own dispatcher`() throws {
     view.update(nil)
     let decoded: DecodedViewProps<TapProps> = try #require(try decode("{ title: 'Card' }"))
     view.update(decoded)

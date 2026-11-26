@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import Foundation
 @_spi(Internal) import ExpoModulesJSI
 
 /// Decodes the props that React sends to the views of one type into their `@ViewProps` struct. The
@@ -177,8 +178,9 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
       propNames.filter { Props.PropName(rawValue: $0) != nil && reported.insert($0).inserted }
     }
     if !newlySkipped.isEmpty {
+      let thread = Thread.isMainThread ? "the main thread" : "the thread '\(Thread.current.name ?? "")'"
       log.warn(
-        "The \(newlySkipped) props of '\(viewName)' weren't applied: props that don't come from React, for example from Reanimated or setNativeProps, aren't supported yet"
+        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. Set them from React instead"
       )
     }
   }

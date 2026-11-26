@@ -105,6 +105,11 @@ TestShadowNode createShadowNode(const react::ComponentDescriptorProvider &provid
   return (__bridge_retained const void *)[NSObject new];
 }
 
+- (BOOL)withRuntimeForCurrentThread:(NS_NOESCAPE void (^)(const void *runtime))block
+{
+  return NO;
+}
+
 - (void)didSkipProps:(NSArray<NSString *> *)propNames
 {
 }
