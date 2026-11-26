@@ -41,7 +41,11 @@ const fs = require('fs');
 const { createRequire } = require('module');
 const path = require('path');
 
-const { readPodfileProperties, resolveAppTarget } = require('./app-target');
+const {
+  readPodfileProperties,
+  resolveAppTarget,
+  xcodeProjectsContaining,
+} = require('./app-target');
 const {
   autolinkConditionKey,
   autolinkConditionLabel,
@@ -962,6 +966,28 @@ function summarizeRecords(
   };
 }
 
+const WIDGETS_PACKAGE = 'expo-widgets';
+/** The local Swift package the expo-widgets config plugin links the widget extension against. */
+const WIDGETS_PACKAGE_REFERENCE = 'build/generated/autolinking/expo/direct/expo-widgets';
+
+/**
+ * Fails the sync when expo-widgets is linked precompiled and an Xcode project references its
+ * source package: only `emitDirectPackage` writes that folder, so Xcode could not resolve the
+ * widget extension's ExpoWidgets product. The config plugin runs before the route is known.
+ */
+function assertWidgetsReferenceResolves(precompiled, xcodeRoot) {
+  const widgets = precompiled.find((r) => r.identity.packageName === WIDGETS_PACKAGE);
+  if (widgets == null) return;
+  const projects = xcodeProjectsContaining(xcodeRoot, WIDGETS_PACKAGE_REFERENCE);
+  if (projects.length === 0) return;
+  const source = frameworkSource(widgets.framework);
+  throw pluginError({
+    what: `${projects.join(', ')} links its widget extension against the Swift package at ${WIDGETS_PACKAGE_REFERENCE}, but ${WIDGETS_PACKAGE} is linked precompiled, so that package is not generated.`,
+    why: `The package is generated only when ${WIDGETS_PACKAGE} is built from source. A precompiled ExpoWidgets.xcframework${source != null ? ` from ${describeSource(source)}` : ''} takes its place, and Xcode then cannot resolve the ExpoWidgets product of the widget extension.`,
+    how: `Add "${WIDGETS_PACKAGE}" to ${BUILD_FROM_SOURCE_OPTION}. ${rerunSpmUpdate()}`,
+  });
+}
+
 /**
  * The staleness inputs (`watchPaths` plugin contract) whose edits must trip RN's
  * in-build re-sync: each module's checked-in Package.swift and
@@ -1131,6 +1157,7 @@ module.exports = function expoSpmPlugin(context) {
     coreAvailable,
     sourceModules,
   } = passes;
+  assertWidgetsReferenceResolves(precompiled, context.appRoot);
   const mixedModules =
     coreRecord &&
     mixedSourcesReport(
