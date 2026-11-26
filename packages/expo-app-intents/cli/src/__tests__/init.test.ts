@@ -1119,6 +1119,48 @@ describe(runInit, () => {
     expect(messages(warn)).not.toContain('Could not update the Expo app config');
   });
 
+  // Inspect mode serializes a plugin function to its name, so this entry cannot be identified.
+  it('refuses to scaffold a second setup when the plugin entry cannot be identified', async () => {
+    writeProject(null);
+    write({
+      'project/app.config.js': `module.exports = { expo: { name: 'my-app', slug: 'my-app', plugins: [[(config) => config, { directory: 'native/siri' }]], experiments: { inlineModules: { watchedDirectories: ['native'] } } } };`,
+      'project/native/siri/AppIntentsSetup.swift': 'existing setup',
+    });
+
+    await expect(
+      runInit({ projectRoot, directory: 'native/intents', examples: ['minimal'], templatesDir })
+    ).rejects.toThrow(/native\/siri\/AppIntentsSetup\.swift/);
+
+    expect(exists('native/intents/AppIntentsSetup.swift')).toBe(false);
+  });
+
+  it('recognizes a plugin entry that uses a path inside the package', async () => {
+    writeProject(
+      staticConfig({
+        plugins: [['expo-app-intents/app.plugin', { directory: 'siri' }]],
+        experiments: { inlineModules: { watchedDirectories: ['siri'] } },
+      })
+    );
+
+    await runInit({ projectRoot, directory: 'siri', examples: ['minimal'], templatesDir });
+
+    expect(readConfig().expo.plugins).toEqual([
+      ['expo-app-intents/app.plugin', { directory: 'siri' }],
+    ]);
+  });
+
+  it('keeps the plugin path when it repoints the plugin', async () => {
+    writeProject(
+      staticConfig({ plugins: [['expo-app-intents/app.plugin', { directory: 'siri' }]] })
+    );
+
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+
+    expect(readConfig().expo.plugins).toEqual([
+      ['expo-app-intents/app.plugin', { directory: 'app-intents' }],
+    ]);
+  });
+
   it('allows an existing setup at the requested path under a dynamic config', async () => {
     writeProject(null);
     write({

@@ -252,9 +252,16 @@ const SHORTCUT_ENTRIES: Partial<Record<InitExample, ShortcutEntry>> = {
 };
 
 const PLUGIN_NAME = 'expo-app-intents';
+const APP_INTENTS_SETUP_FILE_NAME = 'AppIntentsSetup.swift';
 
 type PluginEntry = string | [string, Record<string, any>];
-type DeclaredPluginEntry = NonNullable<ExpoConfig['plugins']>[number];
+
+/** An `expo-app-intents` entry found in the app config. */
+type ConfiguredPlugin = {
+  /** The name the entry uses, such as `expo-app-intents` or `expo-app-intents/app.plugin`. */
+  name: string;
+  directory: string;
+};
 
 function createPluginEntry(directory: string): PluginEntry {
   if (directory === DEFAULT_DIRECTORY) {
@@ -766,22 +773,23 @@ function readAppConfig(projectRoot: string, directory: string): ProjectConfig {
   }
 }
 
-/** The `expo-app-intents` entry in the evaluated config's `plugins` array. */
-function findPluginEntry(config: ProjectConfig): DeclaredPluginEntry | undefined {
-  return config.exp.plugins?.find(
-    (plugin) => plugin === PLUGIN_NAME || (Array.isArray(plugin) && plugin[0] === PLUGIN_NAME)
-  );
-}
-
-/** The directory an existing plugin entry points at. Entries without props use the default. */
-function getPluginDirectory(entry: DeclaredPluginEntry): string {
-  if (Array.isArray(entry) && entry.length === 2) {
-    const props = entry[1];
-    if (props && typeof props === 'object' && typeof props.directory === 'string') {
-      return props.directory;
+/**
+ * The `expo-app-intents` entry in the evaluated config's `plugins` array. Inspect mode serializes a
+ * plugin function to its name, so an entry that passes the plugin function is not found here.
+ */
+function findConfiguredPlugin(config: ProjectConfig): ConfiguredPlugin | undefined {
+  for (const entry of config.exp.plugins ?? []) {
+    const name = Array.isArray(entry) ? entry[0] : entry;
+    if (typeof name !== 'string' || (name !== PLUGIN_NAME && !name.startsWith(`${PLUGIN_NAME}/`))) {
+      continue;
     }
+    const props = Array.isArray(entry) && entry.length === 2 ? entry[1] : undefined;
+    return {
+      name,
+      directory: typeof props?.directory === 'string' ? props.directory : DEFAULT_DIRECTORY,
+    };
   }
-  return DEFAULT_DIRECTORY;
+  return undefined;
 }
 
 /** The watched directories, read from the evaluated config. Autolinking scans the same list. */
@@ -856,6 +864,69 @@ function findWatchedEntriesCovering(
   );
 }
 
+/** Finds a setup file that autolinking already compiles from somewhere other than `directory`. */
+async function findOtherAppIntentsSetupAsync(
+  projectRoot: string,
+  watchedDirectories: string[],
+  directory: string
+): Promise<string | null> {
+  const requestedSetupPath = path.resolve(projectRoot, directory, APP_INTENTS_SETUP_FILE_NAME);
+  const queue = watchedDirectories.map((watchedDirectory) =>
+    path.resolve(projectRoot, watchedDirectory)
+  );
+
+  while (queue.length > 0) {
+    const currentDirectory = queue.shift()!;
+    const entries = await fs.readdir(currentDirectory, { withFileTypes: true }).catch(() => null);
+    if (!entries) {
+      continue;
+    }
+
+    for (const entry of entries) {
+      const entryPath = path.join(currentDirectory, entry.name);
+      if (entry.isDirectory() && entry.name !== 'node_modules') {
+        queue.push(entryPath);
+      } else if (
+        entry.isFile() &&
+        entry.name === APP_INTENTS_SETUP_FILE_NAME &&
+        path.resolve(entryPath) !== requestedSetupPath
+      ) {
+        return path.relative(projectRoot, entryPath).split(path.sep).join('/');
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Refuses to scaffold a second setup file into the watched tree. This holds whatever the plugin
+ * entry looks like: an entry can pass the plugin function, or a dynamic config can add it only in
+ * some environments, and neither one is visible to `findConfiguredPlugin`.
+ */
+async function assertNoOtherSetupIsWatchedAsync(
+  projectRoot: string,
+  config: ProjectConfig,
+  directory: string
+): Promise<void> {
+  const existingSetup = await findOtherAppIntentsSetupAsync(
+    projectRoot,
+    getWatchedDirectories(config),
+    directory
+  );
+  if (!existingSetup) {
+    return;
+  }
+  throw new Error(
+    `Could not scaffold App Intents in '${directory}' because the watched inline-module tree ` +
+      `already contains '${existingSetup}'. Autolinking would compile both ` +
+      `${APP_INTENTS_SETUP_FILE_NAME} files into the app target, and the iOS build would fail ` +
+      `with \`error: filename "${APP_INTENTS_SETUP_FILE_NAME}" used twice\`. Re-run init with ` +
+      `\`--dir ${path.posix.dirname(existingSetup)}\` to use the existing setup, or move its Swift ` +
+      `files to '${directory}' and point the expo-app-intents plugin entry there.`
+  );
+}
+
 /**
  * Refuses to move an existing setup to another directory while the old one is still watched.
  * Repointing the plugin does not remove the old directory from `watchedDirectories`, and both
@@ -866,11 +937,11 @@ function assertDirectoryIsNotAlreadyConfigured(
   config: ProjectConfig,
   directory: string
 ): void {
-  const pluginEntry = findPluginEntry(config);
-  if (!pluginEntry) {
+  const configuredPlugin = findConfiguredPlugin(config);
+  if (!configuredPlugin) {
     return;
   }
-  const configuredDirectory = getPluginDirectory(pluginEntry);
+  const configuredDirectory = configuredPlugin.directory;
   if (isSameDirectory(projectRoot, configuredDirectory, directory)) {
     return;
   }
@@ -925,13 +996,14 @@ function getConfigModifications(
     modifications.experiments = { inlineModules: { watchedDirectories: [directory] } };
   }
 
-  const pluginEntry = findPluginEntry(config);
-  if (!pluginEntry) {
+  const configuredPlugin = findConfiguredPlugin(config);
+  if (!configuredPlugin) {
     modifications.plugins = [createPluginEntry(directory)];
-  } else if (!isSameDirectory(projectRoot, getPluginDirectory(pluginEntry), directory)) {
+  } else if (!isSameDirectory(projectRoot, configuredPlugin.directory, directory)) {
     // Props are required here even for the default directory, otherwise the existing entry keeps
-    // pointing at the directory it was configured with.
-    modifications.plugins = [[PLUGIN_NAME, { directory }]];
+    // pointing at the directory it was configured with. The existing name is kept because plugin
+    // entries are merged by name.
+    modifications.plugins = [[configuredPlugin.name, { directory }]];
   }
 
   return modifications;
@@ -958,6 +1030,7 @@ export async function runInit(options: InitOptions): Promise<void> {
 
   const config = readAppConfig(projectRoot, directory);
   assertDirectoryIsNotAlreadyConfigured(projectRoot, config, directory);
+  await assertNoOtherSetupIsWatchedAsync(projectRoot, config, directory);
   const modifications = getConfigModifications(projectRoot, config, directory);
   warnAboutPrebuildManagedDirectory(directory);
 
@@ -1033,7 +1106,7 @@ export async function runInit(options: InitOptions): Promise<void> {
     }
     if (modifications.plugins) {
       console.log(
-        findPluginEntry(config)
+        findConfiguredPlugin(config)
           ? `Pointed '${PLUGIN_NAME}' at '${directory}' in plugins`
           : `Added '${PLUGIN_NAME}' to plugins`
       );
