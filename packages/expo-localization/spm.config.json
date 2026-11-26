@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoLocalization",
+          "path": "ios/ExpoLocalization",
           "dependencies": [
             "Hermes",
             "React",
@@ -23,7 +24,7 @@
             "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation"],
-          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
+          "resources": [{ "path": "ios/ExpoLocalization/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }
