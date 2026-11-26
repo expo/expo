@@ -340,3 +340,66 @@ struct AppContextTests {
     }
   }
 }
+
+@Suite("AppContext services")
+struct AppContextServicesTests {
+  @Test
+  func `creates the file system once when many threads read it first`() {
+    for _ in 0..<50 {
+      let appContext = AppContext()
+      let fileSystems = ObjectIdentifiers()
+
+      runTogether(threads: 16) {
+        fileSystems.insert(appContext.fileSystem)
+      }
+
+      #expect(fileSystems.count == 1)
+    }
+  }
+}
+
+/// Starts the threads, waits until all of them run, and then calls `body` on all of them at the same moment.
+private func runTogether(threads count: Int, _ body: @escaping @Sendable () -> Void) {
+  let startLine = StartLine(count: count)
+  let group = DispatchGroup()
+  for _ in 0..<count {
+    group.enter()
+    Thread {
+      startLine.arriveAndWait()
+      body()
+      group.leave()
+    }.start()
+  }
+  group.wait()
+}
+
+private final class StartLine: @unchecked Sendable {
+  private let lock = NSLock()
+  private let count: Int
+  private var arrived = 0
+
+  init(count: Int) {
+    self.count = count
+  }
+
+  func arriveAndWait() {
+    lock.withLock { arrived += 1 }
+    while lock.withLock({ arrived < count }) {
+      sched_yield()
+    }
+  }
+}
+
+private final class ObjectIdentifiers: @unchecked Sendable {
+  private let lock = NSLock()
+  private var identifiers = Set<ObjectIdentifier?>()
+
+  var count: Int {
+    lock.withLock { identifiers.count }
+  }
+
+  func insert(_ object: AnyObject?) {
+    let identifier = object.map(ObjectIdentifier.init)
+    lock.withLock { _ = identifiers.insert(identifier) }
+  }
+}
