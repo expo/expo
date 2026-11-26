@@ -2,6 +2,10 @@
 
 import ExpoModulesCore
 
+#if canImport(ExpoTaskManagerObjC)
+import ExpoTaskManagerObjC
+#endif
+
 public typealias AppId = String
 public typealias TaskName = String
 
