@@ -1,6 +1,16 @@
-import { __testing } from '../../../cli/src/utils/mangle';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
-const { extractConstants, prefixSelectors, isDistinctiveSelector, buildManglingHeader } = __testing;
+import { __testing, runMangle } from '../../../cli/src/utils/mangle';
+
+const {
+  extractConstants,
+  prefixSelectors,
+  isDistinctiveSelector,
+  buildManglingHeader,
+  findBinariesToMangle,
+} = __testing;
 
 /**
  * Unit tests for the symbol-mangling transform. These cover the parts of the
@@ -67,5 +77,59 @@ describe('buildManglingHeader', () => {
     expect(header.indexOf('#define reactTag Exp_reactTag')).toBeGreaterThan(objcStart);
     expect(header.indexOf('#define reactTag Exp_reactTag')).toBeLessThan(objcEnd);
     expect(header.indexOf('#define CFoo Exp_CFoo')).toBeLessThan(objcStart);
+  });
+});
+
+describe('findBinariesToMangle', () => {
+  it('separates the prebuilt frameworks that Xcode copies to XCFrameworkIntermediates', () => {
+    const builtProductsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-brownfield-mangle-'));
+    const podLibrary = path.join(builtProductsDir, 'RNScreens', 'libRNScreens.a');
+    const prebuiltFramework = path.join(
+      builtProductsDir,
+      'XCFrameworkIntermediates',
+      'React-Core-prebuilt',
+      'React.framework'
+    );
+    fs.mkdirSync(path.dirname(podLibrary), { recursive: true });
+    fs.mkdirSync(prebuiltFramework, { recursive: true });
+    fs.writeFileSync(podLibrary, '');
+    fs.writeFileSync(path.join(prebuiltFramework, 'React'), '');
+
+    expect(findBinariesToMangle(builtProductsDir)).toEqual({
+      podBinaries: [podLibrary],
+      prebuiltBinaries: [path.join(prebuiltFramework, 'React')],
+    });
+
+    fs.rmSync(builtProductsDir, { recursive: true, force: true });
+  });
+});
+
+describe('runMangle', () => {
+  it('patches the pod xcconfigs again when the mangling config is up to date', async () => {
+    const podsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-brownfield-mangle-'));
+    const xcconfigPath = path.join(podsDir, 'Target Support Files', 'expo-brownfield-mangle.xcconfig');
+    const podXcconfigPath = path.join(podsDir, 'Target Support Files', 'Foo', 'Foo.release.xcconfig');
+    fs.mkdirSync(path.dirname(podXcconfigPath), { recursive: true });
+    fs.writeFileSync(xcconfigPath, 'MANGLED_SPECS_CHECKSUM = abc\n');
+    // CocoaPods writes the pod xcconfigs again on each `pod install`.
+    fs.writeFileSync(podXcconfigPath, 'OTHER_CFLAGS = $(inherited)\n');
+
+    await runMangle(
+      {
+        podsProjectPath: path.join(podsDir, 'Pods.xcodeproj'),
+        podTargetLabels: ['Foo'],
+        podXcconfigPaths: [podXcconfigPath],
+        manglePrefix: 'Exp_',
+        xcconfigPath,
+        specsChecksum: 'abc',
+      },
+      { verbose: false }
+    );
+
+    const patched = fs.readFileSync(podXcconfigPath, 'utf8');
+    expect(patched).toContain(`#include "${xcconfigPath}"`);
+    expect(patched).toContain('-include "$(MANGLING_HEADER)"');
+
+    fs.rmSync(podsDir, { recursive: true, force: true });
   });
 });

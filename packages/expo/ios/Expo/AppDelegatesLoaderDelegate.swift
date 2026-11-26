@@ -11,7 +11,7 @@ public class AppDelegatesLoaderDelegate: NSObject {
    */
   @objc
   public static func registerAppDelegateSubscribers(_ legacySubscriber: ExpoAppDelegateSubscriberProtocol) {
-    let modulesProvider = AppContext.modulesProvider(withName: "ExpoModulesProvider")
+    let modulesProvider = AppContext.modulesProvider(withName: "ExpoModulesProvider", inImageOf: AppDelegatesLoaderDelegate.self)
     ExpoAppDelegateSubscriberRepository.registerSubscriber(legacySubscriber)
     ExpoAppDelegateSubscriberRepository.registerSubscribersFrom(modulesProvider: modulesProvider)
     ExpoAppDelegateSubscriberRepository.registerReactDelegateHandlersFrom(modulesProvider: modulesProvider)

@@ -119,17 +119,29 @@ const buildPodTargets = async (
  * After the simulator build, find the binaries to scan with `nm`. Skip the
  * umbrella `Pods_*` and `libPods-*` outputs since they're aggregator targets,
  * not the per-pod libraries we want to mangle.
+ *
+ * `XCFrameworkIntermediates` holds the prebuilt frameworks (React, hermesvm).
+ * They are not compiled with the mangling header, so they are returned apart:
+ * their selectors must keep their names, and so must the selectors of pod
+ * categories on their classes (React finds `RCTConvert` categories by name).
  */
-const findBinariesToMangle = (builtProductsDir: string): string[] => {
-  const binaries: string[] = [];
+const findBinariesToMangle = (
+  builtProductsDir: string
+): { podBinaries: string[]; prebuiltBinaries: string[] } => {
+  const podBinaries: string[] = [];
+  const prebuiltBinaries: string[] = [];
   if (!fs.existsSync(builtProductsDir)) {
-    return binaries;
+    return { podBinaries, prebuiltBinaries };
   }
 
-  const walk = (dir: string): void => {
+  const walk = (dir: string, binaries: string[]): void => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) {
+        if (entry.name === 'XCFrameworkIntermediates') {
+          walk(full, prebuiltBinaries);
+          continue;
+        }
         if (entry.name.endsWith('.framework')) {
           if (!entry.name.startsWith('Pods_')) {
             const fwName = entry.name.slice(0, -'.framework'.length);
@@ -137,7 +149,7 @@ const findBinariesToMangle = (builtProductsDir: string): string[] => {
           }
           continue;
         }
-        walk(full);
+        walk(full, binaries);
         continue;
       }
       if (entry.isFile() && entry.name.endsWith('.a') && !entry.name.startsWith('libPods-')) {
@@ -146,8 +158,8 @@ const findBinariesToMangle = (builtProductsDir: string): string[] => {
     }
   };
 
-  walk(builtProductsDir);
-  return binaries;
+  walk(builtProductsDir, podBinaries);
+  return { podBinaries, prebuiltBinaries };
 };
 
 const runNm = async (binaries: string[], flags: string): Promise<string[]> => {
@@ -296,10 +308,11 @@ interface ManglingDefines {
 
 const buildManglingDefines = async (
   prefix: string,
-  binaries: string[]
+  podBinaries: string[],
+  prebuiltBinaries: string[]
 ): Promise<ManglingDefines> => {
-  const allSymbolsGU = await runNm(binaries, '-gU');
-  const allSymbolsU = await runNm(binaries, '-U');
+  const allSymbolsGU = await runNm([...podBinaries, ...prebuiltBinaries], '-gU');
+  const allSymbolsU = await runNm(podBinaries, '-U');
 
   const classes = extractClasses(allSymbolsGU);
   const categorySelectors = extractCategorySelectors(allSymbolsU, classes);
@@ -438,26 +451,34 @@ const appendToSetting = (contents: string, key: string, tokens: string): string 
  *  2. nm those binaries, filter Swift symbols, and assemble `MANGLING_DEFINES`.
  *  3. Write the mangling xcconfig + patch each pod's xcconfig to consume it.
  *
- * The Ruby shim already short-circuited on a checksum match before reaching
- * here, so this function unconditionally regenerates.
+ * Steps 1 and 2 are skipped when the checksum matches. Step 3 always patches,
+ * because CocoaPods writes the pod xcconfigs again on each `pod install`.
  */
 export const runMangle = async (
   context: MangleContext,
   options: { verbose: boolean }
 ): Promise<void> => {
-  const builtProductsDir = await buildPodTargets(
-    context.podsProjectPath,
-    context.podTargetLabels,
-    options
-  );
+  if (!isManglingUpToDate(context.xcconfigPath, context.specsChecksum)) {
+    const builtProductsDir = await buildPodTargets(
+      context.podsProjectPath,
+      context.podTargetLabels,
+      options
+    );
 
-  const binaries = findBinariesToMangle(builtProductsDir);
-  const { constantDefines, objcDefines } = await buildManglingDefines(
-    context.manglePrefix,
-    binaries
-  );
+    const { podBinaries, prebuiltBinaries } = findBinariesToMangle(builtProductsDir);
+    const { constantDefines, objcDefines } = await buildManglingDefines(
+      context.manglePrefix,
+      podBinaries,
+      prebuiltBinaries
+    );
 
-  writeManglingXcconfig(context.xcconfigPath, constantDefines, objcDefines, context.specsChecksum);
+    writeManglingXcconfig(
+      context.xcconfigPath,
+      constantDefines,
+      objcDefines,
+      context.specsChecksum
+    );
+  }
 
   for (const podXcconfig of context.podXcconfigPaths) {
     patchPodXcconfig(podXcconfig, context.xcconfigPath);
@@ -475,4 +496,5 @@ export const __testing = {
   prefixSelectors,
   isDistinctiveSelector,
   buildManglingHeader,
+  findBinariesToMangle,
 };

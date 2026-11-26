@@ -3,9 +3,8 @@
 # Replaces the third-party `cocoapods-mangle` gem. Invoked from a Podfile's
 # `post_install` block when `multipleFrameworks: true` is set on the
 # expo-brownfield plugin config. The Ruby side is intentionally minimal — it
-# gathers the install context, short-circuits when nothing has changed, and
-# otherwise spawns the bundled Node worker that does the heavy lifting
-# (xcodebuild + nm + xcconfig generation/patching).
+# gathers the install context and spawns the bundled Node worker that does the
+# heavy lifting (xcodebuild + nm + xcconfig generation/patching).
 
 require 'json'
 require 'digest'
@@ -43,9 +42,20 @@ module ExpoBrownfield
         xcconfig_path = options[:xcconfig_path] || default_xcconfig_path(installer)
         checksum = specs_checksum(targets)
 
+        # The worker runs even when the config is up to date: CocoaPods writes the pod
+        # xcconfigs again on each `pod install`, so the worker must patch them again.
         if up_to_date?(xcconfig_path, checksum)
           Pod::UI.message '- Mangling config already up to date'
-          next
+        else
+          # Expo autolinking adds the Swift macro plugin flags to the pod xcconfigs
+          # only after `post_install`. The worker builds the pods now, so add them first.
+          if defined?(Expo::ProjectIntegrator) && Expo::ProjectIntegrator.respond_to?(:integrate_core_macro_plugins)
+            Expo::ProjectIntegrator.integrate_core_macro_plugins(targets)
+          end
+
+          # CocoaPods saves the Pods project after `post_install`. Save it now, so the worker
+          # builds with the settings from earlier hooks (for example, the deployment targets).
+          installer.pods_project.save
         end
 
         context = {
