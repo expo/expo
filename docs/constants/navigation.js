@@ -420,6 +420,7 @@ export const general = [
     makeGroup('Push notifications', [makePage('guides/using-push-notifications-services.mdx')]),
     makeGroup('Testing', [
       makePage('guides/using-e2e.mdx'),
+      makePage('guides/using-momentic.mdx'),
       makePage('guides/using-testerarmy.mdx'),
     ]),
     makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),

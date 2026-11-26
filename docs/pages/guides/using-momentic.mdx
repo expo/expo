@@ -1,0 +1,353 @@
+---
+title: Using Momentic
+description: Learn how to test your Expo app with Momentic on each push and pull request, using Expo Build and Expo Workflows.
+---
+
+import { Globe01Icon } from '@expo/styleguide-icons/outline/Globe01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+[Momentic](https://momentic.ai) tests Android, iOS, and web apps with AI agents. You keep end-to-end tests as YAML files in your repository. Momentic runs them on remote Android Emulators and iOS Simulators. Mo, Momentic's AI quality assurance (QA) engineer, explores a running build from a short brief and reports bugs with reproduction steps and recordings.
+
+This guide shows how to build your app with [Expo Build](/build/introduction/), run Momentic tests on each push and pull request with [Expo Workflows](/eas/workflows/introduction/), and start Mo on the same build for exploratory testing.
+
+<Prerequisites>
+
+<Requirement title="A Momentic account and API key">
+
+Sign up at [momentic.ai](https://momentic.ai) and create an API key in [Settings > API keys](https://app.momentic.ai/settings/api-keys).
+
+</Requirement>
+
+<Requirement title="Momentic tests in your project">
+
+Add the Momentic mobile CLI as a dev dependency:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev momentic-mobile'],
+    yarn: ['$ yarn add --dev momentic-mobile'],
+    pnpm: ['$ pnpm add --save-dev momentic-mobile'],
+    bun: ['$ bun add --dev momentic-mobile'],
+  }}
+/>
+
+Then, create a project:
+
+<Terminal cmd={['$ npx momentic-mobile init']} />
+
+The `init` command creates **momentic.config.yaml** at the root of your project. Keep your test files in a folder such as **momentic/android** and **momentic/ios**. If your project uses [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), `npx expo prebuild` generates the **android** and **ios** directories, so test files there can be lost.
+
+Each test names its platform and the app it opens. This test checks that the home screen of an Android app loads:
+
+```yaml
+fileType: momentic/mobile-test/v2
+id: home-screen
+description: Open the app and check the home screen
+platform: android
+labels: [smoke]
+steps:
+  - openApp: com.example.myapp
+  - assert: The home screen is visible
+```
+
+See [Momentic's Expo guide](https://momentic.ai/docs/guides/frameworks/expo) to write and run your first test.
+
+</Requirement>
+
+<Requirement title="A GitHub repository linked to your Expo project">
+
+Expo Workflows runs on push and pull request events from GitHub. See [Link your GitHub repository to your Expo project](/build/building-from-github/#link-your-github-repository-to-your-expo-project).
+
+</Requirement>
+
+<Requirement title="The Momentic GitHub App">
+
+Install the [Momentic GitHub App](https://momentic.ai/docs/integrations/github) on your repository. It posts a summary of each test run on the pull request.
+
+</Requirement>
+
+</Prerequisites>
+
+## Run Momentic tests on Expo Workflows
+
+<Step label="1">
+
+### Add build profiles
+
+Momentic installs the native build of your app. It runs an Android APK (**.apk**) and an iOS Simulator build (**.app**). It does not run an **.aab** or an **.ipa**, and it cannot test your project in Expo Go. Add two build profiles to **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "momentic-ios-simulator": {
+      "ios": {
+        "simulator": true
+      }
+    },
+    "momentic-android-apk": {
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+```
+
+Debug APKs work as is. If your app renders content in a WebView, enable WebView debugging in release APKs so Momentic can reach it. See [Momentic's APK requirements](https://momentic.ai/docs/platforms/android/app-setup#apk-requirements).
+
+</Step>
+
+<Step label="2">
+
+### Add your API key
+
+Create a `MOMENTIC_API_KEY` variable in the `preview` environment of your Expo project, in the [Expo dashboard or from the command line](/eas/environment-variables/manage/#create-environment-variables). Set its visibility to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables), and do not add an `EXPO_PUBLIC_` prefix to it.
+
+</Step>
+
+<Step label="3">
+
+### Add the workflow
+
+Create **.eas/workflows/momentic.yml** with the following workflow. It runs on push and pull request events for `main`, and on manual runs. For each platform, it runs two jobs:
+
+1. A [`build`](/eas/workflows/pre-packaged-jobs/#build) job creates the app with the Momentic build profile.
+2. A test job downloads the app with [`eas/download_build`](/eas/workflows/syntax/#easdownload_build), uploads it to Momentic, and runs your tests against it. The build ID is the Momentic tag, so each run tests the build it just uploaded.
+
+```yaml .eas/workflows/momentic.yml|collapseHeight=300
+name: Momentic tests
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch: {}
+
+defaults:
+  tools:
+    node: 22.12.0
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    environment: preview
+    params:
+      platform: android
+      profile: momentic-android-apk
+
+  build_ios:
+    name: Build iOS Simulator app
+    type: build
+    environment: preview
+    params:
+      platform: ios
+      profile: momentic-ios-simulator
+
+  test_android:
+    name: Run Momentic tests on Android
+    needs: [build_android]
+    environment: preview
+    env:
+      CI: 'true'
+      BUILD_ID: ${{ needs.build_android.outputs.build_id }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_android.outputs.build_id }}
+          extensions:
+            - apk
+      - name: Upload app to Momentic
+        run: |
+          npx momentic-mobile assets upload "${{ steps.download_build.outputs.artifact_path }}" \
+            --channel eas --tag "$BUILD_ID"
+      - name: Run tests
+        run: |
+          npx momentic-mobile run momentic/android \
+            --channel eas --tag "$BUILD_ID" --upload-results -y
+
+  test_ios:
+    name: Run Momentic tests on iOS
+    needs: [build_ios]
+    environment: preview
+    env:
+      CI: 'true'
+      BUILD_ID: ${{ needs.build_ios.outputs.build_id }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+          extensions:
+            - app
+      - name: Upload app to Momentic
+        run: |
+          npx momentic-mobile assets upload "${{ steps.download_build.outputs.artifact_path }}" \
+            --channel eas --tag "$BUILD_ID"
+      - name: Run tests
+        run: |
+          npx momentic-mobile run momentic/ios \
+            --channel eas --tag "$BUILD_ID" --upload-results -y
+```
+
+Momentic needs Node.js 22.12.0 or later. The Android test job also needs the Android SDK platform-tools with `ANDROID_HOME` set, because the Momentic CLI connects to the remote emulator through adb. See [Momentic's Android app setup](https://momentic.ai/docs/platforms/android/app-setup).
+
+To start the workflow without a push, run:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/momentic.yml']} />
+
+When a test fails, `momentic-mobile run` exits with an error and the job fails. The run, with a video and the steps of each test, is in your Momentic dashboard. The Momentic GitHub App adds a summary to the pull request.
+
+</Step>
+
+<Step label="4">
+
+### Skip native builds with fingerprint and repack
+
+A full native build on each run is slow. When a change only touches JavaScript, the workflow can reuse an existing build. Add these jobs before the `build` jobs:
+
+1. A [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) job calculates a hash of your app's native code for each platform.
+2. A [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) job looks for an existing build with the same hash and build profile.
+3. When a build exists, a [`repack`](/eas/workflows/pre-packaged-jobs/#repack) job adds the current JavaScript bundle to it. Otherwise, the `build` job creates a new build.
+
+The Android jobs look like this. The iOS jobs are the same with `platform: ios`, the `momentic-ios-simulator` profile, `simulator: true` in `get-build`, and `ios_fingerprint_hash`.
+
+```yaml .eas/workflows/momentic.yml|collapseHeight=300
+jobs:
+  fingerprint:
+    name: Calculate app fingerprints
+    type: fingerprint
+    environment: preview
+
+  get_android_build:
+    name: Find matching Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      platform: android
+      profile: momentic-android-apk
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  repack_android:
+    name: Repack Android app
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: repack
+    params:
+      build_id: ${{ needs.get_android_build.outputs.build_id }}
+
+  build_android:
+    name: Build Android app
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    environment: preview
+    params:
+      platform: android
+      profile: momentic-android-apk
+
+  test_android:
+    name: Run Momentic tests on Android
+    after: [repack_android, build_android]
+    if: ${{ after.repack_android.outputs.build_id || after.build_android.outputs.build_id }}
+    environment: preview
+    env:
+      CI: 'true'
+      BUILD_ID: ${{ after.repack_android.outputs.build_id || after.build_android.outputs.build_id }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ after.repack_android.outputs.build_id || after.build_android.outputs.build_id }}
+          extensions:
+            - apk
+      - name: Upload app to Momentic
+        run: |
+          npx momentic-mobile assets upload "${{ steps.download_build.outputs.artifact_path }}" \
+            --channel eas --tag "$BUILD_ID"
+      - name: Run tests
+        run: |
+          npx momentic-mobile run momentic/android \
+            --channel eas --tag "$BUILD_ID" --upload-results -y
+```
+
+The `fingerprint` job only supports [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/). If you commit your **android** and **ios** directories, use the workflow from the previous step.
+
+</Step>
+
+## Explore pull requests with Mo
+
+Your tests check the flows you already know about. Mo checks the rest. It installs the same build your tests used and walks the screens your brief names on its own emulators and simulators. When Mo suspects a bug, a second agent tries to reproduce it from a clean start, and Mo confirms the bug only when that works. The report has the steps, the expected and actual behavior, and a recording.
+
+### Start Mo on each pull request
+
+Add a job that starts a Mo session after the tests finish. It runs only on pull requests and uses the `qa` CLI, which is Mo's CLI. The `--platform`, `--channel`, and `--tag` flags point Mo at the build the workflow just uploaded:
+
+```yaml .eas/workflows/momentic.yml
+jobs:
+  mo_android:
+    name: Explore the pull request with Mo
+    needs: [build_android, test_android]
+    if: ${{ github.event_name == 'pull_request' }}
+    environment: preview
+    env:
+      BUILD_ID: ${{ needs.build_android.outputs.build_id }}
+    steps:
+      - uses: eas/checkout
+      - name: Start Mo
+        run: |
+          npx --yes qa start "Test the changes in this pull request on the Android build. Sign in with the QA account." \
+            --platform android \
+            --channel eas \
+            --tag "$BUILD_ID"
+```
+
+`qa start` prints a link to the session. Mo keeps testing in the cloud. The report is in your Momentic dashboard. To fix what Mo found with a coding agent, export the report with `qa report <session-id>` and give it to the agent. See [Mo's coding agent loop](https://momentic.ai/docs/mo/cli#export-the-report).
+
+### Start Mo from the Momentic dashboard
+
+To start Mo by hand instead, open Mo in Momentic after the workflow uploads a build, select the `eas` channel and the build ID as the tag, and write a brief. A brief names the flows to check, the test account to use, and anything Mo must not do:
+
+> Check the new profile settings screen on this build. Sign in with the QA account. Change the display name and the avatar, then sign out and back in to confirm the changes stay. Do not delete the account.
+
+## Tips for Expo apps
+
+- Test a [development build](/develop/development-builds/introduction/) the same way as any other APK or simulator build. Point it at a Metro server or an [Expo Update](/eas-update/introduction/) channel that the remote simulator can reach.
+- Describe [Expo Router](/router/introduction/) tabs, headers, and back buttons the way a user sees them, for example "the Settings tab" or "the back button".
+- Open deep links with an `appium` step (`mobile: deepLink`) and the scheme from your [app config](/workflow/configuration/).
+
+## Additional resources
+
+<BoxLink
+  title="Momentic's Expo guide"
+  description="Build an Expo app for Momentic and run your first test locally."
+  href="https://momentic.ai/docs/guides/frameworks/expo"
+  Icon={Globe01Icon}
+/>
+
+<BoxLink
+  title="Mo"
+  description="Learn how Mo sessions, briefs, and reports work."
+  href="https://momentic.ai/docs/mo"
+  Icon={Globe01Icon}
+/>
+
+<BoxLink
+  title="Write Android and iOS tests with a coding agent"
+  description="Give Claude Code, Cursor, or Codex a live simulator through the Momentic mobile Model Context Protocol (MCP) server."
+  href="https://momentic.ai/docs/coding-agents/building-with-ai#write-a-mobile-test"
+  Icon={Globe01Icon}
+/>

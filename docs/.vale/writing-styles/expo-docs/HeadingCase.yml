@@ -169,6 +169,7 @@ exceptions:
   - '.*MCP*'
   - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
+  - '.*Momentic.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
