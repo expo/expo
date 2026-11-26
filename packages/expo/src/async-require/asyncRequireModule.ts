@@ -96,8 +96,6 @@ function asyncRequireImpl<T>(
     }
   }
 
-  // On native, requiring a missing module reports a fatal error via `global.ErrorUtils`
-  // instead of throwing, so the split bundle must be loaded before importing
   const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
