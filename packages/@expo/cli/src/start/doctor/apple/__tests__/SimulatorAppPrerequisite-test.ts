@@ -12,16 +12,13 @@ beforeEach(() => {
 });
 
 it('detects DeviceHub.app from Apple scripts', async () => {
-  jest
-    .mocked(safeIdOfAppAsync)
-    .mockResolvedValueOnce(null)
-    .mockResolvedValueOnce('com.apple.dt.Devices');
+  jest.mocked(safeIdOfAppAsync).mockResolvedValueOnce('com.apple.dt.Devices');
   jest.mocked(spawnAsync).mockResolvedValue({} as any);
 
   await SimulatorAppPrerequisite.instance.assertImplementation();
 
-  expect(safeIdOfAppAsync).toHaveBeenCalledWith('Simulator');
   expect(safeIdOfAppAsync).toHaveBeenCalledWith('DeviceHub');
+  expect(safeIdOfAppAsync).not.toHaveBeenCalledWith('Simulator');
   expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
 
@@ -31,8 +28,6 @@ it('detects DeviceHub.app from LaunchServices', async () => {
     .mocked(spawnAsync)
     // xcode-select --print-path
     .mockResolvedValueOnce({ stdout: '/Applications/Xcode.app/Contents/Developer\n' } as any)
-    // defaults read …/Simulator.app/… CFBundleIdentifier
-    .mockRejectedValueOnce({ stderr: 'The domain/default par of ... does not exist' } as any)
     // defaults read …/DeviceHub.app/… CFBundleIdentifier
     .mockResolvedValueOnce({ stdout: 'com.apple.dt.Devices\n' } as any)
     // xcrun simctl help
@@ -40,29 +35,48 @@ it('detects DeviceHub.app from LaunchServices', async () => {
 
   await SimulatorAppPrerequisite.instance.assertImplementation();
 
-  expect(safeIdOfAppAsync).toHaveBeenCalledWith('Simulator');
-  expect(safeIdOfAppAsync).toHaveBeenCalledWith('DeviceHub');
-  expect(spawnAsync).toHaveBeenCalledWith('defaults', [
-    'read',
-    expect.stringContaining('/Developer/Applications/Simulator.app/Contents/Info.plist'),
-    'CFBundleIdentifier',
-  ]);
   expect(spawnAsync).toHaveBeenCalledWith('defaults', [
     'read',
     expect.stringContaining('/Applications/DeviceHub.app/Contents/Info.plist'),
     'CFBundleIdentifier',
   ]);
+  expect(spawnAsync).not.toHaveBeenCalledWith('defaults', [
+    'read',
+    expect.stringContaining('/Simulator.app/Contents/Info.plist'),
+    'CFBundleIdentifier',
+  ]);
+  expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
+});
+
+it('resolves DeviceHub.app first when Simulator resolves to Xcode', async () => {
+  // Xcode 27 removed Simulator.app, and `id of app "Simulator"` then returns Xcode's own id.
+  jest
+    .mocked(safeIdOfAppAsync)
+    .mockImplementation(async (appName: string) =>
+      appName === 'Simulator'
+        ? 'com.apple.dt.Xcode'
+        : appName === 'DeviceHub'
+          ? 'com.apple.dt.Devices'
+          : null
+    );
+  jest.mocked(spawnAsync).mockResolvedValue({} as any);
+
+  await SimulatorAppPrerequisite.instance.assertImplementation();
+
+  expect(safeIdOfAppAsync).toHaveBeenCalledWith('DeviceHub');
   expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
 
 it(`detects Simulator.app from Apple scripts`, async () => {
   jest
     .mocked(safeIdOfAppAsync)
+    .mockResolvedValueOnce(null)
     .mockResolvedValueOnce('com.apple.CoreSimulator.SimulatorTrampoline');
   jest.mocked(spawnAsync).mockResolvedValue({} as any);
 
   await SimulatorAppPrerequisite.instance.assertImplementation();
 
+  expect(safeIdOfAppAsync).toHaveBeenCalledWith('DeviceHub');
   expect(safeIdOfAppAsync).toHaveBeenCalledWith('Simulator');
   expect(spawnAsync).toHaveBeenCalledWith('xcrun', ['simctl', 'help']);
 });
@@ -74,6 +88,8 @@ it(`detects Simulator.app from LaunchServices`, async () => {
     .mocked(spawnAsync)
     // xcode-select --print-path
     .mockResolvedValueOnce({ stdout: '/Applications/Xcode.app/Contents/Developer\n' } as any)
+    // defaults read …/DeviceHub.app/… CFBundleIdentifier
+    .mockRejectedValueOnce({ stderr: 'The domain/default par of ... does not exist' } as any)
     // defaults read …/Simulator.app/… CFBundleIdentifier
     .mockResolvedValueOnce({ stdout: 'com.apple.iphonesimulator\n' } as any)
     // xcrun simctl help

@@ -16,18 +16,18 @@ export class SimulatorAppPrerequisite extends Prerequisite {
   async assertImplementation(): Promise<void> {
     // Xcode 27 replaces Simulator with DeviceHub
     // See: https://developer.apple.com/documentation/xcode/device-hub
-    // TODO(cedric): once Xcode 27 stable is released, resolve DeviceHub first
-    let appId = await safeIdOfAppAsync('Simulator').then((appId) => {
-      return appId || safeIdOfAppAsync('DeviceHub');
+    // Ask for DeviceHub first: without Simulator.app, `id of app "Simulator"` returns Xcode's own id.
+    let appId = await safeIdOfAppAsync('DeviceHub').then((appId) => {
+      return appId || safeIdOfAppAsync('Simulator');
     });
 
     if (!appId) {
       const xcodePath = await getXcodeSelectPath();
       debugEvent('simulator_xcode_select_path', { path: xcodePath });
       if (xcodePath) {
-        appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
+        appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH)).then(
           (appId) => {
-            return appId || getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH));
+            return appId || getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH));
           }
         );
       }
