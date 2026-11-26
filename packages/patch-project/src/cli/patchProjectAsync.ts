@@ -185,7 +185,10 @@ async function patchProjectForPlatformAsync({
     }
   }
   for (const patchFile of Object.keys(patchFileBackups)) {
-    logger.log(`Removed the old patch file: ${patchFile}`);
+    // The new patch can reuse the old path. That file is the new patch, not a removed one.
+    if (patchFile !== newPatchFile) {
+      logger.log(`Removed the old patch file: ${patchFile}`);
+    }
   }
   await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
 }

@@ -256,6 +256,26 @@ describe(patchProjectAsync, () => {
       expectOriginalNativeProjectRestored();
     });
 
+    it('does not say the new patch file was removed when it reuses the old name', async () => {
+      vol.fromJSON({ '/app/cng-patches/android+checksum.patch': 'old patch' });
+      jest.mocked(getPatchFilesAsync).mockResolvedValueOnce(['android+checksum.patch']);
+      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
+        vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
+        return 'checksum';
+      });
+      jest.mocked(diffAsync).mockImplementationOnce(async (_diffDir, patchFilePath) => {
+        vol.writeFileSync(patchFilePath, 'patch');
+      });
+
+      await patchProjectAsync('/app', { platforms: ['android'] });
+
+      expect(vol.readFileSync('/app/cng-patches/android+checksum.patch', 'utf8')).toBe('patch');
+      expect(logger.log).not.toHaveBeenCalledWith(
+        'Removed the old patch file: /app/cng-patches/android+checksum.patch'
+      );
+      expectOriginalNativeProjectRestored();
+    });
+
     it('restores the original ios project.pbxproj when generating the patch fails', async () => {
       mockGeneratedIosProject();
       jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
