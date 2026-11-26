@@ -9,6 +9,7 @@ import { useWebCameraStream } from '../useWebCameraStream';
 jest.mock('../WebCameraUtils', () => ({
   ...jest.requireActual('../WebCameraUtils'),
   getPreferredStreamDevice: jest.fn(),
+  getOtherStreamDevice: jest.fn(),
   syncTrackCapabilities: jest.fn(),
   stopMediaStream: jest.fn(),
   setVideoSource: jest.fn(),
@@ -92,6 +93,121 @@ describe(useWebCameraStream, () => {
 
     expect(onMountError).toHaveBeenCalledTimes(1);
     expect(onCameraReady).not.toHaveBeenCalled();
+  });
+});
+
+function createCameraStream(
+  id: string,
+  deviceId: string,
+  { facingMode, label = '' }: { facingMode?: string; label?: string } = {}
+): MediaStream {
+  return {
+    id,
+    getTracks: () => [{ label, getSettings: () => ({ deviceId, facingMode }) }],
+  } as unknown as MediaStream;
+}
+
+describe('useWebCameraStream camera switching', () => {
+  const video = createVideo(HTMLMediaElement.HAVE_ENOUGH_DATA);
+  const activeStream = createCameraStream('stream-1', 'camera-a');
+
+  function hasVideoSource(stream: MediaStream) {
+    return jest
+      .mocked(Utils.setVideoSource)
+      .mock.calls.some(([element, source]) => element === video && source === stream);
+  }
+
+  async function renderAndToggleCamera() {
+    const ref = { current: video };
+    const hook = await renderHook(
+      ({ type }: { type: 'front' | 'back' }) => useWebCameraStream(ref, type, {}, {}),
+      { initialProps: { type: 'front' } }
+    );
+    await waitFor(() => expect(hasVideoSource(activeStream)).toBe(true));
+    await act(async () => {
+      hook.rerender({ type: 'back' });
+    });
+    return hook;
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('switches to another camera when the browser returns the active camera', async () => {
+    // e.g. Windows camera drivers that don't report `facingMode`
+    const duplicateStream = createCameraStream('stream-2', 'camera-a');
+    const alternativeStream = createCameraStream('stream-3', 'camera-b');
+    jest
+      .mocked(Utils.getPreferredStreamDevice)
+      .mockResolvedValueOnce(activeStream)
+      .mockResolvedValueOnce(duplicateStream);
+    jest.mocked(Utils.getOtherStreamDevice).mockResolvedValue(alternativeStream);
+
+    await renderAndToggleCamera();
+
+    await waitFor(() => expect(hasVideoSource(alternativeStream)).toBe(true));
+    expect(Utils.getOtherStreamDevice).toHaveBeenCalledWith('back', 'camera-a');
+    expect(Utils.stopMediaStream).toHaveBeenCalledWith(duplicateStream);
+  });
+
+  it('keeps the active camera when there is no other camera', async () => {
+    const duplicateStream = createCameraStream('stream-2', 'camera-a');
+    jest
+      .mocked(Utils.getPreferredStreamDevice)
+      .mockResolvedValueOnce(activeStream)
+      .mockResolvedValueOnce(duplicateStream);
+    jest.mocked(Utils.getOtherStreamDevice).mockResolvedValue(null);
+
+    await renderAndToggleCamera();
+
+    await waitFor(() => expect(Utils.getOtherStreamDevice).toHaveBeenCalled());
+    expect(Utils.stopMediaStream).toHaveBeenCalledWith(duplicateStream);
+    expect(jest.mocked(Utils.setVideoSource).mock.lastCall).toEqual([video, activeStream]);
+  });
+
+  it('keeps the active camera when switching to another camera fails', async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest
+      .mocked(Utils.getPreferredStreamDevice)
+      .mockResolvedValueOnce(activeStream)
+      .mockResolvedValueOnce(createCameraStream('stream-2', 'camera-a'));
+    jest.mocked(Utils.getOtherStreamDevice).mockRejectedValue(new Error('NotReadableError'));
+
+    await renderAndToggleCamera();
+
+    await waitFor(() => expect(Utils.getOtherStreamDevice).toHaveBeenCalled());
+    expect(jest.mocked(Utils.setVideoSource).mock.lastCall).toEqual([video, activeStream]);
+  });
+
+  it('uses the camera returned by the browser when it is a different camera', async () => {
+    const backStream = createCameraStream('stream-2', 'camera-b', { facingMode: 'environment' });
+    jest
+      .mocked(Utils.getPreferredStreamDevice)
+      .mockResolvedValueOnce(activeStream)
+      .mockResolvedValueOnce(backStream);
+
+    const { result } = await renderAndToggleCamera();
+
+    await waitFor(() => expect(hasVideoSource(backStream)).toBe(true));
+    expect(Utils.getOtherStreamDevice).not.toHaveBeenCalled();
+    expect(Utils.stopMediaStream).not.toHaveBeenCalled();
+    expect(result.current.type).toBe('back');
+  });
+
+  it('derives the camera type from the label when facingMode is not reported', async () => {
+    const rearStream = createCameraStream('stream-3', 'camera-b', {
+      label: 'Microsoft Camera Rear',
+    });
+    jest
+      .mocked(Utils.getPreferredStreamDevice)
+      .mockResolvedValueOnce(activeStream)
+      .mockResolvedValueOnce(createCameraStream('stream-2', 'camera-a'));
+    jest.mocked(Utils.getOtherStreamDevice).mockResolvedValue(rearStream);
+
+    const { result } = await renderAndToggleCamera();
+
+    await waitFor(() => expect(result.current.type).toBe('back'));
   });
 });
 

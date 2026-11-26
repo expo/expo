@@ -71,10 +71,14 @@ export function useWebCameraStream(
     if (!mediaTrackSettings) {
       return null;
     }
-    // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
-    const { facingMode = 'user' } = mediaTrackSettings;
-    return FacingModeToCameraType[facingMode] ?? null;
-  }, [mediaTrackSettings]);
+    if (mediaTrackSettings.facingMode) {
+      return FacingModeToCameraType[mediaTrackSettings.facingMode] ?? null;
+    }
+    // On desktop no value will be returned, in this case we should assume the cameraType is 'front',
+    // unless the camera's label says otherwise (e.g. "Microsoft Camera Rear" on Windows).
+    const label = stream?.getTracks()[0]?.label ?? '';
+    return Utils.labelMatchesCameraType(label, 'back') ? 'back' : 'front';
+  }, [stream, mediaTrackSettings]);
 
   const getStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {
     try {
@@ -88,13 +92,35 @@ export function useWebCameraStream(
     }
   }, [preferredType, onMountError]);
 
+  const getOtherStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {
+    const activeDeviceId = stream?.getTracks()[0]?.getSettings().deviceId;
+    if (!activeDeviceId) {
+      return null;
+    }
+    try {
+      return await Utils.getOtherStreamDevice(preferredType, activeDeviceId);
+    } catch (error) {
+      if (__DEV__) {
+        console.warn(`Error switching to another camera for type "${preferredType}":`, error);
+      }
+      return null;
+    }
+  }, [preferredType, stream]);
+
   const resumeAsync = React.useCallback(async (): Promise<boolean> => {
-    const nextStream = await getStreamDeviceAsync();
+    let nextStream = await getStreamDeviceAsync();
     if (Utils.compareStreams(nextStream, stream)) {
-      // Do nothing if the streams are the same.
-      // This happens when the device only supports one camera (i.e. desktop) and the mode was toggled between front/back while already active.
-      // Without this check there is a screen flash while the video switches.
-      return false;
+      // The browser returned the camera that is already active. This happens when the device only
+      // supports one camera (i.e. desktop), or when the browser can't select a camera by `facingMode`
+      // because the camera drivers don't report it (e.g. on Windows).
+      // Close the duplicate stream and explicitly switch to another camera, if there is one.
+      Utils.stopMediaStream(nextStream);
+      nextStream = await getOtherStreamDeviceAsync();
+      if (!nextStream) {
+        // Do nothing if there is no other camera.
+        // Without this check there is a screen flash while the video switches.
+        return false;
+      }
     }
 
     // Save a history of all active streams (usually 2+) so we can close them later.
@@ -105,7 +131,7 @@ export function useWebCameraStream(
 
     setStream(nextStream);
     return false;
-  }, [getStreamDeviceAsync, setStream, stream, activeStreams.current]);
+  }, [getStreamDeviceAsync, getOtherStreamDeviceAsync, setStream, stream, activeStreams.current]);
 
   React.useEffect(() => {
     // Restart the camera and guard concurrent actions.
