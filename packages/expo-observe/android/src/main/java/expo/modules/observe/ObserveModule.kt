@@ -2,8 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.AppMetricsModule
-import expo.modules.appmetrics.ObserveConsent
+import expo.modules.observe.shared.ObserveConsent
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -15,9 +14,17 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.CancellationException
+import expo.modules.observe.shared.dispatch.LEGACY_DATABASE_NAME
+import expo.modules.observe.shared.dispatch.OBSERVE_DEFAULT_BASE_URL
+import expo.modules.observe.shared.dispatch.OBSERVE_TAG
+import expo.modules.observe.shared.dispatch.ObservabilityBackgroundWorker
+import expo.modules.observe.shared.dispatch.ObservabilityManager
+import expo.modules.observe.shared.dispatch.ObservePreferences
+import expo.modules.observe.shared.dispatch.PersistedBundleDefaults
+import expo.modules.observe.shared.dispatch.PersistedConfig
 
 @OptimizedRecord
-class Config(
+internal class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
@@ -29,7 +36,7 @@ class Config(
 ) : Record
 
 @OptimizedRecord
-class BundleDefaults(
+internal class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
 ) : Record
@@ -62,13 +69,20 @@ class ObserveModule : Module() {
           ObservePreferences.deleteStoredSettings(context)
         }
         appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
-          "AppMetricsModule is required by ObserveModule. Make sure expo-app-metrics is installed."
+          "AppMetricsModule is required by ObserveModule but is not registered. The expo-observe " +
+            "native install is incomplete. Reinstall expo-observe and rebuild the app."
         }
-        val sessionManager = appMetricsModule.sessionManager
+        val manifest = checkNotNull(getManifest(appContext.service<ConstantsInterface>())) {
+          "Manifest is required to initialize ObservabilityManager."
+        }
+        val projectId = checkNotNull(manifest.projectId) {
+          "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
+        }
         observabilityManager = ObservabilityManager(
           context,
-          appContext.service<ConstantsInterface>(),
-          sessionManager = sessionManager
+          projectId = projectId,
+          baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL,
+          sessionManager = appMetricsModule.sessionManager
         )
       }
 

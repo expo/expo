@@ -1,6 +1,6 @@
-import AppMetrics from 'expo-app-metrics';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import AppMetrics from '../../app-metrics';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { attachActionListener } from './actionListener';

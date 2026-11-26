@@ -1,4 +1,5 @@
 import type { NativeModule } from 'expo';
+
 import type {
   LogAttributeValue,
   LogEventOptions,
@@ -7,7 +8,7 @@ import type {
   RecordSpanOptions,
   Span,
   StartSpanOptions,
-} from 'expo-app-metrics';
+} from './app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the

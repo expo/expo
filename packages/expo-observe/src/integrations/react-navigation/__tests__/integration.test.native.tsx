@@ -11,14 +11,14 @@ import {
   type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { act, fireEvent, render } from '@testing-library/react-native';
-import AppMetrics from 'expo-app-metrics';
 import { createRef } from 'react';
 import { Pressable, Text } from 'react-native';
 
+import AppMetrics from '../../../app-metrics';
 import { ObserveNavigationContainer } from '../ObserveNavigationContainer';
 import { useObserveForReactNavigation } from '../useObserveForReactNavigation';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',

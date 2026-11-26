@@ -1,0 +1,254 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+import Foundation
+
+#if !os(tvOS)
+import MetricKit
+#endif
+
+struct AppMetrics {
+  #if !os(tvOS)
+  static let metricKitSubscriber = MetricKitSubscriber()
+
+  /// Registers the MetricKit subscriber to receive diagnostic and performance payloads.
+  /// Even though MetricKit doesn't work on the simulator, it prints some logs (probably once a day)
+  /// that are piped to the terminal when using the `expo run:ios` command.
+  /// To avoid them, we explicitly don't register the subscriber on the simulator.
+  static func registerMetricKitSubscriber() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
+    #if !targetEnvironment(simulator)
+    MXMetricManager.shared.add(metricKitSubscriber)
+    metricKitSubscriber.processPastPayloads()
+    #endif
+  }
+  #endif
+
+  /// Ingests fatal JavaScript errors that were written to disk before the process was terminated on a
+  /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
+  /// `js.exception` log attributed to the session it was captured in. Called once at launch.
+  static func ingestPendingErrors() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
+    let pendingErrors = PendingErrorStore.drain()
+    guard !pendingErrors.isEmpty else {
+      return
+    }
+    AppMetricsActor.isolated {
+      for pendingError in pendingErrors {
+        // Each error attaches to the prior-launch session it was captured in (`pendingError.sessionId`),
+        // not the just-started `mainSession`, so this doesn't depend on the current session's row INSERT.
+        do {
+          _ = try database?.insert(
+            log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId)
+          )
+        } catch {
+          logger.warn("[AppMetrics] Failed to ingest pending error: \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+
+  /// The shared metrics database. Every database access goes through it. `nil` while consent is not
+  /// granted, so the database is never opened, writes do nothing and reads are empty.
+  @AppMetricsActor
+  static var database: MetricsDatabase? {
+    return ObserveConsent.isGranted ? openedDatabase : nil
+  }
+
+  /// `nil` in release builds if the database could not be opened even after a wipe-and-retry. In
+  /// DEBUG we trap with `assertionFailure` so developers see the failure immediately; in release we
+  /// keep the host app running because telemetry should never be load-bearing for the user's
+  /// primary work — callers degrade naturally via `?.`.
+  @AppMetricsActor
+  private static let openedDatabase: MetricsDatabase? = {
+    do {
+      return try MetricsDatabase.openWipingOnFailure()
+    } catch {
+      logger.error(
+        "[AppMetrics] Failed to open the metrics database after a wipe-and-retry: \(error.localizedDescription). Continuing without persistence — metrics and logs from this launch will be dropped."
+      )
+      assertionFailure("MetricsDatabase failed to open: \(error)")
+      return nil
+    }
+  }()
+
+  // Make the initializer private to prevent non-singleton usage.
+  private init() {}
+
+  /// Deletes the stored data. Runs at a launch without consent and at a revoke.
+  static func deleteStoredData() {
+    guard let databaseDirectory = try? MetricsDatabase.defaultDirectoryUrl(),
+      let pendingErrorsDirectory = try? PendingErrorStore.directoryUrl()
+    else {
+      return
+    }
+    deleteStoredData(databaseDirectory: databaseDirectory, pendingErrorsDirectory: pendingErrorsDirectory)
+  }
+
+  /// Deletes the metrics database, the pending-error files, the legacy JSON file, and the settings.
+  static func deleteStoredData(databaseDirectory: URL, pendingErrorsDirectory: URL) {
+    let databaseUrl = databaseDirectory.appendingPathComponent("metrics.db")
+    do {
+      try MetricsDatabase.removeDatabaseFile(at: databaseUrl)
+    } catch {
+      logger.warn("[AppMetrics] Failed to delete the metrics database: \(error.localizedDescription)")
+    }
+    PendingErrorStore.delete(in: pendingErrorsDirectory)
+    AppMetricsUserDefaults.deleteStoredSettings()
+    MetricsDatabase.cleanUpLegacyStorage()
+  }
+
+  /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
+  /// so the changes run one at a time.
+  @AppMetricsActor
+  static func setConsent(granted: Bool) {
+    guard ObserveConsent.update(granted: granted) else {
+      return
+    }
+    if granted {
+      // The launch inserts did nothing without consent, so the session rows are inserted now.
+      mainSession.insertRow()
+      foregroundSession?.insertRow()
+      mainSession.saveUnsavedStartupMetrics()
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      // Past payloads are from before the grant, so they are not processed.
+      MXMetricManager.shared.add(metricKitSubscriber)
+      #endif
+    } else {
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      MXMetricManager.shared.remove(metricKitSubscriber)
+      #endif
+      // The open database is not used again in this process, so its files can be deleted.
+      deleteStoredData()
+    }
+  }
+
+  // MARK: - Read API for downstream consumers (e.g. expo-observe)
+
+  /// Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Consumers persist
+  /// the largest seen id and pass it back on subsequent calls to fetch only newer rows. Empty when the
+  /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
+  @AppMetricsActor
+  static func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
+    return try database?.getMetrics(afterId: cursor, limit: limit) ?? []
+  }
+
+  /// Returns log rows whose `id` is greater than `cursor`, in ascending id order. Empty when the
+  /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
+  @AppMetricsActor
+  static func getLogs(afterId cursor: Int64, limit: Int? = nil) throws -> [LogRow] {
+    return try database?.getLogs(afterId: cursor, limit: limit) ?? []
+  }
+
+  /// Hydrates session rows for the given ids. Used to attach session metadata to a batch of metrics
+  /// or logs that have already been read past a cursor.
+  @AppMetricsActor
+  static func getSessions(ids: [String]) throws -> [SessionRow] {
+    return try database?.getSessions(ids: ids) ?? []
+  }
+
+  /// The largest metric id currently in the database, or `nil` if the metrics table is empty.
+  /// Consumers can compare a persisted dispatch cursor against this to detect that the database was
+  /// wiped (or never reached the cursor's value) and reset their cursor accordingly.
+  @AppMetricsActor
+  static func getMaxMetricId() throws -> Int64? {
+    return try database?.getMaxMetricId() ?? nil
+  }
+
+  /// The largest log id currently in the database, or `nil` if the logs table is empty.
+  @AppMetricsActor
+  static func getMaxLogId() throws -> Int64? {
+    return try database?.getMaxLogId() ?? nil
+  }
+
+  /// Returns span rows whose `id` is greater than `cursor`, in ascending id order, at most
+  /// `limit` of them (all when `nil`). Empty when the database failed to open.
+  @AppMetricsActor
+  static func getSpans(afterId cursor: Int64, limit: Int? = nil) throws -> [SpanRow] {
+    return try database?.getSpans(afterId: cursor, limit: limit) ?? []
+  }
+
+  /// The largest span id currently in the database, or `nil` if the table is empty.
+  @AppMetricsActor
+  static func getMaxSpanId() throws -> Int64? {
+    return try database?.getMaxSpanId() ?? nil
+  }
+
+  /// Returns the spans attributed to `sessionId`, in ascending id order. Empty when the
+  /// database failed to open.
+  @AppMetricsActor
+  static func getSpans(forSessionId sessionId: String) throws -> [SpanRow] {
+    return try database?.getSpans(forSessionId: sessionId) ?? []
+  }
+
+  /// Deletes span rows with `id <= upToId`. The exporter owns deletion; the per-session read
+  /// (`getSpans(forSessionId:)`) sees only rows not yet dispatched.
+  @AppMetricsActor
+  static func deleteSpans(upToId: Int64) throws {
+    try database?.deleteSpans(upToId: upToId)
+  }
+
+  // MARK: - Environment
+
+  @AppMetricsActor
+  static func setEnvironment(_ environment: String) {
+    guard AppMetricsUserDefaults.environment != environment else { return }
+    AppMetricsUserDefaults.environment = environment
+    do {
+      try database?.updateEnvironmentForActiveSessions(environment: environment)
+    } catch {
+      logger.warn("[AppMetrics] Failed to propagate environment to active sessions: \(error.localizedDescription)")
+    }
+  }
+
+  /// The shared sink every span producer writes completed rows through. Nonisolated so the
+  /// JS-thread module functions can hand it to span handles; it resolves the database on the
+  /// actor at write time.
+  static let spanWriter = SpanWriter()
+
+  // MARK: - Main session
+
+  /// The main session that tracks metrics for the entire lifecycle of the app process.
+  ///
+  /// This session starts when the app launches and continues until the app terminates.
+  /// Unlike foreground sessions, there is only one main session per app process.
+  static let mainSession = MainSession()
+
+  // MARK: - Foreground session
+
+  /// The currently active foreground session, or `nil` if the app is not in the foreground.
+  ///
+  /// This session tracks metrics while the app is actively visible to the user. It is created
+  /// when the app enters the foreground and cleared when the app enters the background.
+  @AppMetricsActor
+  static internal private(set) var foregroundSession: Session?
+
+  /// Starts a new foreground session, stopping any existing session if one is active.
+  ///
+  /// This should be called when the app becomes active (enters the foreground). If a previous
+  /// foreground session is still running, it will be stopped and finalized before creating the new session.
+  internal static func startNewForegroundSession() {
+    AppMetricsActor.isolated {
+      if let foregroundSession = Self.foregroundSession {
+        logger.warn(
+          "[AppMetrics] New foreground session started while one was already active. Stopping the old session."
+        )
+        foregroundSession.stop()
+      }
+      foregroundSession = ForegroundSession()
+    }
+  }
+
+  /// Stops and finalizes the current foreground session if one is active.
+  ///
+  /// This should be called when the app enters the background. The session will be stopped,
+  /// its metrics finalized, and the session reference cleared.
+  internal static func stopForegroundSession() {
+    AppMetricsActor.isolated {
+      foregroundSession?.stop()
+      foregroundSession = nil
+    }
+  }
+}

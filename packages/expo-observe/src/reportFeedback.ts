@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from './app-metrics';
 import { warnIfUserContentEntryMissing } from './privacyManifestWarning';
 import type { ObserveFeedback, ObserveModule } from './types';
 
