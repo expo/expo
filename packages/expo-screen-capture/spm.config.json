@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoScreenCapture",
+          "path": "ios/ExpoScreenCapture",
           "dependencies": [
             "Hermes",
             "React",
