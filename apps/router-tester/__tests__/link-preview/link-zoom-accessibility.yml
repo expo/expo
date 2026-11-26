@@ -1,0 +1,46 @@
+appId: dev.expo.routertester
+name: Link zoom accessibility
+---
+- stopApp: dev.expo.routertester
+# A dev client opens its launcher on a cold deep link. Connect it to Metro on 8081 (from maestro/test.sh) first.
+- openLink: router-tester://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+- extendedWaitUntil:
+    visible: "Current Path: /"
+    timeout: 60000
+- openLink: router-tester://link-preview/misc
+- runFlow: ../close-warning.yml
+# Maestro reads the accessibility tree, so these steps fail when the child of a zoom source is not in it.
+- scrollUntilVisible:
+    element:
+      id: "zoom-trigger-pressable"
+    direction: DOWN
+- assertVisible:
+    id: "zoom-trigger-pressable"
+- scrollUntilVisible:
+    element:
+      id: "zoom-preview-pressable"
+    direction: DOWN
+- assertVisible:
+    id: "zoom-preview-pressable"
+- scrollUntilVisible:
+    element:
+      id: "zoom-source-pressable"
+    direction: UP
+- assertVisible:
+    id: "zoom-source-pressable"
+- tapOn:
+    id: "zoom-source-pressable"
+- assertVisible:
+    id: "zoom-target-image"
+# Dismiss the zoom destination with the interactive gesture. Android has no zoom transition.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: 50%, 40%
+          end: 50%, 95%
+      - assertNotVisible:
+          id: "zoom-target-image"
+      - assertVisible:
+          id: "zoom-source-pressable"
