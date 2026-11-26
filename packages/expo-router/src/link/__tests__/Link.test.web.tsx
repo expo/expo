@@ -64,17 +64,32 @@ it('renders a Link with a slot', () => {
 });
 
 it('renders a Link with a slot and array style', () => {
-  expect(() =>
-    render(
-      <Link asChild href="/foo">
-        <View testID="pressable" style={[{ padding: 10 }, { margin: 5 }]}>
-          <Text testID="inner-text">Button</Text>
-        </View>
-      </Link>
-    )
-  ).toThrow(
-    '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  const { getByTestId } = render(
+    <Link asChild href="/foo">
+      <View testID="pressable" style={[{ padding: 10 }, { margin: 5 }]}>
+        <Text testID="inner-text">Button</Text>
+      </View>
+    </Link>
   );
+  const node = getByTestId('pressable');
+  const computed = window.getComputedStyle(node);
+  expect(computed.paddingTop).toBe('10px');
+  expect(computed.marginTop).toBe('5px');
+});
+
+it('merges a child array style over the Link style when using asChild', () => {
+  const { getByTestId } = render(
+    <Link asChild href="/foo" style={{ backgroundColor: 'blue', padding: 4 }}>
+      <View testID="pressable" style={[{ backgroundColor: 'red' }, { margin: 8 }]}>
+        <Text>Button</Text>
+      </View>
+    </Link>
+  );
+  const node = getByTestId('pressable');
+  const computed = window.getComputedStyle(node);
+  expect(computed.backgroundColor).toBe('rgb(255, 0, 0)');
+  expect(computed.paddingTop).toBe('4px');
+  expect(computed.marginTop).toBe('8px');
 });
 
 it('supports target blank', () => {
