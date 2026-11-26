@@ -1541,9 +1541,7 @@ public class ViewModifierRegistry {
   public static var widgetKit: WidgetKitModifiers?
 
   private init() {
-    // The number of built-in modifiers, so the dictionary doesn't grow and rehash while they register.
-    registrations.reserveCapacity(164)
-    registerBuiltInModifiers()
+    registrations = Dictionary(uniqueKeysWithValues: builtInModifiers())
   }
 
   /**
@@ -1596,9 +1594,6 @@ public class ViewModifierRegistry {
 
   /**
    * Registers a new modifier type with the given type name.
-   * The type is an autoclosure, so the Swift runtime creates the witness tables of the modifier type when
-   * a view first uses it, not for all built-in modifiers when the registry starts. Keep this overload non-generic:
-   * a generic function gets the witness tables from its caller, so the caller creates them at registration.
    */
   internal func register(_ type: String, _ modifierType: @autoclosure @escaping () -> any (ViewModifier & Record).Type) {
     register(type, .type(modifierType))
@@ -1606,7 +1601,6 @@ public class ViewModifierRegistry {
 
   /**
    * Registers a new modifier type that sends events with the given type name.
-   * The type is an autoclosure for the same reason as in the overload above.
    */
   internal func register(_ type: String, _ modifierType: @autoclosure @escaping () -> any (EventDispatchingViewModifier & Record).Type) {
     register(type, .eventDispatchingType(modifierType))
@@ -1976,332 +1970,352 @@ internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
 
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
-  private func registerBuiltInModifiers() {
-    register("listSectionSpacing", ListSectionSpacingModifier.self)
+  private func builtInModifiers() -> [(String, Registration)] {
+    return [
+      entry("listSectionSpacing", ListSectionSpacingModifier.self),
 
-    register("background", BackgroundModifier.self)
+      entry("background", BackgroundModifier.self),
 
-    register("cornerRadius", CornerRadiusModifier.self)
+      entry("cornerRadius", CornerRadiusModifier.self),
 
-    register("shadow", ShadowModifier.self)
+      entry("shadow", ShadowModifier.self),
 
-    register("frame", FrameModifier.self)
+      entry("frame", FrameModifier.self),
 
-    register("universalLayout", UniversalLayoutModifier.self)
+      entry("universalLayout", UniversalLayoutModifier.self),
 
-    register("padding", PaddingModifier.self)
+      entry("padding", PaddingModifier.self),
 
-    register("opacity", OpacityModifier.self)
+      entry("opacity", OpacityModifier.self),
 
-    register("scaleEffect", ScaleEffectModifier.self)
+      entry("scaleEffect", ScaleEffectModifier.self),
 
-    register("rotationEffect", RotationEffectModifier.self)
+      entry("rotationEffect", RotationEffectModifier.self),
 
-    register("rotation3DEffect", Rotation3DEffectModifier.self)
+      entry("rotation3DEffect", Rotation3DEffectModifier.self),
 
-    register("offset", OffsetModifier.self)
+      entry("offset", OffsetModifier.self),
 
-    register("foregroundColor", ForegroundColorModifier.self)
+      entry("foregroundColor", ForegroundColorModifier.self),
 
-    register("foregroundStyle", ForegroundStyleModifier.self)
+      entry("foregroundStyle", ForegroundStyleModifier.self),
 
-    register("luminanceToAlpha", LuminanceToAlphaModifier.self)
+      entry("luminanceToAlpha", LuminanceToAlphaModifier.self),
 
-    register("bold", BoldModifier.self)
+      entry("bold", BoldModifier.self),
 
-    register("italic", ItalicModifier.self)
+      entry("italic", ItalicModifier.self),
 
-    register("monospacedDigit", MonospacedDigitModifier.self)
+      entry("monospacedDigit", MonospacedDigitModifier.self),
 
-    register("tint", TintModifier.self)
+      entry("tint", TintModifier.self),
 
-    register("selectedSegmentTintColor", SelectedSegmentTintColorModifier.self)
+      entry("selectedSegmentTintColor", SelectedSegmentTintColorModifier.self),
 
-    register("hidden", HiddenModifier.self)
+      entry("hidden", HiddenModifier.self),
 
-    register("labelsHidden", LabelsHiddenModifier.self)
+      entry("labelsHidden", LabelsHiddenModifier.self),
 
-    register("disabled", DisabledModifier.self)
+      entry("disabled", DisabledModifier.self),
 
-    register("redacted", RedactedModifier.self)
+      entry("redacted", RedactedModifier.self),
 
-    register("unredacted", UnredactedModifier.self)
+      entry("unredacted", UnredactedModifier.self),
 
-    register("privacySensitive", PrivacySensitiveModifier.self)
+      entry("privacySensitive", PrivacySensitiveModifier.self),
 
-    register("invalidatableContent", InvalidatableContentModifier.self)
+      entry("invalidatableContent", InvalidatableContentModifier.self),
 
-    register("zIndex", ZIndexModifier.self)
+      entry("zIndex", ZIndexModifier.self),
 
-    register("blur", BlurModifier.self)
+      entry("blur", BlurModifier.self),
 
-    register("brightness", BrightnessModifier.self)
+      entry("brightness", BrightnessModifier.self),
 
-    register("contrast", ContrastModifier.self)
+      entry("contrast", ContrastModifier.self),
 
-    register("saturation", SaturationModifier.self)
+      entry("saturation", SaturationModifier.self),
 
-    register("colorInvert", ColorInvertModifier.self)
+      entry("colorInvert", ColorInvertModifier.self),
 
-    register("grayscale", GrayscaleModifier.self)
+      entry("grayscale", GrayscaleModifier.self),
 
-    register("border", BorderModifier.self)
-    register("strokeBorder", StrokeBorderModifier.self)
+      entry("border", BorderModifier.self),
+      entry("strokeBorder", StrokeBorderModifier.self),
 
-    register("clipShape", ClipShapeModifier.self)
+      entry("clipShape", ClipShapeModifier.self),
 
-    register("onTapGesture", OnTapGestureModifier.self)
+      entry("onTapGesture", OnTapGestureModifier.self),
 
-    register("onLongPressGesture", OnLongPressGestureModifier.self)
+      entry("onLongPressGesture", OnLongPressGestureModifier.self),
 
-    register("onAppear", OnAppearModifier.self)
+      entry("onAppear", OnAppearModifier.self),
 
-    register("onDisappear", OnDisappearModifier.self)
+      entry("onDisappear", OnDisappearModifier.self),
 
-    register("onGeometryChange", OnGeometryChangeModifier.self)
+      entry("onGeometryChange", OnGeometryChangeModifier.self),
 
-    register("refreshable", RefreshableModifier.self)
+      entry("refreshable", RefreshableModifier.self),
 
-    register("hueRotation", HueRotationModifier.self)
+      entry("hueRotation", HueRotationModifier.self),
 
-    register("navigationTitle", NavigationTitleModifier.self)
+      entry("navigationTitle", NavigationTitleModifier.self),
 
-    register("navigationBarTitleDisplayMode", NavigationBarTitleDisplayModeModifier.self)
+      entry("navigationBarTitleDisplayMode", NavigationBarTitleDisplayModeModifier.self),
 
-    register("toolbarTitleDisplayMode", ToolbarTitleDisplayModeModifier.self)
+      entry("toolbarTitleDisplayMode", ToolbarTitleDisplayModeModifier.self),
 
-    register("navigationSplitViewStyle", NavigationSplitViewStyleModifier.self)
+      entry("navigationSplitViewStyle", NavigationSplitViewStyleModifier.self),
 
-    register("navigationSplitViewColumnWidth", NavigationSplitViewColumnWidthModifier.self)
+      entry("navigationSplitViewColumnWidth", NavigationSplitViewColumnWidthModifier.self),
 
-    register("arrangementViewStyle", ArrangementViewStyleModifier.self)
+      entry("arrangementViewStyle", ArrangementViewStyleModifier.self),
 
-    register("splitArrangementLayoutRatio", SplitArrangementLayoutRatioModifier.self)
+      entry("splitArrangementLayoutRatio", SplitArrangementLayoutRatioModifier.self),
 
-    register("splitArrangementLayoutSize", SplitArrangementLayoutSizeModifier.self)
+      entry("splitArrangementLayoutSize", SplitArrangementLayoutSizeModifier.self),
 
-    register("splitArrangementFixedLayoutSize", SplitArrangementFixedLayoutSizeModifier.self)
+      entry("splitArrangementFixedLayoutSize", SplitArrangementFixedLayoutSizeModifier.self),
 
-    register("overlayArrangementEdge", OverlayArrangementEdgeModifier.self)
+      entry("overlayArrangementEdge", OverlayArrangementEdgeModifier.self),
 
-    register("accessibilityLabel", AccessibilityLabelModifier.self)
+      entry("accessibilityLabel", AccessibilityLabelModifier.self),
 
-    register("accessibilityHint", AccessibilityHintModifier.self)
+      entry("accessibilityHint", AccessibilityHintModifier.self),
 
-    register("accessibilityValue", AccessibilityValueModifier.self)
+      entry("accessibilityValue", AccessibilityValueModifier.self),
 
-    register("accessibilityInputLabels", AccessibilityInputLabelsModifier.self)
+      entry("accessibilityInputLabels", AccessibilityInputLabelsModifier.self),
 
-    register("accessibilityIdentifier", AccessibilityIdentifierModifier.self)
+      entry("accessibilityIdentifier", AccessibilityIdentifierModifier.self),
 
-    register("accessibilityHidden", AccessibilityHiddenModifier.self)
+      entry("accessibilityHidden", AccessibilityHiddenModifier.self),
 
-    register("accessibilityElement", AccessibilityElementModifier.self)
+      entry("accessibilityElement", AccessibilityElementModifier.self),
 
-    register("accessibilityAddTraits", AccessibilityAddTraitsModifier.self)
+      entry("accessibilityAddTraits", AccessibilityAddTraitsModifier.self),
 
-    register("accessibilityRemoveTraits", AccessibilityRemoveTraitsModifier.self)
+      entry("accessibilityRemoveTraits", AccessibilityRemoveTraitsModifier.self),
 
-    register("layoutPriority", LayoutPriorityModifier.self)
+      entry("layoutPriority", LayoutPriorityModifier.self),
 
-    register("aspectRatio", AspectRatioModifier.self)
+      entry("aspectRatio", AspectRatioModifier.self),
 
-    register("clipped", ClippedModifier.self)
+      entry("clipped", ClippedModifier.self),
 
-    register("mask", MaskModifier.self)
+      entry("mask", MaskModifier.self),
 
-    register("overlay", OverlayModifier.self)
+      entry("overlay", OverlayModifier.self),
 
-    register("backgroundOverlay", BackgroundOverlayModifier.self)
+      entry("backgroundOverlay", BackgroundOverlayModifier.self),
 
-    register("glassEffect", GlassEffectModifier.self)
+      entry("glassEffect", GlassEffectModifier.self),
 
-    register("animation", AnimationModifier.self)
+      entry("animation", AnimationModifier.self),
 
-    register("glassEffectId", GlassEffectIdModifier.self)
+      entry("glassEffectId", GlassEffectIdModifier.self),
 
-    register("matchedGeometryEffect", MatchedGeometryEffectModifier.self)
+      entry("matchedGeometryEffect", MatchedGeometryEffectModifier.self),
 
-    register("geometryGroup", GeometryGroupModifier.self)
+      entry("geometryGroup", GeometryGroupModifier.self),
 
-    register("fixedSize", FixedSizeModifier.self)
+      entry("fixedSize", FixedSizeModifier.self),
 
-    register("ignoreSafeArea", IgnoreSafeAreaModifier.self)
+      entry("ignoreSafeArea", IgnoreSafeAreaModifier.self),
 
-    register("containerShape", ContainerShapeModifier.self)
+      entry("containerShape", ContainerShapeModifier.self),
 
-    register("contentShape", ContentShapeModifier.self)
+      entry("contentShape", ContentShapeModifier.self),
 
-    register("containerRelativeFrame", ContainerRelativeFrameModifier.self)
+      entry("containerRelativeFrame", ContainerRelativeFrameModifier.self),
 
-    register("buttonStyle", ButtonStyleModifier.self)
+      entry("buttonStyle", ButtonStyleModifier.self),
 
-    register("buttonBorderShape", ButtonBorderShapeModifier.self)
+      entry("buttonBorderShape", ButtonBorderShapeModifier.self),
 
-    register("toggleStyle", ToggleStyleModifier.self)
+      entry("toggleStyle", ToggleStyleModifier.self),
 
-    register("controlSize", ControlSizeModifier.self)
+      entry("controlSize", ControlSizeModifier.self),
 
-    register("labelStyle", LabelStyleModifier.self)
+      entry("labelStyle", LabelStyleModifier.self),
 
-    register("textFieldStyle", TextFieldStyleModifier.self)
+      entry("textFieldStyle", TextFieldStyleModifier.self),
 
-    register("scrollContentBackground", ScrollContentBackground.self)
+      entry("scrollContentBackground", ScrollContentBackground.self),
 
-    register("listRowBackground", ListRowBackground.self)
+      entry("listRowBackground", ListRowBackground.self),
 
-    register("listRowSeparator", ListRowSeparator.self)
+      entry("listRowSeparator", ListRowSeparator.self),
 
-    register("listRowSeparatorTint", ListRowSeparatorTint.self)
+      entry("listRowSeparatorTint", ListRowSeparatorTint.self),
 
-    register("listRowSpacing", ListRowSpacing.self)
+      entry("listRowSpacing", ListRowSpacing.self),
 
-    register("alignmentGuide", AlignmentGuideModifier.self)
+      entry("alignmentGuide", AlignmentGuideModifier.self),
 
-    register("truncationMode", TextTruncationMode.self)
+      entry("truncationMode", TextTruncationMode.self),
 
-    register("kerning", TextKerning.self)
+      entry("kerning", TextKerning.self),
 
-    register("allowsTightening", TextAllowsTightening.self)
+      entry("allowsTightening", TextAllowsTightening.self),
 
-    register("minimumScaleFactor", MinimumScaleFactorModifier.self)
+      entry("minimumScaleFactor", MinimumScaleFactorModifier.self),
 
-    register("textCase", TextCase.self)
+      entry("textCase", TextCase.self),
 
-    register("underline", TextUnderLine.self)
+      entry("underline", TextUnderLine.self),
 
-    register("strikethrough", TextStrikeThrough.self)
+      entry("strikethrough", TextStrikeThrough.self),
 
-    register("multilineTextAlignment", MultilineTextAlignment.self)
+      entry("multilineTextAlignment", MultilineTextAlignment.self),
 
-    register("textSelection", TextSelection.self)
+      entry("textSelection", TextSelection.self),
 
-    register("lineSpacing", LineSpacing.self)
+      entry("lineSpacing", LineSpacing.self),
 
-    register("lineHeight", LineHeight.self)
+      entry("lineHeight", LineHeight.self),
 
-    register("lineLimit", LineLimitModifier.self)
+      entry("lineLimit", LineLimitModifier.self),
 
-    register("listRowInsets", ListRowInsets.self)
+      entry("listRowInsets", ListRowInsets.self),
 
-    register("badgeProminence", BadgeProminence.self)
+      entry("badgeProminence", BadgeProminence.self),
 
-    register("badge", Badge.self)
+      entry("badge", Badge.self),
 
-    register("listSectionMargins", ListSectionMargins.self)
+      entry("listSectionMargins", ListSectionMargins.self),
 
-    register("scrollDismissesKeyboard", ScrollDismissesKeyboardModifier.self)
+      entry("scrollDismissesKeyboard", ScrollDismissesKeyboardModifier.self),
 
-    register("menuActionDismissBehavior", MenuActionDismissBehaviorModifier.self)
+      entry("menuActionDismissBehavior", MenuActionDismissBehaviorModifier.self),
 
-    register("headerProminence", HeaderProminence.self)
+      entry("headerProminence", HeaderProminence.self),
 
-    register("font", FontModifier.self)
+      entry("font", FontModifier.self),
 
-    register("dynamicTypeSize", DynamicTypeSizeModifier.self)
+      entry("dynamicTypeSize", DynamicTypeSizeModifier.self),
 
-    register("imageScale", ImageScaleModifier.self)
+      entry("imageScale", ImageScaleModifier.self),
 
-    register("gridCellUnsizedAxes", GridCellUnsizedAxes.self)
+      entry("gridCellUnsizedAxes", GridCellUnsizedAxes.self),
 
-    register("gridCellColumns", GridCellColumns.self)
+      entry("gridCellColumns", GridCellColumns.self),
 
-    register("gridColumnAlignment", GridColumnAlignment.self)
+      entry("gridColumnAlignment", GridColumnAlignment.self),
 
-    register("gridCellAnchor", GridCellAnchor.self)
+      entry("gridCellAnchor", GridCellAnchor.self),
 
-    register("tag", TagModifier.self)
+      entry("tag", TagModifier.self),
 
-    register("scrollTargetBehavior", ScrollTargetBehaviorModifier.self)
+      entry("scrollTargetBehavior", ScrollTargetBehaviorModifier.self),
 
-    register("scrollTargetLayout", ScrollTargetLayoutModifier.self)
+      entry("scrollTargetLayout", ScrollTargetLayoutModifier.self),
 
-    register("id", IDModifier.self)
+      entry("id", IDModifier.self),
 
-    register("scrollPosition", ScrollPositionModifier.self)
+      entry("scrollPosition", ScrollPositionModifier.self),
 
-    register("searchable", SearchableModifier.self)
+      entry("searchable", SearchableModifier.self),
 
-    register("searchToolbarBehavior", SearchToolbarBehaviorModifier.self)
+      entry("searchToolbarBehavior", SearchToolbarBehaviorModifier.self),
 
-    register("pickerStyle", PickerStyleModifier.self)
+      entry("pickerStyle", PickerStyleModifier.self),
 
-    register("menuOrder", MenuOrderModifier.self)
+      entry("menuOrder", MenuOrderModifier.self),
 
-    register("menuStyle", MenuStyleModifier.self)
+      entry("menuStyle", MenuStyleModifier.self),
 
-    register("menuIndicator", MenuIndicatorModifier.self)
+      entry("menuIndicator", MenuIndicatorModifier.self),
 
-    register("submitLabel", SubmitLabelModifier.self)
+      entry("submitLabel", SubmitLabelModifier.self),
 
-    register("textInputAutocapitalization", TextInputAutocapitalizationModifier.self)
+      entry("textInputAutocapitalization", TextInputAutocapitalizationModifier.self),
 
-    register("textContentType", TextContentTypeModifier.self)
+      entry("textContentType", TextContentTypeModifier.self),
 
-    register("datePickerStyle", DatePickerStyleModifier.self)
+      entry("datePickerStyle", DatePickerStyleModifier.self),
 
-    register("scrollDisabled", ScrollDisabledModifier.self)
+      entry("scrollDisabled", ScrollDisabledModifier.self),
 
-    register("preferredColorScheme", PreferredColorSchemeModifier.self)
+      entry("preferredColorScheme", PreferredColorSchemeModifier.self),
 
-    register("scrollClipDisabled", ScrollClipDisabledModifier.self)
+      entry("scrollClipDisabled", ScrollClipDisabledModifier.self),
 
-    register("scrollIndicators", ScrollIndicatorsModifier.self)
+      entry("scrollIndicators", ScrollIndicatorsModifier.self),
 
-    register("scrollEdgeEffectStyle", ScrollEdgeEffectStyleModifier.self)
+      entry("scrollEdgeEffectStyle", ScrollEdgeEffectStyleModifier.self),
 
-    register("tabViewStyle", TabViewStyleModifier.self)
+      entry("tabViewStyle", TabViewStyleModifier.self),
 
-    register("indexViewStyle", IndexViewStyleModifier.self)
+      entry("indexViewStyle", IndexViewStyleModifier.self),
 
-    register("defaultScrollAnchor", DefaultScrollAnchorModifier.self)
+      entry("defaultScrollAnchor", DefaultScrollAnchorModifier.self),
 
-    register("defaultScrollAnchorForRole", DefaultScrollAnchorForRoleModifier.self)
+      entry("defaultScrollAnchorForRole", DefaultScrollAnchorForRoleModifier.self),
 
-    register("progressViewStyle", ProgressViewStyleModifier.self)
+      entry("progressViewStyle", ProgressViewStyleModifier.self),
 
-    register("gaugeStyle", GaugeStyleModifier.self)
+      entry("gaugeStyle", GaugeStyleModifier.self),
 
-    register("presentationDetents", PresentationDetentsModifier.self)
+      entry("presentationDetents", PresentationDetentsModifier.self),
 
-    register("presentationDragIndicator", PresentationDragIndicatorModifier.self)
+      entry("presentationDragIndicator", PresentationDragIndicatorModifier.self),
 
-    register("presentationCornerRadius", PresentationCornerRadiusModifier.self)
+      entry("presentationCornerRadius", PresentationCornerRadiusModifier.self),
 
-    register("presentationBackgroundInteraction", PresentationBackgroundInteractionModifier.self)
+      entry("presentationBackgroundInteraction", PresentationBackgroundInteractionModifier.self),
 
-    register("interactiveDismissDisabled", InteractiveDismissDisabledModifier.self)
+      entry("interactiveDismissDisabled", InteractiveDismissDisabledModifier.self),
 
-    register("presentationBackground", PresentationBackgroundModifier.self)
+      entry("presentationBackground", PresentationBackgroundModifier.self),
 
-    register("presentationSizing", PresentationSizingModifier.self)
+      entry("presentationSizing", PresentationSizingModifier.self),
 
-    register("listStyle", ListStyleModifier.self)
+      entry("listStyle", ListStyleModifier.self),
 
-    register("sectionIndexLabel", SectionIndexLabelModifier.self)
+      entry("sectionIndexLabel", SectionIndexLabelModifier.self),
 
-    register("moveDisabled", MoveDisabledModifier.self)
+      entry("moveDisabled", MoveDisabledModifier.self),
 
-    register("deleteDisabled", DeleteDisabledModifier.self)
+      entry("deleteDisabled", DeleteDisabledModifier.self),
 
-    register("environment", EnvironmentModifier.self)
+      entry("environment", EnvironmentModifier.self),
 
-    register("contentTransition", ContentTransitionModifier.self)
+      entry("contentTransition", ContentTransitionModifier.self),
 
-    register("keyboardType", KeyboardTypeModifier.self)
+      entry("keyboardType", KeyboardTypeModifier.self),
 
-    register("autocorrectionDisabled", AutocorrectionDisabledModifier.self)
+      entry("autocorrectionDisabled", AutocorrectionDisabledModifier.self),
 
-    register("onSubmit", OnSubmitModifier.self)
+      entry("onSubmit", OnSubmitModifier.self),
 
-    register("containerBackground", ContainerBackgroundModifier.self)
+      entry("containerBackground", ContainerBackgroundModifier.self),
 
-    register("symbolEffect", SymbolEffectModifier.self)
+      entry("symbolEffect", SymbolEffectModifier.self),
 
-    register("onScrollPhaseChange", OnScrollPhaseChangeModifier.self)
+      entry("onScrollPhaseChange", OnScrollPhaseChangeModifier.self),
 
-    register("onScrollGeometryChange", OnScrollGeometryChangeModifier.self)
+      entry("onScrollGeometryChange", OnScrollGeometryChangeModifier.self),
 
-    register("onHingeChange", OnHingeChangeModifier.self)
+      entry("onHingeChange", OnHingeChangeModifier.self)
+    ]
+  }
+
+  /**
+   * Creates the registration of a built-in modifier type.
+   * The type is an autoclosure, so the Swift runtime creates the witness tables of the modifier type when
+   * a view first uses it, not for all built-in modifiers when the registry starts. Keep this overload non-generic:
+   * a generic function gets the witness tables from its caller, so the caller creates them for all built-in modifiers.
+   */
+  private func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (ViewModifier & Record).Type) -> (String, Registration) {
+    return (type, .type(modifierType))
+  }
+
+  /**
+   * Creates the registration of a built-in modifier type that sends events.
+   * The type is an autoclosure for the same reason as in the overload above.
+   */
+  private func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (EventDispatchingViewModifier & Record).Type) -> (String, Registration) {
+    return (type, .eventDispatchingType(modifierType))
   }
 }
