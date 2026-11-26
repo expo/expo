@@ -25,6 +25,7 @@ struct AudioPolicyRecord {
   var interruptionMode: InterruptionMode?
   var allowsRecording: Bool?
   var shouldRouteThroughEarpiece: Bool?
+  var bluetoothProfile: BluetoothProfile?
 }
 
 extension AudioPolicyRecord {
@@ -33,7 +34,8 @@ extension AudioPolicyRecord {
       playsInSilentMode: policy.playsInSilentMode,
       interruptionMode: policy.interruptionMode,
       allowsRecording: policy.allowsRecording,
-      shouldRouteThroughEarpiece: policy.shouldRouteThroughEarpiece
+      shouldRouteThroughEarpiece: policy.shouldRouteThroughEarpiece,
+      bluetoothProfile: policy.bluetoothProfile
     )
   }
 
@@ -42,7 +44,8 @@ extension AudioPolicyRecord {
       playsInSilentMode: playsInSilentMode,
       interruptionMode: interruptionMode,
       allowsRecording: allowsRecording,
-      shouldRouteThroughEarpiece: shouldRouteThroughEarpiece
+      shouldRouteThroughEarpiece: shouldRouteThroughEarpiece,
+      bluetoothProfile: bluetoothProfile
     )
   }
 }

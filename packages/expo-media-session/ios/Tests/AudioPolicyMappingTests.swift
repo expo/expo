@@ -215,6 +215,34 @@ struct AudioPolicyMappingTests {
   }
 
   @Test
+  func `a2dp Bluetooth profile allows only A2DP output`() {
+    let a2dp = AudioPolicy(interruptionMode: .doNotMix, allowsRecording: true, bluetoothProfile: .a2dp)
+    #expect(resolve(a2dp).configuration.options == [.defaultToSpeaker, .allowBluetoothA2DP])
+
+    let upgraded = resolve(
+      AudioPolicy(interruptionMode: .doNotMix, bluetoothProfile: .a2dp),
+      [SessionRequirements(capabilities: .record)]
+    )
+    #expect(upgraded.configuration.category == .playAndRecord)
+    #expect(upgraded.configuration.options == [.defaultToSpeaker, .allowBluetoothA2DP])
+  }
+
+  @Test(arguments: [AVAudioSession.Mode.voiceChat, .videoChat])
+  func `chat modes keep HFP with the a2dp Bluetooth profile`(mode: AVAudioSession.Mode) {
+    let chat = resolve(
+      AudioPolicy(interruptionMode: .doNotMix, bluetoothProfile: .a2dp),
+      [SessionRequirements(mode: mode)]
+    )
+    #expect(chat.configuration.options == [.defaultToSpeaker, bluetooth])
+  }
+
+  @Test
+  func `update without a Bluetooth profile keeps the current one`() {
+    let policy = AudioPolicy(bluetoothProfile: .a2dp).merged(with: AudioPolicyUpdate(allowsRecording: true))
+    #expect(policy.bluetoothProfile == .a2dp)
+  }
+
+  @Test
   func `validation rejects duck without silent mode`() {
     let policy = AudioPolicy(playsInSilentMode: false, interruptionMode: .duckOthers)
     #expect(throws: InvalidAudioPolicyException.self) {

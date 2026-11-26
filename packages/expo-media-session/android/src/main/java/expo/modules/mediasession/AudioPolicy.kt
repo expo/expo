@@ -16,6 +16,11 @@ enum class InterruptionMode(val value: String) : Enumerable {
     get() = this != DO_NOT_MIX_PERSISTENT
 }
 
+enum class BluetoothProfile(val value: String) : Enumerable {
+  HFP("hfp"),
+  A2DP("a2dp")
+}
+
 enum class MixingRequirement(val value: String) : Enumerable {
   MIX_WITH_OTHERS("mixWithOthers"),
   DUCK_OTHERS("duckOthers"),
@@ -34,25 +39,29 @@ class AudioPolicy(
   val playsInSilentMode: Boolean = true,
   val interruptionMode: InterruptionMode = InterruptionMode.MIX_WITH_OTHERS,
   val allowsRecording: Boolean = false,
-  val shouldRouteThroughEarpiece: Boolean = false
+  val shouldRouteThroughEarpiece: Boolean = false,
+  val bluetoothProfile: BluetoothProfile = BluetoothProfile.HFP
 ) {
   fun copy(
     playsInSilentMode: Boolean = this.playsInSilentMode,
     interruptionMode: InterruptionMode = this.interruptionMode,
     allowsRecording: Boolean = this.allowsRecording,
-    shouldRouteThroughEarpiece: Boolean = this.shouldRouteThroughEarpiece
+    shouldRouteThroughEarpiece: Boolean = this.shouldRouteThroughEarpiece,
+    bluetoothProfile: BluetoothProfile = this.bluetoothProfile
   ) = AudioPolicy(
     playsInSilentMode = playsInSilentMode,
     interruptionMode = interruptionMode,
     allowsRecording = allowsRecording,
-    shouldRouteThroughEarpiece = shouldRouteThroughEarpiece
+    shouldRouteThroughEarpiece = shouldRouteThroughEarpiece,
+    bluetoothProfile = bluetoothProfile
   )
 
   fun merged(update: AudioPolicyUpdate) = copy(
     playsInSilentMode = update.playsInSilentMode ?: playsInSilentMode,
     interruptionMode = update.interruptionMode ?: interruptionMode,
     allowsRecording = update.allowsRecording ?: allowsRecording,
-    shouldRouteThroughEarpiece = update.shouldRouteThroughEarpiece ?: shouldRouteThroughEarpiece
+    shouldRouteThroughEarpiece = update.shouldRouteThroughEarpiece ?: shouldRouteThroughEarpiece,
+    bluetoothProfile = update.bluetoothProfile ?: bluetoothProfile
   )
 
   override fun equals(other: Any?) =
@@ -60,15 +69,16 @@ class AudioPolicy(
       other.playsInSilentMode == playsInSilentMode &&
       other.interruptionMode == interruptionMode &&
       other.allowsRecording == allowsRecording &&
-      other.shouldRouteThroughEarpiece == shouldRouteThroughEarpiece
+      other.shouldRouteThroughEarpiece == shouldRouteThroughEarpiece &&
+      other.bluetoothProfile == bluetoothProfile
 
   override fun hashCode() =
-    Objects.hash(playsInSilentMode, interruptionMode, allowsRecording, shouldRouteThroughEarpiece)
+    Objects.hash(playsInSilentMode, interruptionMode, allowsRecording, shouldRouteThroughEarpiece, bluetoothProfile)
 
   override fun toString() =
     "AudioPolicy(playsInSilentMode=$playsInSilentMode, interruptionMode=$interruptionMode, " +
       "allowsRecording=$allowsRecording, " +
-      "shouldRouteThroughEarpiece=$shouldRouteThroughEarpiece)"
+      "shouldRouteThroughEarpiece=$shouldRouteThroughEarpiece, bluetoothProfile=$bluetoothProfile)"
 
   companion object {
     val DEFAULT = AudioPolicy()
@@ -79,22 +89,24 @@ class AudioPolicyUpdate(
   val playsInSilentMode: Boolean? = null,
   val interruptionMode: InterruptionMode? = null,
   val allowsRecording: Boolean? = null,
-  val shouldRouteThroughEarpiece: Boolean? = null
+  val shouldRouteThroughEarpiece: Boolean? = null,
+  val bluetoothProfile: BluetoothProfile? = null
 ) {
   override fun equals(other: Any?) =
     other is AudioPolicyUpdate &&
       other.playsInSilentMode == playsInSilentMode &&
       other.interruptionMode == interruptionMode &&
       other.allowsRecording == allowsRecording &&
-      other.shouldRouteThroughEarpiece == shouldRouteThroughEarpiece
+      other.shouldRouteThroughEarpiece == shouldRouteThroughEarpiece &&
+      other.bluetoothProfile == bluetoothProfile
 
   override fun hashCode() =
-    Objects.hash(playsInSilentMode, interruptionMode, allowsRecording, shouldRouteThroughEarpiece)
+    Objects.hash(playsInSilentMode, interruptionMode, allowsRecording, shouldRouteThroughEarpiece, bluetoothProfile)
 
   override fun toString() =
     "AudioPolicyUpdate(playsInSilentMode=$playsInSilentMode, interruptionMode=$interruptionMode, " +
       "allowsRecording=$allowsRecording, " +
-      "shouldRouteThroughEarpiece=$shouldRouteThroughEarpiece)"
+      "shouldRouteThroughEarpiece=$shouldRouteThroughEarpiece, bluetoothProfile=$bluetoothProfile)"
 }
 
 class SessionRequirements(

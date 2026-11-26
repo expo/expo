@@ -65,6 +65,10 @@ public enum SessionResolver {
     let isInputOnly =
       !requirements.isEmpty && requirements.allSatisfy { !$0.capabilities.isDisjoint(with: inputCapabilities) }
     let needsChat = chatModes.contains(mode)
+    // iOS turns on HFP for these modes, so `.a2dp` cannot apply.
+    if mode == .voiceChat || mode == .videoChat {
+      effectivePolicy.bluetoothProfile = .hfp
+    }
 
     var category = baseCategory(for: effectivePolicy)
     var options = baseOptions(for: effectivePolicy, category: category)
@@ -173,11 +177,17 @@ public enum SessionResolver {
       if !policy.shouldRouteThroughEarpiece {
         options.insert(.defaultToSpeaker)
       }
-      #if compiler(>=6.2)
-      options.insert(.allowBluetoothHFP)
-      #else
-      options.insert(.allowBluetooth)
-      #endif
+      switch policy.bluetoothProfile {
+      case .hfp:
+        #if compiler(>=6.2)
+        options.insert(.allowBluetoothHFP)
+        #else
+        options.insert(.allowBluetooth)
+        #endif
+      case .a2dp:
+        // Do not also allow HFP. iOS prefers HFP for a device that supports both profiles.
+        options.insert(.allowBluetoothA2DP)
+      }
     }
     #endif
     return options

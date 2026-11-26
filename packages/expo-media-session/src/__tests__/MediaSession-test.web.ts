@@ -260,6 +260,7 @@ describe('web module', () => {
       interruptionMode: 'doNotMix',
       allowsRecording: false,
       shouldRouteThroughEarpiece: false,
+      bluetoothProfile: 'hfp',
     });
   });
 

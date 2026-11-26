@@ -42,7 +42,27 @@ export type AudioPolicy = {
    * @default false
    */
   shouldRouteThroughEarpiece: boolean;
+  /**
+   * The Bluetooth profile that the session uses for headsets, such as AirPods, when the audio
+   * session category is `playAndRecord`. That is when `allowsRecording` is `true`, or when a media
+   * library records. See [`BluetoothProfile`](#bluetoothprofile) for the values. On Android and web,
+   * this value has no effect.
+   * @default 'hfp'
+   */
+  bluetoothProfile: BluetoothProfile;
 };
+
+/**
+ * Bluetooth profiles that the session can use when its category is `playAndRecord`.
+ *
+ * - `hfp`: Hands-Free Profile (HFP). A connected headset is available for input and output. While
+ * the session is active, iOS routes the headset through HFP. HFP output is mono and narrowband, so
+ * playback sounds like a phone call. Use it when the app records from the headset microphone.
+ * - `a2dp`: Advanced Audio Distribution Profile. A connected headset is available for output only,
+ * in high-quality stereo. The app records from the built-in microphone or a wired input. iOS still
+ * uses HFP while a media library uses the voice chat or video chat mode, or requests HFP itself.
+ */
+export type BluetoothProfile = 'hfp' | 'a2dp';
 
 /**
  * Why the system interrupted the app's audio. The set can grow, so handle unknown values.

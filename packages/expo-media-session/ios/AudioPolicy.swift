@@ -16,6 +16,11 @@ public enum InterruptionMode: String, Enumerable, Sendable {
   }
 }
 
+public enum BluetoothProfile: String, Enumerable, Sendable {
+  case hfp
+  case a2dp
+}
+
 public enum MixingRequirement: String, Sendable {
   case mixWithOthers
   case duckOthers
@@ -38,17 +43,20 @@ public struct AudioPolicy: Equatable, Sendable {
   public var interruptionMode: InterruptionMode
   public var allowsRecording: Bool
   public var shouldRouteThroughEarpiece: Bool
+  public var bluetoothProfile: BluetoothProfile
 
   public init(
     playsInSilentMode: Bool = true,
     interruptionMode: InterruptionMode = .mixWithOthers,
     allowsRecording: Bool = false,
-    shouldRouteThroughEarpiece: Bool = false
+    shouldRouteThroughEarpiece: Bool = false,
+    bluetoothProfile: BluetoothProfile = .hfp
   ) {
     self.playsInSilentMode = playsInSilentMode
     self.interruptionMode = interruptionMode
     self.allowsRecording = allowsRecording
     self.shouldRouteThroughEarpiece = shouldRouteThroughEarpiece
+    self.bluetoothProfile = bluetoothProfile
   }
 
   public static let `default` = AudioPolicy()
@@ -58,7 +66,8 @@ public struct AudioPolicy: Equatable, Sendable {
       playsInSilentMode: update.playsInSilentMode ?? playsInSilentMode,
       interruptionMode: update.interruptionMode ?? interruptionMode,
       allowsRecording: update.allowsRecording ?? allowsRecording,
-      shouldRouteThroughEarpiece: update.shouldRouteThroughEarpiece ?? shouldRouteThroughEarpiece
+      shouldRouteThroughEarpiece: update.shouldRouteThroughEarpiece ?? shouldRouteThroughEarpiece,
+      bluetoothProfile: update.bluetoothProfile ?? bluetoothProfile
     )
   }
 }
@@ -68,17 +77,20 @@ public struct AudioPolicyUpdate: Equatable, Sendable {
   public var interruptionMode: InterruptionMode?
   public var allowsRecording: Bool?
   public var shouldRouteThroughEarpiece: Bool?
+  public var bluetoothProfile: BluetoothProfile?
 
   public init(
     playsInSilentMode: Bool? = nil,
     interruptionMode: InterruptionMode? = nil,
     allowsRecording: Bool? = nil,
-    shouldRouteThroughEarpiece: Bool? = nil
+    shouldRouteThroughEarpiece: Bool? = nil,
+    bluetoothProfile: BluetoothProfile? = nil
   ) {
     self.playsInSilentMode = playsInSilentMode
     self.interruptionMode = interruptionMode
     self.allowsRecording = allowsRecording
     self.shouldRouteThroughEarpiece = shouldRouteThroughEarpiece
+    self.bluetoothProfile = bluetoothProfile
   }
 }
 
