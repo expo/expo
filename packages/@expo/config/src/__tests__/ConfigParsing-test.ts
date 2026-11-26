@@ -267,6 +267,21 @@ describe(getConfig, () => {
         );
       });
     });
+    it.each(['Inspect', null])('rejects an unknown pluginMode %p', (pluginMode) => {
+      vol.fromJSON({ 'package.json': '{}' }, '/invalid-mode/');
+      expect(() =>
+        getConfig('/invalid-mode/', {
+          // @ts-expect-error JavaScript callers can pass unsupported values.
+          pluginMode,
+          skipSDKVersionRequirement: true,
+        })
+      ).toThrow(
+        expect.objectContaining({
+          code: 'INVALID_CONFIG',
+          message: expect.stringContaining("Use 'apply', 'skip', or 'inspect'"),
+        })
+      );
+    });
     it('rejects a non-array plugin declaration during inspection', () => {
       vol.fromJSON(
         {
