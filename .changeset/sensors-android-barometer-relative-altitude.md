@@ -1,5 +1,5 @@
 ---
-'expo-sensors': minor
+'expo-sensors': patch
 ---
 
 [Android] Add `relativeAltitude` to the barometer measurement.
