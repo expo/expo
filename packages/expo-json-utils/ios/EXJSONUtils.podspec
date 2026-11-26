@@ -27,6 +27,6 @@ Pod::Spec.new do |s|
   }
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/*.{h,m,swift}'
+    test_spec.source_files = 'EXJSONUtilsTests/*.{h,m,swift}'
   end
 end
