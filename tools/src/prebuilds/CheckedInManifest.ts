@@ -1231,15 +1231,17 @@ export async function resolveCheckedInManifestAsync(
       hasExplicitSources ? declaredSources : [''],
       nonSources
     );
-    const uncoveredTests = files.find((file) => file.split('/').includes('Tests'));
+    const uncoveredTests = files.find((file) =>
+      file.split('/').some((segment) => segment.endsWith('Tests'))
+    );
     if (uncoveredTests) {
       throw manifestError(
         product.name,
         target.name,
-        `its Tests directory contains source "${uncoveredTests}" that is not excluded and would ship in the artifact.`,
+        `its tests directory contains source "${uncoveredTests}" that is not excluded and would ship in the artifact.`,
         hasExplicitSources
-          ? "Remove the Tests directory from this target's sources in Package.swift, or add it to the target's exclude list."
-          : "Add the Tests directory to this target's exclude list in Package.swift."
+          ? "Remove the tests directory from this target's sources in Package.swift, or add it to the target's exclude list."
+          : "Add the tests directory to this target's exclude list in Package.swift."
       );
     }
     const config = environmentForTarget(product, target.name);

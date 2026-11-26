@@ -14,11 +14,12 @@ describe('getTargetExcludePatterns', () => {
     assert.deepEqual(getTargetExcludePatterns({ exclude: ['barcode-scanning/**'] }), [
       'barcode-scanning/**',
       '**/Tests/**',
+      '**/*Tests/**',
     ]);
   });
 
   it('excludes tests for a target without any excludes', () => {
-    assert.deepEqual(getTargetExcludePatterns({}), ['**/Tests/**']);
+    assert.deepEqual(getTargetExcludePatterns({}), ['**/Tests/**', '**/*Tests/**']);
   });
 
   it('keeps unit test sources out of a globbed source tree', async () => {
@@ -38,6 +39,24 @@ describe('getTargetExcludePatterns', () => {
       });
 
       assert.deepEqual(files.sort(), ['Foo.swift', 'Nested/Bar.swift']);
+    } finally {
+      await fs.remove(sourceDir);
+    }
+  });
+
+  it('keeps sources in a <Target>Tests folder out of a globbed source tree', async () => {
+    const sourceDir = await fs.mkdtemp(path.join(os.tmpdir(), 'spm-test-exclusion-'));
+    try {
+      await fs.outputFile(path.join(sourceDir, 'Foo.swift'), 'struct Foo {}');
+      await fs.outputFile(path.join(sourceDir, 'FooTests.swift'), 'struct FooTests {}');
+      await fs.outputFile(path.join(sourceDir, 'FooTests', 'BarSpec.swift'), 'import Testing');
+
+      const files = await glob('**/*.swift', {
+        cwd: sourceDir,
+        ignore: getTargetExcludePatterns({}),
+      });
+
+      assert.deepEqual(files.sort(), ['Foo.swift', 'FooTests.swift']);
     } finally {
       await fs.remove(sourceDir);
     }
