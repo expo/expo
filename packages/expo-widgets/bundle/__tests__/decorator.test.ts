@@ -105,4 +105,42 @@ describe('jsx-runtime-stub', () => {
     expect(firstPress).not.toHaveBeenCalled();
     expect(secondPress).toHaveBeenCalledTimes(1);
   });
+
+  it('adds targets to clickable modifiers without mutating the modifier', () => {
+    const shared = { $type: 'clickable', indication: true, eventListener: () => ({ id: 'row' }) };
+    globalThis.__expoWidgetLayout = () =>
+      jsxs('Column', {
+        children: [
+          jsx('Button', { label: 'First', onButtonPressed: () => ({ id: 'button' }) }),
+          jsx('Row', { modifiers: [{ $type: 'paddingAll', all: 8 }, shared] }),
+          jsx('Row', { modifiers: [shared] }),
+        ],
+      });
+
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+
+    expect(tree.props.children[1].props.modifiers[0]).toEqual({ $type: 'paddingAll', all: 8 });
+    expect(tree.props.children[1].props.modifiers[1].target).toBe('__expo_widgets_target_1');
+    expect(tree.props.children[2].props.modifiers[0].target).toBe('__expo_widgets_target_2');
+    expect(shared).not.toHaveProperty('target');
+  });
+
+  it('calls the clickable modifier handler when handling presses', () => {
+    const rowPress = jest.fn(() => ({ id: 'row' }));
+    const textPress = jest.fn(() => ({ id: 'text' }));
+    globalThis.__expoWidgetLayout = () =>
+      jsx('Row', {
+        modifiers: [{ $type: 'clickable', eventListener: rowPress }],
+        children: jsx('Text', { modifiers: [{ $type: 'clickable', eventListener: textPress }] }),
+      });
+
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+    const target = tree.props.children.props.modifiers[0].target;
+
+    const result = globalThis.__expoWidgetHandlePress({}, { timestamp: 1, target });
+
+    expect(result).toEqual({ id: 'text' });
+    expect(rowPress).not.toHaveBeenCalled();
+    expect(textPress).toHaveBeenCalledTimes(1);
+  });
 });

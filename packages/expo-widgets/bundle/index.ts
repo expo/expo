@@ -98,12 +98,19 @@ const __expoWidgetHandlePress = function (
       onButtonPress?: () => Dictionary;
       onButtonPressed?: () => Dictionary;
       target?: string;
+      modifiers?: { $type?: string; target?: string; eventListener?: () => Dictionary }[];
       children?: unknown;
     };
     // TODO(@jakex7): on iOS it's named `onButtonPress` while on Android it's named `onButtonPressed`. We should unify this in the future.
     const onPress = props?.onButtonPress ?? props?.onButtonPressed;
     if (onPress && props?.target === target) {
       return onPress();
+    }
+    const clickable = props?.modifiers?.find(
+      (modifier) => modifier?.$type === 'clickable' && modifier.target === target
+    );
+    if (clickable?.eventListener) {
+      return clickable.eventListener();
     }
 
     for (const child of React.Children.toArray(props?.children)) {

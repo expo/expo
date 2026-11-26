@@ -12,10 +12,12 @@ import androidx.compose.ui.unit.sp
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.kotlin.views.createComposeProps
@@ -115,13 +117,14 @@ private val DefaultUncheckedTrackColor = ColorProvider(Color(0xffe7e0ec))
 
 private class WidgetConverterContext(
   override val applicationContext: Context,
-  val widgetSize: DpSize
+  val widgetSize: DpSize,
+  val source: InteractionSource
 ) : ConverterContext {
   override val runtime: Runtime? = null
 }
 
 internal fun ReadableMap.toPeekRoot(context: Context, source: InteractionSource, size: DpSize): Emittable {
-  val converterContext = WidgetConverterContext(context, size)
+  val converterContext = WidgetConverterContext(context, size, source)
   return EmittableColumn().also { root ->
     root.children += toPeekNodes(converterContext, source)
   }
@@ -207,13 +210,13 @@ private fun ReadableMap.toPeekLazyColumn(converterContext: WidgetConverterContex
   }
 }
 
-private fun ReadableMap.toPeekSpacer(converterContext: ConverterContext): EmittableSpacer {
+private fun ReadableMap.toPeekSpacer(converterContext: WidgetConverterContext): EmittableSpacer {
   return EmittableSpacer().also {
     it.modifier = props<SpacerProps>(converterContext).modifiers.toPeekModifier(converterContext)
   }
 }
 
-private fun ReadableMap.toPeekText(converterContext: ConverterContext): EmittableText {
+private fun ReadableMap.toPeekText(converterContext: WidgetConverterContext): EmittableText {
   val props = props<TextProps>(converterContext)
   val typography = props.typography?.toGlanceTypography()
   return EmittableText().also {
@@ -250,7 +253,7 @@ private fun ReadableMap.toPeekImage(converterContext: WidgetConverterContext): E
   }
 }
 
-private fun WidgetImageProps.imageModifier(converterContext: ConverterContext): GlanceModifier {
+private fun WidgetImageProps.imageModifier(converterContext: WidgetConverterContext): GlanceModifier {
   val modifier = modifiers.toPeekModifier(converterContext)
   val description = contentDescription ?: return modifier
   return modifier.semantics { contentDescription = description }
@@ -320,7 +323,7 @@ private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, s
   }
 }
 
-private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): EmittableCheckBox {
+private fun ReadableMap.toPeekCheckBox(converterContext: WidgetConverterContext): EmittableCheckBox {
   val props = props<CheckboxProps>(converterContext)
   val checked = props.colors.checkedColor.toGlanceColorProvider() ?: DefaultCheckedColor
   val unchecked = props.colors.uncheckedColor.toGlanceColorProvider() ?: DefaultUncheckedColor
@@ -330,7 +333,7 @@ private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): Emit
   }
 }
 
-private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): EmittableSwitch {
+private fun ReadableMap.toPeekSwitch(converterContext: WidgetConverterContext): EmittableSwitch {
   val props = props<SwitchProps>(converterContext)
   val colors = SwitchDefaults.switchColors(
     checkedThumbColor = props.colors.checkedThumbColor.toGlanceColorProvider() ?: DefaultCheckedColor,
@@ -344,7 +347,7 @@ private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): Emitta
   }
 }
 
-private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): EmittableRadioButton {
+private fun ReadableMap.toPeekRadioButton(converterContext: WidgetConverterContext): EmittableRadioButton {
   val props = props<RadioButtonProps>(converterContext)
   return EmittableRadioButton(
     RadioButtonDefaults.colors(DefaultCheckedColor, DefaultUncheckedColor)
@@ -355,7 +358,7 @@ private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): E
   }
 }
 
-private fun ReadableMap.toPeekLinearProgress(converterContext: ConverterContext): EmittableLinearProgressIndicator {
+private fun ReadableMap.toPeekLinearProgress(converterContext: WidgetConverterContext): EmittableLinearProgressIndicator {
   val props = props<LinearProgressIndicatorProps>(converterContext)
   return EmittableLinearProgressIndicator().also {
     it.progress = props.progress ?: 0f
@@ -366,7 +369,7 @@ private fun ReadableMap.toPeekLinearProgress(converterContext: ConverterContext)
   }
 }
 
-private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContext): Emittable {
+private fun ReadableMap.toPeekCircularProgress(converterContext: WidgetConverterContext): Emittable {
   val props = props<CircularProgressIndicatorProps>(converterContext)
   val progress = props.progress
   if (progress == null) {
@@ -383,7 +386,7 @@ private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContex
   )
 }
 
-private fun ReadableMap.toPeekLoadingIndicator(converterContext: ConverterContext): EmittableCircularProgressIndicator {
+private fun ReadableMap.toPeekLoadingIndicator(converterContext: WidgetConverterContext): EmittableCircularProgressIndicator {
   val props = props<LoadingIndicatorProps>(converterContext)
   return EmittableCircularProgressIndicator().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -391,7 +394,7 @@ private fun ReadableMap.toPeekLoadingIndicator(converterContext: ConverterContex
   }
 }
 
-private fun ModifierList.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
+private fun ModifierList.toPeekModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var result: GlanceModifier = GlanceModifier
   for (config in this) {
     result = result.then(config.toPeekModifier(converterContext))
@@ -399,7 +402,7 @@ private fun ModifierList.toPeekModifier(converterContext: ConverterContext): Gla
   return result
 }
 
-private fun ModifierType.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
+private fun ModifierType.toPeekModifier(converterContext: WidgetConverterContext): GlanceModifier {
   return when (this["\$type"]?.asString()) {
     "paddingAll" -> asRecord<PaddingAllParams>(converterContext)?.let { GlanceModifier.padding(it.all.dp) }
     "padding" -> asRecord<PaddingParams>(converterContext)?.let {
@@ -419,6 +422,11 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
       ?.let { GlanceModifier.background(it) }
     "cornerRadius" -> asRecord<CornerRadiusParams>(converterContext)?.let { GlanceModifier.cornerRadius(it.radius.dp) }
+    "clickable" -> asRecord<WidgetClickableParams>(converterContext)?.target?.let { target ->
+      GlanceModifier.clickable(
+        WidgetInteraction(converterContext.source, target).toGlanceAction(converterContext.applicationContext)
+      )
+    }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier
@@ -428,7 +436,7 @@ private inline fun <reified T : Record> ModifierType.asRecord(converterContext: 
   return runCatching { recordFromMap<T>(this, converterContext) }.getOrNull()
 }
 
-private fun TextProps.textModifier(converterContext: ConverterContext): GlanceModifier {
+private fun TextProps.textModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
   background.toGlanceColorProvider()?.let {
     modifier = modifier.background(it)
@@ -436,7 +444,7 @@ private fun TextProps.textModifier(converterContext: ConverterContext): GlanceMo
   return modifier
 }
 
-private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext): GlanceModifier {
+private fun WidgetButtonProps.buttonModifier(converterContext: WidgetConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
   val color = if (enabled) {
     colors.containerColor
@@ -692,3 +700,8 @@ internal data class WidgetImageProps(
   val alpha: Float = 1f,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
+
+@OptimizedRecord
+internal data class WidgetClickableParams(
+  @Field val target: String? = null
+) : Record
