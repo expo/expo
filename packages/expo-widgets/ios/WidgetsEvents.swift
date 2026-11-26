@@ -1,3 +1,5 @@
+import Foundation
+
 public enum WidgetsEventType: String {
   case userEvent = "ExpoWidgetsUserInteraction"
 }
