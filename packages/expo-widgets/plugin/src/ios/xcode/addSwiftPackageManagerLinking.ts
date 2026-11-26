@@ -43,8 +43,9 @@ type PbxObjectFields = { isa: string } & Record<string, unknown>;
 
 const WIDGETS_PACKAGE_PATH = 'build/generated/autolinking/expo/direct/expo-widgets';
 const WIDGETS_PRODUCT_NAME = 'ExpoWidgets';
-const REACT_NATIVE_XCCONFIG_PATH = 'ReactNativeSPM/ReactNativeSPM.xcconfig';
-const REACT_NATIVE_XCCONFIG_NAME = 'ReactNativeSPM.xcconfig';
+/** The Expo SwiftPM plugin writes it: React Native's xcconfig, linking only what ExpoWidgets uses. */
+const WIDGETS_XCCONFIG_PATH = 'ExpoSPM/ExpoWidgetsExtension.xcconfig';
+const WIDGETS_XCCONFIG_NAME = 'ExpoWidgetsExtension.xcconfig';
 
 const runWidgetsScript = (script: string) => `set -eo pipefail
 
@@ -86,10 +87,10 @@ export function addSwiftPackageManagerLinking(
   const productDependencyUuid = addWidgetsProductDependency(xcodeProject, target);
   addProductToFrameworksPhase(xcodeProject, target, productDependencyUuid);
 
-  const xcconfigUuid = findOrAddReactNativeXcconfig(xcodeProject);
+  const xcconfigUuid = findOrAddWidgetsXcconfig(xcodeProject);
   for (const configuration of targetConfigurations(xcodeProject, target)) {
     configuration.baseConfigurationReference = xcconfigUuid;
-    configuration.baseConfigurationReference_comment = REACT_NATIVE_XCCONFIG_NAME;
+    configuration.baseConfigurationReference_comment = WIDGETS_XCCONFIG_NAME;
     configuration.buildSettings.LD_RUNPATH_SEARCH_PATHS = [
       '"$(inherited)"',
       '"@executable_path/../../Frameworks"',
@@ -184,20 +185,20 @@ function addProductToFrameworksPhase(
   phase.files.push({ value: buildFileUuid, comment });
 }
 
-function findOrAddReactNativeXcconfig(xcodeProject: XcodeProject): string {
+function findOrAddWidgetsXcconfig(xcodeProject: XcodeProject): string {
   return findOrAddObject(
     xcodeProject,
     objectSection<PbxFileReference>(xcodeProject, 'PBXFileReference'),
-    (fileReference) => unquote(fileReference.path ?? '') === REACT_NATIVE_XCCONFIG_PATH,
+    (fileReference) => unquote(fileReference.path ?? '') === WIDGETS_XCCONFIG_PATH,
     {
       object: {
         isa: 'PBXFileReference',
         lastKnownFileType: 'text.xcconfig',
-        name: REACT_NATIVE_XCCONFIG_NAME,
-        path: REACT_NATIVE_XCCONFIG_PATH,
+        name: WIDGETS_XCCONFIG_NAME,
+        path: WIDGETS_XCCONFIG_PATH,
         sourceTree: 'SOURCE_ROOT',
       },
-      comment: REACT_NATIVE_XCCONFIG_NAME,
+      comment: WIDGETS_XCCONFIG_NAME,
     }
   );
 }
