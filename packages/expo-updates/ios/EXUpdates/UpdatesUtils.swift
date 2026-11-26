@@ -191,6 +191,18 @@ public final class UpdatesUtils: NSObject {
 #endif
   }
 
+  internal static func isProtectedDataAvailable() -> Bool {
+#if os(iOS)
+    // UIApplication must be read on the main thread. Off the main thread, keep the old behavior.
+    guard Thread.isMainThread else {
+      return true
+    }
+    return UIApplication.shared.isProtectedDataAvailable
+#else
+    return true
+#endif
+  }
+
   internal static func isUsingCustomInitialization() -> Bool {
 #if EX_UPDATES_CUSTOM_INIT
     return true

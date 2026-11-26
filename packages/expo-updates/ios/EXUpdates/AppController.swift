@@ -272,23 +272,34 @@ public class AppController: NSObject {
     // swiftlint:enable closure_body_length
 
     if let config = config {
-      let updatesDatabase = UpdatesDatabase()
-      do {
-        let directory = try initializeUpdatesDirectory()
-        UpdatesUtils.setExcludedFromBackup(directory, excluded: config.excludeFromBackup, logger: logger)
-        try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory, logger: logger)
-        _sharedInstance = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
-        UpdatesControllerRegistry.sharedInstance.controller = _sharedInstance as? (any UpdatesInterface)
-      } catch {
-        let cause = UpdatesError.appControllerInitializationError(cause: error)
-        logger.error(.controllerInitializationFailed, cause: error)
-        _sharedInstance = DisabledAppController(error: cause)
-        UpdatesControllerRegistry.sharedInstance.controller = _sharedInstance as? (any UpdatesInterface)
+      if !UpdatesUtils.isProtectedDataAvailable() {
+        logger.info(message: "Protected data is not available. expo-updates will wait for the device to unlock before it launches an update.")
+        _sharedInstance = PendingAppController(config: config, logger: logger)
         return
       }
+      initializeWithDatabase(config: config, logger: logger)
     } else {
       _sharedInstance = DisabledAppController(error: nil)
     }
+  }
+
+  @discardableResult
+  internal static func initializeWithDatabase(config: UpdatesConfig, logger: UpdatesLogger) -> InternalAppControllerInterface {
+    let controller: InternalAppControllerInterface
+    let updatesDatabase = UpdatesDatabase()
+    do {
+      let directory = try initializeUpdatesDirectory()
+      UpdatesUtils.setExcludedFromBackup(directory, excluded: config.excludeFromBackup, logger: logger)
+      try initializeUpdatesDatabase(updatesDatabase: updatesDatabase, inUpdatesDirectory: directory, logger: logger)
+      controller = EnabledAppController(config: config, database: updatesDatabase, updatesDirectory: directory)
+    } catch {
+      let cause = UpdatesError.appControllerInitializationError(cause: error)
+      logger.error(.controllerInitializationFailed, cause: error)
+      controller = DisabledAppController(error: cause)
+    }
+    _sharedInstance = controller
+    UpdatesControllerRegistry.sharedInstance.controller = controller as? (any UpdatesInterface)
+    return controller
   }
 
   public static func overrideConfiguration(configuration: [String: Any]?) {
