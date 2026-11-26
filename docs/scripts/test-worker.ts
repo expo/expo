@@ -591,9 +591,9 @@ async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
     const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
     const location = response.headers.get('location') ?? '';
 
-    if (response.status !== 301 || location !== nativeModulesUrl) {
+    if (response.status !== 302 || location !== nativeModulesUrl) {
       throw new Error(
-        `Expected ${from} to 301 to ${nativeModulesUrl}, the native modules of the latest SDK in ` +
+        `Expected ${from} to 302 to ${nativeModulesUrl}, the native modules of the latest SDK in ` +
           `package.json, got: HTTP ${response.status} -> ${location}`
       );
     }
