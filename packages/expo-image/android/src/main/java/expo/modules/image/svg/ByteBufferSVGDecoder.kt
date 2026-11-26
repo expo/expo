@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
  * decoder an SVG load fails at that point while a raster one succeeds.
  */
 class ByteBufferSVGDecoder(private val decoder: SVGDecoder = SVGDecoder()) : ResourceDecoder<ByteBuffer, SVG> {
-  override fun handles(source: ByteBuffer, options: Options) = true
+  override fun handles(source: ByteBuffer, options: Options) = SVGHeader.looksLikeSvg(source)
 
   @Throws(IOException::class)
   override fun decode(source: ByteBuffer, width: Int, height: Int, options: Options): Resource<SVG>? {
