@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
 
+#include <atomic>
 #include <exception>
 
 #include <folly/dynamic.h>
@@ -10,6 +11,11 @@
 namespace jsi = facebook::jsi;
 
 namespace expo::views {
+
+namespace {
+// Reanimated sends the same props again at each React commit, so a failed conversion can repeat often.
+std::atomic<bool> reportedConversionFailure{false};
+} // namespace
 
 ObjCPropsDecoder::ObjCPropsDecoder(id<EXViewPropsDecoding> decoder) : decoder_(decoder) {}
 
@@ -76,10 +82,12 @@ DecodedProps ObjCPropsDecoder::decodeDynamicValues(
       }
       *decodedPointer = decoder->decodeValues(runtime, jsiValues, *previousPointer);
     } catch (const std::exception &error) {
-      NSLog(
-        @"[ExpoModulesCore] The props of a view that came from outside React, for example from Reanimated, weren't applied: converting them from folly::dynamic to JavaScript values failed (error: %s). The view keeps its previous props. If this repeats, report it to Expo with the props that the view received.",
-        error.what()
-      );
+      if (!reportedConversionFailure.exchange(true)) {
+        NSLog(
+          @"[ExpoModulesCore] The props of a view that came from outside React, for example from Reanimated, weren't applied: converting them from folly::dynamic to JavaScript values failed (error: %s). The view keeps its previous props. Expo logs this only once. If such props keep not applying, report it to Expo with the props that the view received.",
+          error.what()
+        );
+      }
     }
   }];
 
