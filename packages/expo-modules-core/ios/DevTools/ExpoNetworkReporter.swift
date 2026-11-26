@@ -137,7 +137,7 @@ public final class ExpoNetworkReporter: Sendable {
       return
     }
     if request.isTextResponse, let text = String(data: body, encoding: .utf8) {
-      EXNetworkReporterBodyStore.storeTextResponseBody(text, forRequestId: requestId)
+      RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, body: text)
     } else {
       RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, data: body, base64Encoded: true)
     }
