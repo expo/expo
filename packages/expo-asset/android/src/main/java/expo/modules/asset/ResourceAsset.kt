@@ -6,6 +6,8 @@ import android.content.res.Resources
 import androidx.core.net.toUri
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.errors.InvalidArgumentException
+import expo.modules.kotlin.devtools.ExpoNetworkReporter
+import expo.modules.kotlin.okhttp.await
 import okhttp3.Request
 import java.io.InputStream
 
@@ -62,14 +64,19 @@ private fun findResourceIdForAndroidResPath(context: Context, resourceFilePath: 
   ).takeIf { it != 0 }
 }
 
+private val remoteClient by lazy {
+  OkHttpClientProvider.getOkHttpClient()
+    .newBuilder()
+    .apply { interceptors().add(0, ExpoNetworkReporter()) }
+    .build()
+}
+
 internal suspend fun openRemoteStream(url: String): InputStream? {
   val response = Request
     .Builder()
     .url(url)
     .build()
-    .await(
-      OkHttpClientProvider.getOkHttpClient()
-    )
+    .await(remoteClient)
 
   val body = response.body
   if (!response.isSuccessful || body == null) {
