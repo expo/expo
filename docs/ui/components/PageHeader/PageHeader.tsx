@@ -68,7 +68,7 @@ export function PageHeader({
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-start gap-2 max-xl:flex-col">
+      <div className="flex flex-col gap-2 xl:gap-4">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <H1 className="my-0!">
             {iconUrl && (
@@ -92,7 +92,7 @@ export function PageHeader({
           )}
           {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-2" />}
         </div>
-        <div className="flex shrink-0 items-center gap-1 empty:hidden">
+        <div className="flex shrink-0 items-center gap-1 empty:hidden xl:order-first xl:-mt-10.75 xl:self-end">
           {!isSdkPackagePage && (
             <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
           )}
