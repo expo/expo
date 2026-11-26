@@ -490,7 +490,10 @@ function isMatchingObject<T extends Record<string, any>>(
         return false;
       }
     } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-      if (!isMatchingObject(expectedValues[key], actualValues[key], matchArraysAsSets)) {
+      if (
+        typeof actualValues[key] !== 'object' ||
+        !isMatchingObject(expectedValues[key], actualValues[key], matchArraysAsSets)
+      ) {
         return false;
       }
     } else {

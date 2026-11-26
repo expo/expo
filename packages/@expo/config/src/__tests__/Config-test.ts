@@ -544,6 +544,30 @@ describe(modifyConfigAsync, () => {
     ).toEqual(appFile);
   });
 
+  it('warns and rolls back when the dynamic config drops a modified nested object', async () => {
+    createProject('/static-dynamic-function-nested-dropped', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config,
+        experiments: { typedRoutes: true },
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-nested-dropped', {
+        experiments: { inlineModules: { watchedDirectories: ['app-intents'] } },
+      })
+    ).resolves.toMatchObject({ type: 'warn', config: null });
+
+    expect(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-nested-dropped/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    ).toEqual(appFile);
+  });
+
   it('matches arrays outside updates by index when modifying static with function-like dynamic config', async () => {
     createProject('/static-dynamic-function-arrays-outside-updates', {
       'app.json': JSON.stringify({ ...appFile, android: { permissions: ['CAMERA'] } }),
