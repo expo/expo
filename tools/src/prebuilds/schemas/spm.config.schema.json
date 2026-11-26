@@ -219,6 +219,11 @@
                     "type": "boolean",
                     "description": "When true, the product is never prebuilt as an xcframework. The prebuild flow skips it entirely — it does not generate sources, build, or resolve its externalDependencies. The product entry remains so autolinking (`autolinkWhen`) can still register the matching CocoaPods source pod. Use this for companion adapters that must always compile from source because they bridge to a peer pod that may not be present."
                 },
+                "releaseFlavor": {
+                    "type": "string",
+                    "enum": [ "stub" ],
+                    "description": "When \"stub\", the Release flavor is not built. The prebuild makes it from the Debug XCFramework of the same run: the same Info.plists, Headers, PrivateHeaders and Modules, around an empty dynamic library with the real install name. Use this for debug-only products, so Release apps contain none of their code. The Debug flavor must be built too."
+                },
                 "autolinkWhen": {
                     "type": "object",
                     "description": "Registers this product's CocoaPods pod as a companion pod, linked only when the condition holds. Give exactly one selector: the first of podName, npmPackage and podfileProperty present is the one evaluated, so a second is silently ignored, and a condition with none of them never links. Consumed by precompiled_modules.rb.",

@@ -149,6 +149,14 @@ Each package must define `spm.config.json` with:
 
 Use the schema above for field-level reference.
 
+A debug-only product sets `"releaseFlavor": "stub"`. Its Release flavor is not built. The pipeline
+makes it from the Debug XCFramework: the same slices, Info.plists, `Headers/`, `PrivateHeaders/`
+and `Modules/`, around an empty dynamic library with the real install name. It has no code, no
+resources and no dSYMs, and it is signed and packed like any Release flavor. The Debug flavor must
+be built in the same run or be on disk. Verification only checks that `Headers/` and
+`Modules/module.modulemap` match the Debug flavor. Versioned bundles (macOS, Mac Catalyst) are not
+supported.
+
 ## Troubleshooting
 
 `No Package.swift file found`

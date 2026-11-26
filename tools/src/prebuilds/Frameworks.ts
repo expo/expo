@@ -30,6 +30,7 @@ import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
+import { isReleaseStub, makeStubXCFrameworkAsync } from './StubXCFramework';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -167,6 +168,48 @@ export const Frameworks = {
     // Create tarball containing the product xcframework and any SPM dependency xcframeworks
     if (!usesPackageLocalBuildPath(pkg)) {
       await createProductTarballAsync(pkg, product, buildType, options?.bundleSharedDeps);
+    }
+  },
+
+  /**
+   * Composes the Release XCFramework of a `"releaseFlavor": "stub"` product from its Debug
+   * XCFramework, then signs and packs it like any Release XCFramework.
+   */
+  composeReleaseStubXCFrameworkAsync: async (
+    pkg: SPMPackageSource,
+    product: SPMProduct,
+    signing?: SigningOptions
+  ): Promise<void> => {
+    const debugXCFramework = Frameworks.getFrameworkPath(
+      pkg.buildPath,
+      product.name,
+      'Debug',
+      pkg.outputVersionPrefix
+    );
+    if (!(await fs.pathExists(debugXCFramework))) {
+      throw new Error(
+        `Cannot compose the Release flavor of ${product.name}: its spm.config.json sets ` +
+          `"releaseFlavor": "stub", so the Release flavor is made from the Debug XCFramework, ` +
+          `and there is none at ${debugXCFramework}. Build the Debug flavor too: run the ` +
+          `prebuild without --flavor, or with --flavor Debug before --flavor Release.`
+      );
+    }
+
+    const xcframeworkOutputPath = Frameworks.getFrameworkPath(
+      pkg.buildPath,
+      product.name,
+      'Release',
+      pkg.outputVersionPrefix
+    );
+    await makeStubXCFrameworkAsync(debugXCFramework, xcframeworkOutputPath);
+    logger.info(`✅ Made the Release stub of ${chalk.green(product.name)} from its Debug flavor`);
+
+    if (signing?.identity) {
+      await signXCFramework(xcframeworkOutputPath, signing.identity, signing.useTimestamp ?? true);
+    }
+
+    if (!usesPackageLocalBuildPath(pkg)) {
+      await createProductTarballAsync(pkg, product, 'Release');
     }
   },
 
@@ -743,7 +786,8 @@ const createProductTarballAsync = async (
 
   // Include SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
   // Skip shared deps unless bundleSharedDeps is true (npm bundling mode)
-  const spmPackages = product.spmPackages;
+  // A Release stub links nothing, so a dependency framework in its output folder is a leftover.
+  const spmPackages = isReleaseStub(product, buildType) ? undefined : product.spmPackages;
   if (spmPackages && spmPackages.length > 0) {
     for (const spmPkg of spmPackages) {
       const depName = spmPkg.productName;
