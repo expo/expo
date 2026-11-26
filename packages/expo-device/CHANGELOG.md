@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- [Android] `Device.deviceName` falls back to the global device name when the device has no Bluetooth name on Android 12 and older. ([#52547](https://github.com/expo/expo/issues/52547))
+
 ## 58.0.5
 
 ### Patch Changes
