@@ -17,11 +17,22 @@ export async function createSymlinksToKotlinFiles(
 
     try {
       await fs.promises.mkdir(path.dirname(targetPath), { recursive: true });
-      await fs.promises.symlink(filePath, targetPath);
+      await linkOrCopy(filePath, targetPath);
     } catch (e) {
       error(`Couldn't symlink inline module: ${filePath}. Error: ${e}`);
     }
   });
+}
+
+async function linkOrCopy(filePath: string, targetPath: string) {
+  try {
+    await fs.promises.symlink(filePath, targetPath);
+  } catch (e) {
+    if (!(e instanceof Error) || !('code' in e) || e.code !== 'EPERM') {
+      throw e;
+    }
+    await fs.promises.copyFile(filePath, targetPath);
+  }
 }
 
 export function getClassName(classNameWithPackage: string): string {
