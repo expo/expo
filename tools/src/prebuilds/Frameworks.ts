@@ -30,6 +30,7 @@ import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
+import { stripReleaseSymbolsAsync } from './StripSymbols';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -158,6 +159,8 @@ export const Frameworks = {
     // These are pre-built binary frameworks that the product dynamically links against
     // and must be embedded in the app bundle at runtime.
     await copySPMDependencyXCFrameworksAsync(pkg, product, buildType, options?.bundleSharedDeps);
+
+    await stripReleaseSymbolsAsync(xcframeworkOutputPath, product.name, slices, buildType);
 
     // Sign the XCFramework if a signing identity is provided
     if (signing?.identity) {
