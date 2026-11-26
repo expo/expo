@@ -2,7 +2,7 @@
 
 import { SharedRef } from 'expo';
 import React, { isValidElement, use, useId, type PropsWithChildren, type ReactNode } from 'react';
-import type { ViewStyle } from 'react-native';
+import type { ColorValue, ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Icon, Label } from '../primitives';
@@ -91,6 +91,13 @@ export interface LinkMenuActionProps {
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
    */
   subtitle?: string;
+  /**
+   * The color of the menu item's icon. Destructive items keep the system's red, and disabled items
+   * stay gray.
+   *
+   * @platform ios
+   */
+  tintColor?: ColorValue;
   /**
    * The title of the menu item.
    * @deprecated Use `children` prop instead.
