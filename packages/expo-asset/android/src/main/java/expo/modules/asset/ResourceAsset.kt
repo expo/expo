@@ -65,9 +65,11 @@ private fun findResourceIdForAndroidResPath(context: Context, resourceFilePath: 
 }
 
 private val remoteClient by lazy {
+  val networkReporter = ExpoNetworkReporter()
   OkHttpClientProvider.getOkHttpClient()
     .newBuilder()
-    .apply { interceptors().add(0, ExpoNetworkReporter()) }
+    .apply { interceptors().add(0, networkReporter) }
+    .addNetworkInterceptor(networkReporter.redirectInterceptor)
     .build()
 }
 

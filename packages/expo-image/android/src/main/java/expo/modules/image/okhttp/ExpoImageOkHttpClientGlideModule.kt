@@ -81,9 +81,11 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
 @GlideModule
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
+    val networkReporter = ExpoNetworkReporter()
     val client = OkHttpClientProvider.createClient()
       .newBuilder()
-      .addInterceptor(ExpoNetworkReporter())
+      .addInterceptor(networkReporter)
+      .addNetworkInterceptor(networkReporter.redirectInterceptor)
       .build()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.

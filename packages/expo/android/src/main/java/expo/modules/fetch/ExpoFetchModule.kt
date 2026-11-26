@@ -25,13 +25,15 @@ import java.net.URL
 @Suppress("unused")
 class ExpoFetchModule : Module() {
   private val client by lazy {
+    val networkReporter = ExpoNetworkReporter()
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
       // After the file interceptor, so `file://` requests stay out of the Network panel, and before
       // the compression one, so the reported body is the decoded one the caller reads.
-      .addInterceptor(ExpoNetworkReporter())
+      .addInterceptor(networkReporter)
       .addInterceptor(TransparentCompressionInterceptor)
+      .addNetworkInterceptor(networkReporter.redirectInterceptor)
       .build()
   }
   private val cookieHandler by lazy { ForwardingCookieHandler() }
