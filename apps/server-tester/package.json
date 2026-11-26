@@ -37,7 +37,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
-    "compression": "^1.8.0",
+    "compression": "^1.8.2",
     "esbuild": "^0.28.1",
     "express": "^5.1.0",
     "morgan": "^1.11.0",
