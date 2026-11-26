@@ -24,6 +24,7 @@ jest.mock('../../gitPatch', () => ({
 jest.mock('../generateNativeProjects', () => ({
   ...jest.requireActual('../generateNativeProjects'),
   generateNativeProjectsAsync: jest.fn(),
+  platformSanityCheckAsync: jest.fn(),
 }));
 jest.mock('../dir', () => {
   const actualDir = jest.requireActual('../dir');
@@ -213,7 +214,10 @@ describe(patchProjectAsync, () => {
         vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
         return 'checksum';
       });
-      jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
+      jest.mocked(diffAsync).mockImplementationOnce(async (_diffDir, patchFilePath) => {
+        vol.writeFileSync(patchFilePath, '');
+        throw new Error('git diff failed');
+      });
 
       await expect(patchProjectAsync('/app', { platforms: ['android'] })).rejects.toThrow(
         'git diff failed'

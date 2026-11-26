@@ -82,6 +82,7 @@ async function patchProjectForPlatformAsync({
 
   let backupFileMappings: BackupFileMappings = {};
   const patchFileBackups: BackupFileMappings = {};
+  let newPatchFile: string | null = null;
   let originalProjectDir: string | null = null;
   try {
     await movePatchFilesAsync({
@@ -136,6 +137,7 @@ async function patchProjectForPlatformAsync({
     debug(`Generating patch file`);
     const patchFilePath = path.join(patchRoot, `${platform}+${templateChecksum}.patch`);
     logger.log(chalk.bold(`Saving patch file to ${patchFilePath}`));
+    newPatchFile = patchFilePath;
     await diffAsync(diffDir, patchFilePath, options.diffOptions ?? []);
     const stat = await fs.stat(patchFilePath);
     if (stat.size === 0) {
@@ -148,7 +150,7 @@ async function patchProjectForPlatformAsync({
       originalProjectDir,
       backupFileMappings,
     });
-    const arePatchFilesRestored = await restorePatchFilesAsync(patchFileBackups);
+    const arePatchFilesRestored = await restorePatchFilesAsync({ newPatchFile, patchFileBackups });
     if (isProjectRestored && arePatchFilesRestored) {
       await fs.rm(workingDirectories.rootDir, { recursive: true, force: true });
     }
@@ -252,9 +254,23 @@ async function movePatchFilesAsync({
   }
 }
 
-/** Returns `false` when some old patch files are still in the working directory. */
-async function restorePatchFilesAsync(patchFileBackups: BackupFileMappings): Promise<boolean> {
+/**
+ * Deletes the new patch file of a failed run, then moves the old patch files back.
+ * Returns `false` when some of this could not be done.
+ */
+async function restorePatchFilesAsync({
+  newPatchFile,
+  patchFileBackups,
+}: {
+  /** `git diff` can create this file before it fails. */
+  newPatchFile: string | null;
+  patchFileBackups: BackupFileMappings;
+}): Promise<boolean> {
   try {
+    if (newPatchFile) {
+      await fs.rm(newPatchFile, { force: true });
+      newPatchFile = null;
+    }
     for (const [patchFile, backupPath] of Object.entries(patchFileBackups)) {
       await moveAsync(backupPath, patchFile);
       delete patchFileBackups[patchFile];
@@ -264,10 +280,13 @@ async function restorePatchFilesAsync(patchFileBackups: BackupFileMappings): Pro
   } catch (restoreError) {
     logger.error(
       chalk.red(
-        `Could not restore the old patch files. ` +
-          `Move each file back manually before you run patch-project again. ` +
-          `A later run deletes them:` +
-          formatBackupFileMappings(patchFileBackups)
+        `Could not restore the patch files in the patch directory. ` +
+          (newPatchFile ? `Delete the incomplete patch file ${newPatchFile}. ` : '') +
+          (Object.keys(patchFileBackups).length > 0
+            ? `Move each old patch file back manually before you run patch-project again. ` +
+              `A later run deletes them:` +
+              formatBackupFileMappings(patchFileBackups)
+            : '')
       )
     );
     logger.error(restoreError);
