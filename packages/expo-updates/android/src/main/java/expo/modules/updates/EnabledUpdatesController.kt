@@ -47,6 +47,7 @@ import kotlinx.coroutines.sync.withLock
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.time.DurationUnit
@@ -83,7 +84,8 @@ class EnabledUpdatesController(
   override val reloadScreenManager = ReloadScreenManager()
   override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
-  internal val stateChangeListenerMap: MutableMap<String, UpdatesStateChangeListener> = mutableMapOf()
+  // Listeners subscribe and unsubscribe from module threads while the state machine iterates this map.
+  internal val stateChangeListenerMap: MutableMap<String, UpdatesStateChangeListener> = ConcurrentHashMap()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
