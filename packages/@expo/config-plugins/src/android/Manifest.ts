@@ -130,6 +130,14 @@ export type ManifestUsesLibrary = {
   };
 };
 
+// https://developer.android.com/guide/topics/manifest/profileable-element
+export type ManifestProfileable = {
+      $: {
+        'android:shell': StringBoolean;
+    'android:enabled'?: StringBoolean;
+};
+};
+
 export type ManifestApplication = {
   $: ManifestApplicationAttributes;
   activity?: ManifestActivity[];
@@ -138,6 +146,7 @@ export type ManifestApplication = {
   'meta-data'?: ManifestMetaData[];
   'uses-library'?: ManifestUsesLibrary[];
   'activity-alias'?: ManifestActivityAlias[];
+profileable?: ManifestProfileable[];
   // ...
 };
 
