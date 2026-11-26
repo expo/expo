@@ -58,6 +58,11 @@ async function buildFrameworkAsync(root: string, slice: FixtureSlice) {
     path.join(framework, 'Modules', 'module.modulemap'),
     `framework module ${NAME} {\n  umbrella header "${NAME}.h"\n  export *\n}\n`
   );
+  const swiftModule = path.join(framework, 'Modules', `${NAME}.swiftmodule`);
+  await fs.outputFile(path.join(swiftModule, 'arm64-apple-ios.swiftinterface'), '// interface\n');
+  await fs.outputFile(path.join(swiftModule, 'arm64-apple-ios.abi.json'), '{}\n');
+  await fs.outputFile(path.join(swiftModule, 'arm64-apple-ios.swiftdoc'), 'doc');
+  await fs.outputFile(path.join(swiftModule, 'Project', 'arm64-apple-ios.swiftsourceinfo'), 'info');
   await fs.outputFile(path.join(framework, 'PrivacyInfo.xcprivacy'), plist.build({}));
   await fs.outputFile(path.join(framework, `${NAME}.bundle`, 'data.txt'), 'resource');
   await fs.outputFile(
@@ -140,7 +145,8 @@ async function dylibIdentityAsync(binary: string, arch: string): Promise<string[
 
 const isKeptInStub = (file: string) =>
   file === 'Info.plist' ||
-  new RegExp(`^[^/]+/${NAME}\\.framework/(Info\\.plist|Headers/|Modules/|${NAME}$)`).test(file);
+  (new RegExp(`^[^/]+/${NAME}\\.framework/(Info\\.plist|Headers/|Modules/|${NAME}$)`).test(file) &&
+    !/\.(abi\.json|swiftdoc|swiftsourceinfo)$/.test(file));
 
 describe('makeStubXCFrameworkAsync', () => {
   let debugXCFramework: string;
@@ -163,6 +169,7 @@ describe('makeStubXCFrameworkAsync', () => {
       assert.ok(debugFiles.some((file) => file.endsWith('PrivacyInfo.xcprivacy')));
       assert.ok(debugFiles.some((file) => file.includes('.dSYM/')));
       assert.ok(debugFiles.some((file) => file.endsWith(`${NAME}.bundle/data.txt`)));
+      assert.ok(debugFiles.some((file) => file.endsWith('.abi.json')));
 
       assert.deepEqual(await listFilesAsync(stubXCFramework), debugFiles.filter(isKeptInStub));
     }

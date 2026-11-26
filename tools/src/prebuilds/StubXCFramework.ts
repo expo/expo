@@ -37,6 +37,9 @@ const PLATFORMS: Record<string, StubPlatform> = {
 
 const COPIED_FRAMEWORK_ENTRIES = ['Info.plist', 'Headers', 'PrivateHeaders', 'Modules'];
 
+/** Swift module files that no compile step reads. Xcode embeds `Modules/` in the app. */
+const SKIPPED_MODULE_FILE = /\.(abi\.json|swiftdoc|swiftsourceinfo)$/;
+
 /** The entries React Native compares between the flavors of a flavored framework pair. */
 const PAIRED_FRAMEWORK_ENTRIES = ['Headers', path.join('Modules', 'module.modulemap')];
 
@@ -98,6 +101,7 @@ export async function makeStubXCFrameworkAsync(
           await cp(source, path.join(outputXCFramework, framework, entry), {
             recursive: true,
             verbatimSymlinks: true,
+            filter: (file) => !SKIPPED_MODULE_FILE.test(file),
           });
         }
       }
