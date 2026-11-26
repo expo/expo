@@ -18,5 +18,9 @@ internal fun Cipher.decrypt(sealedData: SealedData): ByteArray {
   val inputBuf = sealedData.taggedCiphertextBuffer
   val output = ByteArray(getOutputSize(inputBuf.remaining()))
   val written = doFinal(inputBuf, ByteBuffer.wrap(output))
-  return if (written == output.size) output else output.copyOf(written)
+  return if (written == output.size) {
+    output
+  } else {
+    output.copyOf(written)
+  }
 }
