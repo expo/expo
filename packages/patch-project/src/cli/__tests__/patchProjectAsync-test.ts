@@ -210,6 +210,32 @@ describe(patchProjectAsync, () => {
       );
     });
 
+    it('keeps the original native project when moving it back fails after a successful patch', async () => {
+      const { moveAsync: actualMoveAsync } = jest.requireActual<typeof import('../dir')>('../dir');
+      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
+        vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
+        return 'checksum';
+      });
+      jest.mocked(diffAsync).mockImplementationOnce(async (_diffDir, patchFilePath) => {
+        vol.writeFileSync(patchFilePath, 'patch');
+      });
+      jest
+        .mocked(moveAsync)
+        .mockImplementationOnce(actualMoveAsync)
+        .mockImplementationOnce(actualMoveAsync)
+        .mockRejectedValueOnce(new Error('restore failed'));
+
+      await expect(patchProjectAsync('/app', { platforms: ['android'] })).rejects.toThrow(
+        'patch-project created the patch, but could not restore the original native project to /app/android'
+      );
+
+      expect(vol.toJSON('/app/.patch-project-tmp/android/diff/android')).toEqual({
+        '/app/.patch-project-tmp/android/diff/android/build.gradle': 'original build.gradle',
+        '/app/.patch-project-tmp/android/diff/android/app/src/main/AndroidManifest.xml':
+          'original manifest',
+      });
+    });
+
     it('restores the old patch files when generating the patch fails', async () => {
       vol.fromJSON({ '/app/cng-patches/android+old.patch': 'old patch' });
       jest.mocked(getPatchFilesAsync).mockResolvedValueOnce(['android+old.patch']);
