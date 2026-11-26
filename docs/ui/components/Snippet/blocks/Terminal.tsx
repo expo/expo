@@ -22,7 +22,7 @@ import {
 import type { PackageManagerKey } from './packageManagerStore';
 
 const TERMINAL_TEXT_CLASSES =
-  'border-none! bg-transparent! px-0 py-0 text-[15px] leading-[1.625] tracking-[-0.03px] whitespace-pre';
+  'border-none! bg-transparent! px-0 py-0 text-[13px] leading-[1.625] tracking-[-0.03px] whitespace-pre';
 
 export type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 

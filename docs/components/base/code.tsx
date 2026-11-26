@@ -90,7 +90,7 @@ export function Code({ className, children, title }: CodeProps) {
       {...attributes}>
       <code
         className={mergeClasses(
-          'block py-4 text-sm leading-[1.4] text-default',
+          'block py-4 text-[13px] leading-[19.6px] text-default',
           isWrapped ? 'w-full' : 'w-max min-w-full'
         )}
         dangerouslySetInnerHTML={{ __html: codeLinesHtml }}
