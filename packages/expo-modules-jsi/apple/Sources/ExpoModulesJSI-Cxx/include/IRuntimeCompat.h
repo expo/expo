@@ -8,7 +8,12 @@
 // methods now take `IRuntime&` instead of `Runtime&`. Older React Native
 // versions (e.g. react-native-tvos 0.85) only have `jsi::Runtime`. Alias
 // `IRuntime` to `Runtime` there so the same source compiles against both.
-#if __has_include(<cxxreact/ReactNativeVersion.h>)
+//
+// Since React Native 0.89 the `cxxreact` header emits a `#warning`, and a
+// warning fails the Xcode 27 build, so prefer the `react/utils` header.
+#if __has_include(<react/utils/ReactNativeVersion.h>)
+#include <react/utils/ReactNativeVersion.h>
+#elif __has_include(<cxxreact/ReactNativeVersion.h>)
 #include <cxxreact/ReactNativeVersion.h>
 #endif
 
