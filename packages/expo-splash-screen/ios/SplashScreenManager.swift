@@ -8,6 +8,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   private var rootView: UIView?
   private var options = SplashScreenOptions()
   var preventAutoHideCalled = false
+  private var hideRequested = false
 
   private override init() {}
 
@@ -41,9 +42,10 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   func hide() {
-    if RCTRunningInAppExtension() {
+    if RCTRunningInAppExtension() || hideRequested {
       return
     }
+    hideRequested = true
 
     let prerender = SplashScreenPrerender.shared()
     let fadeDuration = options.fade ? options.duration / 1000 : 0
@@ -102,6 +104,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   func didReceiveReloadCommand() {
+    hideRequested = false
     showSplashScreen()
   }
 

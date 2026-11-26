@@ -222,11 +222,14 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   return instance;
 }
 
+// Also defined in ExpoReactNativeFactory.swift. Keep the two in sync.
+static NSString *const kExpoReactNativeFactoryDidCreateNotification = @"ExpoReactNativeFactoryDidCreate";
+
 // The constructor registers a notification observer so that `prepare` runs right after
 // `ExpoReactNativeFactory` finishes init (which sets up the React Native feature flags).
 // This is early in `didFinishLaunchingWithOptions:`, so the preparation gets a head start.
-// Apps that never create the factory (brownfield apps that open React Native later) never
-// trigger the notification, so the flags are not read before the app's override.
+// A brownfield app that creates the factory later still sends the notification; the
+// preparation starts late, and `mountPreparedTree` dismisses it if the scene already connected.
 static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
   SplashScreenPrerender *prerender = [SplashScreenPrerender shared];
@@ -235,7 +238,7 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
   }
   [prerender log:@"constructor (registering observer)"];
   [[NSNotificationCenter defaultCenter]
-      addObserverForName:@"ExpoReactNativeFactoryDidCreate"
+      addObserverForName:kExpoReactNativeFactoryDidCreateNotification
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification *) {
@@ -609,7 +612,11 @@ static void __attribute__((constructor)) ExpoSplashScreenPrerenderInit(void)
 {
   RCTAssertMainQueue();
   [self log:_containerView ? @"mountIfPrepared (already mounted)" : @"mountIfPrepared"];
-  if (_containerView || !_prepared || _dismissed) {
+  if (_containerView || _dismissed) {
+    return;
+  }
+  if (!_prepared) {
+    [self log:@"mountIfPrepared: ExpoReactNativeFactory notification not received, skipping"];
     return;
   }
   // Wait once: a non-blocking notify replaces the second blocking wait.
