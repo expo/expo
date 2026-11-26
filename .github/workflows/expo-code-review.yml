@@ -334,7 +334,8 @@ jobs:
             REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
             export REVIEW_SANDBOX_TOKEN
           fi
-          ./scripts/expo-code-review ecr ci --expect-head "$HEAD_SHA" --context-file "$RUNNER_TEMP/pr-description.md" ${FORCE:+"$FORCE"}
+          bash .github/scripts/ai-review-capture.sh \
+            ./scripts/expo-code-review ecr ci --expect-head "$HEAD_SHA" --context-file "$RUNNER_TEMP/pr-description.md" ${FORCE:+"$FORCE"}
         continue-on-error: true
         env:
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
@@ -371,6 +372,25 @@ jobs:
           NEXT: ${{ steps.cap.outputs.next }}
           SEEN: ${{ steps.cap.outputs.seen }}
         run: bash .github/scripts/ai-review-auto-count.sh record
+
+      # expo-bot is a code owner of the autonomous paths. Submit its decision only
+      # when every changed file is in that scope, so a mixed PR is not blocked by
+      # the other scopes. A run whose review succeeded also dismisses expo-bot's approval
+      # of an older commit. expo-code-review-stale.yml does it for every push.
+      # A failed call does not fail the job. A failed dismissal fails this step.
+      - name: Submit the autonomous review decision
+        if: steps.review.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BOT_LOGIN: expo-bot
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          POSTED: ${{ runner.temp }}/ai-review-posted.md
+          ECR_LOG: ${{ runner.temp }}/ai-review-ecr.log
+          DECIDE: ${{ steps.scope.outputs.only_autonomous == 'true' }}
+        run: bash .github/scripts/ai-review-decision.sh
 
       # ecr rewrites the comment, and the count step rewrites the tail, so this runs
       # after both. A missing comment is a no-op. Only a review that finished has a stored
