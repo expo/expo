@@ -26,10 +26,10 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{h,m,swift}"
-  s.exclude_files = "Tests/**"
+  s.exclude_files = "ExpoMediaSessionTests/**"
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.source_files = 'ExpoMediaSessionTests/**/*.swift'
     test_spec.requires_app_host = false
 
     test_spec.pod_target_xcconfig = {
