@@ -1,0 +1,27 @@
+appId: dev.expo.routertester
+name: Link preview with Reanimated
+---
+- stopApp: dev.expo.routertester
+# A dev client opens its launcher on a cold deep link. Connect it to Metro on 8081 (from maestro/test.sh) first.
+- openLink: router-tester://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+- extendedWaitUntil:
+    visible: "Current Path: /"
+    timeout: 60000
+- openLink: router-tester://link-preview/reanimated
+- runFlow: ../close-warning.yml
+# Each trigger must stay in the accessibility tree and open its route after its animation.
+- tapOn: "Resize"
+- tapOn:
+    id: "reanimated-width-trigger"
+- assertVisible: "One"
+- openLink: router-tester://link-preview/reanimated
+- tapOn: "Move"
+- tapOn:
+    id: "reanimated-move-trigger"
+- assertVisible: "One"
+- openLink: router-tester://link-preview/reanimated
+- tapOn: "Expand"
+- assertVisible: ".*Extra line.*"
+- tapOn:
+    id: "reanimated-layout-trigger"
+- assertVisible: "One"
