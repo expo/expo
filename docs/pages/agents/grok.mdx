@@ -20,9 +20,11 @@ Grok Build is xAI's terminal-based AI coding agent. It can read and write files 
 
 ### Install Grok Build
 
-Install Grok Build, then start it from any project. For other install methods, see the [Grok Build documentation](https://docs.x.ai/build/overview).
+Install Grok Build. For other install methods, see the [Grok Build documentation](https://docs.x.ai/build/overview).
 
 <Terminal cmd={['$ curl -fsSL https://x.ai/cli/install.sh | bash']} />
+
+Then run `grok` one time and sign in. The first session registers the xAI plugin marketplace, which the plugin install in step 3 needs.
 
 </Step>
 
@@ -125,7 +127,7 @@ For more examples, see the Example prompts sections of [Expo Skills](/skills/#ex
 
 <Collapsible summary='No marketplace plugin named "expo" in any registered marketplace.'>
 
-If you see this error when you install the plugin, Grok Build has no marketplace source that lists the Expo plugin. To fix it, add the xAI plugin marketplace, then install the plugin again:
+If you see this error when you install the plugin, Grok Build has not registered the xAI plugin marketplace yet. Run `grok` one time and sign in, then install the plugin again. You can also add the marketplace manually:
 
 <Terminal
   cmd={[

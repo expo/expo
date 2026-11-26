@@ -54,27 +54,23 @@ Install the official Expo plugin so Cursor knows Expo conventions and can work w
 
 <Tab label="Cursor editor">
 
-Enter the following command in Cursor's Agent panel:
+Open **Customize** in the Cursor sidebar and find the **Expo** plugin. Select **Install**, then choose a project or user scope.
 
-```text Cursor Agent panel
-/add-plugin expo
-```
+You can also add the plugin from the [Expo page in the Cursor Marketplace](https://cursor.com/marketplace/expo). That page shows the `/add-plugin expo` command for the Agent panel.
 
-You can also add the plugin from the [Expo page in the Cursor Marketplace](https://cursor.com/marketplace/expo).
-
-The Expo MCP Server uses OAuth. Authenticate the `expo` server with your Expo account before you use it.
+Then sign in to your Expo account. In **Customize**, find the `expo` MCP server and start the sign-in. Complete it in your browser.
 
 </Tab>
 
 <Tab label="Cursor CLI">
 
-Start the Cursor CLI, then type `/plugin` in the session. Select **Browse plugins** and install `expo`.
+Start the Cursor CLI:
 
 <Terminal cmd={['$ agent']} />
 
-Then sign in to your Expo account:
+In the session, type `/plugin` and open the **Marketplace** tab. Search for **Expo**, select the plugin, and select **Install for you (user scope)**.
 
-<Terminal cmd={['$ agent mcp login expo']} />
+Then sign in to your Expo account. Type `/mcp` in the session, select **Expo**, and select **Login**. Complete the sign-in in your browser.
 
 </Tab>
 

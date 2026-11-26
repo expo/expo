@@ -44,15 +44,9 @@ Then sign in to your Expo account. Type `/apps` in a Codex session, search for *
 
 <Tab label="Cursor">
 
-Enter the following command in Cursor's Agent panel:
+Open **Customize** in the Cursor sidebar, find the **Expo** plugin, and select **Install**. Then find the `expo` MCP server in **Customize** and sign in to your Expo account.
 
-```text Cursor Agent panel
-/add-plugin expo
-```
-
-Then authenticate the `expo` MCP server with your Expo account.
-
-In the Cursor CLI, type `/plugin` inside an `agent` session and install `expo`. Then run `agent mcp login expo` to sign in to your Expo account.
+In the Cursor CLI, type `/plugin` inside an `agent` session and install **Expo** from the **Marketplace** tab. Then type `/mcp`, select **Expo**, and select **Login** to sign in to your Expo account.
 
 </Tab>
 
@@ -68,6 +62,8 @@ Then sign in to your Expo account:
 
 <Tab label="Grok Build">
 
+Run `grok` one time and sign in before you install the plugin.
+
 <Terminal cmd={['$ grok plugin install expo --trust']} />
 
 Then type `/mcps` inside your Grok Build session, select `expo`, and press <kbd>I</kbd> to sign in to your Expo account.
@@ -76,7 +72,7 @@ Then type `/mcps` inside your Grok Build session, select `expo`, and press <kbd>
 
 </Tabs>
 
-The Expo plugin is also listed in the plugin directory of each agent. The following table shows the listing and the CLI install command for each agent:
+Each agent's plugin directory also lists the Expo plugin. The following table shows the listing and the CLI install command for each agent:
 
 | Agent                  | Expo plugin listing                                                                                          | CLI install command                                  |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------- |

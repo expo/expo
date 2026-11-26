@@ -21,9 +21,9 @@ Devin is Cognition's AI software engineer. It runs as cloud sessions in the Devi
 
 ### Set up Devin
 
-Sign in to the [Devin web app](https://app.devin.ai) to use cloud sessions. To use Devin in your terminal, install the Devin CLI. For other install methods, see the [Devin CLI documentation](https://docs.devin.ai/cli/index).
+Sign in to the [Devin web app](https://app.devin.ai) to use cloud sessions. To use Devin in your terminal, install the Devin CLI and sign in to your Devin account. For other install methods, see the [Devin CLI documentation](https://docs.devin.ai/cli/index).
 
-<Terminal cmd={['$ curl -fsSL https://cli.devin.ai/install.sh | bash']} />
+<Terminal cmd={['$ curl -fsSL https://cli.devin.ai/install.sh | bash', '', '$ devin auth login']} />
 
 </Step>
 
@@ -48,13 +48,17 @@ Create a project with the following command or ensure your existing project has 
 
 ### Install the Expo plugin
 
-Install the official Expo plugin so Devin knows Expo conventions and can work with your Expo Services projects. The plugin installs Expo Skills and registers the Expo MCP Server. Devin adds the plugin to your personal scope, so one install applies to cloud sessions, the Devin CLI, and Devin Desktop.
+Install the official Expo plugin so Devin knows Expo conventions and can work with your Expo Services projects. The plugin installs Expo Skills and registers the Expo MCP Server. The Devin CLI installs the plugin to your personal scope, and the web app installs it to the scope you are viewing. A personal install applies to cloud sessions, the Devin CLI, and Devin Desktop.
 
 <Tabs>
 
 <Tab label="Devin web app">
 
-Click the following button to open the Expo plugin on the **Customize** page of the Devin web app, then install it:
+{/* vale off */}
+
+Click the following button to open the Expo plugin on the **Customize** page of the Devin web app, then select **Install for me**:
+
+{/* vale on */}
 
 <Button
   theme="secondary"
@@ -67,7 +71,7 @@ Click the following button to open the Expo plugin on the **Customize** page of 
 
 You can also add the plugin manually. On the **Plugins** tab of the **Customize** page, select **Add plugin** > **From repository**, enter `expo/skills`, and set the subdirectory to `plugins/expo`.
 
-After the install, select **Connect MCP** to sign in to your Expo account. You can also connect the `expo` server later from the **MCPs** tab of the **Customize** page.
+After the install, the plugin page shows **Connect your expo account**. Select **Sign in with expo** to give Devin access through your Expo account.
 
 </Tab>
 
@@ -77,9 +81,11 @@ Run the following command to install the plugin from the `expo/skills` repositor
 
 <Terminal cmd={["$ devin plugins install 'expo/skills#plugins/expo'"]} />
 
-Then sign in to your Expo account:
+Enter `y` when the command asks you to confirm. Then sign in to your Expo account:
 
 <Terminal cmd={['$ devin mcp login expo']} />
+
+The Devin web app has a separate connection. After a CLI sign-in, the plugin page in the web app can still show **Connect your expo account**. Select **Sign in with expo** there too.
 
 </Tab>
 
@@ -110,6 +116,8 @@ The guides below cover the available skills and everything else the MCP Server c
 Run the Devin CLI from your project root, then describe what you want to do. A plugin change applies to new sessions, so start a new session after you install the plugin.
 
 <Terminal cmd={['$ cd my-app', '', '$ devin']} />
+
+To use a cloud session instead, select **New session** in the Devin web app and describe your task.
 
 </Step>
 
