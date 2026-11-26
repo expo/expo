@@ -75,8 +75,11 @@ internal class CustomTabsActivitiesHelper(
         putExtra(BrowserProxyActivity.EXTRA_URL, url.toString())
         putExtra(BrowserProxyActivity.EXTRA_CUSTOM_TABS_INTENT_DATA, tabsIntent.intent)
 
-        // The proxy activity will be in a different task due to its taskAffinity
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        // The proxy activity will be in a different task due to its taskAffinity.
+        // Clear that task first: when the app process was killed while a tab was open, the task
+        // survives with the browser on top, and bringing it forward would show the old page and
+        // drop this intent, so the proxy would never see the new URL.
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
       }
 
       currentActivity.startActivity(proxyIntent)
