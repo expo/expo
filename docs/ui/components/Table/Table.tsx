@@ -15,10 +15,10 @@ type TableProps = PropsWithChildren<{
 
 const STACKED_LAYOUT_CLASSES = [
   'table-fixed [&>thead]:sr-only',
-  '[&>tbody>tr]:flex [&>tbody>tr]:flex-wrap [&>tbody>tr]:items-center [&>tbody>tr]:gap-x-4 [&>tbody>tr]:gap-y-2 [&>tbody>tr]:p-4',
+  '[&>tbody>tr]:flex [&>tbody>tr]:flex-wrap [&>tbody>tr]:items-baseline [&>tbody>tr]:gap-x-4 [&>tbody>tr]:gap-y-2 [&>tbody>tr]:p-4',
   '[&>tbody>tr+tr]:border-t [&>tbody>tr+tr]:border-secondary',
   '[&>tbody>tr>td]:min-w-0 [&>tbody>tr>td]:border-r-0 [&>tbody>tr>td]:p-0 [&>tbody>tr>td]:wrap-anywhere',
-  '[&>tbody>tr>td:nth-child(2)]:ml-auto [&>tbody>tr>td:nth-child(2)]:flex [&>tbody>tr>td:nth-child(2)]:items-center [&>tbody>tr>td:nth-child(2)]:justify-end [&>tbody>tr>td:nth-child(2)]:gap-1 [&>tbody>tr>td:nth-child(2)]:text-secondary',
+  '[&>tbody>tr>td:nth-child(2)]:ml-auto [&>tbody>tr>td:nth-child(2)]:flex [&>tbody>tr>td:nth-child(2)]:items-baseline [&>tbody>tr>td:nth-child(2)]:justify-end [&>tbody>tr>td:nth-child(2)]:gap-1 [&>tbody>tr>td:nth-child(2)]:text-secondary',
   '[&>tbody>tr>td:nth-child(2)]:before:content-(--stacked-label)',
   '[&>tbody>tr>td:nth-child(n+3)]:basis-full',
 ];

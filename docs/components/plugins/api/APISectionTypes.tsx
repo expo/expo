@@ -143,6 +143,7 @@ const renderTypePropertyRow = (
       <Cell>
         <APITypeOrSignatureType
           allowBlock
+          collapsible
           type={type}
           signatures={signatures}
           sdkVersion={sdkVersion}

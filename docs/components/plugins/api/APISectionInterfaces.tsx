@@ -99,7 +99,7 @@ const renderInterfacePropertyRow = (
       </Cell>
       <Cell>
         {type ? (
-          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+          <APIDataType typeDefinition={type} sdkVersion={sdkVersion} collapsible />
         ) : (
           <CODE>undefined</CODE>
         )}

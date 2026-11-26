@@ -37,7 +37,7 @@ export function APIParamRow({
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />
+        <APIDataType typeDefinition={type} sdkVersion={sdkVersion} collapsible />
       </Cell>
       {showDescription && (
         <Cell className="[&>*]:last:mb-0!">
