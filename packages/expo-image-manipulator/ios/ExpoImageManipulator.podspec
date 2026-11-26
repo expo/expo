@@ -33,13 +33,13 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = "**/*.{h,m,swift}"
-    s.exclude_files = 'Tests/'
+    s.exclude_files = 'ExpoImageManipulatorTests/'
   end
 
   s.test_spec 'Tests' do |test_spec|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoImageManipulatorTests/**/*.{m,swift}'
   end
 end
