@@ -241,6 +241,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private var clearViewBeforeChangingSource = false
 
   /**
+   * Whether the view has had a size. Before that, an image cannot load, so [rerenderIfNeeded] has
+   * nothing to do. [onSizeChanged] starts the first load.
+   */
+  private var hasBeenSized = false
+
+  /**
    * Copies saved props to the provided view.
    * It ensures that the view state is up to date.
    */
@@ -475,6 +481,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
+    hasBeenSized = true
     rerenderIfNeeded(
       shouldRerenderBecauseOfResize = allowDownscaling &&
         contentFit != ContentFit.Fill &&
@@ -570,7 +577,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
   }
 
-  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false, force: Boolean = false) =
+  internal fun rerenderIfNeeded(shouldRerenderBecauseOfResize: Boolean = false, force: Boolean = false) {
+    if (!hasBeenSized) {
+      return
+    }
     trace(Trace.tag, "rerenderIfNeeded(shouldRerenderBecauseOfResize=$shouldRerenderBecauseOfResize,force=$force)") {
       if (lockResource && !force) {
         return@trace
@@ -669,6 +679,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
     }
+  }
 
   private fun getOrCreateSecondView(): ExpoImageView {
     secondView?.let { return it }
@@ -683,7 +694,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     layoutParams = matchParent
 
-    firstView.isVisible = true
+    // Hidden until the first image is ready, which is the state `cleanIfNeeded` leaves it in.
+    firstView.isVisible = false
 
     // We need to add a `FrameLayout` to allow views to overflow.
     // With the `LinearLayout` is impossible to render two views on each other.
