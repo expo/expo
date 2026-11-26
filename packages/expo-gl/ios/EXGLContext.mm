@@ -252,8 +252,8 @@
                                         providerRef, NULL, true, kCGRenderingIntentDefault);
 
     // Begin image context
-    NSInteger widthInPoints = width / scale;
-    NSInteger heightInPoints = height / scale;
+    CGFloat widthInPoints = width / scale;
+    CGFloat heightInPoints = height / scale;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
 
     // Flip and draw image to CGImage
