@@ -1,7 +1,14 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
+import {
+  Animated,
+  type StyleProp,
+  StyleSheet,
+  View,
+  type ViewInstance,
+  type ViewStyle,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useVerticalBarEdgeIOS } from '../../utils/useVerticalBarEdgeIOS';
@@ -58,7 +65,7 @@ export function Screen(props: Props) {
     getDefaultHeaderHeight(size, modal, headerStatusBarHeight)
   );
 
-  const headerRef = React.useRef<View>(null);
+  const headerRef = React.useRef<ViewInstance>(null);
 
   const [headerHeight, setHeaderHeight] = React.useState(defaultHeaderHeight);
 

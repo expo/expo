@@ -174,7 +174,8 @@ interface LinkZoomTransitionSourceProps extends PropsWithChildren {
   animateAspectRatioChange?: boolean;
 }
 
-interface LinkZoomTransitionSourceNativeProps extends ViewProps, LinkZoomTransitionSourceProps {
+interface LinkZoomTransitionSourceNativeProps
+  extends Omit<ViewProps, 'children'>, LinkZoomTransitionSourceProps {
   disableForceFlatten?: boolean;
 }
 

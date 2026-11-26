@@ -202,7 +202,7 @@ function appendLabelOptions(options: NativeTabOptions, props: NativeTabsTriggerL
     options.title = props.children;
     options.hiddenTitle = undefined;
     if (props.selectedStyle) {
-      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle);
+      options.selectedLabelStyle = StyleSheet.flatten(props.selectedStyle) ?? undefined;
     }
   }
 }

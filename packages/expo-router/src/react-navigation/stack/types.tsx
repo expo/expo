@@ -442,11 +442,11 @@ export type StackNavigationConfig = {
 export type TransitionSpec =
   | {
       animation: 'spring';
-      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | 'isInteraction' | 'useNativeDriver'>;
     }
   | {
       animation: 'timing';
-      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | 'isInteraction' | 'useNativeDriver'>;
     };
 
 export type StackCardInterpolationProps = {
