@@ -32,6 +32,12 @@ target_include_directories(
   "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
 )
 
+target_compile_definitions(
+  expo-modules-worklets
+  PRIVATE
+  "WORKLETS_STABLE_API_TARGET=\"0.14.0\""
+)
+
 target_link_libraries(
   expo-modules-worklets
   PRIVATE

@@ -181,7 +181,8 @@
             "RNWorklets"
           ],
           "linkedFrameworks": ["Foundation"],
-          "includeDirectories": ["."]
+          "includeDirectories": ["."],
+          "compilerFlags": ["-DWORKLETS_STABLE_API_TARGET=\"0.14.0\""]
         }
       ]
     }
