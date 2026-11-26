@@ -70,15 +70,14 @@ internal enum ViewPropsRuntimes {
 
   // MARK: - Lookup of the worklets UI runtime
 
-  /// The time between two lookups, in nanoseconds. Each miss on the main thread can start a lookup, for example on
-  /// each frame of an animation, so they're limited. A later lookup finds the UI runtime when `react-native-worklets`
-  /// loads after the first one, or after a reload.
+  /// Each miss on the main thread can start a lookup, for example on each frame of an animation, so they're limited.
+  /// A later lookup finds the UI runtime when `react-native-worklets` loads after the first one, or after a reload.
   private static let lookupInterval: UInt64 = 1_000_000_000
 
   @MainActor
   private static var lastLookupStart: UInt64?
 
-  /// The number of the newest lookup, so that an older lookup that finishes later doesn't count.
+  /// An older lookup that finishes after a newer one starts doesn't count.
   @MainActor
   private static var lookupNumber = 0
 
