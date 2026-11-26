@@ -50,7 +50,7 @@ export async function checkPackagesAsync(
   const { exp, pkg } = getConfig(projectRoot, {
     // Sometimes users will add a plugin to the config before installing the library,
     // this wouldn't work unless we dangerously disable plugin serialization.
-    skipPlugins: true,
+    pluginMode: 'skip',
   });
 
   if (pkg.expo?.install?.exclude?.length && !json) {

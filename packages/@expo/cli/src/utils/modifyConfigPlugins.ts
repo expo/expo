@@ -14,7 +14,7 @@ export async function attemptAddingPluginsAsync(
     { plugins },
     {
       skipSDKVersionRequirement: true,
-      skipPlugins: true,
+      pluginMode: 'skip',
     }
   );
   if (modification.type === 'success') {
