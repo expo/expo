@@ -9,7 +9,9 @@ import EXManifests
 class TestStateChangeEventManager: UpdatesEventManager {
   var lastContext: UpdatesStateContext? = nil
   var sendCount = 0
-  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
+
+  func setObserver(_ observer: any EXUpdates.UpdatesEventManagerObserver) {}
+  func removeObserver(_ observer: any EXUpdates.UpdatesEventManagerObserver) {}
 
   func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
     lastContext = context
