@@ -92,6 +92,7 @@ exceptions:
   - '.*DevTools.*'
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
+  - '.*Devin.*'
   - '.*detach.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
@@ -136,6 +137,7 @@ exceptions:
   - '.*Google Font.*'
   - '.*Google Service Account.*'
   - '.*Google Pay.*'
+  - '.*Grok Bot.*'
   - '.*Grok Build.*'
   - ".*Giphy's.*"
   - '.*GLView.*'

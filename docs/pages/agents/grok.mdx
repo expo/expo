@@ -7,6 +7,8 @@ description: Use Grok Build to build, upgrade, debug, and deploy your Expo and R
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { XAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -49,7 +51,7 @@ Install the official Expo plugin so Grok Build knows Expo conventions and can wo
 
 <Terminal cmd={['$ grok plugin install expo --trust']} />
 
-You can also type `/marketplace` inside Grok Build and install `expo` from the catalog.
+You can also type `/marketplace` inside Grok Build and install `expo` from the catalog. The catalog is the [xAI plugin marketplace](https://github.com/xai-org/plugin-marketplace).
 
 Then sign in to your Expo account. Type `/mcps` inside your Grok Build session, select `expo`, and press <kbd>I</kbd>. Grok Build opens the sign-in page in your browser.
 
@@ -118,3 +120,28 @@ After setup, describe Expo tasks in plain language. For example:
 | Verify the UI     | Take a screenshot and verify the blue circle view.                                |
 
 For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
+
+## Troubleshooting
+
+<Collapsible summary='No marketplace plugin named "expo" in any registered marketplace.'>
+
+If you see this error when you install the plugin, Grok Build has no marketplace source that lists the Expo plugin. To fix it, add the xAI plugin marketplace, then install the plugin again:
+
+<Terminal
+  cmd={[
+    '$ grok plugin marketplace add xai-org/plugin-marketplace',
+    '',
+    '$ grok plugin install expo --trust',
+  ]}
+/>
+
+</Collapsible>
+
+## Related guides
+
+<BoxLink
+  title="Grok Bot"
+  description="Add the Expo plugin to xAI's cloud agent, with example prompts."
+  href="/agents/grok-bot/"
+  Icon={XAILogoIcon}
+/>
