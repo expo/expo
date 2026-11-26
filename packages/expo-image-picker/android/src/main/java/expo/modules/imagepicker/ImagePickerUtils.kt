@@ -129,8 +129,12 @@ internal fun String.toBitmapCompressFormat(): Bitmap.CompressFormat = when {
   }
 }
 
-internal fun MediaMetadataRetriever.extractInt(key: Int): Int {
-  return this.extractMetadata(key)?.toInt() ?: throw FailedToExtractVideoMetadataException()
+/**
+ * Returns `null` when the container doesn't provide the key (common for screen recordings and
+ * files saved from other apps). A missing key must not fail the whole picker result.
+ */
+internal fun MediaMetadataRetriever.extractIntOrNull(key: Int): Int? {
+  return this.extractMetadata(key)?.toIntOrNull()
 }
 
 /**
