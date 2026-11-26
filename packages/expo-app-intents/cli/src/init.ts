@@ -2,6 +2,7 @@ import { getConfig, getConfigFilePaths, modifyConfigAsync } from 'expo/config';
 import type { ConfigFilePaths, ExpoConfig, ProjectConfig } from 'expo/config';
 import { existsSync } from 'fs';
 import fs from 'fs/promises';
+import { inspect } from 'node:util';
 import path from 'path';
 import prompts from 'prompts';
 import type { PromptObject } from 'prompts';
@@ -270,17 +271,18 @@ function createPluginEntry(directory: string): PluginEntry {
   return [PLUGIN_NAME, { directory }];
 }
 
-function getPluginSnippet(directory: string): string {
-  return directory === DEFAULT_DIRECTORY
-    ? `'${PLUGIN_NAME}'`
-    : `['${PLUGIN_NAME}', { directory: '${directory}' }]`;
-}
-
-function getManualConfigSnippet(directory: string): string {
-  return (
-    `  experiments: { inlineModules: { watchedDirectories: ['${directory}'] } },\n` +
-    `  plugins: [${getPluginSnippet(directory)}],`
-  );
+function getManualConfigSnippet(directory: string, modifications?: Partial<ExpoConfig>): string {
+  const lines: string[] = [];
+  if (!modifications || modifications.experiments) {
+    lines.push(
+      `  experiments: { inlineModules: { watchedDirectories: [${inspect(directory)}] } },`
+    );
+  }
+  if (!modifications || modifications.plugins) {
+    const entry = modifications?.plugins?.[0] ?? createPluginEntry(directory);
+    lines.push(`  plugins: [${inspect(entry)}],`);
+  }
+  return lines.join('\n');
 }
 
 function splitExampleValues(values: string[]): string[] {
@@ -1084,32 +1086,28 @@ export async function runInit(options: InitOptions): Promise<void> {
     written.push(destinationPath);
   }
 
-  let updatedAppConfig = true;
-  if (Object.keys(modifications).length > 0) {
+  const needsConfigUpdate = Object.keys(modifications).length > 0;
+  if (needsConfigUpdate && config.dynamicConfigPath) {
+    console.warn(
+      `The Swift files are scaffolded. Update ${path.relative(projectRoot, config.dynamicConfigPath)} ` +
+        `by merging these settings into your existing config:\n\n` +
+        getManualConfigSnippet(directory, modifications)
+    );
+  } else if (needsConfigUpdate) {
     const result = await modifyConfigAsync(projectRoot, modifications, CONFIG_READ_OPTIONS);
-    updatedAppConfig = result.type === 'success';
-    if (!updatedAppConfig) {
-      console.warn(
-        `Could not update the Expo app config automatically. ${result.message}. ` +
-          `The Swift files are scaffolded, but a config that is computed in JavaScript can only ` +
-          `be edited by you. Add this to your config:\n\n` +
-          getManualConfigSnippet(directory)
-      );
-    }
-  }
-
-  // Only the edits that were actually part of the modifications are reported. A re-run of an
-  // already configured project changes nothing, and claiming otherwise hides what init did.
-  if (updatedAppConfig) {
-    if (modifications.experiments) {
-      console.log(`Enabled inline modules for '${directory}' in the app config`);
-    }
-    if (modifications.plugins) {
-      console.log(
-        findConfiguredPlugin(config)
-          ? `Pointed '${PLUGIN_NAME}' at '${directory}' in plugins`
-          : `Added '${PLUGIN_NAME}' to plugins`
-      );
+    if (result.type !== 'success') {
+      console.warn(result.message);
+    } else {
+      if (modifications.experiments) {
+        console.log(`Enabled inline modules for '${directory}' in the app config`);
+      }
+      if (modifications.plugins) {
+        console.log(
+          findConfiguredPlugin(config)
+            ? `Pointed '${PLUGIN_NAME}' at '${directory}' in plugins`
+            : `Added '${PLUGIN_NAME}' to plugins`
+        );
+      }
     }
   }
   const additions = [

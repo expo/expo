@@ -1106,18 +1106,29 @@ describe(runInit, () => {
     expect(readConfig().expo.experiments.inlineModules.watchedDirectories).toEqual(['legacy']);
   });
 
-  it('adds only the watched directory when a dynamic config already declares the plugin', async () => {
-    writeProject(staticConfig());
-    write({
-      'project/app.config.js': `module.exports = ({ config }) => ({ ...config, plugins: ['expo-app-intents'] });`,
-    });
+  it.each(['...config', '...config, experiments: { typedRoutes: true }'])(
+    'reports only the missing watched directory for a dynamic config with %s',
+    async (fields) => {
+      const original = staticConfig();
+      writeProject(original);
+      write({
+        'project/app.config.js': `module.exports = ({ config }) => ({ ${fields}, plugins: ['expo-app-intents'] });`,
+      });
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
-
-    expect(readConfig().expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
-    expect(readConfig().expo.plugins).toBeUndefined();
-    expect(messages(warn)).not.toContain('Could not update the Expo app config');
-  });
+      for (let run = 0; run < 2; run++) {
+        warn.mockClear();
+        await runInit({
+          projectRoot,
+          directory: 'app-intents',
+          examples: ['minimal'],
+          templatesDir,
+        });
+        expect(read('app.json')).toBe(original);
+        expect(messages(warn)).toContain("watchedDirectories: ['app-intents']");
+        expect(messages(warn)).not.toContain('plugins:');
+      }
+    }
+  );
 
   // Inspect mode serializes a plugin function to its name, so this entry cannot be identified.
   it('refuses to scaffold a second setup when the plugin entry cannot be identified', async () => {
