@@ -126,7 +126,7 @@ export default function DocumentationNestedScrollLayout({
         <div
           className={mergeClasses(
             'flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
-            'lg:col-start-2 lg:row-start-1 lg:h-[calc(var(--nested-scroll-layout-height)-1.25rem)] lg:rounded-lg lg:bg-default lg:shadow-sm lg:outline-(--expo-theme-border-secondary) lg:outline-[0.5px] lg:outline-offset-[-0.5px]',
+            'lg:col-start-2 lg:row-start-1 lg:h-[calc(var(--nested-scroll-layout-height)-1.25rem)] lg:rounded-lg lg:bg-default lg:relative lg:shadow-sm lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:rounded-[inherit] lg:after:border-[0.5px] lg:after:border-(--expo-theme-border-secondary)',
             isMobileMenuVisible && 'hidden'
           )}>
           <div className="relative flex h-full min-w-0 flex-1 overflow-hidden max-lg:overflow-auto">
