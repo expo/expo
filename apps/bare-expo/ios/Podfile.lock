@@ -100,7 +100,6 @@ PODS:
     - React-renderercss
     - React-rendererdebug
     - React-utils
-    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
@@ -134,7 +133,6 @@ PODS:
     - React-renderercss
     - React-rendererdebug
     - React-utils
-    - ReactAppDependencyProvider
     - ReactCodegen
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
@@ -4458,7 +4456,7 @@ SPEC CHECKSUMS:
   EXManifests: b0b83ad894166f7e080b18814c5e73aed46e366e
   Expo: 234302e4bfcebd14145a297d3e9c67a4aca13c9e
   expo-dev-client: 6beb19e24c16b0b30b78e2d6325936272f200758
-  expo-dev-launcher: c2f1e3d6221161987ad438b6d448fe23bd9089b8
+  expo-dev-launcher: 87f6df463b2b0852a3278af6f1691043fb9107c4
   expo-dev-menu: 68800f52c516293eea1a3ec91373ab0d6e7a5c86
   expo-dev-menu-interface: d304e400271187edf1534704a4a05dcc140076e2
   ExpoAgeRange: c2c606e16bbfdfe8ba790f47f24054d0267bfcd7

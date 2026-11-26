@@ -203,7 +203,7 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   func loadRecentlyOpenedApps() {
-    let apps = EXDevLauncherController.sharedInstance().recentlyOpenedAppsRegistry.recentlyOpenedApps()
+    let apps = EXDevLauncherController.sharedInstance().recentlyOpenedApps()
 
     let allApps = apps.compactMap { app -> RecentlyOpenedApp? in
       guard let url = app["url"] as? String,

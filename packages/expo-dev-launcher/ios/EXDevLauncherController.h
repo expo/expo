@@ -69,6 +69,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearRecentlyOpenedApps;
 
+- (NSArray<NSDictionary<NSString *, id> *> *)recentlyOpenedApps;
+
+- (BOOL)switchAppRegistryComponentTo:(NSString *)moduleName;
+
+- (nullable NSString *)rootViewModuleName;
+
 - (NSDictionary *)getLaunchOptions;
 
 - (EXManifestsManifest * _Nullable)appManifest;
