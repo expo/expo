@@ -13,7 +13,6 @@ name: SDK cherry-pick
 on:
   pull_request_target:
     types: [closed, labeled]
-    branches: [main]
   workflow_dispatch:
     inputs:
       pr:
@@ -35,10 +34,14 @@ jobs:
   cherry-pick:
     name: Backport to SDK branches
     # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added.
+    # No `branches` filter: a pull request of a merged stack reports the branch below it as its base,
+    # so the backport checks that the merge commit is on main. A pull request into sdk-NN usually
+    # carries the sdk-NN label of its own base. It is skipped, so that it gets no refusal comment.
     if: >-
       github.repository == 'expo/expo'
       && (github.event_name == 'workflow_dispatch'
       || github.event.pull_request.merged
+      && !contains(github.event.pull_request.labels.*.name, github.event.pull_request.base.ref)
       && (github.event.action == 'labeled' && startsWith(github.event.label.name, 'sdk-')
       || github.event.action == 'closed' && contains(join(github.event.pull_request.labels.*.name, ' '), 'sdk-')))
     runs-on: ubuntu-24.04

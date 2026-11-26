@@ -14,8 +14,6 @@ export type BackportOptions = {
   prNumber: number;
   sdkVersion: number;
   mergeSha: string;
-  /** The branch that the pull request merged into. The bot backports only from `main`. */
-  baseBranch: string;
   /** The login of the pull request author, whom the `CHANGELOG.md` entries credit. */
   author: string;
   /**
@@ -178,8 +176,18 @@ git cherry-pick -x ${mergeSha}`;
     }
     // Before the fetch, the ref may be missing. Then the plain steps stay.
     await readChangesetConfigAsync(`refs/remotes/origin/${targetBranch}`).catch(() => {});
-    if (options.baseBranch !== 'main') {
-      const reason = `The bot backports only pull requests that merged into \`main\`. This pull request merged into \`${options.baseBranch}\`, so the bot did not backport it to \`${targetBranch}\`.`;
+    // A branch made from main after the merge already holds the change, and so does sdk-NN for a
+    // stack that merged into it. When the branch changed the same lines later, the cherry-pick
+    // conflicts instead of coming out empty.
+    if (await github.branchContainsAsync(targetBranch, mergeSha)) {
+      await commentAsync(
+        `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
+      );
+      return;
+    }
+    // An upper pull request of a merged stack keeps the branch below it as its base.
+    if (!(await github.branchContainsAsync('main', mergeSha))) {
+      const reason = `The bot backports only pull requests whose merge commit is on \`main\`. The merge commit ${mergeSha} of this pull request is not on \`main\`, so the bot did not backport it to \`${targetBranch}\`.`;
       await commentAsync(`${reason}\n\n${manualSteps}`);
       throw new Error(reason);
     }
@@ -202,13 +210,29 @@ git cherry-pick -x ${mergeSha}`;
       return tip;
     };
     let base = await fetchTargetAsync();
-    // A branch made from main after the merge already holds the change. When it changed the same
-    // lines later, the cherry-pick conflicts instead of coming out empty.
-    if (await github.branchContainsAsync(targetBranch, mergeSha)) {
+    // Each pull request of a merged stack gets its own run, and the runs finish in any order. A
+    // commit that lands before the commits below it can apply cleanly and still not compile.
+    const blockers: string[] = [];
+    for (const entry of await github.readStackBelowAsync(prNumber)) {
+      if (!entry.mergeSha || !entry.mergedAt) {
+        blockers.push(`#${entry.number} is not merged.`);
+      } else if (
+        (await github.branchContainsAsync(targetBranch, entry.mergeSha)) ||
+        (await github.branchHasCherryPickAsync(targetBranch, entry.mergeSha, entry.mergedAt))
+      ) {
+        continue;
+      } else if (!entry.labels.includes(targetBranch)) {
+        blockers.push(`#${entry.number} does not have the \`${targetBranch}\` label.`);
+      } else {
+        blockers.push(`#${entry.number} is not on \`${targetBranch}\` yet.`);
+      }
+    }
+    if (blockers.length > 0) {
+      const reason = `The bot did not backport this pull request to \`${targetBranch}\`, because a pull request below it in the stack must be there first. ${blockers.join(' ')}`;
       await commentAsync(
-        `This change is already on \`${targetBranch}\`: the branch contains ${mergeSha}. No backport was made.`
+        `${reason}\n\nAdd the \`${targetBranch}\` label to each pull request named above that does not have it. When each one is on \`${targetBranch}\`, remove the \`${targetBranch}\` label from this pull request and add it again. If a pull request below this one was backported by hand without \`git cherry-pick -x\`, the bot cannot find it on \`${targetBranch}\`. Then backport this one by hand too.\n\n${manualSteps}`
       );
-      return;
+      throw new Error(reason);
     }
     if (options.buildPatch !== undefined && !fs.existsSync(options.buildPatch)) {
       const reason = options.buildPatchRejected
