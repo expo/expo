@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.4'
 
+expoModule {
+  v2 true
+}
+
 def pedometerPlayServicesEnabled = (findProperty('expo.sensors.pedometer-play-services-enabled') ?: "false").toString() == "true"
 
 android {
@@ -20,4 +24,5 @@ android {
 dependencies {
   def pedometerPlayServicesConfiguration = pedometerPlayServicesEnabled ? "implementation" : "compileOnly"
   add(pedometerPlayServicesConfiguration, "com.google.android.gms:play-services-fitness:21.3.0")
+  implementation 'com.facebook.react:react-android'
 }

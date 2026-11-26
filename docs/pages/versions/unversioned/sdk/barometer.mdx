@@ -24,7 +24,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 ```jsx
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
@@ -48,10 +48,7 @@ export default function App() {
     <View style={styles.wrapper}>
       <Text>Barometer: Listener {subscription ? 'ACTIVE' : 'INACTIVE'}</Text>
       <Text>Pressure: {pressure} hPa</Text>
-      <Text>
-        Relative Altitude:{' '}
-        {Platform.OS === 'ios' ? `${relativeAltitude} m` : `Only available on iOS`}
-      </Text>
+      <Text>Relative Altitude: {relativeAltitude} m</Text>
       <TouchableOpacity onPress={toggleListener} style={styles.button}>
         <Text>Toggle listener</Text>
       </TouchableOpacity>

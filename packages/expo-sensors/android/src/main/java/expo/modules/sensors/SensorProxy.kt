@@ -5,26 +5,28 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener2
 import android.hardware.SensorManager
-import android.os.Bundle
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinitionBuilder
-import java.lang.ref.WeakReference
+import com.facebook.react.bridge.LifecycleEventListener
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.reactContext
+import io.github.expo.modules.v2.react.reactContextOrNull
 
 internal typealias OnNewEvent = (event: SensorEvent) -> Unit
 
 class SensorProxy(
   private val sensorType: Int,
-  appContext: AppContext,
+  private val contextProvider: () -> Context,
   val onNewEvent: OnNewEvent
-) : SensorEventListener2 {
-  private val appContextHolder = WeakReference(appContext)
-
+) : SensorEventListener2, LifecycleEventListener {
   private val sensorKernelServiceSubscription: SensorSubscription by lazy {
-    val context = appContextHolder.get()?.reactContext ?: throw Exceptions.ReactContextLost()
-    SensorSubscription(context, sensorType, this)
+    SensorSubscription(contextProvider(), sensorType, this)
   }
+
+  val isAvailable: Boolean
+    get() {
+      val sensorManager = contextProvider().getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+      return sensorManager?.getDefaultSensor(sensorType) != null
+    }
 
   private var isObserving = false
 
@@ -52,19 +54,19 @@ class SensorProxy(
     }
   }
 
-  fun onHostResume() {
+  override fun onHostResume() {
     if (isObserving) {
       sensorKernelServiceSubscription.startObserving()
     }
   }
 
-  fun onHostPause() {
+  override fun onHostPause() {
     if (isObserving) {
       sensorKernelServiceSubscription.stopObserving()
     }
   }
 
-  fun onHostDestroy() {
+  override fun onHostDestroy() {
     if (isObserving) {
       sensorKernelServiceSubscription.stopObserving()
       isObserving = false
@@ -72,62 +74,19 @@ class SensorProxy(
   }
 }
 
-@Suppress("FunctionName")
-internal fun ModuleDefinitionBuilder.UseSensorProxy(
-  module: Module,
-  sensorType: Int,
-  eventName: String,
-  listenerDecorator: (() -> Unit)? = null,
-  sensorProxyGetter: () -> SensorProxy
-) {
-  Events(eventName)
+internal fun Module.createSensorProxy(sensorType: Int, onNewEvent: OnNewEvent): SensorProxy =
+  SensorProxy(sensorType, { androidContext }, onNewEvent)
 
-  OnStartObserving {
-    listenerDecorator?.invoke()
-    sensorProxyGetter().startObserving()
-  }
-
-  OnStopObserving {
-    listenerDecorator?.invoke()
-    sensorProxyGetter().stopObserving()
-  }
-
-  OnActivityEntersForeground {
-    sensorProxyGetter().onHostResume()
-  }
-
-  OnActivityEntersBackground {
-    sensorProxyGetter().onHostPause()
-  }
-
-  OnActivityDestroys {
-    sensorProxyGetter().onHostDestroy()
-  }
-
-  OnDestroy {
-    sensorProxyGetter().onHostDestroy()
-  }
-
-  AsyncFunction("setUpdateInterval") { updateInterval: Int ->
-    sensorProxyGetter().setUpdateInterval(updateInterval)
-  }
-
-  AsyncFunction<Boolean>("isAvailableAsync") {
-    val sensorManager = module.appContext.reactContext?.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
-    sensorManager?.getDefaultSensor(sensorType) != null
-  }
+/**
+ * Starts the sensor for a module on the Expo Modules API 2.0. Such a module gets no activity
+ * lifecycle events, so the proxy listens to React Native's to pause the sensor in the background.
+ */
+internal fun Module.startObserving(sensorProxy: SensorProxy) {
+  reactContext.addLifecycleEventListener(sensorProxy)
+  sensorProxy.startObserving()
 }
 
-internal inline fun Module.createSensorProxy(
-  eventName: String,
-  sensorType: Int,
-  appContext: AppContext,
-  crossinline eventMapper: (sensorEvent: SensorEvent) -> Bundle
-): SensorProxy {
-  val weakModule = WeakReference(this)
-
-  val onNewEvent: OnNewEvent = { sensorEvent: SensorEvent ->
-    weakModule.get()?.sendEvent(eventName, eventMapper(sensorEvent))
-  }
-  return SensorProxy(sensorType, appContext, onNewEvent)
+internal fun Module.stopObserving(sensorProxy: SensorProxy) {
+  reactContextOrNull?.removeLifecycleEventListener(sensorProxy)
+  sensorProxy.stopObserving()
 }
