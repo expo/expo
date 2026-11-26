@@ -125,6 +125,22 @@ test('stages and validates every product, dependency, and flavor', () => {
   );
 });
 
+test('a realAndStub product stages and requires its release-stub tarball', () => {
+  const root = fixture([{ name: 'ExpoOne', releaseFlavor: 'realAndStub' }]);
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  assert.throws(() => validateRawIosPrebuilds(root), /ExpoOne release-stub XCFramework is missing/);
+  framework(root, 'ExpoOne', 'release-stub');
+  assert.equal(stageIosPrebuilds(root), true);
+  const tarball = path.join(root, 'prebuilds/output/release-stub/xcframeworks/ExpoOne.tar.gz');
+  assert.ok(tarListing(tarball).includes('ExpoOne.xcframework/Info.plist'));
+  fs.rmSync(tarball);
+  assert.throws(
+    () => validatePublishedIosPrebuilds(root),
+    /ExpoOne release-stub publish tarball is missing/
+  );
+});
+
 test('raw validation rejects an incomplete or missing headers XCFramework', () => {
   const root = flaggedFixture();
   const headers = path.join(

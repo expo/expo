@@ -26,7 +26,10 @@ function getSpmDependencyNames(products) {
 
 function getFlavors(product) {
   const headers = product.headersXCFramework === true ? ['headers'] : [];
-  if (!product.customBuild) return [...FLAVORS, ...headers];
+  if (!product.customBuild) {
+    const releaseStub = product.releaseFlavor === 'realAndStub' ? ['release-stub'] : [];
+    return [...FLAVORS, ...releaseStub, ...headers];
+  }
   // CocoaPods precompiled mode, including released autolinking versions, picks up any
   // `<flavor>/xcframeworks/<Product>.tar.gz` but cannot consume a pod that vendors its own
   // xcframework, so a custom-build product publishes its headers only.

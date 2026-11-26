@@ -4,6 +4,7 @@
     {
       "name": "EXManifests",
       "podName": "EXManifests",
+      "releaseFlavor": "realAndStub",
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
