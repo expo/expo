@@ -40,12 +40,11 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
   }
 
-  s.source_files = "**/*.{h,m,swift}"
-  s.exclude_files = 'Tests/'
+  s.source_files = "ExpoImage/**/*.{h,m,swift}"
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoImageTests/**/*.{m,swift}'
   end
 end

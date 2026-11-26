@@ -105,8 +105,7 @@
             "libdav1d",
             "libwebp"
           ],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "exclude": ["Tests/**"]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

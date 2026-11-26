@@ -33,8 +33,7 @@ let package = Package(
         .product(name: "libavif", package: "libavif-Xcode"),
         .product(name: "libdav1d", package: "libdav1d-Xcode"),
       ],
-      path: "ios",
-      exclude: ["ExpoImage.podspec", "Tests"]
+      path: "ios/ExpoImage"
     )
   ],
   swiftLanguageModes: [.v6]
