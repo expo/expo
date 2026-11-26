@@ -137,7 +137,7 @@ class AesCryptoModule : Module() {
       options?.additionalData?.let { cipher.updateAAD(it.toBytes()) }
 
       val plaintext = cipher.decrypt(sealedData)
-      return plaintext.array().formatted(options?.output)
+      return plaintext.formatted(options?.output)
     } catch (err: Throwable) {
       throw DecryptionFailed(err)
     }

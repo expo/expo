@@ -166,6 +166,16 @@ export async function test({ describe, it, expect, beforeAll }: JasmineInterface
         expect(areArraysEqual(decrypted, plaintext)).toBe(true);
       });
 
+      it('preserves the exact plaintext length, including trailing zero bytes', async () => {
+        for (const plaintext of [new Uint8Array(0), new Uint8Array([1, 2, 0, 0])]) {
+          const sealedData = await aesEncryptAsync(plaintext, key);
+          const decrypted = await aesDecryptAsync(sealedData, key);
+
+          expect(decrypted.byteLength).toBe(plaintext.byteLength);
+          expect(areArraysEqual(decrypted, plaintext)).toBe(true);
+        }
+      });
+
       it('encrypts and decrypts ArrayBuffer data', async () => {
         const plaintext = new Uint8Array([9, 10, 11, 12, 13, 14, 15, 16]).buffer;
 
