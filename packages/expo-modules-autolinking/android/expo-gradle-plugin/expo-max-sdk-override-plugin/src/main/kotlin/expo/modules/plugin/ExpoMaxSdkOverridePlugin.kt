@@ -7,6 +7,7 @@ import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import expo.modules.plugin.text.Colors
 import expo.modules.plugin.text.Emojis
 import expo.modules.plugin.text.withColor
+import expo.modules.plugin.utils.manifestMergerReportPath
 import org.gradle.internal.cc.base.logger
 
 /**
@@ -23,8 +24,9 @@ class ExpoMaxSdkOverridePlugin : Plugin<Project> {
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val taskName = "expo${variant.name.replaceFirstChar { it.uppercase() }}OverrideMaxSdkConflicts"
-      val blameReportPath = "outputs/logs/manifest-merger-${listOfNotNull(variant.flavorName?.takeIf { it.isNotEmpty() }, variant.buildType).joinToString("-")}-report.txt"
-      val reportFile = project.layout.buildDirectory.file(blameReportPath)
+      val reportFile = project.layout.buildDirectory.file(
+        manifestMergerReportPath(variant.productFlavors.map { (_, flavorName) -> flavorName }, variant.buildType)
+      )
       val fixTaskProvider = project.tasks.register(
         taskName,
         FixManifestMaxSdkTask::class.java
