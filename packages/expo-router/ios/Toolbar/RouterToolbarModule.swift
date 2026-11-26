@@ -71,10 +71,10 @@ public class RouterToolbarModule: Module {
         view.titleStyle = style?.toTitleStyle()
       }
       Prop("accessibilityLabel") { (view: RouterToolbarItemView, accessibilityLabel: String?) in
-        view.accessibilityLabel = accessibilityLabel
+        view.routerAccessibilityLabel = accessibilityLabel
       }
       Prop("accessibilityHint") { (view: RouterToolbarItemView, accessibilityHint: String?) in
-        view.accessibilityHint = accessibilityHint
+        view.routerAccessibilityHint = accessibilityHint
       }
       Prop("disabled") { (view: RouterToolbarItemView, disabled: Bool?) in
         view.disabled = disabled ?? false
