@@ -373,7 +373,8 @@ struct MetricsDatabaseTests {
           value: 1.5,
           routeName: "/home",
           updateId: "update-1",
-          params: "{\"k\":1}"
+          params: "{\"k\":1}",
+          unit: "ms"
         )
       )
 
@@ -387,6 +388,7 @@ struct MetricsDatabaseTests {
       #expect(row.routeName == "/home")
       #expect(row.updateId == "update-1")
       #expect(row.params == "{\"k\":1}")
+      #expect(row.unit == "ms")
     }
   }
 
@@ -909,7 +911,8 @@ private func makeMetricRow(
   value: Double = 1.0,
   routeName: String? = nil,
   updateId: String? = nil,
-  params: String? = nil
+  params: String? = nil,
+  unit: String? = nil
 ) -> MetricRow {
   return MetricRow(
     sessionId: sessionId,
@@ -919,7 +922,8 @@ private func makeMetricRow(
     value: value,
     routeName: routeName,
     updateId: updateId,
-    params: params
+    params: params,
+    unit: unit
   )
 }
 

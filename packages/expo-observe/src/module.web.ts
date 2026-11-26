@@ -1,6 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo';
 
 import AppMetrics, {
+  recordMetric,
   recordSpan,
   startSpan,
   withSpan,
@@ -29,6 +30,7 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   startSpan = startSpan;
   withSpan = withSpan;
   recordSpan = recordSpan;
+  recordMetric = recordMetric;
   configure(config: ObserveConfig): void {}
   getIntegrations(): ObserveIntegrationsConfig {
     return {};

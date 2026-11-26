@@ -47,6 +47,9 @@ struct Event: Codable, Sendable {
     let routeName: String?
     let updateId: String?
     let customParams: AnyCodable?
+    /// UCUM unit of `value`. `nil` means seconds for the SDK's own metrics and no unit for a
+    /// custom metric.
+    var unit: String? = nil
   }
 
   struct Log: Codable, Sendable {
@@ -98,7 +101,8 @@ struct Event: Codable, Sendable {
           parentSessionId: nil,
           routeName: metric.routeName,
           updateId: metric.updateId,
-          customParams: decodeCustomParams(metric.params)
+          customParams: decodeCustomParams(metric.params),
+          unit: metric.unit
         )
       },
       logs: logs.map { log in

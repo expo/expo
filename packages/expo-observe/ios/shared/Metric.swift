@@ -10,6 +10,8 @@ struct Metric: Codable, Sendable {
     case session
     case updates
     case navigation
+    /// A metric recorded with `recordMetric` from JS. Its name is exported as it is.
+    case custom
     // TODO(@ubax): support arbitrary user-defined string categories from JS;
     // Until then `JsMetric.toMetric()` drops the category when the raw string
     // doesn't match a case here.
@@ -22,6 +24,9 @@ struct Metric: Codable, Sendable {
   var routeName: String? = nil
   var updateId: String? = nil
   var params: AnyCodable? = nil
+  /// UCUM unit of `value`, such as `ms` or `By`. `nil` means seconds for the SDK's own metrics
+  /// and no unit for a custom metric.
+  var unit: String? = nil
   /// ID of the session this metric is attached to. `nil` until the metric is handed to a session
   /// (`Session.receiveMetric`) or hydrated from the database — at every JS-observable read path the
   /// field is populated, so consumers can rely on it.
@@ -35,6 +40,7 @@ struct Metric: Codable, Sendable {
     routeName: String? = nil,
     updateId: String? = nil,
     params: [String: Any]? = nil,
+    unit: String? = nil,
     sessionId: String? = nil
   ) {
     self.category = category
@@ -44,6 +50,7 @@ struct Metric: Codable, Sendable {
     self.routeName = routeName
     self.updateId = updateId
     self.params = params != nil ? AnyCodable(params) : nil
+    self.unit = unit
     self.sessionId = sessionId
   }
 

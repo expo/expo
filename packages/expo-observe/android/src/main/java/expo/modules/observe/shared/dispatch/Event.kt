@@ -88,7 +88,10 @@ internal data class EASMetric(
   val value: Double,
   val routeName: String? = null,
   val updateId: String? = null,
-  val customParams: JsonObject? = null
+  val customParams: JsonObject? = null,
+  // UCUM unit of `value`. `null` means seconds for the SDK's own metrics and no unit for a custom
+  // metric.
+  val unit: String? = null
 ) {
   companion object {
     fun fromMetric(metric: Metric): EASMetric =
@@ -101,7 +104,8 @@ internal data class EASMetric(
         routeName = metric.routeName,
         updateId = metric.updateId,
         // TODO(@lukmccall): Consider using `org.json.JSONObject` instead of kotlinx.serialization. Also, we're not handling exceptions that might be thrown here.
-        customParams = metric.params?.let { Json.decodeFromString<JsonObject>(it) }
+        customParams = metric.params?.let { Json.decodeFromString<JsonObject>(it) },
+        unit = metric.unit
       )
   }
 }

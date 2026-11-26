@@ -102,6 +102,7 @@ export interface Metric {
   sessionId: string;
   routeName?: string | null;
   params?: Record<string, unknown>;
+  unit?: string | null;
 }
 
 export type MetricAttributes = {
@@ -613,6 +614,28 @@ export type RecordSpanOptions = {
   parent?: Span | null;
 };
 
+/**
+ * Unit of a metric value, as a [UCUM](https://ucum.org/) code, which is the format that
+ * OpenTelemetry uses. Common units autocomplete: `'s'` (seconds), `'ms'` (milliseconds), `'By'`
+ * (bytes), and `'1'` (a ratio). For a count, put the name of the counted thing in braces, for
+ * example, `'{item}'`.
+ */
+export type MetricUnit = 's' | 'ms' | 'By' | '1' | (string & {});
+
+export type RecordMetricOptions = {
+  /**
+   * Unit of the value. Omit it when the value has no unit. A unit with more than 63 characters,
+   * a space, or a character that is not ASCII is dropped with a warning, and the metric is
+   * recorded without a unit.
+   */
+  unit?: MetricUnit | null;
+  /**
+   * Attributes attached to the metric. Values go through the same validation as `logEvent`
+   * attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -643,6 +666,11 @@ export interface ExpoAppMetricsModuleType {
    * @hidden
    */
   recordSpan(name: string, options: Omit<RecordSpanOptions, 'parent'>, parent?: Span): void;
+  /**
+   * Native shape behind the `recordMetric` wrapper.
+   * @hidden
+   */
+  recordMetric(name: string, value: number, options?: RecordMetricOptions | null): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty

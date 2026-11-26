@@ -91,6 +91,34 @@ struct OpenTelemetryTests {
   }
 
   @Test
+  func `custom metrics keep their name and unit`() {
+    let metric = makeCustomMetric(unit: "ms")
+    let otMetric = metric.toOTMetric()
+    #expect(otMetric.name == "checkout.payment_time")
+    #expect(otMetric.unit == "ms")
+  }
+
+  @Test
+  func `custom metrics without a unit send an empty unit`() {
+    #expect(makeCustomMetric(unit: nil).toOTMetric().unit == "")
+  }
+
+  private func makeCustomMetric(unit: String?) -> Event.Metric {
+    Event.Metric(
+      category: "custom",
+      name: "checkout.payment_time",
+      value: 120,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil,
+      unit: unit
+    )
+  }
+
+  @Test
   func `navigation metric names are mapped correctly`() {
     let cold = Event.Metric(
       category: "navigation",

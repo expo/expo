@@ -27,6 +27,7 @@ import expo.modules.observe.shared.crashreporting.ExitInfoProviderImpl
 import expo.modules.observe.shared.crashreporting.JvmCrashHandler
 import expo.modules.observe.shared.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.observe.shared.crashreporting.attributeAndStoreCrashReport
+import expo.modules.observe.shared.customMetric
 import expo.modules.observe.shared.deleteStoredData
 import expo.modules.observe.shared.jserrors.ErrorReport
 import expo.modules.observe.shared.jserrors.ErrorSource
@@ -181,6 +182,24 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
         GlobalAttributes.set(attributes)
+      }
+
+      Function("recordMetric") { name: String, value: Double, options: RecordMetricOptions? ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
+        val metric = customMetric(
+          sessionId = mainSession.sessionId,
+          name = name,
+          value = value,
+          unit = options?.unit,
+          attributes = options?.attributes
+        ) ?: return@Function
+
+        scope.launch {
+          saveStartupMetrics()
+          mainSession.addMetrics(listOf(metric))
+        }
       }
 
       Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanObject? ->
@@ -707,6 +726,12 @@ internal data class SpanEndOptions(
   @Field val message: String? = null,
   /** Unix-epoch milliseconds overriding "now" as the span end. */
   @Field val endTime: Double? = null
+) : Record
+
+@OptimizedRecord
+internal data class RecordMetricOptions(
+  @Field val unit: String? = null,
+  @Field val attributes: Map<String, Any?>? = null
 ) : Record
 
 @OptimizedRecord

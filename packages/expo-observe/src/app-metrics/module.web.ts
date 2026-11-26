@@ -71,6 +71,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     return new WebSpan() as unknown as Span;
   }
   recordSpan() {}
+  recordMetric() {}
   async clearStoredEntries() {}
   async getInactiveSessions() {
     return [];

@@ -24,7 +24,7 @@ internal object MetricsConstants {
 
 @Database(
   entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class, Span::class],
-  version = 18,
+  version = 19,
   exportSchema = false
 )
 internal abstract class MetricsDatabase : RoomDatabase() {
@@ -120,7 +120,10 @@ internal data class Metric(
   val routeName: String? = null,
   val updateId: String? = null,
   // JSON string
-  val params: String? = null
+  val params: String? = null,
+  // UCUM unit of `value`. `null` means seconds for the SDK's own metrics and no unit for a custom
+  // metric.
+  val unit: String? = null
 )
 
 internal data class SessionWithMetrics(
