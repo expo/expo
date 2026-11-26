@@ -4,6 +4,7 @@ import expo.modules.calendar.next.domain.dto.event.EventInput
 import expo.modules.calendar.next.domain.dto.event.EventUpdate
 import expo.modules.calendar.next.domain.model.event.AccessLevel
 import expo.modules.calendar.next.domain.model.event.Availability
+import expo.modules.calendar.next.domain.model.event.RecurrenceWeekday
 import expo.modules.calendar.next.domain.model.event.RecurrenceRule
 import expo.modules.calendar.next.domain.wrappers.CalendarId
 import expo.modules.calendar.next.records.EventAccessLevel
@@ -70,6 +71,9 @@ class EventMapper {
       ?: throw IllegalArgumentException("Frequency is required for recurrence rule"),
     interval = interval,
     occurrence = occurrence,
-    endDate = endDate
+    endDate = endDate,
+    daysOfTheWeek = daysOfTheWeek?.map { RecurrenceWeekday(it.dayOfTheWeek, it.weekNumber) },
+    daysOfTheMonth = daysOfTheMonth,
+    monthsOfTheYear = monthsOfTheYear
   )
 }

@@ -1,5 +1,6 @@
 import type { RecurrenceRule as ExpoCalendarRecurrenceRule } from '../legacy/Calendar';
 
+/** Android also supports `daysOfTheWeek`, `daysOfTheMonth`, and `monthsOfTheYear` with the class-based API. */
 export type RecurrenceRule = {
   /**
    * Date on which the calendar item should stop recurring; overrides `occurrence` if both are specified.

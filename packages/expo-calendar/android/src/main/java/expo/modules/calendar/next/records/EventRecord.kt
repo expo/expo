@@ -1,5 +1,6 @@
 package expo.modules.calendar.next.records
 
+import expo.modules.calendar.next.domain.model.event.RecurrenceWeekday
 import expo.modules.calendar.next.utils.parseRrDate
 import expo.modules.calendar.next.utils.rrFormat
 import expo.modules.calendar.next.utils.sdf
@@ -41,6 +42,12 @@ data class AlarmRecord(
 ) : Record
 
 @OptimizedRecord
+data class RecurrenceWeekdayRecord(
+  @Field val dayOfTheWeek: Int,
+  @Field val weekNumber: Int? = null
+) : Record
+
+@OptimizedRecord
 data class RecurrenceRuleRecord(
   @Field
   val endDate: String? = null,
@@ -49,7 +56,10 @@ data class RecurrenceRuleRecord(
   @Field
   val interval: Int? = null,
   @Field
-  val occurrence: Int? = null
+  val occurrence: Int? = null,
+  @Field val daysOfTheWeek: List<RecurrenceWeekdayRecord>? = null,
+  @Field val daysOfTheMonth: List<Int>? = null,
+  @Field val monthsOfTheYear: List<Int>? = null
 ) : Record {
 
   /**
@@ -83,7 +93,13 @@ data class RecurrenceRuleRecord(
           ?.let { sdf.format(it) },
         frequency = ruleMap["FREQ"]?.lowercase(Locale.getDefault()),
         interval = ruleMap["INTERVAL"]?.toIntOrNull(),
-        occurrence = ruleMap["COUNT"]?.toIntOrNull()
+        occurrence = ruleMap["COUNT"]?.toIntOrNull(),
+        daysOfTheWeek = ruleMap["BYDAY"]?.split(",")?.map {
+          val day = RecurrenceWeekday.fromRuleString(it)
+          RecurrenceWeekdayRecord(day.dayOfTheWeek, day.weekNumber)
+        },
+        daysOfTheMonth = ruleMap["BYMONTHDAY"]?.split(",")?.map(String::toInt),
+        monthsOfTheYear = ruleMap["BYMONTH"]?.split(",")?.map(String::toInt)
       )
     }
   }

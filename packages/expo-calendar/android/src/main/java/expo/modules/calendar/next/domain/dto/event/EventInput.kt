@@ -41,14 +41,7 @@ class EventInput(
     guestsCanSeeGuests = guestsCanSeeGuests,
     organizer = organizer,
     originalId = null,
-    rrule = rrule?.let {
-      RecurrenceRule(
-        frequency = it.frequency,
-        interval = it.interval,
-        occurrence = it.occurrence,
-        endDate = it.endDate
-      )
-    },
+    rrule = rrule,
     status = null,
     title = title,
     eventTimezone = eventTimezone
