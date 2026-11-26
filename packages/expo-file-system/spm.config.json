@@ -12,29 +12,26 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "objc",
-          "name": "ExpoFileSystem_ios_objc",
+          "name": "ExpoFileSystemObjC",
           "moduleName": "ExpoFileSystem",
-          "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
+          "path": "ios/ExpoFileSystemObjC",
           "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "includeDirectories": ["."]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         },
         {
           "type": "swift",
           "name": "ExpoFileSystem",
           "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
-            "ExpoFileSystem_ios_objc"
+            "ExpoFileSystemObjC"
           ],
           "linkedFrameworks": ["Foundation", "UIKit", "QuickLook"],
           "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
