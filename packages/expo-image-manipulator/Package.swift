@@ -16,6 +16,7 @@ let package = Package(
     .package(path: "../ExpoModulesCoreHeaders"),
     .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),
     .package(url: "https://github.com/SDWebImage/SDWebImageWebPCoder.git", exact: "0.15.0"),
+    .package(url: "https://github.com/SDWebImage/libwebp-Xcode.git", exact: "1.6.0"),
   ],
   targets: [
     .target(
@@ -24,6 +25,7 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
         .product(name: "SDWebImage", package: "SDWebImage"),
         .product(name: "SDWebImageWebPCoder", package: "SDWebImageWebPCoder"),
+        .product(name: "libwebp", package: "libwebp-Xcode"),
       ],
       path: "ios/ExpoImageManipulator"
     )
