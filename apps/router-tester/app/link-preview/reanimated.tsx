@@ -78,6 +78,41 @@ export default function ReanimatedLinkPreview() {
           </Link.Trigger>
           <Link.Preview />
         </Link>
+
+        <Text>Zoom (the buttons above also animate these):</Text>
+        <Link href="/link-preview/reanimated-zoom-dest" asChild>
+          <Link.Trigger withAppleZoom>
+            <Pressable testID="reanimated-zoom-width-trigger">
+              <Animated.View style={[styles.trigger, widthStyle]}>
+                <Text>Zoom width</Text>
+              </Animated.View>
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+        <Link href="/link-preview/reanimated-zoom-dest" asChild>
+          <Link.Trigger withAppleZoom>
+            <Pressable testID="reanimated-zoom-move-trigger">
+              <Animated.View style={[styles.trigger, offsetStyle]}>
+                <Text>Zoom move</Text>
+              </Animated.View>
+            </Pressable>
+          </Link.Trigger>
+        </Link>
+        <Link href="/link-preview/reanimated-zoom-dest" asChild>
+          <Link.Trigger withAppleZoom>
+            <AnimatedPressable
+              testID="reanimated-zoom-layout-trigger"
+              layout={LinearTransition.duration(600)}
+              style={styles.trigger}>
+              <Text>Zoom layout</Text>
+              {expanded && (
+                <Animated.Text entering={FadeIn} exiting={FadeOut}>
+                  Extra line
+                </Animated.Text>
+              )}
+            </AnimatedPressable>
+          </Link.Trigger>
+        </Link>
       </View>
     </ScrollView>
   );
