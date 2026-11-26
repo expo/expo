@@ -18,7 +18,11 @@ The generated Markdown file has YAML frontmatter followed by the user-facing sum
 Fix asset URLs when the development server uses a custom origin.
 ```
 
-Write the summary for package users without assuming they have read the pull request. Prefix internal work with `[Internal]`. Multiple paragraphs and fenced code blocks are supported.
+- Write the summary for package users without assuming they have read the pull request
+- Prefix internal work with `[Internal]`
+- Multiple paragraphs and fenced code blocks are supported.
+- If a change is reflected in multiple packages, prefer combining this into one changeset that references multiple packages.
+- Keep in mind these are changelog entries that are user-facing and should avoid excessive internal details or technical explanations.
 
 ## Reference overrides
 
