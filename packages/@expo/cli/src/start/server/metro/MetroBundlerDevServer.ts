@@ -28,6 +28,7 @@ import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
+import { RESERVED_STRING } from '@expo/metro/metro/lib/reservedString';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -164,9 +165,7 @@ interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
 
 // TODO(@kitten): We access this here to run server-side code bundled by metro
 // It's not isolated into a worker thread yet
-// Check `metro-require/require.ts` for how this function is defined
 declare namespace globalThis {
-  const __c: (() => void) | undefined;
   let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;
 }
 
@@ -1725,7 +1724,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // NOTE: We throw away the updates and instead simply send a trigger to the client to re-fetch the server route.
             if (!isInitialUpdate && hasUpdate) {
               // Clear all SSR modules before sending the reload event. This ensures that the next event will rebuild the in-memory state from scratch.
-              if (typeof globalThis.__c === 'function') globalThis.__c();
+              this.clearServerModules();
 
               const allModuleIds = new Set(
                 [...added, ...modified].map((m) => m.module[0]).concat(deleted)
@@ -2113,9 +2112,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return;
       }
 
-      if (typeof globalThis.__c === 'function') {
-        globalThis.__c();
-      }
+      this.clearServerModules();
 
       this.broadcastMessage('sendDevCommand', {
         name: 'loader-invalidate',
@@ -2320,6 +2317,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         inlineSourceMap: serializerOptions.inlineSourceMap,
         serverRoot: config.server.unstable_serverRoot ?? config.projectRoot,
         shouldAddToIgnoreList,
+        reservedString: RESERVED_STRING,
 
         // TODO(@kitten): This is incoherently typed. The target should be typed to accept this coherently
         // but we have no type overrides or a proper type chain for this
@@ -2478,6 +2476,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       lazy: graphOptions.lazy,
     });
     return this.metro.getBundler().getRevisionByGraphId(graphId);
+  }
+
+  /**
+   * Clear the module registry that server bundles share in this process, so that the next server
+   * bundle evaluated rebuilds its modules.
+   */
+  private clearServerModules() {
+    const globalPrefix = this.metro?._config.transformer.globalPrefix ?? '';
+    const clear = (globalThis as Record<string, unknown>)[`${globalPrefix}__c`];
+    if (typeof clear === 'function') {
+      clear();
+    }
   }
 
   private async resolveRelativePathAsync(

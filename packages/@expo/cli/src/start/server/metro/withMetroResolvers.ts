@@ -11,6 +11,7 @@ import type {
   CustomResolver,
 } from '@expo/metro/metro-resolver';
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { redirectModulePath as metroRedirectModulePath } from '@expo/metro/metro-resolver/PackageResolve';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { event } from './resolveEvents';
@@ -59,6 +60,17 @@ export function withMetroResolvers(
 
         const universalContext = {
           ...context,
+          // NOTE(@robhogan): Metro 0.88 removed these two from the context
+          // (https://github.com/react/metro/pull/2181), but custom resolvers still call them, e.g.
+          // `@rnx-kit/metro-resolver-symlinks`. They behave as in Metro 0.87 until a breaking SDK
+          // release.
+          redirectModulePath(modulePath: string) {
+            return metroRedirectModulePath(context, modulePath);
+          },
+          doesFileExist(filePath: string) {
+            const result = context.fileSystemLookup(filePath);
+            return result.exists && result.type === 'f';
+          },
           resolveRequest(
             ctx: CustomResolutionContext,
             moduleName: string,

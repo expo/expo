@@ -60,21 +60,12 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
   /**
    * Override Metro's update() to clear the status before _log() runs.
    *
-   * Metro's Terminal.#update() is async and snapshots #nextStatusStr at the start.
-   * When _log() calls terminal.log(), Terminal starts #update() which captures
-   * whatever status is currently set — often a stale progress bar. This progress bar
-   * gets written as permanent output between log lines because the next #update()
-   * cycle (which would clear it) runs 33ms later.
-   *
-   * By clearing the status to empty before _log(), Terminal's #update() captures
-   * an empty status and doesn't write any progress bars alongside log lines.
-   * The correct status is then restored by terminal.status() at the end.
+   * While a status is set, Metro's Terminal.log() writes the last written status again below
+   * each log line, which is often a stale progress bar. Clearing the status first writes the
+   * log line on its own. The correct status is then restored by terminal.status() at the end.
    */
   update(event: TerminalReportableEvent): void {
-    if (
-      event.type !== 'bundle_transform_progressed' &&
-      event.type !== ('bundle_transform_progressed_throttled' as string)
-    ) {
+    if (event.type !== 'bundle_transform_progressed') {
       this.terminal.status('');
     }
     super.update(event);

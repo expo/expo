@@ -394,12 +394,12 @@ it.each(['node', 'react-server'])(
     const serializerOptions: ExpoSerializerOptions = {
       ...options,
       shouldAddToIgnoreList: (module) => module.path === entry,
-    };
-    serializerOptions.excludeSource = false;
-    serializerOptions.serializerOptions = {
-      ...serializerOptions.serializerOptions,
-      entryFilename: '_expo/server/hello world.js',
-      excludeSource: true,
+      excludeSource: false,
+      serializerOptions: {
+        ...(options as ExpoSerializerOptions).serializerOptions,
+        entryFilename: '_expo/server/hello world.js',
+        excludeSource: true,
+      },
     };
     const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
     const { artifacts } = (await serializer(entry, premodules, graph, serializerOptions)) as any;
@@ -413,9 +413,12 @@ it.each(['node', 'react-server'])(
     expect(map.ignoreList).toEqual([map.sources.indexOf('/index.js')]);
     expect(map.x_google_ignoreList).toEqual(map.ignoreList);
     expect(js.source).toContain('//# debugId=' + map.debugId);
-    serializerOptions.excludeSource = true;
-    serializerOptions.serializerOptions.excludeSource = false;
-    const included = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+    const includedOptions: ExpoSerializerOptions = {
+      ...serializerOptions,
+      excludeSource: true,
+      serializerOptions: { ...serializerOptions.serializerOptions, excludeSource: false },
+    };
+    const included = (await serializer(entry, premodules, graph, includedOptions)) as any;
     expect(included.artifacts.find((a: SerialAsset) => a.type === 'map').source).toContain(
       'export const value = 42;'
     );
@@ -544,29 +547,33 @@ it.each(['node', 'react-server'])(
   }
 );
 
-it.each(['true', '1'])(
-  'honors excludeSource=%s in Metro inline-map requests',
-  async (excludeSource) => {
-    const [entry, premodules, graph, options] = await microBundle({
-      fs: { 'index.js': `export const value = 42;` },
-      options: { dev: true, sourceMaps: true },
-    });
-    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
-    const requestOptions: ExpoSerializerOptions = {
-      ...options,
-      inlineSourceMap: true,
-      sourceUrl: 'http://localhost/index.bundle?excludeSource=' + excludeSource,
-      serializerOptions: undefined,
-    };
-    const code = await serializer(entry, premodules, graph, requestOptions);
-    expect(typeof code).toBe('string');
-    const encoded = (code as string).match(
-      /sourceMappingURL=data:application\/json[^,]*,([^\n]+)/
-    )![1]!;
-    const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
-    expect(JSON.stringify(map)).not.toContain('export const value = 42;');
-  }
-);
+it.each([
+  // As Metro's server passes a request's `excludeSource` query parameter
+  ['from the options', true, ''],
+  // As Metro before 0.88.1 leaves it out of the options
+  ['from the URL', undefined, '?excludeSource=true'],
+  ['from the URL as 1', undefined, '?excludeSource=1'],
+])('honors excludeSource %s in Metro inline-map requests', async (_, excludeSource, query) => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { dev: true, sourceMaps: true },
+  });
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const requestOptions: ExpoSerializerOptions = {
+    ...options,
+    excludeSource,
+    inlineSourceMap: true,
+    sourceUrl: 'http://localhost/index.bundle' + query,
+    serializerOptions: undefined,
+  };
+  const code = await serializer(entry, premodules, graph, requestOptions);
+  expect(typeof code).toBe('string');
+  const encoded = (code as string).match(
+    /sourceMappingURL=data:application\/json[^,]*,([^\n]+)/
+  )![1]!;
+  const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
+  expect(JSON.stringify(map)).not.toContain('export const value = 42;');
+});
 
 it.each([false, true])(
   'respects custom source URLs and source exclusion in single-bundle client maps (inline: %s)',

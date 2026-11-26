@@ -579,10 +579,11 @@ export function withExtendedResolver(
                   ? context.customResolverOptions.environment
                   : undefined,
             });
+            const metroRequire = `${config.transformer.globalPrefix}__r`;
             const contents =
               typeof opaqueId === 'number'
-                ? `module.exports=/*${moduleName}*/__r(${opaqueId})`
-                : `module.exports=/*${moduleName}*/__r(${JSON.stringify(opaqueId)})`;
+                ? `module.exports=/*${moduleName}*/${metroRequire}(${opaqueId})`
+                : `module.exports=/*${moduleName}*/${metroRequire}(${JSON.stringify(opaqueId)})`;
             // const contents = `module.exports=/*${moduleName}*/__r(require.resolveWeak('${moduleName}'))`;
             // const generatedModuleId = fastHashMemoized(contents);
             const virtualModuleId = `\0weak:${opaqueId}`;

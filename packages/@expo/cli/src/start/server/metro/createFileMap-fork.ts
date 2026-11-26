@@ -5,6 +5,7 @@
 // and redirects to `@expo/metro-file-map`
 
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
+import type { InputFileMapPlugin } from '@expo/metro-file-map';
 import type MetroServer from '@expo/metro/metro/Server';
 import ciInfo from 'ci-info';
 import path from 'node:path';
@@ -33,7 +34,10 @@ export default function createFileMap(config: ExpoMetroConfig, options?: CreateF
   const { enabled: autoSaveEnabled, ...autoSaveOpts } = config.watcher.unstable_autoSaveCache ?? {};
   const autoSave = watch && autoSaveEnabled ? autoSaveOpts : false;
 
-  const plugins = [...(config.unstable_fileMapPlugins ?? [])];
+  // NOTE(@robhogan): The fork predates Metro's current plugin API
+  // (https://github.com/react/metro/pull/1951), so a config plugin that calls
+  // `getOrComputeFileData` isn't supported yet.
+  const plugins = [...((config.unstable_fileMapPlugins ?? []) as readonly InputFileMapPlugin[])];
   let dependencyPlugin: DependencyPlugin | null = null;
 
   if (config.resolver.dependencyExtractor != null && options?.extractDependencies !== false) {
@@ -56,6 +60,9 @@ export default function createFileMap(config: ExpoMetroConfig, options?: CreateF
   const projectRoot = config.projectRoot;
   const serverRoot = config.server.unstable_serverRoot;
   const enableFallback = !!config.resolver.unstable_onDemandFilesystem;
+  if (enableFallback) {
+    allowAssetsOutsideRoots();
+  }
 
   // NOTE(@kitten): We allow the on-demand filesystem to escape the server root and access any file,
   // - if we're using the CLI from `expo/expo` on an external project (e.g. in CI(
@@ -107,6 +114,38 @@ export default function createFileMap(config: ExpoMetroConfig, options?: CreateF
     hasteMap,
     dependencyPlugin,
   };
+}
+
+type AssetsModule = typeof import('@expo/metro/metro/Assets');
+
+let didAllowAssetsOutsideRoots = false;
+
+/**
+ * Stop Metro's transformer from throwing for an asset outside every root, which the on-demand
+ * filesystem maps. Such an asset gets no URL path, which Expo's transform worker doesn't read.
+ */
+export function allowAssetsOutsideRoots(): void {
+  // NOTE(@robhogan): Metro only throws here for a file map that holds files outside its roots.
+  // Remove this once the on-demand filesystem maps only files under Metro's roots.
+  if (didAllowAssetsOutsideRoots) {
+    return;
+  }
+  didAllowAssetsOutsideRoots = true;
+  const assets: AssetsModule = require('@expo/metro/metro/Assets');
+  const { getAssetUrlPath } = assets;
+  Object.defineProperty(assets, 'getAssetUrlPath', {
+    value: (...args: Parameters<AssetsModule['getAssetUrlPath']>): string | null => {
+      try {
+        return getAssetUrlPath(...args);
+      } catch (error) {
+        // Metro throws this only for an asset under no root
+        if (error instanceof Error && error.message.includes('is not within projectRoot')) {
+          return null;
+        }
+        throw error;
+      }
+    },
+  });
 }
 
 function isDirectoryIn(targetPath: string, rootPath: string) {

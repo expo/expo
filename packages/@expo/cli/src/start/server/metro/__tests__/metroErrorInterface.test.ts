@@ -312,7 +312,7 @@ describe('logMetroError', () => {
       start('first');
       start('second');
       reporter.update({
-        type: 'bundle_transform_progressed_throttled',
+        type: 'bundle_transform_progressed',
         buildID: 'second',
         transformedFileCount: 2,
         totalFileCount: 5,

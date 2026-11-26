@@ -316,6 +316,18 @@ export function getDefaultConfig(
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
+      // NOTE(@robhogan): Metro 0.88 reads `"exports"` from the package root, and applies `"browser"`
+      // redirections after it, by default (https://github.com/react/metro/pull/2174). Both can change
+      // which file a package import resolves to, so they stay off until a breaking SDK release.
+      unstable_resolveExportsFromPackageRoot: false,
+      unstable_applyBrowserSpecAfterExports: false,
+      // NOTE(@robhogan): This is the file behind Metro 0.88's default specifier,
+      // `metro:runtime/modules/empty-module`, which Metro before 0.87.2 can't resolve (e.g. React
+      // Native's, under `react-native start` with an older lockfile), and which config code can't
+      // read as a file path.
+      emptyModulePath: require.resolve('metro-runtime/modules/empty-module', {
+        paths: [path.dirname(require.resolve('@expo/metro/package.json'))],
+      }),
       platforms: ['ios', 'android', ...OUT_OF_TREE_PLATFORMS],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
@@ -417,6 +429,12 @@ export function getDefaultConfig(
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
       unstable_workerThreads: true,
+      // NOTE(@robhogan): Shared transform results break two Expo mechanisms. PostCSS output marked
+      // `skipCache` must be transformed again on every traversal (see
+      // `patchMetroGraphToSupportUncachedModules`), but sharing returns the first result. Graph
+      // optimization and tree shaking write into module outputs and dependencies, which sharing gives
+      // to every graph that holds the module. Turn this on once both are fixed.
+      unstable_shareTransformResults: false,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist
@@ -464,6 +482,11 @@ export function getDefaultConfig(
 
   // Expo defaults to the Node crawler and watcher, where Metro defaults to Watchman.
   (metroConfig.resolver as { useWatchman: boolean }).useWatchman = false;
+
+  // NOTE(@robhogan): Each Metro's default run statement calls the `__r` that its own `require`
+  // polyfill defines. Metro 0.88 prefixes it with `transformer.globalPrefix`, and Metro 0.87
+  // doesn't, so this leaves the run statement to the Metro that loads the config.
+  delete (metroConfig.serializer as { getRunModuleStatement?: unknown }).getRunModuleStatement;
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }

@@ -103,6 +103,9 @@ declare module '2g' {
 export const event = events('metro');
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
+// Metro reports progress several times per module, so progress events are limited to one per bundle
+// in this interval, as Metro limits its own progress status
+const PROGRESS_EVENT_INTERVAL_MS = 100;
 const DARK_BLOCK_CHAR = '\u2593';
 const LIGHT_BLOCK_CHAR = '\u2591';
 /**
@@ -117,6 +120,8 @@ export class MetroTerminalReporter extends TerminalReporter {
       end: SpanEnd<'metro'>;
       total: number;
       ratio: number;
+      // When the last progress event was emitted, from `performance.now()`
+      progressTime: number;
       start: { id: string; platform: null | string; environment: null | string; entry: string };
     }
   >();
@@ -459,6 +464,7 @@ export class MetroTerminalReporter extends TerminalReporter {
           end: event.span(),
           total: 1,
           ratio: 0,
+          progressTime: -Infinity,
           start: {
             id: evt.buildID,
             platform: evt.bundleDetails.platform ?? null,
@@ -477,7 +483,7 @@ export class MetroTerminalReporter extends TerminalReporter {
         });
         return;
       }
-      case 'bundle_transform_progressed_throttled': {
+      case 'bundle_transform_progressed': {
         const span = this.#bundleSpans.get(evt.buildID);
         if (span) {
           span.total = evt.totalFileCount;
@@ -486,12 +492,16 @@ export class MetroTerminalReporter extends TerminalReporter {
             evt.totalFileCount,
             span.ratio
           );
-          event('bundling:progress', {
-            id: evt.buildID,
-            progress: span.ratio,
-            total: evt.totalFileCount,
-            current: evt.transformedFileCount,
-          });
+          const now = performance.now();
+          if (now - span.progressTime >= PROGRESS_EVENT_INTERVAL_MS) {
+            span.progressTime = now;
+            event('bundling:progress', {
+              id: evt.buildID,
+              progress: span.ratio,
+              total: evt.totalFileCount,
+              current: evt.transformedFileCount,
+            });
+          }
         }
         return;
       }

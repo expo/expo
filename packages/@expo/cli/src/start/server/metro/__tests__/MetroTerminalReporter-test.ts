@@ -7,6 +7,7 @@ import {
   parseErrorStringToObject,
 } from '../../serverLogLikeMetro';
 import {
+  event,
   extractCodeFrame,
   formatUsingNodeStandardLibraryError,
   isNodeStdLibraryModule,
@@ -678,9 +679,9 @@ describe('non-interactive terminal output', () => {
       isPrefetch: false,
     } as any);
 
-    // Progress updates (normally throttled at 100ms, we simulate the throttled event directly)
+    // Progress updates
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID1,
       transformedFileCount: 500,
       totalFileCount: 964,
@@ -703,7 +704,7 @@ describe('non-interactive terminal output', () => {
 
     // Progress update for second bundle
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID2,
       transformedFileCount: 97,
       totalFileCount: 210,
@@ -770,7 +771,7 @@ describe('non-interactive terminal output', () => {
 
     // Add some progress
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID1,
       transformedFileCount: 50,
       totalFileCount: 100,
@@ -787,14 +788,9 @@ describe('status cleared before log lines', () => {
   afterEach(() => mockIsInteractive.mockReturnValue(false));
 
   /**
-   * Metro's Terminal.#update() is async and snapshots #nextStatusStr when it starts.
-   * When _log() calls terminal.log(), Terminal starts #update() which captures
-   * whatever status is currently set. If it's a progress bar, that progress bar
-   * gets written as permanent output between log lines (it can't be reliably
-   * cleared before more output arrives).
-   *
-   * The fix: update() clears the status to empty before _log() runs, so Terminal's
-   * #update() captures an empty status and writes no progress bars alongside log lines.
+   * While a status is set, Metro's Terminal.log() writes the last written status again below
+   * each log line, which is often a stale progress bar. update() clears the status before _log()
+   * runs, so log lines are written on their own.
    */
 
   const buildID1 = 'build-1';
@@ -839,7 +835,7 @@ describe('status cleared before log lines', () => {
       isPrefetch: false,
     } as any);
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID1,
       transformedFileCount: 50,
       totalFileCount: 100,
@@ -873,7 +869,7 @@ describe('status cleared before log lines', () => {
       isPrefetch: false,
     } as any);
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID1,
       transformedFileCount: 883,
       totalFileCount: 886,
@@ -911,7 +907,7 @@ describe('status cleared before log lines', () => {
 
     // Progress event should NOT clear the status
     reporter.update({
-      type: 'bundle_transform_progressed_throttled',
+      type: 'bundle_transform_progressed',
       buildID: buildID1,
       transformedFileCount: 50,
       totalFileCount: 100,
@@ -920,6 +916,44 @@ describe('status cleared before log lines', () => {
     // Should not start with a clear
     const firstStatus = callOrder.find((c) => c.type === 'status');
     expect(firstStatus?.content).not.toBe('');
+  });
+});
+
+describe('bundling events', () => {
+  const buildID = 'build-1';
+  const bundleDetails = asBundleDetails({
+    buildID,
+    entryFile: 'node_modules/expo-router/entry.js',
+    platform: 'ios',
+    bundleType: 'bundle',
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('reports the last progress total when a bundle is done', () => {
+    const end = jest.fn();
+    jest.spyOn(event, 'span').mockReturnValue(end);
+    const terminal = { log: jest.fn(), status: jest.fn(), flush: jest.fn() };
+    const reporter = new MetroTerminalReporter('/', terminal as any);
+    reporter._getElapsedTime = jest.fn(() => BigInt(100_000_000));
+
+    reporter.update({ type: 'bundle_build_started', buildID, bundleDetails } as any);
+    // Within one progress event interval, so only the first emits an event
+    reporter.update({
+      type: 'bundle_transform_progressed',
+      buildID,
+      transformedFileCount: 1,
+      totalFileCount: 5,
+    } as any);
+    reporter.update({
+      type: 'bundle_transform_progressed',
+      buildID,
+      transformedFileCount: 9,
+      totalFileCount: 10,
+    } as any);
+    reporter.update({ type: 'bundle_build_done', buildID, bundleDetails } as any);
+
+    expect(end).toHaveBeenCalledWith('bundling:done', expect.objectContaining({ total: 10 }));
   });
 });
 

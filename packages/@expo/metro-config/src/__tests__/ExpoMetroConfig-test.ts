@@ -1,5 +1,5 @@
 import { Cache } from '@expo/metro/metro-cache';
-import { mergeConfig } from '@expo/metro/metro-config';
+import { getDefaultConfig as getDefaultMetroConfig, mergeConfig } from '@expo/metro/metro-config';
 import { vol } from 'memfs';
 import os from 'os';
 import path from 'path';
@@ -153,6 +153,23 @@ describe(getDefaultConfig, () => {
   it('lets a user config turn Watchman on', () => {
     const config = mergeConfig(getDefaultConfig(projectRoot), { resolver: { useWatchman: true } });
     expect(config.resolver.useWatchman).toBe(true);
+  });
+
+  it(`defaults the empty module to a file path`, () => {
+    const { emptyModulePath } = getDefaultConfig(projectRoot).resolver;
+    expect(path.isAbsolute(emptyModulePath)).toBe(true);
+    expect(emptyModulePath).toMatch(/[\\/]metro-runtime[\\/]src[\\/]modules[\\/]empty-module\.js$/);
+  });
+
+  it('leaves the run statement to the Metro that loads the config', () => {
+    const hostDefaults = getDefaultMetroConfig.getDefaultValues(projectRoot);
+    const getRunModuleStatement = () => '';
+    // As Metro's `loadConfig` puts its own defaults under the config
+    const config = mergeConfig(
+      { ...hostDefaults, serializer: { ...hostDefaults.serializer, getRunModuleStatement } },
+      getDefaultConfig(projectRoot)
+    );
+    expect(config.serializer.getRunModuleStatement).toBe(getRunModuleStatement);
   });
 });
 
