@@ -87,16 +87,17 @@ function UnmatchedInner() {
         <View style={[styles.pageLink, styles.placeholder]} />
       )}
       <View style={styles.linkContainer}>
-        <Pressable>
+        <Pressable
+          role="button"
+          onPress={() => {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/' as Href);
+            }
+          }}>
           {({ hovered, pressed }) => (
             <Text
-              onPress={() => {
-                if (router.canGoBack()) {
-                  router.back();
-                } else {
-                  router.replace('/' as Href);
-                }
-              }}
               style={[
                 styles.link,
                 Platform.select({
