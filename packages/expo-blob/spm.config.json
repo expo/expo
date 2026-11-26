@@ -16,7 +16,6 @@
         {
           "type": "swift",
           "name": "ExpoBlob",
-          "path": "ios/ExpoBlob",
           "dependencies": [
             "Hermes",
             "React",

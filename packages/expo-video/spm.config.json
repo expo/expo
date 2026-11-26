@@ -17,7 +17,6 @@
         {
           "type": "swift",
           "name": "ExpoVideo",
-          "path": "ios/ExpoVideo",
           "dependencies": [
             "Hermes",
             "React",
