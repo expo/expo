@@ -176,6 +176,17 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     }
   }
 
+  override fun onWindowVisibilityChanged(visibility: Int) {
+    super.onWindowVisibilityChanged(visibility)
+    if (
+      visibility == VISIBLE &&
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+      blurConfiguration == BlurViewConfiguration.DIMEZIS
+    ) {
+      blurTarget?.blurTargetView?.refreshBlurView(blurView)
+    }
+  }
+
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
     needsClippingPathUpdate = true
