@@ -17,6 +17,7 @@
         {
           "type": "swift",
           "name": "ExpoContacts",
+          "path": "ios/ExpoContacts",
           "dependencies": [
             "Hermes",
             "React",
