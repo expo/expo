@@ -76,11 +76,18 @@ A failed criterion is a `critical` finding, titled with the criterion.
   Complexity, branch and type findings are a `warning` when you can name the concrete cost,
   otherwise a `suggestion`.
 - Correctness: edge cases, error paths, resource cleanup, ordering, concurrency. Walk each
-  failure path to its end, through the code it calls.
+  failure path to its end, through the code it calls. When a delete, rename, or move
+  changes its place relative to `try` or `finally`, list every path already removed or
+  replaced if the next call throws. Do not stop once the resource the change is saving
+  is still in place. Other files may already be gone, and a throw before the `try`
+  never reaches the new `catch`.
 - User-facing output: for each message, log and error on the surface you listed, check that
   it is still true after the change, in the order the user sees it. A message from code the
   change calls counts. Report advice that is now wrong, or a value, path or count that no
-  longer matches what the code does, at the changed line that makes it wrong.
+  longer matches what the code does, at the changed line that makes it wrong. Walk each
+  branch that prints the message, including a failure of the recovery step after an earlier
+  step in that recovery already succeeded. A message that is true on one of those branches
+  and false on another is a finding.
 - Breaking changes: a changed public type, option, CLI flag, file format or default. Name the
   caller that breaks and whether the PR gives a migration. Include breaks in how people run
   and build: a renamed or removed environment variable or config key, or a new mandatory
@@ -111,6 +118,8 @@ Before you return, read each finding again. This pass removes noise, never a rea
 
 - Keep every `critical` and `warning` that meets the evidence requirement, whatever the size
   of the fix.
+- A defect that meets the evidence requirement goes in `findings`. Do not leave it in
+  `trace.uncertainties`, and do not describe it only in the summary.
 - Drop a finding you cannot defend when the author asks "why?". Open the code again before
   you drop it: the answer may make the finding stronger.
 - Drop a `suggestion` that is not worth the author's time, or whose comment is longer than

@@ -31,13 +31,21 @@ The patch files are user data. Users commit them to their own repositories.
 - **The user's native project.** The CLI moves the user's `android/` or `ios/` into
   `.patch-project-tmp/<platform>/` and deletes that directory in a `finally`. A change to this
   flow must keep the user's project recoverable when any step throws. The iOS project file is
-  normalized before the diff, and `revertNormalizeNativeProjectsAsync` restores it.
+  normalized before the diff, and `revertNormalizeNativeProjectsAsync` restores it. Patch
+  files under `cng-patches/` are user data too. The run deletes them before it moves the
+  native project, and it has no step that moves the project back when a later call throws.
+  A change that deletes user files earlier, or adds a call that can throw before the new
+  patch is written, must also put those files back on a throw. A throw while preparing
+  `.patch-project-tmp` must leave the existing patch files in place.
 - **Patch file names and format.** The name ties a patch to a template checksum. A change to
   the name, the location (`patchRoot`) or the diff options can break patches that users
   already committed. It needs a migration path or a clear error.
 - **Messages.** A project shape the plugin can handle, such as a patch for another template
   checksum or a large patch, is a warning through `WarningAggregator`. A patch that cannot
-  apply is an error. Each message names the patch file and what the user can do next.
+  apply is an error. Each message names the patch file and what the user can do next. A
+  message that tells the user to move or delete a directory must still be true on every
+  branch that prints it, including after the files are already back in the project. A wrong
+  next step that replaces the restored project is a defect.
 - **@expo/cli internals.** The CLI loads modules from `@expo/cli/build/src/prebuild/` through
   `resolveFromExpoCli`. A change on either side can break the other. Check both packages.
 

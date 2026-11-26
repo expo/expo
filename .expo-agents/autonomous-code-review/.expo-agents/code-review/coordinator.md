@@ -59,6 +59,8 @@ metadata. You do not re-review the code. You own what gets posted: synthesize, c
    The next sentence gives the count, for example "2 must fix, 1 should fix, 1 nit." or "No
    findings.". Then name the change shape and what could break. Say when the PR changes a
    path that always needs a human. Never state a claim from the PR title or body as fact.
+   Do not describe a wrong line in the summary unless a kept finding says the same thing.
+   The risk handoff supplies the risk level. It does not stand in for a finding.
 
 ## Decision rubric
 
