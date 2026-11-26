@@ -3,16 +3,6 @@
 import ExpoModulesJSI
 import Foundation
 
-/// A runtime that more than one thread runs code in, such as the worklets UI runtime, which the JavaScript thread
-/// can run worklets in too. Code that keeps state between JSI calls, such as the caches of ``JavaScriptRuntime``,
-/// runs on such a runtime only while it holds the runtime's lock.
-@_spi(Internal)
-public protocol JavaScriptRuntimeLocking: AnyObject {
-  /// Runs `body` while holding the runtime's lock, and returns `true`. Returns `false` without running `body`
-  /// when the runtime is gone.
-  func withLock(_ body: () -> Void) -> Bool
-}
-
 /// The runtime that the props decoders of v2 views use on each thread for props that come as `folly::dynamic`,
 /// without a runtime: from Reanimated, React Native's animations, and every update of a view after
 /// `setNativeProps`. A value converted from `folly::dynamic` doesn't depend on the runtime that converted it, so
