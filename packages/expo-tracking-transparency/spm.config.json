@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoTrackingTransparency",
+          "path": "ios/ExpoTrackingTransparency",
           "dependencies": [
             "Hermes",
             "React",
