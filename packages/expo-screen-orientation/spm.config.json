@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoScreenOrientation",
+          "path": "ios/ExpoScreenOrientation",
           "dependencies": [
             "Hermes",
             "React",
