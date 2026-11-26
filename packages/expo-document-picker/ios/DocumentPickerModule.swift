@@ -6,6 +6,7 @@ struct PickingContext {
   let promise: Promise
   let options: DocumentPickerOptions
   let delegate: DocumentPickingDelegate
+  weak var picker: UIDocumentPickerViewController?
 }
 
 public class DocumentPickerModule: Module, PickingResultHandler {
@@ -15,8 +16,12 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     Name("ExpoDocumentPicker")
 
     AsyncFunction("getDocumentAsync") { (options: DocumentPickerOptions, promise: Promise) in
-      if pickingContext != nil {
-        throw PickingInProgressException()
+      if let context = pickingContext {
+        guard context.picker?.presentingViewController == nil else {
+          throw PickingInProgressException()
+        }
+        pickingContext = nil
+        context.promise.resolve(DocumentPickerResponse(canceled: true))
       }
 
       guard let currentVc = appContext?.utilities?.currentViewController() else {
@@ -26,7 +31,12 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       let documentPickerVC = createDocumentPicker(with: options)
       let pickerDelegate = DocumentPickingDelegate(resultHandler: self)
 
-      pickingContext = PickingContext(promise: promise, options: options, delegate: pickerDelegate)
+      pickingContext = PickingContext(
+        promise: promise,
+        options: options,
+        delegate: pickerDelegate,
+        picker: documentPickerVC
+      )
 
       documentPickerVC.delegate = pickerDelegate
       documentPickerVC.presentationController?.delegate = pickerDelegate
