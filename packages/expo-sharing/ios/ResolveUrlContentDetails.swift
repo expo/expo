@@ -1,3 +1,5 @@
+import Foundation
+
 struct ContentDetails {
   var uri: URL?
   var type: ExpoContentType?
