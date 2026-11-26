@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix the app never calling the system completion handler of `handleEventsForBackgroundURLSession`, for `expo-file-system` background downloads and for background sessions of other modules. ([#53454](https://github.com/expo/expo/pull/53454) by [@zocario](https://github.com/zocario))
+- [iOS] Fix a crash when a `DownloadTask` or `UploadTask` is cancelled or garbage-collected at the moment its request completes. ([#50106](https://github.com/expo/expo/pull/50106) by [@isaacrowntree](https://github.com/isaacrowntree))
+- [Android] Fix `copy()` and `move()` with `overwrite: true` deleting the source when the destination is a SAF (`content://`) document that is the source or contains it. These calls now throw instead. ([#53675](https://github.com/expo/expo/pull/53675) by [@barthap](https://github.com/barthap))
+- Fix `copy()` and `move()` with `overwrite: true` deleting the source when the destination resolves to the source or to a directory that contains it. These calls now throw instead. ([#53665](https://github.com/expo/expo/pull/53665) by [@barthap](https://github.com/barthap))
+- [iOS] Fix upload task and download task progress sending `bytesSent`, `bytesWritten` and `totalBytes` as `bigint` instead of `number`. ([#53917](https://github.com/expo/expo/pull/53917) by [@tareksabry1337](https://github.com/tareksabry1337))
+
 ## 58.0.14
 
 ### Patch Changes

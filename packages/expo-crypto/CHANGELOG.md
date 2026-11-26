@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Fix AES-GCM decryption returning extra zero bytes on devices that overestimate the required output size. ([#54151](https://github.com/expo/expo/pull/54151) by [@huamurui](https://github.com/huamurui))
+
 ## 58.0.8
 
 ### Patch Changes

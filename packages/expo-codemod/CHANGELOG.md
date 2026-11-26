@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.2
+
+### Patch Changes
+
+- Fix the React Navigation codemod skipping supported imports in files that also contain unsupported imports. ([#48941](https://github.com/expo/expo/pull/48941) by [@ahmdshrif](https://github.com/ahmdshrif))
+- Fix `sdk-56-expo-router-react-navigation-replace` silently skipping named re-exports (`export { A } from '@react-navigation/...'`), which are now rewritten like named imports. Re-export styles that cannot be rewritten (`export *`, `export * as ns from`, `export v from`, `export { default as X } from`), `jest` module calls (`mock`, `doMock`, `unmock`, `setMock`, `requireActual`, `requireMock`, `createMockFromModule`), and inline `import("...")` types outside call type arguments referencing `@react-navigation/*` modules are reported for manual migration. ([#48942](https://github.com/expo/expo/pull/48942) by [@ahmdshrif](https://github.com/ahmdshrif))
+
 ## 58.0.1
 
 ### Patch Changes

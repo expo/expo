@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [Android] Fix a `ConcurrentModificationException` crash in the motion activity receiver and stop `removeWatchAsync` from requiring the location permission. ([#53919](https://github.com/expo/expo/pull/53919) by [@HubertBer](https://github.com/HubertBer))
+- Add a `timeout` option to `getMotionActivityAsync` that rejects with `ERR_LOCATION_MOTION_ACTIVITY_TIMEOUT` when no activity update arrives in time. ([#53920](https://github.com/expo/expo/pull/53920) by [@HubertBer](https://github.com/HubertBer))
+- [next][iOS] Send `null` instead of omitting the unavailable `Position` fields in task and watcher payloads. ([#53093](https://github.com/expo/expo/pull/53093) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.22
 
 ### Patch Changes

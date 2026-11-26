@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- Use `.cjs` filenames for CommonJS server output in projects with `"type": "module"`. ([#54051](https://github.com/expo/expo/pull/54051) by [@kitten](https://github.com/kitten))
+
 ## 58.0.23
 
 ### Patch Changes

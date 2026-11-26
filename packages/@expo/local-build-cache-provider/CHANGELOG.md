@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/config@58.0.13
+
 ## 58.0.12
 
 ### Patch Changes

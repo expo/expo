@@ -1,5 +1,17 @@
 # expo-template-default
 
+## 58.0.36
+
+### Patch Changes
+
+- Updated dependencies. ([#53984](https://github.com/expo/expo/pull/53984), [#51972](https://github.com/expo/expo/pull/51972), [#54293](https://github.com/expo/expo/pull/54293), [#51571](https://github.com/expo/expo/pull/51571), [#54284](https://github.com/expo/expo/pull/54284), [#49324](https://github.com/expo/expo/pull/49324), [#53210](https://github.com/expo/expo/pull/53210), [#54297](https://github.com/expo/expo/pull/54297), [#54294](https://github.com/expo/expo/pull/54294), [#53323](https://github.com/expo/expo/pull/53323), [#54090](https://github.com/expo/expo/pull/54090), [#54068](https://github.com/expo/expo/pull/54068), [#53781](https://github.com/expo/expo/pull/53781), [#53765](https://github.com/expo/expo/pull/53765), [#53399](https://github.com/expo/expo/pull/53399), [#47930](https://github.com/expo/expo/pull/47930), [#54014](https://github.com/expo/expo/pull/54014), [#52653](https://github.com/expo/expo/pull/52653), [#53573](https://github.com/expo/expo/pull/53573), [#53767](https://github.com/expo/expo/pull/53767), [#51607](https://github.com/expo/expo/pull/51607), [#53320](https://github.com/expo/expo/pull/53320), [#52961](https://github.com/expo/expo/pull/52961), [#52424](https://github.com/expo/expo/pull/52424), [#52640](https://github.com/expo/expo/pull/52640), [#54295](https://github.com/expo/expo/pull/54295), [#54292](https://github.com/expo/expo/pull/54292), [#51802](https://github.com/expo/expo/pull/51802), [#53841](https://github.com/expo/expo/pull/53841), [#53415](https://github.com/expo/expo/pull/53415), [#53632](https://github.com/expo/expo/pull/53632), [#50736](https://github.com/expo/expo/pull/50736), [#53733](https://github.com/expo/expo/pull/53733), [#53450](https://github.com/expo/expo/pull/53450), [#53447](https://github.com/expo/expo/pull/53447), [#54296](https://github.com/expo/expo/pull/54296), [#53426](https://github.com/expo/expo/pull/53426), [#53634](https://github.com/expo/expo/pull/53634), [#52391](https://github.com/expo/expo/pull/52391), [#51695](https://github.com/expo/expo/pull/51695), [#54291](https://github.com/expo/expo/pull/54291), [#52899](https://github.com/expo/expo/pull/52899), [#53294](https://github.com/expo/expo/pull/53294), [#54060](https://github.com/expo/expo/pull/54060))
+  - @expo/ui@58.0.30
+  - expo-router@58.0.33
+  - expo@58.1.0
+  - expo-glass-effect@58.0.6
+  - expo-image@58.0.19
+  - expo-splash-screen@58.0.15
+
 ## 58.0.35
 
 ### Patch Changes

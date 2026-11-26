@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- [iOS] Fix a crash on iPad when `shareAsync()` is called while an earlier share sheet is still on screen. ([#54075](https://github.com/expo/expo/pull/54075) by [@beqramo](https://github.com/beqramo))
+- Updated dependencies. ([#54140](https://github.com/expo/expo/pull/54140), [#47993](https://github.com/expo/expo/pull/47993), [#48232](https://github.com/expo/expo/pull/48232), [#54179](https://github.com/expo/expo/pull/54179), [#52592](https://github.com/expo/expo/pull/52592))
+  - @expo/config-plugins@58.0.14
+
 ## 58.0.23
 
 ### Patch Changes

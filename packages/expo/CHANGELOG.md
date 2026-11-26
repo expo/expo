@@ -1,5 +1,28 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] A module built from its checked-in Package.swift can depend on the `ExpoModulesWorkletsHeaders` package at `../ExpoModulesWorkletsHeaders`. The SwiftPM plugin emits that package over the `ExpoModulesWorkletsHeaders.xcframework` from `expo-modules-core`, together with the `ExpoModulesCoreHeaders` package it depends on. ([#53323](https://github.com/expo/expo/pull/53323) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- Prevent false fatal errors when loading split chunks that have not been preloaded. ([#54284](https://github.com/expo/expo/pull/54284) by [@kitten](https://github.com/kitten))
+- Fix `expo/fetch` handling of failures after response headers arrive. On iOS, `Response.body` reports failures that occur before the first read. On Android, `Response.body`, `text()`, and `arrayBuffer()` reject when the connection fails partway through the body. ([#49324](https://github.com/expo/expo/pull/49324) by [@garfieldnate](https://github.com/garfieldnate))
+- Fix `expo/fetch` returning an empty or partial body from `text()` or `arrayBuffer()` when `response.body` is read while that call waits. `response.body` is now locked during the read, as the Fetch spec requires. ([#53320](https://github.com/expo/expo/pull/53320) by [@vonovak](https://github.com/vonovak))
+- Accept patch releases of `@shopify/flash-list` (`~2.3.2` instead of `2.3.2`), so `npx expo install --fix` no longer downgrades projects that use `2.3.3`. ([#52961](https://github.com/expo/expo/pull/52961) by [@saviocmc](https://github.com/saviocmc))
+- Updated dependencies. ([#50939](https://github.com/expo/expo/pull/50939), [#54140](https://github.com/expo/expo/pull/54140), [#54284](https://github.com/expo/expo/pull/54284), [#53831](https://github.com/expo/expo/pull/53831), [#54163](https://github.com/expo/expo/pull/54163), [#53887](https://github.com/expo/expo/pull/53887), [#53019](https://github.com/expo/expo/pull/53019), [#53393](https://github.com/expo/expo/pull/53393), [#54051](https://github.com/expo/expo/pull/54051), [#47993](https://github.com/expo/expo/pull/47993), [#48232](https://github.com/expo/expo/pull/48232), [#54321](https://github.com/expo/expo/pull/54321), [#53322](https://github.com/expo/expo/pull/53322), [#53454](https://github.com/expo/expo/pull/53454), [#50106](https://github.com/expo/expo/pull/50106), [#53675](https://github.com/expo/expo/pull/53675), [#53665](https://github.com/expo/expo/pull/53665), [#53968](https://github.com/expo/expo/pull/53968), [#52948](https://github.com/expo/expo/pull/52948), [#53917](https://github.com/expo/expo/pull/53917), [#53392](https://github.com/expo/expo/pull/53392), [#53731](https://github.com/expo/expo/pull/53731), [#53860](https://github.com/expo/expo/pull/53860), [#54179](https://github.com/expo/expo/pull/54179), [#52851](https://github.com/expo/expo/pull/52851), [#50966](https://github.com/expo/expo/pull/50966), [#52592](https://github.com/expo/expo/pull/52592))
+  - expo-modules-core@58.2.0
+  - @expo/config-plugins@58.0.14
+  - @expo/cli@58.1.22
+  - expo-file-system@58.0.15
+  - @expo/fingerprint@0.22.0
+  - @expo/metro-config@58.0.24
+  - @expo/config@58.0.13
+  - babel-preset-expo@58.0.27
+  - @expo/local-build-cache-provider@58.0.13
+
 ## 58.0.26
 
 ### Patch Changes

@@ -1,5 +1,28 @@
 # Changelog
 
+## 58.1.22
+
+### Patch Changes
+
+- Prevent false fatal errors when loading split chunks that have not been preloaded. ([#54284](https://github.com/expo/expo/pull/54284) by [@kitten](https://github.com/kitten))
+- Detect Factory Droid, Grok Bot, Claude Cowork, and Muse in CLI telemetry. ([#53831](https://github.com/expo/expo/pull/53831) by [@davidmokos](https://github.com/davidmokos))
+- Fix dev-server calling `/_expo/debugger` against the external `REACT_NATIVE_PACKAGER_HOSTNAME` or `EXPO_PACKAGER_PROXY_URL` host instead of its local socket. ([#54163](https://github.com/expo/expo/pull/54163) by [@harpreetkbadhan](https://github.com/harpreetkbadhan))
+- Fix `expo lint` and `expo run` failing right after installing a missing package. ([#53887](https://github.com/expo/expo/pull/53887) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing. ([#53019](https://github.com/expo/expo/pull/53019) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Internal] Include the parent CLI command in telemetry to distinguish nested command invocations. ([#53393](https://github.com/expo/expo/pull/53393) by [@davidmokos](https://github.com/davidmokos))
+- Use `.cjs` filenames for CommonJS server output in projects with `"type": "module"`. ([#54051](https://github.com/expo/expo/pull/54051) by [@kitten](https://github.com/kitten))
+- Improve source maps for exported API routes, server rendering, React Server Components, and native bundles. Fix missing maps and incorrect source paths, and consistently honor options to omit source code from maps. ([#52948](https://github.com/expo/expo/pull/52948) by [@kitten](https://github.com/kitten))
+- [Internal] Read `useWatchman` as upstream Metro does, now that `@expo/metro-config` defaults it to `false`. ([#53731](https://github.com/expo/expo/pull/53731) by [@robhogan](https://github.com/robhogan))
+- In `expo serve`, load exported CommonJS server modules independently of the project module type and improve error handling. ([#52851](https://github.com/expo/expo/pull/52851) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#54140](https://github.com/expo/expo/pull/54140), [#54051](https://github.com/expo/expo/pull/54051), [#47993](https://github.com/expo/expo/pull/47993), [#48232](https://github.com/expo/expo/pull/48232), [#52948](https://github.com/expo/expo/pull/52948), [#53392](https://github.com/expo/expo/pull/53392), [#53731](https://github.com/expo/expo/pull/53731), [#54148](https://github.com/expo/expo/pull/54148), [#53732](https://github.com/expo/expo/pull/53732), [#53805](https://github.com/expo/expo/pull/53805), [#54047](https://github.com/expo/expo/pull/54047), [#53238](https://github.com/expo/expo/pull/53238), [#53249](https://github.com/expo/expo/pull/53249), [#54143](https://github.com/expo/expo/pull/54143), [#54179](https://github.com/expo/expo/pull/54179), [#52592](https://github.com/expo/expo/pull/52592))
+  - @expo/config-plugins@58.0.14
+  - @expo/router-server@58.0.24
+  - @expo/metro-config@58.0.24
+  - @expo/metro-file-map@58.0.7
+  - @expo/config@58.0.13
+  - @expo/inline-modules@0.2.11
+  - @expo/prebuild-config@58.0.21
+
 ## 58.1.21
 
 ### Patch Changes

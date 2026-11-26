@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Updated dependencies. ([#54151](https://github.com/expo/expo/pull/54151))
+  - expo-crypto@58.0.9
+
 ## 58.0.19
 
 ### Patch Changes

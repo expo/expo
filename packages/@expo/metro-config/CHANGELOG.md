@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- Improve source maps for exported API routes, server rendering, React Server Components, and native bundles. Fix missing maps and incorrect source paths, and consistently honor options to omit source code from maps. ([#52948](https://github.com/expo/expo/pull/52948) by [@kitten](https://github.com/kitten))
+- Fix `new SharedWorker(new URL(...))` creating a dedicated `Worker` instead of a `SharedWorker` on web. ([#53392](https://github.com/expo/expo/pull/53392) by [@Gabrola](https://github.com/Gabrola))
+- [Internal] `getDefaultConfig` sets `resolver.useWatchman` to `false` in place of `null`. ([#53731](https://github.com/expo/expo/pull/53731) by [@robhogan](https://github.com/robhogan))
+- Updated dependencies.
+  - @expo/config@58.0.13
+
 ## 58.0.23
 
 ### Patch Changes

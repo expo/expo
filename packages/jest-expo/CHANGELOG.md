@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Add `setConsent` to the `ExpoObserve` mock. ([#53710](https://github.com/expo/expo/pull/53710) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.15
 
 ### Patch Changes

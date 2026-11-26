@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [Android] Create the embedded fingerprint and manifest on every build, so a repeat release build does not embed a stale runtime version after a native change. ([#53906](https://github.com/expo/expo/pull/53906) by [@sivefunc](https://github.com/sivefunc))
+
 ## 58.0.22
 
 ### Patch Changes
