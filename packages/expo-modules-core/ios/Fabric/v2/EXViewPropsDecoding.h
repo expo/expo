@@ -46,7 +46,8 @@ NS_SWIFT_NAME(ViewPropsDecoding)
 
 /**
  Runs `block` with the `facebook::jsi::Runtime` that props without a runtime decode in on the current thread,
- and returns `YES`. Returns `NO` without running `block` when the thread has no such runtime.
+ and returns `YES`. Returns `NO` without running `block` when the thread has no such runtime. A runtime that
+ other threads use too stays locked while `block` runs.
  */
 - (BOOL)withRuntimeForCurrentThread:(NS_NOESCAPE void (^)(const void *runtime))block
     NS_SWIFT_NAME(withRuntimeForCurrentThread(_:));

@@ -180,7 +180,7 @@ public final class ViewPropsDecoder<Props: AnyViewProps>: @unchecked Sendable {
     if !newlySkipped.isEmpty {
       let thread = Thread.isMainThread ? "the main thread" : "the thread '\(Thread.current.name ?? "")'"
       log.warn(
-        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. Set them from React instead"
+        "The \(newlySkipped) props of '\(viewName)' weren't applied: they came from outside React, for example from Reanimated or Animated, on \(thread), which has no JavaScript runtime that can decode them. On the main thread, call `installOnUIRuntime(getUIRuntimeHolder())` once at startup, with `installOnUIRuntime` from `expo` and `getUIRuntimeHolder` from `react-native-worklets`. Otherwise, set them from React"
       )
     }
   }
