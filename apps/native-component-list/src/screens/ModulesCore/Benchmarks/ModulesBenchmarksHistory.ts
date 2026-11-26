@@ -1,7 +1,20 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type BenchmarkRun = {
-  timeMs: number;
+  /** Median of `samples`. The headline value, robust to a single noisy series. */
+  medianMs: number;
+  /** Arithmetic mean of `samples`. Sensitive to outliers, so compare it against the median. */
+  meanMs: number;
+  /** Fastest series. */
+  minMs: number;
+  /** Slowest series. */
+  maxMs: number;
+  /** Bounds of the 95% bootstrap confidence interval for the median. */
+  ciLowMs: number;
+  ciHighMs: number;
+  /** Duration of each timed series, in run order. Never empty. */
+  samples: number[];
+  /** Iterations executed within a single series. */
   iterations: number;
   runAt: number;
 };
@@ -12,7 +25,27 @@ export interface BenchmarkHistoryStore {
   clearAll(): Promise<void>;
 }
 
-const STORAGE_KEY_PREFIX = 'ncl:modules-benchmarks:v1:';
+// Bumped whenever the measurement protocol changes, so results produced by an older
+// protocol are dropped instead of being compared against current ones.
+const STORAGE_KEY_PREFIX = 'ncl:modules-benchmarks:v4:';
+
+function isBenchmarkRun(value: any): value is BenchmarkRun {
+  return (
+    typeof value?.medianMs === 'number' &&
+    typeof value?.meanMs === 'number' &&
+    typeof value?.minMs === 'number' &&
+    typeof value?.maxMs === 'number' &&
+    typeof value?.ciLowMs === 'number' &&
+    typeof value?.ciHighMs === 'number' &&
+    typeof value?.iterations === 'number' &&
+    typeof value?.runAt === 'number' &&
+    Array.isArray(value?.samples) &&
+    value.samples.length > 0 &&
+    value.samples.every((sample: unknown) => {
+      return typeof sample === 'number';
+    })
+  );
+}
 
 class AsyncStorageBenchmarkHistoryStore implements BenchmarkHistoryStore {
   async getPrevious(benchmarkId: string): Promise<BenchmarkRun | null> {
@@ -22,14 +55,7 @@ class AsyncStorageBenchmarkHistoryStore implements BenchmarkHistoryStore {
     }
     try {
       const parsed = JSON.parse(raw);
-      if (
-        typeof parsed?.timeMs === 'number' &&
-        typeof parsed?.iterations === 'number' &&
-        typeof parsed?.runAt === 'number'
-      ) {
-        return parsed as BenchmarkRun;
-      }
-      return null;
+      return isBenchmarkRun(parsed) ? parsed : null;
     } catch {
       return null;
     }
