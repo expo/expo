@@ -87,12 +87,11 @@
           }
         }
       ],
+      "swiftLanguageVersions": ["6"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoImage",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
@@ -106,8 +105,7 @@
             "libdav1d",
             "libwebp"
           ],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "exclude": ["Tests/**"]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

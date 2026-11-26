@@ -6,7 +6,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * These expectations are shared with `ios/Tests/SVGVariablesTests.swift`. The two implementations
+ * These expectations are shared with `ios/ExpoImageTests/SVGVariablesTests.swift`. The two implementations
  * are separate ports of the same rules, so a case added here belongs there too.
  */
 class SVGVariablesTest {
