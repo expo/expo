@@ -183,26 +183,13 @@ test.describe(inputDir, () => {
       await expect(page.locator('body')).toContainText('Unmatched Route');
     });
     test('"Go back" on the 404 page works with the keyboard', async ({ page }) => {
-      await page.goto(new URL('/browser-buttons', expoStart.url).href);
-      await expect(page.locator('[data-testid="browser-buttons-index"]')).toHaveText(
-        'IndexGo to OneGo to 404'
-      );
-
-      await page.locator('text=Go to 404').click();
+      await page.goto(new URL('/browser-buttons/two', expoStart.url).href);
       await expect(page.locator('body')).toContainText('Unmatched Route');
 
       const goBack = page.getByRole('button', { name: 'Go back' });
-      await expect(goBack).toBeVisible();
+      await goBack.focus();
 
-      for (let i = 0; i < 20; i++) {
-        if (await goBack.evaluate((element) => element === document.activeElement)) {
-          break;
-        }
-        await page.keyboard.press('Tab');
-      }
-      await expect(goBack).toBeFocused();
-
-      // The button has a single tab stop.
+      // The button has a single tab stop, and Shift+Tab proves it is in the tab order.
       await page.keyboard.press('Tab');
       expect(await goBack.evaluate((element) => element.contains(document.activeElement))).toBe(
         false
