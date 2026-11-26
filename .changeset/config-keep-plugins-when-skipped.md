@@ -3,4 +3,3 @@
 ---
 
 Add a `pluginMode: 'inspect'` option to `getConfig` to read serialized plugin declarations without resolving or running the plugins.
-Deprecate `skipPlugins` in favor of `pluginMode`.
