@@ -177,6 +177,9 @@ export type GetConfigOptions = {
   skipSDKVersionRequirement?: boolean;
   /**
    * Skip plugin resolution and execution. The returned config omits changes made by plugins.
+||||||| parent of ac42c497eab ([cli][config] Deprecate the skipPlugins option)
+   * Dangerously skip resolving plugins.
+   * @deprecated Use `pluginMode: 'skip'` for `true` or `pluginMode: 'apply'` for `false`.
    */
   skipPlugins?: boolean;
   /**
