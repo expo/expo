@@ -75,6 +75,20 @@ public final class ExpoNetworkReporter: Sendable {
     }
   }
 
+  public func willFollowRedirect(_ requestId: String, request: URLRequest, redirectResponse: HTTPURLResponse) {
+    requests.withLock { requests in
+      guard requests[requestId] != nil else {
+        return
+      }
+      RCTInspectorNetworkReporter.reportRequestStart(
+        requestId,
+        request: request,
+        encodedDataLength: 0,
+        redirectResponse: redirectResponse
+      )
+    }
+  }
+
   public func didReceiveResponse(_ requestId: String, response: URLResponse) {
     let statusCode: Int
     let headers: [String: String]
@@ -137,7 +151,7 @@ public final class ExpoNetworkReporter: Sendable {
       return
     }
     if request.isTextResponse, let text = String(data: body, encoding: .utf8) {
-      EXNetworkReporterBodyStore.storeTextResponseBody(text, forRequestId: requestId)
+      RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, body: text)
     } else {
       RCTInspectorNetworkReporter.maybeStoreResponseBody(requestId, data: body, base64Encoded: true)
     }

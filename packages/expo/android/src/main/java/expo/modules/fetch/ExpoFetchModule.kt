@@ -10,6 +10,7 @@ import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.devtools.ExpoNetworkReporter
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.NativeArrayBuffer
@@ -24,10 +25,15 @@ import java.net.URL
 @Suppress("unused")
 class ExpoFetchModule : Module() {
   private val client by lazy {
+    val networkReporter = ExpoNetworkReporter()
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
+      // After the file interceptor, so `file://` requests stay out of the Network panel, and before
+      // the compression one, so the reported body is the decoded one the caller reads.
+      .addInterceptor(networkReporter)
       .addInterceptor(TransparentCompressionInterceptor)
+      .addNetworkInterceptor(networkReporter.redirectInterceptor)
       .build()
   }
   private val cookieHandler by lazy { ForwardingCookieHandler() }
