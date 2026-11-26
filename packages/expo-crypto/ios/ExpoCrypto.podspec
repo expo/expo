@@ -27,18 +27,18 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.exclude_files = ['Tests/', 'Benchmarks/']
+  s.exclude_files = ['ExpoCryptoTests/', 'ExpoCryptoBenchmarks/']
   s.test_spec 'Tests' do |test_spec|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoCryptoTests/**/*.{m,swift}'
   end
 
   # Performance benchmarks, run with `et native-unit-tests --benchmarks`. A separate spec, so unit
   # test runs neither build nor run them.
   s.test_spec 'Benchmarks' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Benchmarks/**/*.swift'
+    test_spec.source_files = 'ExpoCryptoBenchmarks/**/*.swift'
   end
 end
