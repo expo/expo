@@ -974,16 +974,16 @@ const WIDGETS_PACKAGE_REFERENCE = 'build/generated/autolinking/expo/direct/expo-
  * Fails the sync when expo-widgets is linked precompiled and an Xcode project references its
  * source package: only `emitDirectPackage` writes that folder, so Xcode could not resolve the
  * widget extension's ExpoWidgets product. The config plugin runs before the route is known.
- *
- * @param xcodeRoot the Xcode project directory (`<app>/ios`), i.e. `context.appRoot`.
  */
 function assertWidgetsReferenceResolves(precompiled, xcodeRoot) {
-  if (!precompiled.some((r) => r.identity.packageName === WIDGETS_PACKAGE)) return;
+  const widgets = precompiled.find((r) => r.identity.packageName === WIDGETS_PACKAGE);
+  if (widgets == null) return;
   const projects = xcodeProjectsContaining(xcodeRoot, WIDGETS_PACKAGE_REFERENCE);
   if (projects.length === 0) return;
+  const source = frameworkSource(widgets.framework);
   throw pluginError({
     what: `${projects.join(', ')} links its widget extension against the Swift package at ${WIDGETS_PACKAGE_REFERENCE}, but ${WIDGETS_PACKAGE} is linked precompiled, so that package is not generated.`,
-    why: `The package is generated only when ${WIDGETS_PACKAGE} is built from source. A precompiled ExpoWidgets.xcframework, from EXPO_PRECOMPILED_MODULES_PATH or a local prebuild, takes its place, and Xcode then cannot resolve the ExpoWidgets product of the widget extension.`,
+    why: `The package is generated only when ${WIDGETS_PACKAGE} is built from source. A precompiled ExpoWidgets.xcframework${source != null ? ` from ${describeSource(source)}` : ''} takes its place, and Xcode then cannot resolve the ExpoWidgets product of the widget extension.`,
     how: `Add "${WIDGETS_PACKAGE}" to ${BUILD_FROM_SOURCE_OPTION}. ${rerunSpmUpdate()}`,
   });
 }
