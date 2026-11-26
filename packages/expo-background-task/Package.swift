@@ -22,8 +22,7 @@ let package = Package(
         "ExpoBackgroundTaskObjC",
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
-      path: "ios",
-      exclude: ["ExpoBackgroundTask.podspec", "ExpoBackgroundTaskObjC", "Tests"]
+      path: "ios/ExpoBackgroundTask"
     ),
     .target(
       name: "ExpoBackgroundTaskObjC",

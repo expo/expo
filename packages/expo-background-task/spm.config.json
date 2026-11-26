@@ -28,6 +28,7 @@
         {
           "type": "swift",
           "name": "ExpoBackgroundTask",
+          "path": "ios/ExpoBackgroundTask",
           "dependencies": [
             "Hermes",
             "React",
