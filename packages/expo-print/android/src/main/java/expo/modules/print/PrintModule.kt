@@ -5,6 +5,7 @@ import android.os.ParcelFileDescriptor
 import android.print.PrintAttributes
 import android.print.PrintManager
 import android.print.PrintDocumentAdapter
+import android.webkit.URLUtil
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import io.github.expo.modules.v2.Constant
@@ -40,6 +41,12 @@ class PrintModule : Module() {
 
   @JS
   private suspend fun print(options: PrintOptions) {
+    if (options.html == null) {
+      val uri = options.uri ?: throw NullUriException()
+      if (!URLUtil.isValidUrl(uri) && !FileUtils.isBase64DataUri(uri)) {
+        throw InvalidUriException(uri)
+      }
+    }
     withContext(Dispatchers.Main) {
       suspendCancellableCoroutine { continuation ->
         if (options.html != null) {
@@ -57,7 +64,7 @@ class PrintModule : Module() {
         } else {
           // Prints from given URI (file path or base64 data URI starting with `data:*;base64,`)
           try {
-            val pda = PrintDocumentAdapter(WeakReference(androidContext), continuation, options.uri)
+            val pda = PrintDocumentAdapter(WeakReference(androidContext), options.uri)
             printDocumentToPrinter(pda, options)
             continuation.resume(null)
           } catch (e: Exception) {
