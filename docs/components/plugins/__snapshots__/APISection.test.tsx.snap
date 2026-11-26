@@ -54,7 +54,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         id="appleauthenticationbutton"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationButton
@@ -379,7 +379,7 @@ for more details.
             id="buttonstyle"
           >
             <code
-              class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+              class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
               data-text="true"
             >
               buttonStyle
@@ -460,7 +460,7 @@ for more details.
             id="buttontype"
           >
             <code
-              class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+              class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
               data-text="true"
             >
               buttonType
@@ -541,7 +541,7 @@ for more details.
             id="cornerradius"
           >
             <code
-              class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+              class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
               data-text="true"
             >
               cornerRadius
@@ -626,7 +626,7 @@ for more details.
             id="onpress"
           >
             <code
-              class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+              class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
               data-text="true"
             >
               onPress
@@ -726,7 +726,7 @@ in here.
             id="style"
           >
             <code
-              class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+              class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
               data-text="true"
             >
               style
@@ -984,7 +984,7 @@ properties.
         id="formatfullnamefullname-formatstyle"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           formatFullName(fullName, formatStyle)
@@ -1228,7 +1228,7 @@ properties.
         id="getcredentialstateasyncuser"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           getCredentialStateAsync(user)
@@ -1515,7 +1515,7 @@ value depending on the state of the credential.
         id="isavailableasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           isAvailableAsync()
@@ -1662,7 +1662,7 @@ value depending on the state of the credential.
         id="refreshasyncoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           refreshAsync(options)
@@ -1916,7 +1916,7 @@ refresh operation.
         id="signinasyncoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           signInAsync(options)
@@ -2221,7 +2221,7 @@ sign-in operation.
         id="signoutasyncoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           signOutAsync(options)
@@ -2549,7 +2549,7 @@ sign-out operation.
         id="addrevokelistenerlistener"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           addRevokeListener(listener)
@@ -2746,7 +2746,7 @@ sign-out operation.
         id="subscription"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           Subscription
@@ -2853,7 +2853,7 @@ sign-out operation.
           id="remove"
         >
           <code
-            class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+            class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
             data-text="true"
           >
             remove()
@@ -2994,7 +2994,7 @@ After calling this function, the listener will no longer receive any events from
         id="appleauthenticationcredential"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationCredential
@@ -3580,7 +3580,7 @@ developers.
         id="appleauthenticationfullname"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationFullName
@@ -3949,7 +3949,7 @@ may be
         id="appleauthenticationfullnameformatstyle"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationFullNameFormatStyle
@@ -4136,7 +4136,7 @@ for more details.
         id="appleauthenticationrefreshoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationRefreshOptions
@@ -4465,7 +4465,7 @@ OAuth 2.0 protocol
         id="appleauthenticationsigninoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationSignInOptions
@@ -4814,7 +4814,7 @@ OAuth 2.0 protocol
         id="appleauthenticationsignoutoptions"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationSignOutOptions
@@ -5109,7 +5109,7 @@ OAuth 2.0 protocol
         id="appleauthenticationbuttonstyle"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationButtonStyle
@@ -5391,7 +5391,7 @@ OAuth 2.0 protocol
         id="appleauthenticationbuttontype"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationButtonType
@@ -5710,7 +5710,7 @@ OAuth 2.0 protocol
         id="appleauthenticationcredentialstate"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationCredentialState
@@ -6084,7 +6084,7 @@ for more details.
         id="appleauthenticationoperation"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationOperation
@@ -6395,7 +6395,7 @@ for more details.
         id="appleauthenticationscope"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationScope
@@ -6686,7 +6686,7 @@ for more details.
         id="appleauthenticationuserdetectionstatus"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           AppleAuthenticationUserDetectionStatus
@@ -7052,7 +7052,7 @@ exports[`APISection expo-pedometer 1`] = `
         id="getpermissionsasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           getPermissionsAsync()
@@ -7171,7 +7171,7 @@ exports[`APISection expo-pedometer 1`] = `
         id="getstepcountasyncstart-end"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           getStepCountAsync(start, end)
@@ -7596,7 +7596,7 @@ the previous days to be available.
         id="isavailableasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           isAvailableAsync()
@@ -7737,7 +7737,7 @@ available on this device.
         id="isrecordingavailableasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           isRecordingAvailableAsync()
@@ -7933,7 +7933,7 @@ historical step count data is available on this device.
         id="requestpermissionsasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           requestPermissionsAsync()
@@ -8052,7 +8052,7 @@ historical step count data is available on this device.
         id="subscriberecordingasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           subscribeRecordingAsync()
@@ -8294,7 +8294,7 @@ Data is only accessible while there is an active subscription.
         id="unsubscriberecordingasync"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           unsubscribeRecordingAsync()
@@ -8529,7 +8529,7 @@ Unsubscribing will also reset the historical data that was collected.
         id="watchstepcountcallback"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           watchStepCount(callback)
@@ -8854,7 +8854,7 @@ On Android, historical step counts require Play Services Recording API support a
         id="subscription"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           Subscription
@@ -8961,7 +8961,7 @@ On Android, historical step counts require Play Services Recording API support a
           id="remove"
         >
           <code
-            class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+            class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
             data-text="true"
           >
             remove()
@@ -9102,7 +9102,7 @@ After calling this function, the listener will no longer receive any events from
         id="pedometerresult"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           PedometerResult
@@ -9236,7 +9236,7 @@ After calling this function, the listener will no longer receive any events from
         id="pedometerupdatecallbackresult"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           PedometerUpdateCallback(result)
@@ -9406,7 +9406,7 @@ After calling this function, the listener will no longer receive any events from
         id="permissionexpiration"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           PermissionExpiration
@@ -9509,7 +9509,7 @@ After calling this function, the listener will no longer receive any events from
         id="permissionresponse"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           PermissionResponse
@@ -9811,7 +9811,7 @@ in order to enable/disable the permission.
         id="permissionstatus"
       >
         <code
-          class="leading-[1.6154] text-inherit font-medium text-base! leading-snug! wrap-anywhere!"
+          class="leading-[1.6154] text-inherit font-medium text-sm! leading-snug! wrap-anywhere!"
           data-text="true"
         >
           PermissionStatus
