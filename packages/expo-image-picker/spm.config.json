@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoImagePicker",
+          "path": "ios/ExpoImagePicker",
           "dependencies": [
             "Hermes",
             "React",
