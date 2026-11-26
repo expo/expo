@@ -73,4 +73,38 @@ struct ModuleTests {
 
     #expect(rejection == "Error:")
   }
+
+  @Test
+  func `a player built by the DSL constructor exposes its JS members`() async throws {
+    let result = try await runtime.execute {
+      try runtime.eval(
+        """
+        (() => {
+          const player = new expo.modules.ExpoAudio.AudioPlayer(null, 500, false, 0, false)
+          const status = player.currentStatus
+          return [typeof player.id, player.playing, player.volume, status.playbackState, status.mediaServicesDidReset].join(',')
+        })()
+        """
+      ).asString()
+    }
+
+    #expect(result == "string,false,1,unknown,false")
+  }
+
+  @Test
+  func `a playlist reports the loop mode that JavaScript sets`() async throws {
+    let result = try await runtime.execute {
+      try runtime.eval(
+        """
+        (() => {
+          const playlist = new expo.modules.ExpoAudio.AudioPlaylist([], 500, 'none')
+          playlist.loop = 'all'
+          return [playlist.loop, playlist.currentStatus.loop].join(',')
+        })()
+        """
+      ).asString()
+    }
+
+    #expect(result == "all,all")
+  }
 }
