@@ -13,6 +13,8 @@ class GeofencingHandle(
   val locationProvider: LocationProvider
 ) : SharedObject() {
   fun validate(regions: List<GeofencingRegion>) {
+    // CLMonitor on iOS accepts only ASCII letters and digits in a monitor name.
+    // Android has no such limit. The check keeps task names valid on both.
     val hasOnlyASCIIAlphanumerics = taskName.all { character ->
       character in 'a'..'z' || character in 'A'..'Z' || character in '0'..'9'
     }
