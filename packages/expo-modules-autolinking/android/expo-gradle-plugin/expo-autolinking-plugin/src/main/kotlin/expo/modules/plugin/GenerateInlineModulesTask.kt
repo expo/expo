@@ -2,7 +2,7 @@ package expo.modules.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.provider.Property
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
@@ -35,10 +35,10 @@ abstract class GenerateInlineModulesTask : DefaultTask() {
   abstract val mirrorDirectory: DirectoryProperty
 
   /**
-   * Serialized list of the directories watched for inline modules.
+   * Directories watched for inline modules.
    */
   @get:Input
-  abstract val watchedDirectoriesSerialized: Property<String>
+  abstract val watchedDirectories: ListProperty<String>
 
   /**
    * Output directory (a generated source root) where `ExpoInlineModulesList.kt` is written. Only
@@ -65,8 +65,7 @@ abstract class GenerateInlineModulesTask : DefaultTask() {
         mirrorDirectory.get().asFile.absolutePath,
         "--inline-modules-list-directory",
         outputDirectory.get().asFile.absolutePath,
-        "--watched-directories-serialized",
-        watchedDirectoriesSerialized.get()
+        *watchedDirectories.get().flatMap { listOf("--watched-directory", it) }.toTypedArray()
       )
     }
   }
