@@ -1,0 +1,65 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "EXDevMenu",
+      "podName": "expo-dev-menu",
+      "releaseFlavor": "stub",
+      "platforms": ["iOS(\"16.4\")"],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore",
+        "expo-manifests/EXManifests",
+        "expo-dev-menu-interface/EXDevMenuInterface"
+      ],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "EXDevMenu_ios_objc",
+          "path": "ios",
+          "pattern": "Interceptors/RCTKeyCommands.m",
+          "headerPattern": "{EXDevMenuAppInfo.h,Interceptors/RCTKeyCommands.h}",
+          "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
+          "linkedFrameworks": ["Foundation"],
+          "includeDirectories": ["."]
+        },
+        {
+          "type": "swift",
+          "name": "EXDevMenu",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore",
+            "expo-manifests/EXManifests",
+            "expo-dev-menu-interface/EXDevMenuInterface",
+            "EXDevMenu_ios_objc"
+          ],
+          "linkedFrameworks": ["Foundation", "UIKit", "SwiftUI", "Combine"],
+          "resources": [{ "path": "ios/Assets.xcassets", "rule": "process" }]
+        },
+        {
+          "type": "objc",
+          "name": "EXDevMenuAppInfo_ios_objc",
+          "path": "ios",
+          "pattern": "EXDevMenuAppInfo.m",
+          "headerPattern": "EXDevMenuAppInfo.h",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-manifests/EXManifests",
+            "EXDevMenu_ios_objc",
+            "EXDevMenu"
+          ],
+          "linkedFrameworks": ["Foundation"],
+          "compilerFlags": ["-DUSE_HERMES"]
+        }
+      ]
+    }
+  ]
+}
