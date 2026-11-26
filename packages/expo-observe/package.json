@@ -23,6 +23,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
+    "./app.plugin.js": "./app.plugin.js",
     "./package.json": "./package.json",
     ".": {
       "types": {
@@ -51,7 +52,9 @@
   },
   "scripts": {
     "precompile-android": "et prebuild-android-package-for-publish",
-    "build": "expo-build src",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
@@ -60,7 +63,7 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json",
+    "typecheck": "tsc -b tsconfig.all.json",
     "prepack": "expo-module prepack"
   },
   "dependencies": {
@@ -74,7 +77,7 @@
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "react-native-reanimated": "4.7.0",
-    "react-native-worklets": "0.13.0"
+    "react-native-worklets": "0.14.0"
   },
   "peerDependencies": {
     "@react-navigation/native": "^7.0.0",

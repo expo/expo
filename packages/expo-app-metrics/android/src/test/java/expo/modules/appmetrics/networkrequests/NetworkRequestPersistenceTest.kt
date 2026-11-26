@@ -1,12 +1,16 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.Span
+import io.mockk.every
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asExecutor
@@ -401,6 +405,38 @@ class NetworkRequestToSpanMappingTest {
   }
 
   @Test
+  fun `redacts redirect URLs like the request URL`() {
+    val request = makeRequest(
+      redirects = listOf(
+        NetworkRequest.Redirect(
+          fromUrl = "https://user:pass@api.example.com/download?id=1&sig=secret",
+          toUrl = "https://bucket.s3.amazonaws.com/key" +
+            "?X-Amz-Algorithm=AWS4-HMAC-SHA256" +
+            "&X-Amz-Credential=AKIAEXAMPLE%2F20260907%2Fus-east-1%2Fs3%2Faws4_request" +
+            "&X-Amz-Security-Token=session-token" +
+            "&X-Amz-Signature=abc",
+          statusCode = 302,
+          respondedAtMs = null
+        )
+      )
+    )
+    val events = JSONArray(checkNotNull(makeSpan(request).events))
+    val attributes = events.getJSONObject(0).getJSONObject("attributes")
+    assertEquals(
+      "https://REDACTED:REDACTED@api.example.com/download?id=1&sig=REDACTED",
+      attributes.getString("expo.http.redirect.from")
+    )
+    assertEquals(
+      "https://bucket.s3.amazonaws.com/key" +
+        "?X-Amz-Algorithm=AWS4-HMAC-SHA256" +
+        "&X-Amz-Credential=REDACTED" +
+        "&X-Amz-Security-Token=REDACTED" +
+        "&X-Amz-Signature=REDACTED",
+      attributes.getString("expo.http.redirect.to")
+    )
+  }
+
+  @Test
   fun `keeps redirect event times inside the span window`() {
     // A hop that the platform timed before the span's own start has no valid place on the
     // timeline: OTLP events must sit within their span. Rather than ship an event that precedes
@@ -447,6 +483,9 @@ class NetworkRequestToSpanMappingTest {
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class NetworkRequestPersistenceTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
   // Shared by `runTest` and Room's executors: persistence inserts are fire-and-forget, and
   // Room's suspending DAO calls hop to its executors, which live outside the test scheduler's
   // virtual time. Pinning them to the same scheduler makes `advanceUntilIdle` actually wait
@@ -771,6 +810,26 @@ class NetworkRequestPersistenceTest {
       JSONObject(checkNotNull(it.attributes)).getString("url.full").endsWith("/live")
     }
     assertEquals("a live-persisted request must be written exactly once", 1, live)
+  }
+
+  @Test
+  fun `a request recorded while consent is not granted is not written after a grant`() = runTest(testDispatcher) {
+    insertSession("s")
+    val monitor = NetworkRequestMonitor()
+    every { ObserveConsent.isGranted } returns false
+    monitor.record(makeRequest(method = "GET", url = "https://api.example.com/before"))
+    every { ObserveConsent.isGranted } returns true
+
+    monitor.installPersistence(
+      NetworkRequestPersistence(
+        writer = SpanWriter(database = database, scope = this),
+        initialConfiguration = NetworkTracesConfiguration(enabled = true),
+        sessionId = "s"
+      )
+    )
+    testScheduler.advanceUntilIdle()
+
+    assertTrue(allSpans().isEmpty())
   }
 
   @Test

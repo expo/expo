@@ -8,7 +8,6 @@
  * @format
  */
 
-import fs from 'fs';
 import invariant from 'invariant';
 import path from 'path';
 
@@ -28,7 +27,6 @@ import type {
   ProcessFileFunction,
 } from '../types';
 import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
-import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
 type DirectoryNode = Map<string, MixedNode | null>;
@@ -73,8 +71,6 @@ type LookupOptions = Readonly<{
   // traversal, useful when adding files. Will throw if an expected
   // directory is already present as a file.
   makeDirectories: boolean;
-  // Whether to skip the fallback filesystem when a segment is missing.
-  skipFallback: boolean;
   // Resume traversal from a known directory node, whose normal path is
   // the prefix of the requested path ending at pathIdx - 1.
   start:
@@ -96,16 +92,11 @@ const LOOKUP_OPTIONS: LookupOptions = {
   changeListener: null,
   followLeaf: true,
   makeDirectories: false,
-  skipFallback: false,
   start: null,
 };
 const LOOKUP_OPTIONS_NO_FOLLOW_LEAF: LookupOptions = {
   ...LOOKUP_OPTIONS,
   followLeaf: false,
-};
-const LOOKUP_OPTIONS_NO_FOLLOW_LEAF_NO_FALLBACK: LookupOptions = {
-  ...LOOKUP_OPTIONS_NO_FOLLOW_LEAF,
-  skipFallback: true,
 };
 
 // Null if not within the ancestor ('' is the root).
@@ -219,8 +210,8 @@ export default class TreeFS implements MutableFileSystem {
   readonly #pathUtils: RootPathUtils;
   readonly #processFile: ProcessFileFunction;
   readonly #rootDir: Path;
-  readonly #rootPattern: RegExp | null;
-  readonly #roots: readonly string[];
+  #rootPattern: RegExp | null;
+  #roots: readonly string[];
   #rootNode: DirectoryNode = new Map();
 
   constructor(opts: TreeFSOptions) {
@@ -263,6 +254,30 @@ export default class TreeFS implements MutableFileSystem {
     });
     tfs.#rootNode = fileSystemData;
     return tfs;
+  }
+
+  /**
+   * Set the directories this file system holds, i.e. those it saves and does
+   * not fill on demand. Files that were filled on demand under a new root are
+   * dropped without notifying listeners, which were never told of them, so
+   * that the root's crawl reports them.
+   */
+  setRoots(roots: readonly Path[]): void {
+    const previousRoots = this.#roots.map((root) => this.#pathUtils.normalToAbsolute(root));
+    const newRootPrefixes = roots
+      .filter((root) => !previousRoots.includes(root))
+      .map((root) => this.#absoluteDirPrefix(this.#normalizePath(root)));
+    if (this.#fallbackFilesystem != null && newRootPrefixes.length > 0) {
+      const filledPaths = Array.from(this.pathsOutsideRoots(previousRoots)).filter((filePath) => {
+        const absolutePath = this.#pathUtils.normalToAbsolute(filePath);
+        return newRootPrefixes.some((prefix) => absolutePath.startsWith(prefix));
+      });
+      for (const filePath of filledPaths) {
+        this.#removeNormalPath(filePath);
+      }
+    }
+    this.#roots = roots.map((root) => this.#pathUtils.absoluteToNormal(root));
+    this.#rootPattern = pathsToPattern(roots, this.#pathUtils);
   }
 
   /**
@@ -350,9 +365,11 @@ export default class TreeFS implements MutableFileSystem {
   ): {
     changedFiles: FileData;
     removedFiles: Set<string>;
+    filesToStat: Map<string, number>;
   } {
     const changedFiles: FileData = new Map(files);
     const removedFiles: Set<string> = new Set();
+    const filesToStat: Map<string, number> = new Map();
     const subpath = options?.subpath;
 
     // If a subpath is specified, start iteration from that node
@@ -365,13 +382,13 @@ export default class TreeFS implements MutableFileSystem {
       const lookupResult = this.#lookupByNormalPath(subpath, LOOKUP_OPTIONS_NO_FOLLOW_LEAF);
       if (!lookupResult.exists) {
         // Directory doesn't exist, nothing to compare - all files are new
-        return { changedFiles, removedFiles };
+        return { changedFiles, removedFiles, filesToStat };
       }
       if (!isDirectory(lookupResult.node)) {
         // A file or symlink has been replaced by this directory, so it is
         // removed and everything under the directory is new.
         removedFiles.add(lookupResult.canonicalPath);
-        return { changedFiles, removedFiles };
+        return { changedFiles, removedFiles, filesToStat };
       }
       rootNode = lookupResult.node;
       prefix = lookupResult.canonicalPath;
@@ -400,10 +417,12 @@ export default class TreeFS implements MutableFileSystem {
           // Types and modified time match - not changed.
           changedFiles.delete(canonicalPath);
         } else if (
-          (newMetadata[H.MTIME] == null || newMetadata[H.MTIME] === 0) &&
-          (metadata[H.MTIME] == null || metadata[H.MTIME] === 0)
+          isRegularFile(metadata) &&
+          newMetadata[H.MTIME] == null &&
+          metadata[H.MTIME] == null
         ) {
-          // If file is still untouched then mark it as unchanged
+          // A regular file not stat'd before or now, so nothing could be
+          // stale (see `FileMetadata`).
           changedFiles.delete(canonicalPath);
         } else if (
           newMetadata[H.SHA1] != null &&
@@ -414,6 +433,13 @@ export default class TreeFS implements MutableFileSystem {
           const updatedMetadata = [...metadata] as FileMetadata;
           updatedMetadata[H.MTIME] = newMetadata[H.MTIME];
           changedFiles.set(canonicalPath, updatedMetadata);
+        } else if (
+          isRegularFile(metadata) &&
+          newMetadata[H.MTIME] == null &&
+          metadata[H.MTIME] != null
+        ) {
+          // Stat'd before but not now, so it may be unmodified.
+          filesToStat.set(canonicalPath, metadata[H.MTIME]!);
         }
       } else {
         removedFiles.add(canonicalPath);
@@ -422,12 +448,8 @@ export default class TreeFS implements MutableFileSystem {
     return {
       changedFiles,
       removedFiles,
+      filesToStat,
     };
-  }
-
-  getMtimeByNormalPath(normalPath: Path): number | null | undefined {
-    const result = this.#lookupByNormalPath(normalPath, LOOKUP_OPTIONS_NO_FOLLOW_LEAF_NO_FALLBACK);
-    return result.exists && !isDirectory(result.node) ? result.node[H.MTIME] : null;
   }
 
   getSha1(mixedPath: Path): string | null | undefined {
@@ -444,18 +466,6 @@ export default class TreeFS implements MutableFileSystem {
       return null;
     }
     const { canonicalPath, node: fileMetadata } = result;
-
-    // Populate mtime and size on demand
-    if (fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0) {
-      fileMetadata[H.SHA1] = null;
-      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
-      try {
-        const stat = await fs.promises.lstat(absolutePath);
-        const diskMtime = stat.mtime.getTime();
-        fileMetadata[H.MTIME] = diskMtime;
-        fileMetadata[H.SIZE] = stat.size;
-      } catch {}
-    }
 
     // Empty strings
     const existing = fileMetadata[H.SHA1];
@@ -816,7 +826,7 @@ export default class TreeFS implements MutableFileSystem {
 
       if (segmentNode == null) {
         if (opts.makeDirectories !== true && segmentName !== '..') {
-          if (!opts.skipFallback && this.#fallbackFilesystem != null) {
+          if (this.#fallbackFilesystem != null) {
             const parentEnd = isLastSegment
               ? fromIdx - segmentName.length - 1
               : fromIdx - segmentName.length - 2;
@@ -853,7 +863,7 @@ export default class TreeFS implements MutableFileSystem {
               changeListener.directoryAdded(canonicalPath);
             }
             parentNode.set(segmentName, segmentNode);
-          } else if (!opts.skipFallback && this.#fallbackFilesystem != null) {
+          } else if (this.#fallbackFilesystem != null) {
             parentNode.set(segmentName, segmentNode);
           }
         }
@@ -908,12 +918,8 @@ export default class TreeFS implements MutableFileSystem {
 
         // Symlink in a directory path. Targets are stored already lexically
         // resolved to a normal path, with POSIX separators so that the
-        // snapshot is portable between operating systems. A target that
-        // hasn't been read yet is read now.
-        const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(
-          segmentNode,
-          currentPath
-        );
+        // snapshot is portable between operating systems.
+        const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode);
         if (normalSymlinkTarget == null) {
           return {
             canonicalMissingPath: currentPath,
@@ -1509,27 +1515,9 @@ export default class TreeFS implements MutableFileSystem {
     }
   }
 
-  #resolveSymlinkTargetToNormalPath(
-    symlinkNode: FileMetadata,
-    canonicalPathOfSymlink: Path
-  ): Path | null | undefined {
+  #resolveSymlinkTargetToNormalPath(symlinkNode: FileMetadata): Path | null | undefined {
     const symlinkTarget = symlinkNode[H.SYMLINK];
-    if (symlinkTarget === 1) {
-      // Symlink target not yet resolved — read it lazily on first traversal
-      const absoluteSymlink = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
-      try {
-        const literalSymlinkTarget = fs.readlinkSync(absoluteSymlink);
-        const normalTarget = this.#pathUtils.resolveSymlinkToNormal(
-          canonicalPathOfSymlink,
-          literalSymlinkTarget
-        );
-        symlinkNode[H.SYMLINK] = normalizePathSeparatorsToPosix(normalTarget);
-        symlinkNode[H.VISITED] = 1;
-        return normalTarget;
-      } catch {
-        return null;
-      }
-    } else if (symlinkTarget === 0 || symlinkTarget == null) {
+    if (symlinkTarget === 0 || symlinkTarget == null) {
       // WARN: We shouldn't call this method on non-symlinks. Outside of tests
       // this condition shouldn't trigger. It's fine not to resolve a symlink if
       // it does trigger however

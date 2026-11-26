@@ -1,5 +1,5 @@
 import { Image as ExpoImage } from 'expo-image';
-import { AssetField, MediaType, Query, requestPermissionsAsync } from 'expo-media-library';
+import { AssetField, MediaType, Query, MediaLibrary } from 'expo-media-library';
 import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -16,7 +16,7 @@ export default function ReactNativeImageScreen() {
     setUri(null);
     setStatus('Loading…');
     try {
-      const permission = await requestPermissionsAsync();
+      const permission = await MediaLibrary.requestPermissions();
       if (!permission.granted) {
         setStatus('Allow access to photos, then try again.');
         return;

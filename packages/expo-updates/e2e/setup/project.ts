@@ -79,7 +79,6 @@ function getExpoDependencyChunks({
             'expo-system-ui',
             'expo-ui',
             'expo-video',
-            'expo-video-thumbnails',
           ],
         ]
       : []),

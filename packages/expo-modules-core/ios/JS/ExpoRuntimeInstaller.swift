@@ -6,15 +6,13 @@ import ExpoModulesJSI
 internal let globalCoreObjectPropertyName = "expo"
 
 @JavaScriptActor
-internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
+internal class ExpoRuntimeInstaller {
   private let appContext: AppContext
   private let runtime: JavaScriptRuntime
 
   internal init(appContext: AppContext, runtime: JavaScriptRuntime) {
     self.appContext = appContext
     self.runtime = runtime
-    let pointer = runtime.withUnsafePointee { $0 }
-    super.init(runtime: pointer)
   }
 
   /**
@@ -42,6 +40,34 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
       return
     }
     coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: ownsLifecycle))
+  }
+
+  /**
+   Installs `expo.SharedRef`, the base class of shared refs, on the core object.
+   */
+  @JavaScriptActor
+  internal func installSharedRefClass(
+    on coreObject: borrowing JavaScriptObject,
+    inheriting sharedObjectClass: consuming JavaScriptFunction
+  ) throws {
+    let sharedRefClass = try runtime.createClass(name: "SharedRef", inheriting: sharedObjectClass) { this, _ in
+      return this
+    }
+    coreObject.setProperty("SharedRef", value: sharedRefClass.asValue())
+  }
+
+  /**
+   Installs `expo.NativeModule`, the class of module objects, on the core object.
+   */
+  @JavaScriptActor
+  internal func installNativeModuleClass(
+    on coreObject: borrowing JavaScriptObject,
+    inheriting eventEmitterClass: consuming JavaScriptFunction
+  ) throws {
+    let nativeModuleClass = try runtime.createClass(name: "NativeModule", inheriting: eventEmitterClass) { this, _ in
+      return this
+    }
+    coreObject.setProperty("NativeModule", value: nativeModuleClass.asValue())
   }
 
   /**
@@ -131,57 +157,41 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
   }
 
   /**
-   Creates the object that is installed as `expo.packages[packageName]`. It returns the modules,
-   shared object classes and view components of the package by their names.
+   Creates the object that is installed as `expo.packages[packageName]`. It has a read-only lazy property
+   for each export of the package: a module, a shared object class or the React component of a view.
+   The first read creates the export, and later reads don't call native code.
    */
   @JavaScriptActor
-  private static func createPackageObject(
+  static func createPackageObject(
     _ package: PackageHolder,
     appContext: AppContext,
     runtime: JavaScriptRuntime
   ) -> JavaScriptObject {
     let packageName = package.name
+    let packageObject = runtime.createObject()
 
-    // Logs name collisions once, when the package object is created.
-    _ = package.exportNames
-
-    // The React components of the package's views, created on the first access.
-    let viewComponents = JavaScriptValuesCache()
-    let runtimeHandle = runtime.handle
-
-    return runtime.createHostObject(
-      get: { [weak appContext] exportName in
+    for exportName in package.exportNames {
+      packageObject.defineLazyProperty(exportName, options: .enumerable) {
+        [weak appContext] (_: borrowing JavaScriptUnownedValue, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue in
         guard let appContext, let package = appContext.package(named: packageName) else {
           return .undefined()
         }
         if let export = try package.export(named: exportName, appContext: appContext) {
           return export
         }
-        guard let viewType = package.viewType(named: exportName) else {
-          return .undefined()
-        }
-        if let component = viewComponents.store[exportName]?.withUnwrappedValue({ $0.copy() }) {
-          return component
-        }
         // Only the React runtime can create components, so a view is `undefined` in the UI runtime.
-        guard let runtime = runtimeHandle.runtime, NativeViewComponentFactory.isAvailable(in: runtime) else {
+        guard let viewType = package.viewType(named: exportName), NativeViewComponentFactory.isAvailable(in: runtime)
+        else {
           return .undefined()
         }
         let config = NativeViewComponentConfig(
           viewType: viewType,
           componentName: ExpoNativeView.packageComponentName(packageName: packageName, viewName: exportName)
         )
-        let component = try NativeViewComponentFactory.create(config, in: runtime)
-        viewComponents.store[exportName] = component.copy().ref()
-        return component
-      },
-      set: { exportName, _ in
-        throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"].\(exportName)")
-      },
-      getPropertyNames: { [weak appContext] in
-        return appContext?.package(named: packageName)?.exportNames ?? []
+        return try NativeViewComponentFactory.create(config, in: runtime)
       }
-    )
+    }
+    return packageObject
   }
 }
 
@@ -212,7 +222,7 @@ internal final class ReadOnlyExpoModulesPropertyException: GenericException<Stri
 }
 
 /**
- Raised when JavaScript code attempts to assign to `expo.packages[...]` or to an export of a package.
+ Raised when JavaScript code attempts to assign to `expo.packages[...]`.
  The parameter is the path that JavaScript assigned to.
  */
 internal final class ReadOnlyExpoPackagesPropertyException: GenericException<String>, @unchecked Sendable {

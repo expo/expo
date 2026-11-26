@@ -120,6 +120,24 @@ private func extractInt(_ raw: Any?, _ key: String) -> Int? {
   return value.intValue
 }
 
+extension String {
+  /// The longest prefix whose UTF-16 length is at most `maxCount`, cut between characters.
+  /// `maxLength` counts UTF-16 code units, as React Native's `TextInput` and the Android and
+  /// web text fields of this package do.
+  func prefix(utf16Count maxCount: Int) -> String {
+    var result = ""
+    var count = 0
+    for character in self {
+      count += character.utf16.count
+      if count > maxCount {
+        break
+      }
+      result.append(character)
+    }
+    return result
+  }
+}
+
 private struct StatefulTextField: View {
   @ObservedObject var state: ObservableState
   @ObservedObject var props: TextFieldProps
@@ -175,8 +193,8 @@ private struct StatefulTextField: View {
       }
       .onChange(of: state.value as? String) { newValue in
         guard userMutatingState else { return }
-        if let max = props.maxLength, let str = newValue, str.count > max {
-          state.value = String(str.prefix(max))
+        if let max = props.maxLength, let str = newValue, str.utf16.count > max {
+          state.value = str.prefix(utf16Count: max)
           return
         }
         userMutatingState = false
@@ -281,8 +299,8 @@ private struct StatefulSelectableTextField: View {
         localSelection = nil
         return
       }
-      if let max = props.maxLength, let str = newValue, str.count > max {
-        state.value = String(str.prefix(max))
+      if let max = props.maxLength, let str = newValue, str.utf16.count > max {
+        state.value = str.prefix(utf16Count: max)
         return
       }
       userMutatingState = false

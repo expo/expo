@@ -49,6 +49,7 @@ const sampleScan = {
         properties: [],
       },
     ],
+    classes: [],
     modules: [
       {
         name: 'MyModule',
@@ -75,7 +76,7 @@ const sampleScan = {
 
 const emptyScan = {
   schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
-  exports: { records: [], sharedObjects: [], modules: [], enums: [], unions: [] },
+  exports: { records: [], sharedObjects: [], classes: [], modules: [], enums: [], unions: [] },
   stats: { durationMs: 0.5, filesParsed: 0, filesScanned: 0 },
 };
 
@@ -135,6 +136,7 @@ describe(generateTypes, () => {
     expect(result.counts).toEqual({
       modules: 1,
       sharedObjects: 1,
+      classes: 0,
       records: 1,
       enums: 0,
       unions: 0,
@@ -328,6 +330,7 @@ describe(generateTypes, () => {
     expect(result.counts).toEqual({
       modules: 0,
       sharedObjects: 0,
+      classes: 0,
       records: 0,
       enums: 0,
       unions: 0,

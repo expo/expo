@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'SDWebImageWebPCoder'
+  s.dependency 'libwebp', '>= 1.3.2'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {

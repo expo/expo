@@ -1,4 +1,3 @@
-import 'abort-controller/polyfill';
 import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 
 import ServerRegistrationModule from './ServerRegistrationModule';

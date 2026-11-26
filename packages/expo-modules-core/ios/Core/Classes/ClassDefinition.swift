@@ -56,17 +56,17 @@ public final class ClassDefinition: ObjectDefinition {
   @JavaScriptActor
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
     // The concrete `SharedObject` subclass backing this class, used to dispatch to the
-    // `@SharedObject` macro's `_constructSharedObject` / `_decorateSharedObject` overrides.
-    let sharedObjectType = ((associatedType as? DynamicSharedObjectType)?.innerType) as? SharedObject.Type
+    // `@SharedObject` macro's `_constructInstance` / `_decorateClass` overrides.
+    let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType
 
     let constructorClosure: JavaScriptRuntime.SyncFunctionClosure = { [weak self, weak appContext] this, arguments in
       guard let self, let appContext else {
         throw Exceptions.AppContextLost()
       }
       // Build the native instance and pair it with `this` (returning a different object would drop
-      // the prototype chain `new` set up). Prefer the macro-synthesized `_constructSharedObject`,
+      // the prototype chain `new` set up). Prefer the macro-synthesized `_constructInstance`,
       // falling back to the DSL `Constructor` body.
-      if let sharedObject = try sharedObjectType?._constructSharedObject(this: this, arguments: arguments, in: appContext.runtime) {
+      if let sharedObject = try sharedObjectType?._constructInstance(this: this, arguments: arguments, in: appContext.runtime) as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       } else if let constructor {
         let result = try constructor.runBody(appContext, in: appContext.runtime, this: this, arguments: arguments)
@@ -91,8 +91,8 @@ public final class ClassDefinition: ObjectDefinition {
 
     // Bind the macro's `@JS` members: instance members onto the prototype, static members onto the constructor.
     if let sharedObjectType {
-      try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
-      try sharedObjectType._decorateSharedObject(constructor: klass, in: appContext.runtime)
+      try sharedObjectType._decorateClass(prototype: prototype, in: appContext.runtime)
+      try sharedObjectType._decorateClass(constructor: klass, in: appContext.runtime)
     }
 
     // Register the prototype of the JS class for its associated native type.
@@ -143,8 +143,8 @@ public final class ClassDefinition: ObjectDefinition {
       }
     }
     // Bind the macro's `@JS` members, which aren't in the DSL `properties`/`functions` dictionaries.
-    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType as? SharedObject.Type {
-      try sharedObjectType._decorateSharedObject(prototype: proto, in: runtime)
+    if let sharedObjectType = (associatedType as? DynamicSharedObjectType)?.innerType {
+      try sharedObjectType._decorateClass(prototype: proto, in: runtime)
     }
     return proto
   }

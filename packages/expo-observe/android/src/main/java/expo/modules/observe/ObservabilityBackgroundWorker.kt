@@ -14,7 +14,9 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import androidx.work.await
 import androidx.work.workDataOf
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
@@ -61,6 +63,9 @@ class ObservabilityBackgroundWorker(
   }
 
   override suspend fun doWork(): Result {
+    if (!ObserveConsent.isGranted) {
+      return Result.success()
+    }
     return try {
       if (observabilityManager == null) {
         Log.e(OBSERVE_TAG, "ObservabilityManager is null - missing projectId or baseUrl")
@@ -83,7 +88,11 @@ class ObservabilityBackgroundWorker(
   }
 
   companion object {
-    private const val WORK_NAME = "eas-observe-dispatch"
+    internal const val WORK_NAME = "eas-observe-dispatch"
+
+    suspend fun cancelBackgroundDispatch(context: Context) {
+      WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME).await()
+    }
 
     fun scheduleBackgroundDispatch(
       context: Context,

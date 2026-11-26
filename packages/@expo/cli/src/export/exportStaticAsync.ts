@@ -399,7 +399,7 @@ export async function exportFromServerAsync(
 
     // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
-      await devServer.exportExpoRouterRenderModuleAsync({
+      const rendererFilename = await devServer.exportExpoRouterRenderModuleAsync({
         files,
         includeSourceMaps: true,
         platform: 'web',
@@ -495,7 +495,7 @@ export async function exportFromServerAsync(
           };
           manifest.rendering = {
             mode: 'ssr',
-            file: '_expo/server/render.js',
+            file: rendererFilename,
           };
 
           const routes = isGranular
@@ -817,7 +817,7 @@ async function exportLoadersAsync({
   const entryPointModules = entryPoints.map((e) => e.page);
   debugEvent('static:bundling_loaders', { modules: entryPointModules });
 
-  await devServer.exportExpoRouterLoadersAsync({
+  const loaderFilenames = await devServer.exportExpoRouterLoadersAsync({
     platform,
     entryPoints,
     files,
@@ -829,10 +829,10 @@ async function exportLoadersAsync({
   updateExportManifestInFiles({
     files,
     callback: (manifest) => {
-      const routesWithLoaders = new Set(entryPointModules);
       for (const route of manifest.htmlRoutes) {
-        if (routesWithLoaders.has(route.page)) {
-          route.loader = `_expo/loaders${route.page}.js`;
+        const filename = loaderFilenames.get(route.page);
+        if (filename) {
+          route.loader = filename;
         }
       }
     },

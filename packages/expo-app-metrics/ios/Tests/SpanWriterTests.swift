@@ -1,3 +1,4 @@
+import ExpoModulesCore
 import Foundation
 import Testing
 
@@ -78,6 +79,40 @@ struct SpanWriterTests {
       }
       let names = try spanNames(in: database)
       #expect(names == ["checkout"])
+    }
+  }
+
+  @Test
+  func `a span that starts without consent is not written after a grant`() async throws {
+    try await withTemporaryDatabase { database in
+      let writes = Mutex<[@Sendable @AppMetricsActor () -> Void]>([])
+      let writer = SpanWriter(database: database) { write in
+        writes.withLock { $0.append(write) }
+      }
+      let beforeGrant = SpanHandle(
+        recorder: SpanRecorder(
+          name: "before-grant",
+          sessionId: "s",
+          attributes: ["step": "pay"],
+          startTimestampMs: 1_782_131_895_000
+        ),
+        onEnd: writer.onEndOfNewSpan(isGranted: false)
+      )
+      beforeGrant.recorder.addEvent(name: "tapped", attributes: nil, timeMs: 1_782_131_895_010)
+      let afterGrant = SpanHandle(
+        recorder: SpanRecorder(name: "after-grant", sessionId: "s", startTimestampMs: 1_782_131_895_100),
+        onEnd: writer.onEndOfNewSpan(isGranted: true)
+      )
+
+      beforeGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
+      #expect(writes.withLock { $0.isEmpty })
+      afterGrant.end(statusCode: nil, statusMessage: nil, endTimestampMs: 1_782_131_895_250)
+
+      for write in writes.withLock({ $0 }) {
+        write()
+      }
+      let names = try spanNames(in: database)
+      #expect(names == ["after-grant"])
     }
   }
 }

@@ -47,6 +47,13 @@ export default class NativeWatcher extends AbstractWatcher {
     return platform() === 'darwin';
   }
 
+  // fs.watch can return before any changes are reported: libuv starts the
+  // FSEvents stream on another thread, and the stream reports only changes
+  // made after it starts.
+  static isLiveOnStart(): boolean {
+    return false;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(dir: string, opts: WatcherBackendOptions) {
     // NOTE(@kitten): `!NativeWatcher.isSupported` was always truthy, so omitting check here

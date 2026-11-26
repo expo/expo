@@ -223,7 +223,7 @@ export interface TextInputProps {
   onContentSizeChange?: (size: { width: number; height: number }) => void;
 
   /**
-   * Maximum number of characters allowed.
+   * Maximum number of UTF-16 code units allowed, as JavaScript counts string length.
    */
   maxLength?: number;
 

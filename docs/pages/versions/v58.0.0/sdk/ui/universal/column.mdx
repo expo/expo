@@ -115,7 +115,20 @@ export default function ColumnAlignmentExample() {
 
 > **info** Percentage sizes require `@expo/ui` 58.0.23 or later. On earlier versions, a percentage throws an error on Android.
 
-```tsx ColumnSizeExample.tsx
+<ComponentExample
+  title="ColumnSizeExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-column-size-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-size-android-dark.webp',
+    alt: 'A full-width light blue bar above a dark blue bar at half the width',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-column-size-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-size-ios-dark.webp',
+    alt: 'A full-width light blue bar above a dark blue bar at half the width',
+  }}>
+
+```tsx
 import { Host, Column } from '@expo/ui';
 
 export default function ColumnSizeExample() {
@@ -129,6 +142,8 @@ export default function ColumnSizeExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

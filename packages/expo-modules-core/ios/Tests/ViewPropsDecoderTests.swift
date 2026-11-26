@@ -13,11 +13,18 @@ private struct DecoderTestProps {
   var onTap: () -> Void
 }
 
+@ViewProps(extending: DecoderTestProps.self)
+private struct ExtendedDecoderTestProps {
+  var subtitle = "None"
+  var onOpen: () -> Void
+}
+
 @Suite
 @JavaScriptActor
 struct ViewPropsDecoderTests {
   let runtime = JavaScriptRuntime()
   private let decoder = ViewPropsDecoder<DecoderTestProps>(viewName: "TestView")
+  private let extendedDecoder = ViewPropsDecoder<ExtendedDecoderTestProps>(viewName: "ExtendedTestView")
 
   private func decode(
     _ source: String,
@@ -27,6 +34,18 @@ struct ViewPropsDecoderTests {
     return runtime.withUnsafePointee { runtimePointer in
       props.withUnsafePointee { propsPointer in
         decoder.decode(propsPointer: propsPointer, runtimePointer: runtimePointer, previous: previous)
+      }
+    }
+  }
+
+  private func decodeExtended(
+    _ source: String,
+    previous: DecodedViewProps<ExtendedDecoderTestProps>? = nil
+  ) throws -> DecodedViewProps<ExtendedDecoderTestProps>? {
+    let props = try runtime.eval("(\(source))")
+    return runtime.withUnsafePointee { runtimePointer in
+      props.withUnsafePointee { propsPointer in
+        extendedDecoder.decode(propsPointer: propsPointer, runtimePointer: runtimePointer, previous: previous)
       }
     }
   }
@@ -198,5 +217,41 @@ struct ViewPropsDecoderTests {
       }
     }
     #expect(updated === created)
+  }
+
+  // MARK: - Extended props
+
+  @Test
+  func `extended props have their own props and events, then the ones of the base`() {
+    #expect(extendedDecoder.propNameStrings == ["subtitle", "title", "radius", "tint"])
+    #expect(ExtendedDecoderTestProps._eventNames == ["onOpen", "onTap"])
+    #expect(ExtendedDecoderTestProps.allProps == [.subtitle, .base(DecoderTestProps.allProps)])
+  }
+
+  @Test
+  func `extended props decode the props of the base`() throws {
+    let decoded = try #require(try decodeExtended("{ subtitle: 'Details', title: 'Card', opacity: 0.5 }"))
+
+    #expect(decoded.props.subtitle == "Details")
+    #expect(decoded.props.base.title == "Card")
+    #expect(decoded.props.base.radius == 4)
+    #expect(decoded.changedProps(since: nil) == ExtendedDecoderTestProps.allProps)
+  }
+
+  @Test
+  func `null resets a prop of the base, and the diff names the changed base props`() throws {
+    let created = try #require(try decodeExtended("{ subtitle: 'Details', title: 'Card', tint: 'red' }"))
+    let updated = try #require(try decodeExtended("{ title: null, radius: 8 }", previous: created))
+    let diff = ExtendedDecoderTestProps.Diff(old: created, new: updated)
+
+    #expect(updated.props.subtitle == "Details")
+    #expect(updated.props.base.title == "Untitled")
+    #expect(updated.props.base.radius == 8)
+    #expect(updated.props.base.tint == "red")
+    #expect(diff.changed(.base(.title)))
+    #expect(!diff.changed(.subtitle))
+    #expect(!diff.changed(.base(.tint)))
+    #expect(diff.changedNames == [.base(.title), .base(.radius)])
+    #expect(diff.oldValue(\.base.title) == "Card")
   }
 }

@@ -6,6 +6,36 @@ import Testing
 @Suite("PendingErrorStore")
 struct PendingErrorStoreTests {
   @Test
+  func `revoke removes a fatal error whose write is in progress`() throws {
+    try withTemporaryDirectory { directory in
+      let writing = DispatchSemaphore(value: 0)
+      let resume = DispatchSemaphore(value: 0)
+      let finished = DispatchGroup()
+      let deleting = DispatchSemaphore(value: 0)
+      let deleted = DispatchSemaphore(value: 0)
+      DispatchQueue.global().async(group: finished) {
+        PendingErrorStore.write(makePendingError(message: "fatal", sessionId: "s")) {
+          writing.signal()
+          _ = resume.wait(timeout: .now() + 5)
+          try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+          return directory
+        }
+      }
+      #expect(writing.wait(timeout: .now() + 5) == .success)
+      DispatchQueue.global().async(group: finished) {
+        deleting.signal()
+        PendingErrorStore.delete(in: directory)
+        deleted.signal()
+      }
+      #expect(deleting.wait(timeout: .now() + 5) == .success)
+      _ = deleted.wait(timeout: .now() + 0.2)
+      resume.signal()
+      #expect(finished.wait(timeout: .now() + 5) == .success)
+      #expect(!FileManager.default.fileExists(atPath: directory.path))
+    }
+  }
+
+  @Test
   func `writes and drains a fatal error round-trip`() throws {
     try withTemporaryDirectory { directory in
       let error = makePendingError(message: "boom", sessionId: "session-1")

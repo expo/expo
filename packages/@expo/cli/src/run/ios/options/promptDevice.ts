@@ -44,16 +44,23 @@ export function formatDeviceChoice(item: AnyDevice): { title: string; value: str
 /** Prompt to select a device from a searchable list of devices. */
 export async function promptDeviceAsync<T extends AnyDevice>(devices: T[]): Promise<T> {
   // --device with no props after
-  const { value } = await prompt({
-    type: 'autocomplete',
-    name: 'value',
-    limit: 11,
-    message: 'Select a device',
-    choices: devices.map((item) => formatDeviceChoice(item)),
-    suggest: (input: any, choices: any) => {
-      const regex = new RegExp(input, 'i');
-      return choices.filter((choice: any) => regex.test(choice.title));
+  const { value } = await prompt(
+    {
+      type: 'autocomplete',
+      name: 'value',
+      limit: 11,
+      message: 'Select a device',
+      choices: devices.map((item) => formatDeviceChoice(item)),
+      suggest: (input: any, choices: any) => {
+        const regex = new RegExp(input, 'i');
+        return choices.filter((choice: any) => regex.test(choice.title));
+      },
     },
-  });
+    {
+      nonInteractiveHelp: `--device: argument must be provided with a device name or UDID in non-interactive mode. Valid choices are: ${[
+        ...new Set(devices.map((device) => device.name)),
+      ].join(', ')}`,
+    }
+  );
   return devices.find((device) => device.udid === value)!;
 }

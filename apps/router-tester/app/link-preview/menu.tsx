@@ -1,7 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Text, ScrollView, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, ScrollView, Pressable, View } from 'react-native';
 
 import { useTimer } from '@/utils/useTimer';
 
@@ -41,7 +40,7 @@ const Menus = () => {
 
   return (
     <ScrollView style={{ backgroundColor: '#fff' }} contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ paddingHorizontal: 16 }}>
+      <View style={{ paddingHorizontal: 16 }}>
         <Text>Misc</Text>
         <Text>Current Path: {pathname}</Text>
         <Text style={{ marginBottom: 16 }}>Time: {time}</Text>
@@ -309,7 +308,7 @@ const Menus = () => {
             </Link.Menu>
           </Link.Menu>
         </Link>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

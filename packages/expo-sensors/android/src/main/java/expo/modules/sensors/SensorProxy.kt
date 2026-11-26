@@ -78,17 +78,16 @@ internal fun ModuleDefinitionBuilder.UseSensorProxy(
   sensorType: Int,
   eventName: String,
   listenerDecorator: (() -> Unit)? = null,
-  onModuleDestroy: (() -> Unit)? = null,
   sensorProxyGetter: () -> SensorProxy
 ) {
   Events(eventName)
 
-  OnStartObserving(eventName) {
+  OnStartObserving {
     listenerDecorator?.invoke()
     sensorProxyGetter().startObserving()
   }
 
-  OnStopObserving(eventName) {
+  OnStopObserving {
     listenerDecorator?.invoke()
     sensorProxyGetter().stopObserving()
   }
@@ -107,7 +106,6 @@ internal fun ModuleDefinitionBuilder.UseSensorProxy(
 
   OnDestroy {
     sensorProxyGetter().onHostDestroy()
-    onModuleDestroy?.invoke()
   }
 
   AsyncFunction("setUpdateInterval") { updateInterval: Int ->

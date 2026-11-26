@@ -2,12 +2,6 @@
 
 import SwiftUI
 
-/// Returns the class of the Fabric component views of the given SwiftUI view type.
-@MainActor
-internal func swiftUIComponentViewClass<Content: AnyNativeSwiftUIView>(of viewType: Content.Type) -> AnyClass {
-  return SwiftUINativeView<Content>.self
-}
-
 /// The Fabric component view of a SwiftUI view of Expo Modules v2. It holds the props and the children, and the SwiftUI
 /// view or the `Host` that it's mounted in renders `Content` with them.
 internal final class SwiftUINativeView<Content: AnyNativeSwiftUIView>: ExpoSwiftUIViewObjC, @MainActor ExpoSwiftUI.AnyChild {

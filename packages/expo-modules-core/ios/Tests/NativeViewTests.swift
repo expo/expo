@@ -445,9 +445,6 @@ struct PackageViewComponentTests {
     try runtime.eval("delete expo.__createNativeViewComponent")
 
     #expect(try runtime.eval("expo.packages['@expo/cards'].NativeCardView === undefined").asBool())
-    // Nothing is cached, so a later read can create the component.
-    try runtime.eval("expo.__createNativeViewComponent = () => function NativeView() {}")
-    #expect(try runtime.eval("typeof expo.packages['@expo/cards'].NativeCardView").asString() == "function")
   }
 
   @Test

@@ -58,7 +58,6 @@ const DIRECT_MANIFESTS = [
   ['expo-status-bar', 'ExpoStatusBar', CORE_ONLY],
   ['expo-store-review', 'ExpoStoreReview', CORE_ONLY],
   ['expo-symbols', 'ExpoSymbols', CORE_ONLY],
-  ['expo-video-thumbnails', 'ExpoVideoThumbnails', CORE_ONLY],
   ['expo-web-browser', 'ExpoWebBrowser', CORE_ONLY],
 ];
 

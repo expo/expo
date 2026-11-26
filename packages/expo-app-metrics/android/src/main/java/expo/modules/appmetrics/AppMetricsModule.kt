@@ -56,6 +56,8 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -67,8 +69,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   // TODO(@lukmccall): Consider using appContext.backgroundCoroutineScope instead
-  private val scope: CoroutineScope
-    get() = appContext.modulesQueue
+  // A revoke deletes the database while a fire-and-forget write can still run. Such a write logs
+  // and drops instead of crashing the app.
+  private val scope: CoroutineScope by lazy {
+    CoroutineScope(
+      appContext.modulesQueue.coroutineContext + CoroutineExceptionHandler { _, error ->
+        Log.w(TAG, "[AppMetrics] Failed to store telemetry", error)
+      }
+    )
+  }
 
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
@@ -112,6 +121,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
       // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
       Function("logEvent") { name: String, options: LogEventOptions? ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         val validatedName = validateEventName(name) ?: return@Function
         val validatedBody = validateEventBody(options?.body)
         val sanitized = sanitizeLogEventAttributes(options?.attributes)
@@ -151,6 +163,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+        val onEndOfValidSpan = spanWriter.onEndOfNewSpan()
         val validatedName = validatedSpanName(name)
         val recorder = SpanRecorder(
           name = validatedName ?: name,
@@ -163,7 +176,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // A span with an invalid name still works for the caller, including as a parent, but it
         // is never written.
         val onEnd: (Span) -> Unit = if (validatedName != null) {
-          spanWriter::write
+          onEndOfValidSpan
         } else {
           { _ -> }
         }
@@ -235,6 +248,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnCreate {
+        if (!ObserveConsent.isLoaded) {
+          Log.w(
+            TAG,
+            "[AppMetrics] The Observe consent was not loaded, so Observe stays inactive. Call " +
+              "`ApplicationLifecycleDispatcher.onApplicationCreate(this)` in `Application.onCreate`."
+          )
+        }
         sessionManager = SessionManager(context)
 
         // The main session starts at the first startup metric's timestamp (the
@@ -291,6 +311,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // The processor builds the reports; `attributeAndStoreCrashReport` owns
         // the session attribution and storage.
         scope.launch {
+          if (!ObserveConsent.isGranted) {
+            return@launch
+          }
           CrashReportProcessor(
             crashFileReader = CrashFileReader.forContext(context),
             exitInfoProvider = ExitInfoProviderImpl(context),
@@ -325,6 +348,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // TODO(@ubax): move this drain and other resource-intensive startup work off the launch path
         // (e.g. into `markInteractive` or a background dispatch) so it doesn't affect startup time.
         scope.launch {
+          if (!ObserveConsent.isGranted) {
+            return@launch
+          }
           PendingErrorStore.drain(context).forEach { pendingError ->
             runCatching {
               sessionManager.addLogs(listOf(pendingError.toLogRecord()), sessionId = pendingError.sessionId)
@@ -400,6 +426,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
       // they go through the normal async log path.
       Function("reportError") { report: ErrorReport ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         if (report.isFatal) {
           PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
         } else {
@@ -410,6 +439,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("reportFeedback") { report: FeedbackReport ->
+        if (!ObserveConsent.isGranted) {
+          return@Function
+        }
         val record = report.toLogRecord(mainSession.sessionId)
         scope.launch {
           mainSession.addLogs(listOf(record))
@@ -473,6 +505,42 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
+  /**
+   * Applies a consent change from `Observe.setConsent`. Changes run one at a time. A revoke runs
+   * `afterRevoke` after the gate closes, before the next change starts.
+   */
+  suspend fun setConsent(granted: Boolean, afterRevoke: suspend () -> Unit = {}) =
+    consentMutex.withLock {
+      val update = ObserveConsent.update(context, granted)
+      try {
+        if (update.changed && granted) {
+          // The launch insert did nothing without consent, so the session row is inserted now.
+          mainSession.awaitSessionPersisted()
+          sessionManager.startSessionWithIdAt(mainSession.sessionId, mainSession.startDate, metadata)
+          saveStartupMetrics()
+        } else if (!granted) {
+          try {
+            if (update.changed) {
+              deleteStoredData(context)
+            }
+          } finally {
+            afterRevoke()
+          }
+        }
+      } catch (e: Exception) {
+        // A failed save matters more to the caller than a failed cleanup.
+        if (update.isSaved || e is CancellationException) {
+          throw e
+        }
+        throw ConsentNotSavedException(granted).apply { addSuppressed(e) }
+      }
+      if (!update.isSaved) {
+        throw ConsentNotSavedException(granted)
+      }
+    }
+
+  private val consentMutex = Mutex()
+
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
@@ -492,6 +560,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   // The session waits for its row before inserting.
   private suspend fun saveStartupMetrics() =
     saveStartupMetricsMutex.withLock {
+      // Without consent the startup metrics stay in memory.
+      if (!ObserveConsent.isGranted) {
+        return@withLock
+      }
       val metrics = AppStartupManager.takeUnsavedMetrics()
       if (metrics.isNotEmpty()) {
         mainSession.addMetrics(metrics)
@@ -699,4 +771,15 @@ internal fun spanStatusCode(status: String?): Int? = when (status) {
 private class SpanConstructorUnavailableException : CodedException(
   "Span objects can't be constructed directly because a span's identity and session " +
     "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)
+
+private class ConsentNotSavedException(granted: Boolean) : CodedException(
+  if (granted) {
+    "Observe could not save the consent value 'granted' on the device, so collection did not start. " +
+      "The device storage may be full or unavailable. Free storage and call setConsent('granted') again."
+  } else {
+    "Observe could not save the consent value 'not-granted' on the device. Collection stopped and " +
+      "the stored data was deleted, but the next launch may read the earlier value. The device " +
+      "storage may be full or unavailable. Free storage and call setConsent('not-granted') again."
+  }
 )

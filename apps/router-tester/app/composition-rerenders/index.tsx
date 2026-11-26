@@ -1,7 +1,6 @@
 import { Link, Stack, type Href } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SUITES = ['Default', 'Browse', 'Search'] as const;
 
@@ -35,7 +34,7 @@ const HomeIndex = () => {
       <ScrollView
         style={{ flex: 1, backgroundColor: '#fff' }}
         contentInsetAdjustmentBehavior="automatic">
-        <SafeAreaView edges={['left', 'right']} style={{ alignItems: 'center', gap: 16 }}>
+        <View style={{ alignItems: 'center', gap: 16 }}>
           <View>
             <Text>Composition Rerenders - Index</Text>
             <Text testID="index-render-count" style={{ fontSize: 32 }}>
@@ -51,7 +50,7 @@ const HomeIndex = () => {
           {Array.from({ length: 2 }).map((_, i) => (
             <CaseLink key={i} href={`/composition-rerenders/${i}`} text={`Go to ${i}`} />
           ))}
-        </SafeAreaView>
+        </View>
       </ScrollView>
     </>
   );

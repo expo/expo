@@ -6,6 +6,10 @@ plugins {
 group = 'expo.modules.asset'
 version = '58.0.18'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.asset"
   defaultConfig {

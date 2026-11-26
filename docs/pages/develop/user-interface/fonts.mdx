@@ -417,7 +417,7 @@ import { Platform } from 'react-native';
 
 > **Note:** Loading a Google Font using `useFonts` hook has same benefits and limitations as embedding a custom font on your own. See [using a local font file with `useFonts` hook](#with-usefonts-hook) for more information.
 
-Each Google Fonts package provides the `useFonts` hook to load the fonts asynchronously. This hook keeps track of the loading state and loads the font when an app is initialized. The font package also imports the font file so you don't have to explicitly import it.
+Use the [`useFonts`](/versions/latest/sdk/font/#usefonts) hook from `expo-font` to load a Google Font asynchronously. This hook keeps track of the loading state and loads the font when an app is initialized. The font package also imports the font file so you don't have to explicitly import it.
 
 <Step label="1">
 
@@ -442,8 +442,11 @@ After installing the font package, map the font using the `useFonts` hook in a t
 
 ```tsx src/app/_layout.tsx
 // Rest of the import statements
-/* @info Import `Inter_900Black` and `useFonts` hook from `@expo-google-fonts/inter`*/
-import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
+/* @info Import `useFonts` hook from `expo-font`. */
+import { useFonts } from 'expo-font';
+/* @end */
+/* @info Import `Inter_900Black` from its own subpath. The package root requires every font file of the family. */
+import { Inter_900Black } from '@expo-google-fonts/inter/900Black';
 /* @end */
 /* @info Import `SplashScreen` so that when the fonts are not loaded, we can continue to show `SplashScreen`. */
 import * as SplashScreen from 'expo-splash-screen';

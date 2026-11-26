@@ -34,6 +34,13 @@ inputs:
       build phase. The phase rebuilds a slice only when its recorded source hash changed, so
       a stale entry only means a rebuild.
     required: false
+  expo-modules-jsi-xcframework-platform:
+    description: >
+      The `apps/bare-expo` platform directory (`ios` or `macos`) whose Podfile.lock keys the
+      ExpoModulesJSI xcframework cache. Each platform keeps its own entry, so one job never
+      restores the other's slices and skips saving its own.
+    required: false
+    default: 'ios'
   gradle:
     description: 'Restore Gradle cache'
     required: false
@@ -210,16 +217,16 @@ runs:
       id: expo-modules-jsi-xcframework-cache
       with:
         path: packages/expo-modules-jsi/apple/Products
-        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
-        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-
+        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ inputs.expo-modules-jsi-xcframework-platform }}-${{ hashFiles('packages/expo-modules-jsi/apple/**', format('apps/bare-expo/{0}/Podfile.lock', inputs.expo-modules-jsi-xcframework-platform)) }}
+        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ inputs.expo-modules-jsi-xcframework-platform }}-
     - name: ♻️ Restore ExpoModulesJSI xcframework from cache (read-only)
       if: inputs.expo-modules-jsi-xcframework == 'true' && steps.cache-policy.outputs.read-only == 'true'
       uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: expo-modules-jsi-xcframework-cache-read-only
       with:
         path: packages/expo-modules-jsi/apple/Products
-        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
-        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-
+        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ inputs.expo-modules-jsi-xcframework-platform }}-${{ hashFiles('packages/expo-modules-jsi/apple/**', format('apps/bare-expo/{0}/Podfile.lock', inputs.expo-modules-jsi-xcframework-platform)) }}
+        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ inputs.expo-modules-jsi-xcframework-platform }}-
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'

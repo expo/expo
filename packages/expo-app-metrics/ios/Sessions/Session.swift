@@ -29,12 +29,18 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     // submits to `AppMetricsActor` from a parallel task that could race `init`, this should be
     // converted to a stored `sessionStartTask` that downstream writes `await` before proceeding.
     AppMetricsActor.isolated { [self] in
-      let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
-      do {
-        try AppMetrics.database?.insert(session: SessionRow.snapshot(of: self, environment: environment))
-      } catch {
-        logger.warn("[AppMetrics] Failed to insert session row: \(error.localizedDescription)")
-      }
+      self.insertRow()
+    }
+  }
+
+  /// Inserts the session row. Does nothing while consent is not granted.
+  @AppMetricsActor
+  func insertRow() {
+    let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
+    do {
+      try AppMetrics.database?.insert(session: SessionRow.snapshot(of: self, environment: environment))
+    } catch {
+      logger.warn("[AppMetrics] Failed to insert session row: \(error.localizedDescription)")
     }
   }
 

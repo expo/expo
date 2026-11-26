@@ -280,6 +280,7 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 - `backgroundStyle` applies fully on web. On Android, `backgroundColor` is used for the native container color. On iOS, the system sheet background is used.
 - Animation, over-drag, content panning, handle panning, keyboard behavior, custom backdrop, custom background, custom footer, animated value, and detached props are accepted for API compatibility but do not change behavior.
 - `modifiers` is an addition to the `@gorhom/bottom-sheet` API. It takes modifier configs from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers` and applies them to the native sheet's content on iOS and to the `ModalBottomSheet` on Android. It is ignored on web.
+- `contentWindowInsets` is an addition to the `@gorhom/bottom-sheet` API. It sets the insets the Android sheet adds around its content. It is ignored on iOS and web.
 
 ## Platform-specific modifiers
 
@@ -294,6 +295,27 @@ export default function EdgeToEdgeSheet() {
   return (
     <BottomSheet modifiers={[ignoreSafeArea({ edges: 'horizontal' })]}>
       <View style={{ height: 200, backgroundColor: 'tomato' }} />
+    </BottomSheet>
+  );
+}
+```
+
+## Edge-to-edge content on Android
+
+On Android, the sheet pads the top and bottom of its content clear of the system bars, display cutouts, and the keyboard. As a result, a scrolling list stops above the navigation bar. Pass `contentWindowInsets` with only the top inset to let the content run under the navigation bar, and pad the end of the list instead. With that value, the sheet adds no padding for the keyboard.
+
+```tsx
+import { ScrollView } from 'react-native';
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export default function EdgeToEdgeListSheet({ children }: { children: React.ReactNode }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <BottomSheet snapPoints={['50%', '100%']} contentWindowInsets={{ top: insets.top }}>
+      <ScrollView nestedScrollEnabled contentContainerStyle={{ paddingBottom: insets.bottom }}>
+        {children}
+      </ScrollView>
     </BottomSheet>
   );
 }

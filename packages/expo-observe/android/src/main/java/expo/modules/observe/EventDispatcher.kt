@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.easclient.EASClientID
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.MediaType.Companion.toMediaType
@@ -132,6 +133,12 @@ class EventDispatcher(
       call.cancel()
     }
 
+    // Checked right before the request starts, so a revoke during the preparation stops it. The
+    // retryable result ends the dispatch loop without moving the cursors.
+    if (!ObserveConsent.isGranted) {
+      continuation.resume(DispatchResult.RetryableFailure(retryAfterMs = null))
+      return
+    }
     val response = try {
       call.execute()
     } catch (e: Exception) {

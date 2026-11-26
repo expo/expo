@@ -2,6 +2,7 @@ package expo.modules.appmetrics.jserrors
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.writeCrashFileIfGranted
 import java.io.File
 import java.util.UUID
 import kotlinx.serialization.Serializable
@@ -41,14 +42,16 @@ object PendingErrorStore {
    * way to a crash and must not throw out of the error handler).
    */
   fun write(context: Context, error: PendingError) {
-    runCatching {
-      val directory = directory(context)
-      val fileName = "${error.timestamp}-${UUID.randomUUID()}.json"
-      val target = File(directory, fileName)
-      // Write to a temp file then rename, so an interrupted process never leaves a half-written file.
-      val temp = File(directory, "$fileName.tmp")
-      temp.writeText(Json.encodeToString(error))
-      temp.renameTo(target)
+    writeCrashFileIfGranted {
+      runCatching {
+        val directory = directory(context)
+        val fileName = "${error.timestamp}-${UUID.randomUUID()}.json"
+        val target = File(directory, fileName)
+        // Write to a temp file then rename, so an interrupted process never leaves a half-written file.
+        val temp = File(directory, "$fileName.tmp")
+        temp.writeText(Json.encodeToString(error))
+        temp.renameTo(target)
+      }
     }
   }
 
@@ -85,6 +88,6 @@ object PendingErrorStore {
   }
 
   /** The directory holding pending-error files, under `noBackupFilesDir` so they're not backed up. */
-  private fun directory(context: Context): File =
+  internal fun directory(context: Context): File =
     File(context.noBackupFilesDir, "ExpoAppMetrics/pending-errors").apply { mkdirs() }
 }

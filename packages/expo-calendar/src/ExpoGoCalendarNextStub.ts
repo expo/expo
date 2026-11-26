@@ -3,7 +3,7 @@ import type { PermissionResponse } from 'expo';
 class ExpoGoCalendarNextStub {
   static readonly ExpoCalendar = class ExpoCalendar {
     constructor() {
-      throw new Error('`ExpoCalendar` is not yet available in the Expo Go managed workflow.');
+      throw new Error('`Calendar` is not yet available in the Expo Go managed workflow.');
     }
 
     addEventWithForm() {
@@ -12,23 +12,19 @@ class ExpoGoCalendarNextStub {
   };
   static readonly ExpoCalendarEvent = class ExpoCalendarEvent {
     constructor() {
-      throw new Error('`ExpoCalendarEvent` is not yet available in the Expo Go managed workflow.');
+      throw new Error('`CalendarEvent` is not yet available in the Expo Go managed workflow.');
     }
   };
 
   static readonly ExpoCalendarReminder = class ExpoCalendarReminder {
     constructor() {
-      throw new Error(
-        '`ExpoCalendarReminder` is not yet available in the Expo Go managed workflow.'
-      );
+      throw new Error('`CalendarReminder` is not yet available in the Expo Go managed workflow.');
     }
   };
 
   static readonly ExpoCalendarAttendee = class ExpoCalendarAttendee {
     constructor() {
-      throw new Error(
-        '`ExpoCalendarAttendee` is not yet available in the Expo Go managed workflow.'
-      );
+      throw new Error('`CalendarAttendee` is not yet available in the Expo Go managed workflow.');
     }
   };
 

@@ -6,9 +6,12 @@ internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.E
 
 @ExpoModule("ExpoAppMetrics", classes: [SpanHandle.self])
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
+  var isConsentGranted: @Sendable () -> Bool = { ObserveConsent.isGranted }
   var subscription: UpdatesStateChangeSubscription?
 
   public func definition() -> ModuleDefinition {
+    let isConsentGranted = self.isConsentGranted
+
     OnCreate {
       AppMetricsActor.isolated {
         AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
@@ -36,7 +39,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     // TODO(@ubax): move `logEvent` onto the Session shared object so logs are recorded via a
     // session handle (like `addMetric`), instead of writing to `mainSession` directly here.
     Function("logEvent") { (name: String, options: LogEventOptions?) in
-      guard let validatedName = validateEventName(name) else {
+      guard isConsentGranted(), let validatedName = validateEventName(name) else {
         return
       }
       let validatedBody = validateEventBody(options?.body)
@@ -166,6 +169,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
     // the normal async log path.
     Function("reportError") { (report: ErrorReport) in
+      guard isConsentGranted() else { return }
       if report.isFatal {
         PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
       } else {
@@ -176,6 +180,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     Function("reportFeedback") { (report: FeedbackReport) in
+      guard isConsentGranted() else { return }
       let record = report.toLogRecord()
       AppMetricsActor.isolated {
         AppMetrics.mainSession.receiveLog(record)
@@ -193,6 +198,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanHandle?) -> SpanHandle in
+      let onEndOfValidSpan = AppMetrics.spanWriter.onEndOfNewSpan(isGranted: isConsentGranted())
       let validatedName = validatedSpanName(name)
       let recorder = SpanRecorder(
         name: validatedName ?? name,
@@ -208,13 +214,13 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       if validatedName == nil {
         onEnd = { _ in }
       } else {
-        onEnd = AppMetrics.spanWriter.schedule
+        onEnd = onEndOfValidSpan
       }
       return SpanHandle(recorder: recorder, onEnd: onEnd)
     }
 
     Function("recordSpan") { (name: String, options: RecordSpanOptions, parent: SpanHandle?) in
-      guard let validatedName = validatedSpanName(name),
+      guard isConsentGranted(), let validatedName = validatedSpanName(name),
         let window = recordedSpanWindow(startTime: options.startTime, endTime: options.endTime)
       else {
         return

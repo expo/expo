@@ -1,9 +1,7 @@
 package expo.modules.sharing
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Record
 
 enum class ShareType(val value: String) : Enumerable {
   Text("text"),
@@ -47,21 +45,21 @@ enum class ContentType(val value: String) : Enumerable {
   }
 }
 
-@OptimizedRecord
+@Record
 internal data class SharePayload(
-  @Field var value: String = "",
-  @Field var shareType: ShareType = ShareType.Text,
-  @Field var mimeType: String = "text/plain"
-) : Record
+  var value: String = "",
+  var shareType: ShareType = ShareType.Text,
+  var mimeType: String = "text/plain"
+)
 
-@OptimizedRecord
+@Record
 data class ResolvedSharePayload(
-  @Field var value: String = "",
-  @Field var shareType: ShareType = ShareType.Text,
-  @Field var mimeType: String = "text/plain",
-  @Field var contentUri: String? = null,
-  @Field var contentType: ContentType? = null,
-  @Field var contentSize: Long? = null,
-  @Field var contentMimeType: String? = null,
-  @Field var originalName: String? = null
-) : Record
+  var value: String = "",
+  var shareType: ShareType = ShareType.Text,
+  var mimeType: String = "text/plain",
+  var contentUri: String? = null,
+  var contentType: ContentType? = null,
+  var contentSize: Long? = null,
+  var contentMimeType: String? = null,
+  var originalName: String? = null
+)

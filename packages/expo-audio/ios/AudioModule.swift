@@ -227,6 +227,10 @@ public class AudioModule: Module {
         player.currentStatus()
       }
 
+      Property("isActiveForLockScreen") { player in
+        player.isActiveForLockScreen
+      }
+
       Function("play") { player in
         guard self.canStartPlayback() else {
           return
@@ -375,6 +379,10 @@ public class AudioModule: Module {
         playlist.currentStatus()
       }
 
+      Property("isActiveForLockScreen") { playlist in
+        playlist.isActiveForLockScreen
+      }
+
       Function("play") { playlist in
         guard self.canStartPlayback() else {
           return
@@ -497,15 +505,15 @@ public class AudioModule: Module {
         case let (atTime?, forDuration?):
           // Convert relative delay to absolute device time
           let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-          recorder.recordForDuration(TimeInterval(forDuration), atTime: absoluteTime)
+          try recorder.recordForDuration(TimeInterval(forDuration), atTime: absoluteTime)
           return recorder.getRecordingStatus()
         case let (atTime?, nil):
           // Convert relative delay to absolute device time
           let absoluteTime = recorder.ref.deviceCurrentTime + TimeInterval(atTime)
-          recorder.record(atTime: absoluteTime)
+          try recorder.record(atTime: absoluteTime)
           return recorder.getRecordingStatus()
         case let (nil, forDuration?):
-          recorder.recordForDuration(TimeInterval(forDuration))
+          try recorder.recordForDuration(TimeInterval(forDuration))
           return recorder.getRecordingStatus()
         case (nil, nil):
           return try recorder.startRecording()
@@ -528,12 +536,12 @@ public class AudioModule: Module {
 
       Function("startRecordingAtTime") { (recorder, seconds: Double) in
         try checkPermissions()
-        recorder.record(atTime: TimeInterval(seconds))
+        try recorder.record(atTime: TimeInterval(seconds))
       }
 
       Function("recordForDuration") { (recorder, seconds: Double) in
         try checkPermissions()
-        recorder.recordForDuration(TimeInterval(seconds))
+        try recorder.recordForDuration(TimeInterval(seconds))
       }
 
       Function("getAvailableInputs") {

@@ -39,6 +39,15 @@ public struct CrashReport: Codable, Sendable {
   /// App version at the time of the crash.
   public let appVersion: String
 
+  /// App build number at the time of the crash.
+  public let appBuildNumber: String?
+
+  /// OS version at the time of the crash, as MetricKit reports it (for example "iPhone OS 17.6.1 (21G93)").
+  public let osVersion: String?
+
+  /// ID of the crashed process. `nil` before iOS 17 and when MetricKit does not know it.
+  public let processId: Int?
+
   /// Timestamp range start of the diagnostic payload.
   public let timestampBegin: Date
 
@@ -57,6 +66,13 @@ public struct CrashReport: Codable, Sendable {
   /// `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
   /// "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
   /// equal "now," so we can't rely on the session's start time falling inside it.
+  ///
+  /// When MetricKit reports the crashed process ID (iOS 17 and later), only the session of that
+  /// process can match. It must also intersect the payload window, because process IDs repeat
+  /// (for example after a reboot). With no such session, the result is `nil`: the crashed launch
+  /// never stored its session, for example because it failed before the app's code ran.
+  ///
+  /// Without a process ID:
   ///
   /// 1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
   /// pick sessions that intersect the payload window. Among those, prefer the one
@@ -80,6 +96,10 @@ public struct CrashReport: Codable, Sendable {
         return true
       }
       return sessionEnd >= payloadBegin
+    }
+    if let processId {
+      let sameProcess = intersecting.filter { $0.processId == processId }
+      return sameProcess.max(by: { $0.startTimestamp < $1.startTimestamp })
     }
     let candidates: [SessionRow]
     if !intersecting.isEmpty {
@@ -324,6 +344,15 @@ extension CrashReport {
     let decodedTree = try? JSONDecoder().decode(CallStackTree.self, from: diagnostic.callStackTree.jsonRepresentation())
     self.callStackTree = decodedTree.map(CrashReportSymbolicator.symbolicate)
     self.appVersion = diagnostic.applicationVersion
+    self.appBuildNumber = diagnostic.metaData.applicationBuildVersion
+    self.osVersion = diagnostic.metaData.osVersion
+    if #available(iOS 17.0, *) {
+      // MetricKit uses -1 when it does not know the process ID.
+      let pid = diagnostic.metaData.pid
+      self.processId = pid > 0 ? Int(pid) : nil
+    } else {
+      self.processId = nil
+    }
     self.timestampBegin = payload.timeStampBegin
     self.timestampEnd = payload.timeStampEnd
     self.ingestedAt = Date.now

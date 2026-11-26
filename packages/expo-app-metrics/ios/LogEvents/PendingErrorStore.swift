@@ -26,13 +26,24 @@ enum PendingErrorStore {
   /// files unbounded; we keep the newest `maxPendingErrors` and drop the rest (logged at drain time).
   static let maxPendingErrors = 5
 
+  // Revoke closes the gate before deleting. A writer that passed the gate must finish before deletion.
+  private static let fileLock = NSLock()
+
   /// Writes a fatal error to disk synchronously. Best-effort: any failure is swallowed (we're on the
   /// way to a crash and must not throw out of the error handler).
-  static func write(_ error: PendingError) {
-    guard let directory = try? directoryUrl() else {
-      return
+  static func write(_ error: PendingError, directoryUrl: () throws -> URL = createdDirectoryUrl) {
+    fileLock.withLock {
+      guard ObserveConsent.isGranted, let directory = try? directoryUrl() else {
+        return
+      }
+      write(error, in: directory)
     }
-    write(error, in: directory)
+  }
+
+  static func delete(in directory: URL) {
+    fileLock.withLock {
+      try? FileManager.default.removeItem(at: directory)
+    }
   }
 
   /// Writes into an explicit directory. Tests use this overload to point at a temporary directory.
@@ -51,7 +62,7 @@ enum PendingErrorStore {
   /// Reads all pending errors oldest-first and removes their files. Returns the decoded errors so the
   /// caller can ingest them into the database. Corrupt files are deleted and skipped.
   static func drain() -> [PendingError] {
-    guard let directory = try? directoryUrl() else {
+    guard let directory = try? createdDirectoryUrl() else {
       return []
     }
     return drain(in: directory)
@@ -93,14 +104,18 @@ enum PendingErrorStore {
   }
 
   /// The directory holding pending-error files, under the caches directory so they're not backed up.
-  private static func directoryUrl() throws -> URL {
+  static func directoryUrl() throws -> URL {
     let base = try FileManager.default.url(
       for: .cachesDirectory,
       in: .userDomainMask,
       appropriateFor: nil,
       create: true
     )
-    let directory = base.appendingPathComponent("ExpoAppMetrics/pending-errors")
+    return base.appendingPathComponent("ExpoAppMetrics/pending-errors")
+  }
+
+  private static func createdDirectoryUrl() throws -> URL {
+    let directory = try directoryUrl()
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory
   }

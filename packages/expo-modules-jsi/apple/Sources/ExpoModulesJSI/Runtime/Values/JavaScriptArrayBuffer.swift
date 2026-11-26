@@ -22,6 +22,12 @@ public struct JavaScriptArrayBuffer: ~Copyable {
     return runtimeHandle.pointee
   }
 
+  /// Whether the array buffer belongs to the given runtime, the runtime that created it. Use it only with the runtime
+  /// it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   internal init(_ runtime: borrowing JavaScriptRuntime, _ arrayBuffer: consuming facebook.jsi.ArrayBuffer) {
     self.runtimeHandle = runtime.handle
     self.pointee = arrayBuffer

@@ -1046,8 +1046,8 @@
 # Agent discovery paths probed by AI-readiness checkers
 /api https://api.expo.dev/v2/sdks/58.0.0/native-modules 301
 /api/ https://api.expo.dev/v2/sdks/58.0.0/native-modules 301
-/developers / 301
-/developers/ / 301
+/developers /accounts/programmatic-access/ 301
+/developers/ /accounts/programmatic-access/ 301
 /contact https://expo.dev/contact 301
 /contact/ https://expo.dev/contact 301
 /privacy https://expo.dev/privacy 301

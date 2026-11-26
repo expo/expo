@@ -15,19 +15,6 @@ export type PedometerResult = {
   steps: number;
 };
 
-export type PedometerEvent = {
-  /**
-   * Type of the pedometer event, indicating whether updates have paused or resumed.
-   */
-  type: 'pause' | 'resume';
-  /**
-   * Timestamp (in ms since the Unix epoch) associated with the pedometer event.
-   */
-  date: number;
-};
-
-export type PedometerEventCallback = (event: PedometerEvent) => void;
-
 /**
  * Callback function providing event result as an argument.
  */
@@ -48,32 +35,7 @@ export type PedometerUpdateCallback = (result: PedometerResult) => void;
  * `remove()` when you would like to unsubscribe the listener.
  */
 export function watchStepCount(callback: PedometerUpdateCallback): EventSubscription {
-  if (!ExponentPedometer.addListener) {
-    return {
-      remove() {},
-    };
-  }
   return ExponentPedometer.addListener('Exponent.pedometerUpdate', callback);
-}
-
-/**
- * Listen for pedometer pause/resume events emitted by the underlying platform.
- * Call [`startEventUpdatesAsync`](#starteventupdatesasync) to begin receiving events.
- *
- * > Event delivery is best-effort and generally only while the app is running.
- * > Do not rely on it while the app is in the background or terminated.
- * > On Android, events are derived from walking/running activity transitions.
- *
- * @platform android
- * @platform ios
- */
-export function watchEventUpdates(callback: PedometerEventCallback): EventSubscription {
-  if (!ExponentPedometer.addListener) {
-    return {
-      remove() {},
-    };
-  }
-  return ExponentPedometer.addListener('Exponent.pedometerEvent', callback);
 }
 
 /**
@@ -91,48 +53,6 @@ export async function isRecordingAvailableAsync(): Promise<boolean> {
     return false;
   }
   return await ExponentPedometer.isRecordingAvailableAsync();
-}
-
-/**
- * Check whether pedometer pause/resume event tracking is supported on this device.
- *
- * @platform android
- * @platform ios
- */
-export async function isEventTrackingAvailableAsync(): Promise<boolean> {
-  if (!ExponentPedometer.isEventTrackingAvailableAsync) {
-    return false;
-  }
-  return await ExponentPedometer.isEventTrackingAvailableAsync();
-}
-
-/**
- * Start pedometer pause/resume event tracking.
- *
- * @return a promise that fulfills with `true` when event tracking started, or `false` when
- * event tracking is not available on this device.
- *
- * @platform android
- * @platform ios
- */
-export async function startEventUpdatesAsync(): Promise<boolean> {
-  if (!ExponentPedometer.startEventUpdatesAsync) {
-    return false;
-  }
-  return await ExponentPedometer.startEventUpdatesAsync();
-}
-
-/**
- * Stop pedometer pause/resume event tracking.
- *
- * @platform android
- * @platform ios
- */
-export async function stopEventUpdatesAsync(): Promise<void> {
-  if (!ExponentPedometer.stopEventUpdatesAsync) {
-    return;
-  }
-  await ExponentPedometer.stopEventUpdatesAsync();
 }
 
 /**

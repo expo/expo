@@ -4,12 +4,11 @@ import MessageUI
 import UniformTypeIdentifiers
 import ExpoModulesCore
 
-internal final class MailComposingSession: NSObject, MFMailComposeViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
-  typealias ComposingCallback = (Result<[String: String], Exception>) -> ()
-
+@MainActor
+internal final class MailComposingSession: NSObject, @preconcurrency MFMailComposeViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   let appContext: AppContext
   let composeController: MFMailComposeViewController
-  var callback: ComposingCallback?
+  private var continuation: CheckedContinuation<[String: String], Error>?
 
   init(_ appContext: AppContext) {
     self.appContext = appContext
@@ -41,46 +40,47 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
     }
   }
 
-  func presentViewController(_ callback: @escaping ComposingCallback) {
+  func present() async throws -> [String: String] {
     guard let currentViewController = appContext.utilities?.currentViewController() else {
-      callback(.failure(MissingViewControllerException()))
-      return
+      throw MissingViewControllerException()
     }
-    self.callback = callback
     if let presentationController = composeController.presentationController {
       presentationController.delegate = self
     }
-    currentViewController.present(composeController, animated: true)
+    return try await withCheckedThrowingContinuation { continuation in
+      self.continuation = continuation
+      currentViewController.present(composeController, animated: true)
+    }
   }
 
   // MARK: - MFMailComposeViewControllerDelegate
 
   func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
     composeController.dismiss(animated: true) {
-      guard let callback = self.callback else {
-        return
-      }
       switch result {
       case .cancelled:
-        callback(.success(["status": "cancelled"]))
+        self.finish(with: .success(["status": "cancelled"]))
       case .saved:
-        callback(.success(["status": "saved"]))
+        self.finish(with: .success(["status": "saved"]))
       case .sent:
-        callback(.success(["status": "sent"]))
+        self.finish(with: .success(["status": "sent"]))
       case .failed:
-        callback(.failure(SendingFailedException(error)))
+        self.finish(with: .failure(SendingFailedException(error)))
       @unknown default:
-        callback(.failure(UnknownResultException(result)))
+        self.finish(with: .failure(UnknownResultException(result)))
       }
     }
   }
 
   // MARK: - UIAdaptivePresentationControllerDelegate
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    guard let callback = self.callback else {
-      return
-    }
-    callback(.success(["status": "cancelled"]))
+    finish(with: .success(["status": "cancelled"]))
+  }
+
+  // The session can report more than one result, but only the first one settles the call.
+  private func finish(with result: Result<[String: String], Error>) {
+    continuation?.resume(with: result)
+    continuation = nil
   }
 }
 

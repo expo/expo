@@ -27,7 +27,7 @@ export interface SecureFieldProps extends CommonViewModifierProps {
    * If omitted, the field manages its own internal state.
    */
   text?: ObservableState<string>;
-  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  /** Maximum number of UTF-16 code units allowed, as JavaScript counts string length. Truncates natively as the user types. */
   maxLength?: number;
   /** If true, the secure field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;

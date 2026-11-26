@@ -66,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -91,7 +92,7 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mHeadingFilterDegrees: Double? = null
 
   // Motion activity
-  private val mMotionActivityWatchIds = mutableSetOf<Int>()
+  private val mMotionActivityWatchIds: MutableSet<Int> = ConcurrentHashMap.newKeySet()
   private var mMotionActivityPendingIntent: PendingIntent? = null
   private var mMotionActivityReceiverRegistered = false
   private val mMotionActivityReceiver = object : BroadcastReceiver() {
@@ -248,10 +249,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
           stopMotionActivityWatch()
         }
         return@AsyncFunction
-      }
-
-      if (isMissingForegroundPermissions()) {
-        throw LocationUnauthorizedException()
       }
 
       // Check if we want to stop watching location or compass

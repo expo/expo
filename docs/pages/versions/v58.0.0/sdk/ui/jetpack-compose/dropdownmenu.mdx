@@ -445,34 +445,73 @@ By default, each `DropdownMenuGroup` and `SelectableDropdownMenuItem` has the sh
 
 The first element gets rounder top corners, and the last element gets rounder bottom corners. A `DropdownMenuItem` without `shape` is the original Material 3 menu item.
 
+<ComponentExample
+  title="ShapedDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-shaped-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-shaped-android-dark.webp"
+  alt="An outlined Show menu button with an open menu below it holding two groups joined into one stack: Edit and Share, then Settings">
+
 ```tsx
-<DropdownMenuPopup
-  expanded={isExpanded}
-  onDismissRequest={() => setIsExpanded(false)}>
-  {/* Group 1 of 2, with 2 items */}
-  <DropdownMenuGroup shapes={{ index: 0, count: 2 }}>
-    <DropdownMenuItem shape={{ index: 0, count: 2 }}>
-      <DropdownMenuItem.Text>
-        <Text>Edit</Text>
-      </DropdownMenuItem.Text>
-    </DropdownMenuItem>
-    <DropdownMenuItem shape={{ index: 1, count: 2 }}>
-      <DropdownMenuItem.Text>
-        <Text>Share</Text>
-      </DropdownMenuItem.Text>
-    </DropdownMenuItem>
-  </DropdownMenuGroup>
-  <Spacer modifiers={[height(2)]} />
-  {/* Group 2 of 2, with 1 item */}
-  <DropdownMenuGroup shapes={{ index: 1, count: 2 }}>
-    <DropdownMenuItem shape={{ index: 0, count: 1 }}>
-      <DropdownMenuItem.Text>
-        <Text>Settings</Text>
-      </DropdownMenuItem.Text>
-    </DropdownMenuItem>
-  </DropdownMenuGroup>
-</DropdownMenuPopup>
+import {
+  Host,
+  Box,
+  DropdownMenuPopup,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  OutlinedButton,
+  Spacer,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+export default function ShapedDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <Box>
+        <OutlinedButton onClick={() => setIsExpanded(true)}>
+          <Text>Show menu</Text>
+        </OutlinedButton>
+        <DropdownMenuPopup
+          expanded={isExpanded}
+          onDismissRequest={() => setIsExpanded(false)}>
+          {/* Group 1 of 2, with 2 items */}
+          <DropdownMenuGroup shapes={{ index: 0, count: 2 }}>
+            <DropdownMenuItem
+              shape={{ index: 0, count: 2 }}
+              onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Edit</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              shape={{ index: 1, count: 2 }}
+              onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Share</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <Spacer modifiers={[height(2)]} />
+          {/* Group 2 of 2, with 1 item */}
+          <DropdownMenuGroup shapes={{ index: 1, count: 2 }}>
+            <DropdownMenuItem
+              shape={{ index: 0, count: 1 }}
+              onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Settings</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuPopup>
+      </Box>
+    </Host>
+  );
+}
 ```
+
+</ComponentExample>
 
 ## API
 

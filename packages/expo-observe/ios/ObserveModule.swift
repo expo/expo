@@ -17,6 +17,11 @@ internal struct Config: Record {
   @Field var integrations: [String: Any]?
 }
 
+internal enum ConsentValue: String, Enumerable {
+  case granted
+  case notGranted = "not-granted"
+}
+
 internal struct BundleDefaults: Record {
   @Field var environment: String = ""
   @Field var isJsDev: Bool = false
@@ -31,6 +36,11 @@ public final class ObserveModule: Module {
     Events("configure")
 
     OnCreate {
+      // Deletes what a build with consent stored. Module start is late enough, because nothing is
+      // sent without consent.
+      if ObserveConsent.state == .notGranted {
+        ObserveUserDefaults.deleteStoredSettings()
+      }
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
@@ -41,6 +51,10 @@ public final class ObserveModule: Module {
 
     Constant("clientId") {
       EASClientID.uuid().uuidString.lowercased()
+    }
+
+    AsyncFunction("setConsent") { (consent: ConsentValue) in
+      await applyConsent(consent, toAppMetrics: AppMetrics.setConsent(granted:))
     }
 
     AsyncFunction("dispatchEvents") {
@@ -146,4 +160,17 @@ internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
     "NSPrivacyCollectedDataTypeCustomerSupport",
   ]
   return dataTypes.contains { userContentTypes.contains($0["NSPrivacyCollectedDataType"] as? String ?? "") }
+}
+
+/// Applies a consent change to App Metrics. A revoke also deletes the Observe settings, the dispatch
+/// cursors among them.
+@AppMetricsActor
+func applyConsent(
+  _ consent: ConsentValue,
+  toAppMetrics setAppMetricsConsent: @AppMetricsActor (Bool) -> Void
+) {
+  setAppMetricsConsent(consent == .granted)
+  if consent == .notGranted {
+    ObserveUserDefaults.deleteStoredSettings()
+  }
 }

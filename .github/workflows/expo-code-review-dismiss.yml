@@ -150,6 +150,20 @@ jobs:
           # the post step doesn't error trying to save an empty cache.
           package-manager-cache: false
 
+      # ecr rewrites the review comment and drops the automatic review count that
+      # expo-code-review.yml keeps in it. Read the count first, and write it back after.
+      - name: Read the automatic review count
+        id: count
+        if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+        run: bash .github/scripts/ai-review-auto-count.sh read
+
       # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GitHub token only, no OPENAI_API_KEY or model credential
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
@@ -166,3 +180,15 @@ jobs:
           [ -n "$REASON" ] && ARGS+=(--reason "$REASON")
           for id in $IDS; do ARGS+=("$id"); done
           ./scripts/expo-code-review ecr "$SUB" "${ARGS[@]}"
+
+      - name: Restore the automatic review count
+        if: always() && steps.count.outputs.count != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+          COUNT: ${{ steps.count.outputs.count }}
+        run: bash .github/scripts/ai-review-auto-count.sh restore

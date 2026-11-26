@@ -1,5 +1,12 @@
 package expo.modules.appmetrics.networkrequests
 
+import expo.modules.appmetrics.ObserveConsentGrantedRule
+import org.junit.Rule
+import expo.modules.appmetrics.ObserveConsent
+import io.mockk.every
+import io.mockk.mockkObject
+import io.mockk.unmockkAll
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -8,6 +15,14 @@ import java.util.Date
 import java.util.UUID
 
 class NetworkRequestMonitorTest {
+  @get:Rule
+  val observeConsent = ObserveConsentGrantedRule()
+
+  @After
+  fun tearDown() {
+    unmockkAll()
+  }
+
   @Test
   fun `records snapshots and fans out to delegates`() {
     val monitor = NetworkRequestMonitor()
@@ -102,6 +117,38 @@ class NetworkRequestMonitorTest {
     assertEquals("https://api.expo.dev/v2/sessions", collector.started.first().url)
     assertEquals(1, collector.completed.size)
     assertEquals("https://api.expo.dev/v2/sessions", collector.completed.first().url)
+  }
+
+  @Test
+  fun `drops starts and completions while consent is not granted`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns false
+    val monitor = NetworkRequestMonitor()
+    val collector = CollectingDelegate()
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(NetworkRequestStarted(UUID.randomUUID(), "https://expo.dev/x", "GET", Date()))
+    monitor.record(makeRequest())
+
+    assertTrue(monitor.recent.isEmpty())
+    assertTrue(collector.started.isEmpty())
+    assertTrue(collector.completed.isEmpty())
+  }
+
+  @Test
+  fun `records starts and completions while consent is granted`() {
+    mockkObject(ObserveConsent)
+    every { ObserveConsent.isGranted } returns true
+    val monitor = NetworkRequestMonitor()
+    val collector = CollectingDelegate()
+    monitor.addDelegate(collector)
+
+    monitor.recordStart(NetworkRequestStarted(UUID.randomUUID(), "https://expo.dev/x", "GET", Date()))
+    monitor.record(makeRequest())
+
+    assertEquals(1, monitor.recent.size)
+    assertEquals(1, collector.started.size)
+    assertEquals(1, collector.completed.size)
   }
 
   private fun makeRequest(

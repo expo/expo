@@ -11,7 +11,7 @@ final class MetricsDatabase: Sendable {
   /// semantics change in a way that an older or newer build can't operate on; on a mismatch the
   /// database is wiped and recreated (see `openConnection`). We don't ship migrations yet — the data
   /// is local-only and short-lived, so wiping is preferable to maintaining migration code.
-  static let currentSchemaVersion = 3
+  static let currentSchemaVersion = 4
 
   /// How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
   static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
@@ -44,7 +44,7 @@ final class MetricsDatabase: Sendable {
     }
   }
 
-  private static func defaultDirectoryUrl() throws -> URL {
+  static func defaultDirectoryUrl() throws -> URL {
     #if os(tvOS)
     return try FileManager.default
       .url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
@@ -62,28 +62,18 @@ final class MetricsDatabase: Sendable {
     self.fileUrl = directoryUrl.appendingPathComponent("\(fileName).db")
     self.database = try Self.openConnection(fileUrl: fileUrl)
     try createSchemaIfNeeded()
-    scheduleDeactivateOrphanedSessions()
+    deactivateOrphanedSessions()
     schedulePruneExpiredSessions()
   }
 
   /// Marks any session that was still flagged active when the previous process exited (force-quit,
-  /// OOM, crash before `stop()` could run) as inactive. The cutoff is captured before any new session
-  /// row is inserted, so the just-launched main session won't be touched: tasks drain on
-  /// `AppMetricsActor` in FIFO order, and `Session.init` enqueues its INSERT after this task.
-  ///
-  /// `weak self` for the same reason as `schedulePruneExpiredSessions` — a transient database can
-  /// safely deinit before its scheduled task runs.
-  private func scheduleDeactivateOrphanedSessions() {
-    let cutoff = Date.now.ISO8601Format()
-    AppMetricsActor.isolated { [weak self] in
-      guard let self else {
-        return
-      }
-      do {
-        try self.deactivateAllSessionsBefore(timestamp: cutoff)
-      } catch {
-        logger.warn("[AppMetrics] Failed to deactivate orphaned sessions: \(error.localizedDescription)")
-      }
+  /// OOM, crash before `stop()` could run) as inactive. Runs before `init` returns, so every active
+  /// row is from an earlier process and rows inserted after the open are never touched.
+  private func deactivateOrphanedSessions() {
+    do {
+      try database.execute("UPDATE sessions SET isActive = 0 WHERE isActive = 1")
+    } catch {
+      logger.warn("[AppMetrics] Failed to deactivate orphaned sessions: \(error.localizedDescription)")
     }
   }
 
@@ -156,7 +146,7 @@ final class MetricsDatabase: Sendable {
   /// Removes the database file along with its WAL/shm sidecars. The caller must ensure no
   /// `SQLiteDatabase` instance for this file is still alive — when one falls out of scope its `deinit`
   /// runs `sqlite3_close_v2`, which is what releases the file handle.
-  private static func removeDatabaseFile(at fileUrl: URL) throws {
+  static func removeDatabaseFile(at fileUrl: URL) throws {
     let fileManager = FileManager.default
     let basePath = fileUrl.path
     for path in [basePath, basePath + "-wal", basePath + "-shm"] {
@@ -187,13 +177,15 @@ final class MetricsDatabase: Sendable {
         appName, appIdentifier, appVersion, appBuildNumber,
         appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
         deviceOs, deviceOsVersion, deviceModel, deviceName,
-        expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+        expoSdkVersion, reactNativeVersion, clientVersion, languageTag,
+        processId
       ) VALUES (
         ?1, ?2, ?3, ?4, ?5, ?6,
         ?7, ?8, ?9, ?10,
         ?11, ?12, ?13, ?14,
         ?15, ?16, ?17, ?18,
-        ?19, ?20, ?21, ?22
+        ?19, ?20, ?21, ?22,
+        ?23
       )
       """
     )
@@ -203,6 +195,7 @@ final class MetricsDatabase: Sendable {
       session.appUpdateId, session.appUpdateRuntimeVersion, session.appUpdateRequestHeaders, session.appEasBuildId,
       session.deviceOs, session.deviceOsVersion, session.deviceModel, session.deviceName,
       session.expoSdkVersion, session.reactNativeVersion, session.clientVersion, session.languageTag,
+      session.processId,
     ])
     try statement.run()
   }
@@ -226,17 +219,6 @@ final class MetricsDatabase: Sendable {
       """
     )
     try statement.bindAll([isActive, endTimestamp, id])
-    try statement.run()
-  }
-
-  @AppMetricsActor
-  func deactivateAllSessionsBefore(timestamp: String) throws {
-    let statement = try database.prepare(
-      """
-      UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startTimestamp < ?1
-      """
-    )
-    try statement.bindAll([timestamp])
     try statement.run()
   }
 
@@ -742,7 +724,8 @@ final class MetricsDatabase: Sendable {
         expoSdkVersion TEXT,
         reactNativeVersion TEXT,
         clientVersion TEXT,
-        languageTag TEXT
+        languageTag TEXT,
+        processId INTEGER
       );
 
       CREATE TABLE IF NOT EXISTS metrics (
@@ -831,7 +814,8 @@ final class MetricsDatabase: Sendable {
     appName, appIdentifier, appVersion, appBuildNumber,
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,
-    expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+    expoSdkVersion, reactNativeVersion, clientVersion, languageTag,
+    processId
     """
 
   private let spanColumns = """
@@ -843,7 +827,7 @@ final class MetricsDatabase: Sendable {
 
   /// Deletes `metrics.json` left behind by the JSON storage that this database replaced. Nothing reads
   /// that file anymore, so it only takes up space on the device.
-  private static func cleanUpLegacyStorage() {
+  static func cleanUpLegacyStorage() {
     // The JSON storage always lived in the documents directory, also on tvOS.
     guard
       let directoryUrl = try? FileManager.default

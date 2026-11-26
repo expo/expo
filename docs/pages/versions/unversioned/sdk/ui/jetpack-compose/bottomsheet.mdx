@@ -526,6 +526,8 @@ export default function FlexRNContentExample() {
 
 Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Set `nestedScrollEnabled` on the scrollable so it scrolls its own content first. Once it reaches the top edge, the remaining drag moves the sheet. Without `nestedScrollEnabled` the list consumes the gesture and the sheet stays put.
 
+By default, the sheet pads the top and bottom of its content through `BottomSheetDefaults.modalWindowInsets`, which covers the system bars, display cutouts, and the keyboard. As a result, the list stops above the navigation bar. To let it scroll under the navigation bar, pass `contentWindowInsets` with only the top inset, such as `{ top: insets.top }` from `react-native-safe-area-context`. Then pad the end of the list by the bottom inset. With that value, the sheet adds no padding for the keyboard.
+
 <ComponentExample
   title="ScrollableContentBottomSheetExample.tsx"
   src="/static/images/expo-ui/examples/composesheet-scrollable-android-light.webp"

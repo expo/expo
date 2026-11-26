@@ -7,6 +7,20 @@ import { appendDebugIdToSourceMap } from './sourceMap';
 
 // Lazy-loaded to avoid pulling in metro-source-map at startup
 let _buildHermesBundleAsync: typeof import('./exportHermes').buildHermesBundleAsync;
+
+export async function compileHermesArtifactsAsync(
+  projectRoot: string,
+  artifacts: SerialAsset[]
+): Promise<void> {
+  for (const artifact of artifacts) {
+    if (artifact.type !== 'js' || Buffer.isBuffer(artifact.source)) continue;
+    const map = artifacts.find(
+      (asset) => asset.type === 'map' && asset.filename === artifact.filename + '.map'
+    );
+    await transformJsAssetToHermesBytecodeAsync(projectRoot, artifact, map);
+  }
+}
+
 function getBuildHermesBundleAsync() {
   if (!_buildHermesBundleAsync) {
     _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
@@ -21,7 +35,9 @@ export async function transformJsAssetToHermesBytecodeAsync(
 ): Promise<void> {
   if (Buffer.isBuffer(jsAsset.source)) return;
 
-  const debugId = stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
+  const debugId =
+    (mapAsset && JSON.parse(mapAsset.source).debugId) ??
+    stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
   const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
     if (props[1] === 'sourceMappingURL') {
       const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');

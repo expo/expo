@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { getLinkText } from '~/common/click-tracking';
 import DocumentationPage from '~/components/DocumentationPage';
 import { reportHomeClick, reportSectionView } from '~/providers/Analytics';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
@@ -20,14 +21,6 @@ function getSection(control: HTMLElement) {
     control.closest('header, main, footer')?.localName ??
     'sidebar'
   );
-}
-
-function getLinkText(control: HTMLElement) {
-  const terminalCommands = control.closest<HTMLElement>('[data-md="terminal"]')?.dataset.mdCommands;
-  if (terminalCommands) {
-    return Object.values(JSON.parse(terminalCommands)).flat().join(' ');
-  }
-  return control.getAttribute('aria-label') ?? control.innerText.trim().split('\n')[0];
 }
 
 function trackHomeClick(event: MouseEvent) {

@@ -1,7 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+import ExpoModulesTestCore
 import Foundation
 import Testing
+import os
 
 @testable import ExpoModulesCore
 
@@ -26,9 +29,6 @@ struct SharedObjectRegistryTests {
     let jsObject = try runtime.createObject()
     registry.add(native: nativeObject, javaScript: jsObject)
 
-    // Pins the cross-package contract that `SharedObject::NativeState` derives
-    // from `expo::NativeState` on Apple. If the `__has_include` probe in
-    // `EventEmitter.h` falls back, this returns false.
     let hasNativeState = jsObject.hasNativeState()
     #expect(hasNativeState)
   }
@@ -358,6 +358,33 @@ struct SharedObjectRegistryTests {
       #expect(nativeState?.native === nativeObject)
       #expect(nativeState?.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
     }
+
+    @Test
+    func `gives one native state to a native object that two runtimes add at the same time`() throws {
+      let appContext = TestAppContext()
+      let runtimes: [JavaScriptRuntime] = [try appContext.runtime, try appContext.addRuntime()]
+      var objectsWithTwoNativeStates = 0
+
+      for _ in 0..<500 {
+        let nativeObject = TestSharedObject()
+        let pairing = ConcurrentPairing()
+        for runtime in runtimes {
+          runtime.schedule {
+            let jsObject = runtime.createObject()
+            pairing.waitForBothRuntimes()
+            appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject, in: runtime)
+            pairing.record(jsObject.getNativeState(as: SharedObjectNativeState.self))
+          }
+        }
+        for runtime in runtimes {
+          try runtime.execute {}
+        }
+        if !pairing.hasOneNativeState {
+          objectsWithTwoNativeStates += 1
+        }
+      }
+      #expect(objectsWithTwoNativeStates == 0)
+    }
   }
 
   @Suite("delete", .serialized)
@@ -452,3 +479,27 @@ struct SharedObjectRegistryTests {
 }
 
 private final class TestSharedObject: SharedObject {}
+
+/// The native states that two runtimes attach to their JS objects of one native object, when they add it to the
+/// registry at the same time.
+private final class ConcurrentPairing: Sendable {
+  private let state = OSAllocatedUnfairLock(initialState: (arrivedRuntimes: 0, nativeStates: [SharedObjectNativeState?]()))
+
+  /// Waits until the other runtime calls it too, for up to one second, so both runtimes add the object at the same time.
+  func waitForBothRuntimes() {
+    state.withLock { $0.arrivedRuntimes += 1 }
+    let deadline = ContinuousClock.now + .seconds(1)
+    while state.withLock({ $0.arrivedRuntimes }) < 2 && ContinuousClock.now < deadline {}
+  }
+
+  func record(_ nativeState: SharedObjectNativeState?) {
+    state.withLock { $0.nativeStates.append(nativeState) }
+  }
+
+  /// Whether both runtimes attached the same native state.
+  var hasOneNativeState: Bool {
+    return state.withLock { state in
+      return state.nativeStates.count == 2 && state.nativeStates[0] != nil && state.nativeStates[0] === state.nativeStates[1]
+    }
+  }
+}

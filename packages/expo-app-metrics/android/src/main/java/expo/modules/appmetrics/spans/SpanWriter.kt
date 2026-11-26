@@ -3,6 +3,7 @@
 package expo.modules.appmetrics.spans
 
 import android.util.Log
+import expo.modules.appmetrics.ObserveConsent
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Span
 import kotlinx.coroutines.CancellationException
@@ -34,12 +35,26 @@ class SpanWriter(
   fun write(span: Span) = write { span }
 
   /**
+   * The end action for a span that starts now. A span that starts without consent holds data from
+   * before a grant, so it is never written. `write` still drops a span that ends after a revoke.
+   */
+  fun onEndOfNewSpan(): (Span) -> Unit =
+    if (ObserveConsent.isGranted) {
+      { span -> write(span) }
+    } else {
+      { _ -> }
+    }
+
+  /**
    * Writes one row built lazily on `scope`. Producers that would otherwise convert on a hot
    * thread (the OkHttp dispatcher) pass a builder, keeping their path to a single dispatch.
    *
    * A `null` return skips the write, for a snapshot that cannot make a valid row.
    */
   fun write(produce: () -> Span?) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
     scope.launch {
       var span: Span? = null
       try {
@@ -64,6 +79,11 @@ class SpanWriter(
    * report completion, so its caller can retry the batch later.
    */
   fun writeAll(onComplete: () -> Unit = {}, produce: () -> List<Span>) {
+    if (!ObserveConsent.isGranted) {
+      // Dropped rather than kept for a retry: nothing may be stored without consent.
+      onComplete()
+      return
+    }
     scope.launch {
       try {
         awaitSessionPersisted()

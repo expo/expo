@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { addUpdatesStateChangeListener, latestContext } from './UpdatesEmitter';
 import type { UseUpdatesReturnType } from './UseUpdates.types';
@@ -54,12 +54,17 @@ import { currentlyRunning, updatesStateFromContext } from './UseUpdatesUtils';
  */
 export const useUpdates: () => UseUpdatesReturnType = () => {
   const [updatesState, setUpdatesState] = useState(updatesStateFromContext(latestContext));
+  const renderedSequenceNumber = useRef(latestContext.sequenceNumber);
 
   // Change the state based on native state machine context changes
   useEffect(() => {
     const subscription = addUpdatesStateChangeListener((event) => {
       setUpdatesState(updatesStateFromContext(event.context));
     });
+    // A state change can arrive after the first render and before this listener is added.
+    if (latestContext.sequenceNumber !== renderedSequenceNumber.current) {
+      setUpdatesState(updatesStateFromContext(latestContext));
+    }
     return () => subscription.remove();
   }, []);
 

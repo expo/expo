@@ -206,6 +206,16 @@ struct JavaScriptCodableTypedArrayTests {
     #expect(bigInt64[0] == Int64.min)
   }
 
+  @Test
+  func `encode throws in a runtime other than the runtime of the typed array`() throws {
+    let runtime = try runtime
+    let decoded = try Uint8Array.decode(runtime.eval("new Uint8Array([1, 2])"), in: runtime)
+    let otherRuntime = JavaScriptRuntime()
+    #expect(throws: TypedArrayInAnotherRuntimeException.self) {
+      _ = try Uint8Array.encode(decoded, in: otherRuntime)
+    }
+  }
+
   // MARK: - Empty typed array
 
   @Test

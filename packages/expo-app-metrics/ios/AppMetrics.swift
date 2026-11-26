@@ -1,5 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
-import ExpoModulesCore
+import Foundation
 
 #if !os(tvOS)
 import MetricKit
@@ -14,6 +14,9 @@ public struct AppMetrics {
   /// that are piped to the terminal when using the `expo run:ios` command.
   /// To avoid them, we explicitly don't register the subscriber on the simulator.
   static func registerMetricKitSubscriber() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
     #if !targetEnvironment(simulator)
     MXMetricManager.shared.add(metricKitSubscriber)
     metricKitSubscriber.processPastPayloads()
@@ -25,6 +28,9 @@ public struct AppMetrics {
   /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
   /// `js.exception` log attributed to the session it was captured in. Called once at launch.
   static func ingestPendingErrors() {
+    guard ObserveConsent.isGranted else {
+      return
+    }
     let pendingErrors = PendingErrorStore.drain()
     guard !pendingErrors.isEmpty else {
       return
@@ -44,12 +50,19 @@ public struct AppMetrics {
     }
   }
 
-  /// The shared metrics database, or `nil` in release builds if the database could not be opened even
-  /// after a wipe-and-retry. In DEBUG we trap with `assertionFailure` so developers see the failure
-  /// immediately; in release we keep the host app running because telemetry should never be
-  /// load-bearing for the user's primary work — callers degrade naturally via `?.`.
+  /// The shared metrics database. Every database access goes through it. `nil` while consent is not
+  /// granted, so the database is never opened, writes do nothing and reads are empty.
   @AppMetricsActor
-  static let database: MetricsDatabase? = {
+  static var database: MetricsDatabase? {
+    return ObserveConsent.isGranted ? openedDatabase : nil
+  }
+
+  /// `nil` in release builds if the database could not be opened even after a wipe-and-retry. In
+  /// DEBUG we trap with `assertionFailure` so developers see the failure immediately; in release we
+  /// keep the host app running because telemetry should never be load-bearing for the user's
+  /// primary work — callers degrade naturally via `?.`.
+  @AppMetricsActor
+  private static let openedDatabase: MetricsDatabase? = {
     do {
       return try MetricsDatabase.openWipingOnFailure()
     } catch {
@@ -63,6 +76,54 @@ public struct AppMetrics {
 
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
+
+  /// Deletes the stored data. Runs at a launch without consent and at a revoke.
+  static func deleteStoredData() {
+    guard let databaseDirectory = try? MetricsDatabase.defaultDirectoryUrl(),
+      let pendingErrorsDirectory = try? PendingErrorStore.directoryUrl()
+    else {
+      return
+    }
+    deleteStoredData(databaseDirectory: databaseDirectory, pendingErrorsDirectory: pendingErrorsDirectory)
+  }
+
+  /// Deletes the metrics database, the pending-error files, the legacy JSON file, and the settings.
+  static func deleteStoredData(databaseDirectory: URL, pendingErrorsDirectory: URL) {
+    let databaseUrl = databaseDirectory.appendingPathComponent("metrics.db")
+    do {
+      try MetricsDatabase.removeDatabaseFile(at: databaseUrl)
+    } catch {
+      logger.warn("[AppMetrics] Failed to delete the metrics database: \(error.localizedDescription)")
+    }
+    PendingErrorStore.delete(in: pendingErrorsDirectory)
+    AppMetricsUserDefaults.deleteStoredSettings()
+    MetricsDatabase.cleanUpLegacyStorage()
+  }
+
+  /// Applies a consent change from `Observe.setConsent`. It runs on the actor without suspending,
+  /// so the changes run one at a time.
+  @AppMetricsActor
+  public static func setConsent(granted: Bool) {
+    guard ObserveConsent.update(granted: granted) else {
+      return
+    }
+    if granted {
+      // The launch inserts did nothing without consent, so the session rows are inserted now.
+      mainSession.insertRow()
+      foregroundSession?.insertRow()
+      mainSession.saveUnsavedStartupMetrics()
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      // Past payloads are from before the grant, so they are not processed.
+      MXMetricManager.shared.add(metricKitSubscriber)
+      #endif
+    } else {
+      #if !os(tvOS) && !targetEnvironment(simulator)
+      MXMetricManager.shared.remove(metricKitSubscriber)
+      #endif
+      // The open database is not used again in this process, so its files can be deleted.
+      deleteStoredData()
+    }
+  }
 
   // MARK: - Read API for downstream consumers (e.g. expo-observe)
 

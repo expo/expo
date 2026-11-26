@@ -2,6 +2,7 @@ import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/Delta
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
 
+import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { Chunk, getBaseUrlOption } from './Chunk';
 import {
@@ -12,9 +13,42 @@ import {
   serializeChunksAsync,
 } from './chunkingStrategy';
 
+export const legacyChunkSerialization: Omit<ChunkingImplementation, 'serializeAsync'> = {
+  getAsyncChunkTargets(chunk, chunksByPath) {
+    const targets = new Set<Chunk>();
+    if (chunk.options.includeAsyncPaths) return targets;
+    for (const module of chunk.deps) {
+      for (const dependency of module.dependencies.values()) {
+        if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
+          const target = chunksByPath.get(dependency.absolutePath);
+          // Merges can leave async imports pointing at eagerly loaded chunks.
+          if (target?.isAsync) targets.add(target);
+        }
+      }
+    }
+    return targets;
+  },
+  getStableSerializationOptions() {
+    return {};
+  },
+  getSerializationOptions(chunk, chunksByPath, filenamesByChunk) {
+    return {
+      computedAsyncModulePaths: getComputedPathsForAsyncDependencies(
+        chunk,
+        chunksByPath,
+        filenamesByChunk
+      ),
+    };
+  },
+  getMetadata(chunk) {
+    return { modulePaths: [...chunk.deps].map((module) => module.path) };
+  },
+};
+
 export function createLegacyChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
   const { entryFile, preModules, graph, options } = context;
   const strategy: ChunkingImplementation = {
+    ...legacyChunkSerialization,
     async serializeAsync() {
       // Create chunks for splitting.
       const chunks = new Set<Chunk>();
@@ -39,35 +73,6 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
 
       return serializeChunksAsync(chunks, context);
     },
-    getAsyncChunkTargets(chunk, chunksByPath) {
-      const targets = new Set<Chunk>();
-      if (options.includeAsyncPaths) return targets;
-      for (const module of chunk.deps) {
-        for (const dependency of module.dependencies.values()) {
-          if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
-            const target = chunksByPath.get(dependency.absolutePath);
-            // Merges can leave async imports pointing at eagerly loaded chunks.
-            if (target?.isAsync) targets.add(target);
-          }
-        }
-      }
-      return targets;
-    },
-    getStableSerializationOptions() {
-      return {};
-    },
-    getSerializationOptions(chunk, chunksByPath, filenamesByChunk) {
-      return {
-        computedAsyncModulePaths: getComputedPathsForAsyncDependencies(
-          chunk,
-          chunksByPath,
-          filenamesByChunk
-        ),
-      };
-    },
-    getMetadata(chunk) {
-      return { modulePaths: [...chunk.deps].map((module) => module.path) };
-    },
   };
   return strategy;
 }
@@ -87,13 +92,15 @@ function getComputedPathsForAsyncDependencies(
   chunk.deps.forEach((module) => {
     module.dependencies.forEach((dependency) => {
       if (isResolvedDependency(dependency) && dependency.data.data.asyncType) {
+        const isWorker = (dependency.data.data.asyncType as AsyncDependencyType) === 'worker';
         const chunkContainingModule = chunksByPath.get(dependency.absolutePath);
         assert(
           chunkContainingModule,
           'Chunk containing module not found: ' + dependency.absolutePath
         );
 
-        if (chunkContainingModule.isAsync) {
+        // Imports within this chunk need no fetch URL. Workers still need a standalone URL.
+        if (chunkContainingModule.isAsync && (chunkContainingModule !== chunk || isWorker)) {
           const moduleIdName = filenamesByChunk.get(chunkContainingModule);
           assert(
             moduleIdName,

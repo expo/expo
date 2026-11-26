@@ -5,6 +5,7 @@ import { confirmAsync } from '../../../../utils/prompts';
 import { ExternalModule, ExternalModuleVersionError } from '../ExternalModule';
 
 jest.mock('../../../../utils/prompts');
+jest.mock('../../../../utils/interactive', () => ({ isInteractive: () => false }));
 jest.mock('../../../../log');
 jest.mock('../../../../utils/delay', () => ({
   delayAsync: jest.fn(async () => {}),
@@ -257,4 +258,16 @@ describe('installAsync', () => {
     // No install was called
     expect(PackageManager.createForProject).toHaveBeenCalledTimes(0);
   });
+});
+
+it(`names the package to install in non-interactive mode`, async () => {
+  const { externalModule } = createExternalModuleResolver();
+  jest
+    .mocked(confirmAsync)
+    .mockReset()
+    .mockImplementationOnce(jest.requireActual('../../../../utils/prompts').confirmAsync);
+
+  await expect(externalModule.installAsync({ shouldGloballyInstall: true })).rejects.toThrow(
+    'Install @expo/ngrok@^4.1.0 globally and try again.'
+  );
 });

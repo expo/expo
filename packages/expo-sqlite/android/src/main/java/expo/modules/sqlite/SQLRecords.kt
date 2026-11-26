@@ -2,9 +2,10 @@
 
 package expo.modules.sqlite
 
+import io.github.expo.modules.v2.Enumerable
 import io.github.expo.modules.v2.Record
 
-internal enum class SQLAction(val value: String) {
+internal enum class SQLAction(val value: String) : Enumerable {
   INSERT("insert"),
   UPDATE("update"),
   DELETE("delete"),

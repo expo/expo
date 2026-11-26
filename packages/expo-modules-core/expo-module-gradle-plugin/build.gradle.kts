@@ -32,8 +32,8 @@ dependencies {
   compileOnly("com.android.tools.build:gradle:9.2.1")
   implementation("com.facebook.react:react-native-gradle-plugin")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
-  implementation("io.github.expo.pika:pika-gradle:1.1.0")
-  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.3.0")
+  implementation("io.github.expo.pika:pika-gradle:1.1.2")
+  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.3.1")
 
   if (isExpoAutolinkingSettingsPluginAvailable) {
     implementation("expo.modules:expo-autolinking-plugin-shared")

@@ -56,6 +56,11 @@ struct SharedRefTests {
     #expect(result.kind == .string)
     #expect(try result.asString() == "string")
   }
+
+  @Test
+  func `expo.SharedRef inherits the static members of expo.SharedObject`() throws {
+    #expect(try runtime.eval("Object.getPrototypeOf(expo.SharedRef) === expo.SharedObject").asBool() == true)
+  }
 }
 
 @Suite("SharedRef in an attached runtime")

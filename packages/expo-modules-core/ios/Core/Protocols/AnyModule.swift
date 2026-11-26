@@ -21,10 +21,10 @@ public protocol AnyModule: AnyObject, AnyArgument {
   /// Modules that don't use the macro fall back to the default, which is the class name.
   static var _jsName: String { get }
 
-  /// The `@SharedObject` classes the module exposes in its JavaScript object, emitted as a static
-  /// constant by the `@ExpoModule` macro from its `classes:` argument. Framework-internal (leading
+  /// The `@SharedObject` and `@JSClass` classes the module exposes in its JavaScript object, emitted as a
+  /// static constant by the `@ExpoModule` macro from its `classes:` argument. Framework-internal (leading
   /// underscore). Modules that don't use the macro fall back to the default empty list.
-  static var _classTypes: [SharedObject.Type] { get }
+  static var _classTypes: [any AnyJavaScriptClass.Type] { get }
 
   /// The `@ExpoView` classes the module registers as native components, emitted as a static constant
   /// by the `@ExpoModule` macro from its `views:` argument. Framework-internal (leading underscore).
@@ -86,7 +86,7 @@ extension AnyModule {
   @ModuleDefinitionBuilder
   public func definition() -> ModuleDefinition {}
 
-  public static var _classTypes: [SharedObject.Type] {
+  public static var _classTypes: [any AnyJavaScriptClass.Type] {
     return []
   }
 

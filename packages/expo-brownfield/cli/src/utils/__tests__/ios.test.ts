@@ -17,6 +17,7 @@ const makeConfig = (overrides: Partial<IosConfig> = {}): IosConfig => ({
   buildConfiguration: 'Release',
   derivedDataPath: path.join(tmpDir, 'ios/build'),
   device: path.join(tmpDir, 'ios/build/Build/Products/release-iphoneos'),
+  destinations: ['generic/platform=iphoneos', 'generic/platform=iphonesimulator'],
   dryRun: false,
   hostProvidedFrameworks: [],
   output: 'frameworks',

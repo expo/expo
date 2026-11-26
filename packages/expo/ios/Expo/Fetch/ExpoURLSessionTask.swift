@@ -8,6 +8,7 @@ import ExpoModulesCore
 internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate, @unchecked Sendable {
   private let delegate: ExpoURLSessionTaskDelegate
   private var task: URLSessionDataTask?
+  private var reportedRequestId: String?
 
   init(delegate: ExpoURLSessionTaskDelegate) {
     self.delegate = delegate
@@ -38,9 +39,18 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     }
     request.httpBody = requestBody
 
+    if url.scheme == "http" || url.scheme == "https" {
+      let requestId = ExpoNetworkReporter.makeRequestId(devToolsRequestId: requestInit.devToolsRequestId)
+      ExpoNetworkReporter.mark(request, requestId: requestId)
+      reportedRequestId = requestId
+    }
+
     let task = urlSession.dataTask(with: request as URLRequest)
     urlSessionDelegate.addDelegate(task: task, delegate: self)
     self.task = task
+    if let reportedRequestId {
+      ExpoNetworkReporter.shared.willSendRequest(reportedRequestId, request: request as URLRequest)
+    }
     task.resume()
     self.delegate.urlSessionDidStart(self)
   }
@@ -49,6 +59,9 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     if let task {
       urlSessionDelegate.removeDelegate(task: task)
       task.cancel()
+      if let reportedRequestId {
+        ExpoNetworkReporter.shared.didFailLoading(reportedRequestId, cancelled: true)
+      }
     }
   }
 
@@ -75,15 +88,28 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
+    if let reportedRequestId {
+      ExpoNetworkReporter.shared.didReceiveResponse(reportedRequestId, response: response)
+    }
     self.delegate.urlSession(self, didReceive: response)
     completionHandler(.allow)
   }
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    if let reportedRequestId {
+      ExpoNetworkReporter.shared.didReceiveData(reportedRequestId, data: data)
+    }
     self.delegate.urlSession(self, didReceive: data)
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    if let reportedRequestId {
+      if let error {
+        ExpoNetworkReporter.shared.didFailLoading(reportedRequestId, cancelled: (error as? URLError)?.code == .cancelled)
+      } else {
+        ExpoNetworkReporter.shared.didFinishLoading(reportedRequestId, encodedDataLength: Int(task.countOfBytesReceived))
+      }
+    }
     self.delegate.urlSession(self, task: task, didCompleteWithError: error)
   }
 }

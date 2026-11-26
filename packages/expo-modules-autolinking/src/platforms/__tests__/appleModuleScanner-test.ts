@@ -7,7 +7,7 @@ import {
   hasModuleAnnotations,
   scanExpoModulesAsync,
   type ModulesScanner,
-  type ScanModulesOutput,
+  type ScanPackagesOutput,
 } from '../apple/moduleScanner';
 
 afterEach(() => {
@@ -21,7 +21,7 @@ const packageRoots: Record<string, string> = {
   'expo-camera': '/app/node_modules/expo-camera',
 };
 
-function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
+function scannerOutput(partial: Partial<ScanPackagesOutput>): ScanPackagesOutput {
   return {
     schemaVersion: 2,
     modules: [],
@@ -31,9 +31,9 @@ function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
   };
 }
 
-function mockScanner(result: ScanModulesOutput | Error): ModulesScanner {
+function mockScanner(result: ScanPackagesOutput | Error): ModulesScanner {
   return {
-    scanModules: jest.fn(() =>
+    scanPackages: jest.fn(() =>
       result instanceof Error ? Promise.reject(result) : Promise.resolve(result)
     ),
   };
@@ -45,7 +45,7 @@ describe(scanExpoModulesAsync, () => {
 
     await scanExpoModulesAsync(scanner, packageRoots);
 
-    expect(scanner.scanModules).toHaveBeenCalledWith(
+    expect(scanner.scanPackages).toHaveBeenCalledWith(
       ['/app/node_modules/expo-clipboard', '/app/node_modules/expo-camera'],
       { timeout: 5000 }
     );
@@ -82,7 +82,7 @@ describe(scanExpoModulesAsync, () => {
 
     expect(
       await scanExpoModulesAsync(
-        mockScanner(new Error('`scan-modules` returned schema version 3')),
+        mockScanner(new Error('`scan-packages` returned schema version 3')),
         packageRoots
       )
     ).toBeNull();
@@ -95,7 +95,7 @@ describe(scanExpoModulesAsync, () => {
     const scanner = mockScanner(scannerOutput({}));
 
     expect(await scanExpoModulesAsync(scanner, {})).toBeNull();
-    expect(scanner.scanModules).not.toHaveBeenCalled();
+    expect(scanner.scanPackages).not.toHaveBeenCalled();
   });
 
   it('prints the scanner warnings with their locations', async () => {
@@ -413,7 +413,7 @@ describe(groupScannedPackageClasses, () => {
   function scannedClass(
     name: string,
     file: string,
-    accessLevel: ScanModulesOutput['modules'][number]['accessLevel'] = 'public'
+    accessLevel: ScanPackagesOutput['modules'][number]['accessLevel'] = 'public'
   ) {
     return { name, jsName: name, accessLevel, file, platforms: ALL_PLATFORMS };
   }

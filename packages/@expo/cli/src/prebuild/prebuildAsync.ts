@@ -146,10 +146,15 @@ export async function prebuildAsync(
       // command. We now opt to not change dependencies unless a template
       // indicates a new dependency is required, or if the core dependencies are wrong.
       if (
-        await confirmAsync({
-          message: `Install the updated dependencies?`,
-          initial: true,
-        })
+        await confirmAsync(
+          {
+            message: `Install the updated dependencies?`,
+            initial: true,
+          },
+          {
+            nonInteractiveHelp: '--no-install: flag must be provided in non-interactive mode.',
+          }
+        )
       ) {
         const startedAt = Date.now();
         await installAsync([], {

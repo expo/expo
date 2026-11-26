@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
-import { Pressable, ScrollView, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 const examples = [
   ['Nested boundary', '/error-boundaries/nested'],
@@ -14,7 +13,7 @@ export default function ErrorBoundaryExamples() {
 
   return (
     <ScrollView contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ gap: 16, padding: 24 }}>
+      <View style={{ gap: 16, padding: 24 }}>
         <Text>Production error boundary examples</Text>
         {examples.map(([label, href]) => (
           <Pressable
@@ -26,7 +25,7 @@ export default function ErrorBoundaryExamples() {
             <Text style={{ color: '#fff' }}>{label}</Text>
           </Pressable>
         ))}
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }

@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoAppMetrics
 import ExpoModulesCore
 
 /// Outcome of a single dispatch attempt to the OTLP endpoint, modeled after the
@@ -76,6 +77,11 @@ internal enum DispatchUtils {
     }
     #endif
 
+    // Checked right before the request starts: this runs off the actor, so a revoke can finish
+    // during the work above. The retryable result ends the dispatch loop without moving the cursors.
+    guard ObserveConsent.isGranted else {
+      return .retryableFailure(retryAfter: nil)
+    }
     let responseData: Data
     let urlResponse: URLResponse
     do {

@@ -23,6 +23,7 @@ import { markdownComponents } from '~/ui/components/Markdown';
 import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
+import { WebMcpTools } from '~/ui/components/WebMcpTools/WebMcpTools';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 
@@ -106,6 +107,7 @@ export default function App({ Component, pageProps }: AppProps) {
                         <Component {...pageProps} />
                       </ApiDataProvider>
                       <CodeSelectionCopy />
+                      <WebMcpTools />
                     </Tooltip.Provider>
                   </MDXProvider>
                 </CodeBlockSettingsProvider>

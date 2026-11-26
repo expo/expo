@@ -33,6 +33,11 @@ private final class MacroCounter: SharedObject {
     return value
   }
 
+  @JS(.cached)
+  var initial: Int {
+    return value
+  }
+
   // A settable stored property.
   @JS
   var label: String = ""
@@ -140,6 +145,11 @@ private final class MacroSymbolList: SharedObject {
     return items.count
   }
 
+  @JS(symbol: "macro.first", .cached)
+  var first: Int {
+    return items.first ?? -1
+  }
+
   // Shares its text with the symbol above, but a name never collides with a symbol.
   @JS
   func iterator() -> String {
@@ -154,8 +164,39 @@ private final class MacroSymbolList: SharedObject {
   }
 }
 
+/// The superclass of `MacroChainLeaf`, which no module registers.
+@SharedObject
+private class MacroChainRoot: SharedObject {
+  @JS
+  func rootMethod() -> Int {
+    return 1
+  }
+}
+
+/// A class without the macro between two classes with it.
+private class MacroChainMiddle: MacroChainRoot {}
+
+@SharedObject
+private final class MacroChainLeaf: MacroChainMiddle {
+  private let value: Int
+
+  @JS
+  init(value: Int) {
+    self.value = value
+    super.init()
+  }
+
+  @JS
+  func leafMethod() -> Int {
+    return value
+  }
+}
+
 @ExpoModule(
-  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self])
+  classes: [
+    MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self,
+    MacroChainLeaf.self,
+  ])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -183,6 +224,20 @@ private struct MacroSharedObjectTests {
   func `class is exposed under the module by its name`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
     #expect(try runtime.eval("typeof expo.modules.MacroSharedObjectModule.MacroCounter").asString() == "function")
+  }
+
+  @Test
+  func `the class extends the class of its nearest superclass with the macro`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    try runtime.eval("leaf = new expo.modules.MacroSharedObjectModule.MacroChainLeaf(2)")
+
+    #expect(try runtime.eval("leaf.rootMethod() + leaf.leafMethod()").asInt() == 3)
+    #expect(try runtime.eval(
+      "Object.getPrototypeOf(expo.modules.MacroSharedObjectModule.MacroChainLeaf).name"
+    ).asString() == "MacroChainRoot")
+    #expect(try !runtime.eval(
+      "Object.prototype.hasOwnProperty.call(expo.modules.MacroSharedObjectModule.MacroChainLeaf.prototype, 'rootMethod')"
+    ).asBool())
   }
 
   @Test
@@ -245,6 +300,25 @@ private struct MacroSharedObjectTests {
     let result = try value.asArray()
     #expect(try result[0].asString() == "[object SymbolList(2)]")
     #expect(try result[1].asInt() == 2)
+  }
+
+  @Test
+  func `stores the first value of a @JS(.cached) property under a symbol on the instance`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const key = Symbol.for('macro.first')
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([7, 8])
+        const first = list[key]
+        const descriptor = Object.getOwnPropertyDescriptor(list, key)
+        return [first, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asInt() == 7)
+    #expect(try result[1].asInt() == 7)
+    #expect(try result[2].asBool() == false)
   }
 
   @Test
@@ -355,6 +429,30 @@ private struct MacroSharedObjectTests {
       object.label
       """)
     #expect(try value.asString() == "hello")
+  }
+
+  @Test
+  func `stores the first value of a @JS(.cached) property on each instance`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const first = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+        const second = new expo.modules.MacroSharedObjectModule.MacroCounter(2)
+        const ownBeforeRead = Object.prototype.hasOwnProperty.call(first, 'initial')
+        const firstInitial = first.initial
+        first.increment(10)
+        const descriptor = Object.getOwnPropertyDescriptor(first, 'initial')
+        return [ownBeforeRead, firstInitial, second.initial, first.initial, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asBool() == false)
+    #expect(try result[1].asInt() == 1)
+    #expect(try result[2].asInt() == 2)
+    #expect(try result[3].asInt() == 1)
+    #expect(try result[4].asInt() == 1)
+    #expect(try result[5].asBool() == false)
   }
 
   // MARK: - Static @JS members
@@ -513,7 +611,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
 
     // `buildSharedObjectPrototype` is how a SharedObject's proxy is rebuilt in an alternate runtime
-    // (e.g. a worklet), so the prototype must be decorated via `_decorateSharedObject` here too.
+    // (e.g. a worklet), so the prototype must be decorated via `_decorateClass` here too.
     let basePrototype = try runtime.eval("expo.SharedObject.prototype").asObject()
     let prototype = try JavaScriptBindings.buildSharedObjectPrototype(MacroCounter.self, in: runtime, basePrototype: basePrototype)
     // Read into plain values first; `#expect` can't capture the non-copyable `JavaScriptObject`.
@@ -600,23 +698,101 @@ private struct MacroSharedObjectTests {
     #expect(nativeObject.sharedObjectId == 0)
   }
 
-  @Test
-  func `event emitter methods throw in an attached runtime`() throws {
-    let id = try createCounter()
+  /// Resolves the counter in an attached runtime as the `attachedCounter` global, and adds a listener of the `change`
+  /// event there that appends the payloads to the `received` global.
+  private func addListenerInAttachedRuntime(counterId id: Int) throws -> JavaScriptRuntime {
     let attachedRuntime = try appContext.addRuntime()
-    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
-    for call in ["addListener('change', () => {})", "removeAllListeners('change')", "emit('change')", "listenerCount('change')"] {
-      let message = try attachedRuntime.eval(
-        """
-        try {
-          attachedCounter.\(call)
-          ''
-        } catch (error) {
-          error.message
-        }
-        """).asString()
-      #expect(message.contains("only in the main runtime"), "\(call)")
-    }
+    try attachedRuntime.eval(
+      """
+      attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))
+      received = []
+      subscription = attachedCounter.addListener('change', (value) => { received.push(value) })
+      """)
+    return attachedRuntime
+  }
+
+  /// Waits until the runtime has run the work that was scheduled on it before.
+  private func waitForScheduledWork(in runtime: JavaScriptRuntime) throws {
+    try runtime.execute {}
+  }
+
+  @Test
+  func `a listener in an attached runtime gets a native event`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    nativeObject.emit(event: "change", payload: 5)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5")
+  }
+
+  @Test
+  func `listeners in the main runtime and an attached runtime get a native event once each`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    let nativeObject = try SharedObject.native(from: try mainRuntime.eval("counter").asObject())
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    nativeObject.emit(event: "change", payload: 5)
+    nativeObject.emit(event: "change", payload: 6)
+    try waitForScheduledWork(in: mainRuntime)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try mainRuntime.eval("mainReceived.join()").asString() == "5,6")
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5,6")
+  }
+
+  @Test
+  func `a listener removed in an attached runtime doesn't get native events`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+    try attachedRuntime.eval("subscription.remove()")
+
+    nativeObject.emit(event: "change", payload: 5)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("received.length").asInt() == 0)
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 0)
+  }
+
+  @Test
+  func `emit in an attached runtime calls only the listeners of that runtime`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    try attachedRuntime.eval("attachedCounter.emit('change', 5)")
+    #expect(try attachedRuntime.eval("received.join()").asString() == "5")
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 1)
+    #expect(try mainRuntime.eval("mainReceived.length").asInt() == 0)
+  }
+
+  @Test
+  func `a native event with an AnyArgument payload reaches only the main runtime`() throws {
+    let id = try createCounter()
+    let mainRuntime = try runtime
+    let nativeObject = try SharedObject.native(from: try mainRuntime.eval("counter").asObject())
+    try mainRuntime.eval("mainReceived = []; counter.addListener('change', (value) => { mainReceived.push(value) })")
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    let payload: [String: Any] = ["value": 5]
+    nativeObject.emit(event: "change", payload: payload)
+    try waitForScheduledWork(in: mainRuntime)
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try mainRuntime.eval("mainReceived[0].value").asInt() == 5)
+    #expect(try attachedRuntime.eval("received.length").asInt() == 0)
+  }
+
+  @Test
+  func `release in the main runtime removes the listeners in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try addListenerInAttachedRuntime(counterId: id)
+
+    try runtime.eval("counter.release()")
+    try waitForScheduledWork(in: attachedRuntime)
+    #expect(try attachedRuntime.eval("attachedCounter.listenerCount('change')").asInt() == 0)
   }
 
   @Test

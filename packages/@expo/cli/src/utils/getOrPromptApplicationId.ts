@@ -112,7 +112,7 @@ async function promptForBundleIdWithInitialAsync(
   // Warn the user if the bundle ID is already in use.
   const warning = await getBundleIdWarningAsync(bundleIdentifier);
 
-  if (warning && !(await warnAndConfirmAsync(warning))) {
+  if (warning && !(await warnAndConfirmAsync(warning, NO_BUNDLE_ID_MESSAGE))) {
     // Cycle the Bundle ID prompt to try again.
     return await promptForBundleIdWithInitialAsync(projectRoot, exp);
   }
@@ -131,15 +131,18 @@ async function promptForBundleIdWithInitialAsync(
   return bundleIdentifier;
 }
 
-async function warnAndConfirmAsync(warning: string): Promise<boolean> {
+async function warnAndConfirmAsync(warning: string, nonInteractiveHelp: string): Promise<boolean> {
   Log.log();
   Log.warn(warning);
   Log.log();
   if (
-    !(await confirmAsync({
-      message: `Continue?`,
-      initial: true,
-    }))
+    !(await confirmAsync(
+      {
+        message: `Continue?`,
+        initial: true,
+      },
+      { nonInteractiveHelp }
+    ))
   ) {
     return false;
   }
@@ -254,7 +257,7 @@ async function promptForPackageWithInitialAsync(
 
   // Warn the user if the package name is already in use.
   const warning = await getPackageNameWarningAsync(packageName);
-  if (warning && !(await warnAndConfirmAsync(warning))) {
+  if (warning && !(await warnAndConfirmAsync(warning, NO_PACKAGE_MESSAGE))) {
     // Cycle the Package name prompt to try again.
     return promptForPackageWithInitialAsync(projectRoot, exp);
   }

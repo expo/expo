@@ -133,13 +133,11 @@ For local development, both client- and server-side environment variables are lo
 
 One way to supply non-secret Expo Services environment variables to other EAS CLI commands is to use the `eas env:exec` command.
 
-<Terminal cmd={["$ eas env:exec --environment production 'echo $APP_VARIANT'"]} />
+<Terminal cmd={["$ eas env:exec production 'echo $APP_VARIANT'"]} />
 
 For example, it can be useful when uploading source maps to Sentry using a [`SENTRY_AUTH_TOKEN`](/guides/using-sentry) variable after an update bundle is created.
 
-<Terminal
-  cmd={["$ eas env:exec --environment production 'npx sentry-expo-upload-sourcemaps dist'"]}
-/>
+<Terminal cmd={["$ eas env:exec production 'npx sentry-expo-upload-sourcemaps dist'"]} />
 
 ## Using environment variables in Expo Workflows
 

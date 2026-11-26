@@ -79,6 +79,12 @@ internal final class DestinationAlreadyExistsException: Exception {
   }
 }
 
+internal final class DestinationContainsSourceException: Exception {
+  override var reason: String {
+    "Destination is the source or contains it, overwriting it would delete the source"
+  }
+}
+
 internal final class MissingPermissionException: GenericException<String> {
   override var reason: String {
     "Missing permission for uri: \(param)"

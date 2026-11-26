@@ -52,12 +52,12 @@ web では、`react-native-view-shot` は `html2canvas-pro` を使ってスク�
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
 import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
-/* @tutinfo `expo-media-library` から `MediaLibrary` をインポートします。 */import * as MediaLibrary from 'expo-media-library';/* @end */
+/* @tutinfo `expo-media-library` から `usePermissions` をインポートします。 */import { usePermissions } from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドを取得するため、この文を追加します。 */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });/* @end */
+  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドを取得するため、この文を追加します。 */const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo 権限の状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーが権限を許可または拒否するためのダイアログを表示します。 */
@@ -120,7 +120,7 @@ export default function Index() {
 
 `onSaveImageAsync()` 関数の中で `react-native-view-shot` の `captureRef()` メソッドを呼び出すことで、ビューのスクリーンショットを撮影できます。このメソッドは省略可能な引数を受け取り、スクリーンショットを撮影する領域の `width` と `height` を渡せます。利用可能なオプションの詳細については、[ライブラリのドキュメント](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) を参照してください。
 
-また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.Asset.create()`](/versions/latest/sdk/media-library/#createfilepath-album) のパラメータとして渡すと、デバイスのメディアライブラリにスクリーンショットが保存されます。
+また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`Asset.create()`](/versions/latest/sdk/media-library/#createfilepath-album) のパラメータとして渡すと、デバイスのメディアライブラリにスクリーンショットが保存されます。
 
 **src/app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
 
@@ -130,7 +130,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import { Asset, usePermissions } from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import type { ImageSource } from 'expo-image';
 
@@ -149,7 +149,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });
   const imageRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
@@ -193,7 +193,7 @@ export default function Index() {
         quality: 1,
       });
 
-      await MediaLibrary.Asset.create(localUri);
+      await Asset.create(localUri);
       alert('Saved!');
     } catch (e) {
       console.log(e);
@@ -294,7 +294,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library';
+import { Asset, usePermissions } from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
 import type { ImageSource } from 'expo-image';
 
@@ -313,7 +313,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const [permissionResponse, requestPermission] = usePermissions({ writeOnly: true });
   const imageRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
@@ -359,7 +359,7 @@ export default function Index() {
           quality: 1,
         });
 
-        await MediaLibrary.Asset.create(localUri);
+        await Asset.create(localUri);
         alert('Saved!');
       } catch (e) {
         console.log(e);

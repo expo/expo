@@ -181,6 +181,9 @@ const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
   expomodulesworkletsheaders: {
     ExpoModulesWorkletsHeaders: 'expo-modules-core/ExpoModulesWorklets',
   },
+  expouiheaders: { ExpoUIHeaders: '@expo/ui/ExpoUI' },
+  rnscreensheaders: { RNScreensHeaders: 'RNScreens' },
+  rnworkletsheaders: { RNWorkletsHeaders: 'RNWorklets' },
   xcframeworks: { ReactHeaders: 'React' },
 };
 

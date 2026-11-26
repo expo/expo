@@ -6,7 +6,10 @@ internal import SDWebImageAVIFCoder
 internal import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
-  lazy var prefetcher = SDWebImagePrefetcher.shared
+  // Loads through `SDImageLoadersManager`, like `<Image>`, so prefetches use the same loaders.
+  private let prefetcher = SDWebImagePrefetcher(
+    imageManager: SDWebImageManager(cache: SDImageCache.shared, loader: SDImageLoadersManager.shared)
+  )
 
   // Whether JS subscribed to `imageLoaded`. Skips the per-image-load bridge hop when nothing is
   // listening
@@ -38,7 +41,7 @@ public final class ImageModule: Module {
         if let imageRef: SharedRef<UIImage> = sources?.get() {
           // Unset an array of traditional sources and just render the image ref right away.
           view.sources = nil
-          view.renderSourceImage(imageRef.ref)
+          view.renderImageRef(imageRef.ref)
         } else {
           // Update an array of sources. Image will start loading once the all props are updated.
           view.sources = sources?.get()
@@ -195,6 +198,9 @@ public final class ImageModule: Module {
       context[.storeCacheType] = SDImageCacheType.none.rawValue
       context[.originalQueryCacheType] = sdCacheType
       context[.originalStoreCacheType] = sdCacheType
+      if cachePolicy == .disk {
+        context[.imageCache] = DiskOnlyImageCache.shared
+      }
 
       var imagesLoaded = 0
       var failed = false
@@ -204,7 +210,7 @@ public final class ImageModule: Module {
       }
 
       urls.forEach { url in
-        SDWebImagePrefetcher.shared.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
+        self.prefetcher.prefetchURLs([url], context: context, progress: nil, completed: { _, skipped in
           if skipped > 0 && !failed {
             failed = true
             promise.resolve(false)
@@ -220,7 +226,7 @@ public final class ImageModule: Module {
 
     AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
       let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
-      generatePlaceholder(source: source, onFailure: {
+      ImageModule.generatePlaceholder(source: source, onFailure: {
         promise.reject(BlurhashGenerationException())
       }, generator: { (image: UIImage) in
         if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
@@ -232,7 +238,7 @@ public final class ImageModule: Module {
     }
 
     AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
-      generatePlaceholder(source: source, onFailure: {
+      ImageModule.generatePlaceholder(source: source, onFailure: {
         promise.reject(ThumbhashGenerationException())
       }, generator: { (image: UIImage) in
         let blurhashString = thumbHash(fromImage: image)
@@ -344,16 +350,19 @@ public final class ImageModule: Module {
     ])
   }
 
-  func generatePlaceholder(
+  static func generatePlaceholder(
     source: Either<Image, URL>,
+    loader: SDImageLoader = SDImageLoadersManager.shared,
     onFailure: @escaping () -> Void,
     generator: @escaping (UIImage) -> Void
   ) {
     if let image: Image = source.get() {
       generator(image.ref)
     } else if let url: URL = source.get() {
-      let downloader = SDWebImageDownloader()
-      downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
+      loader.requestImage(with: url, options: [], context: nil, progress: nil) { image, _, error, finished in
+        guard finished || error != nil else {
+          return
+        }
         DispatchQueue.global().async {
           guard let downloadedImage = image else {
             onFailure()
@@ -361,7 +370,7 @@ public final class ImageModule: Module {
           }
           generator(downloadedImage)
         }
-      })
+      }
     } else {
       onFailure()
     }
@@ -380,6 +389,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
     SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
+    SDImageLoadersManager.shared.addLoader(NetworkReportingImageLoader(downloader: .shared))
   }
 
   static func configureCache(config: ImageCacheConfig) {

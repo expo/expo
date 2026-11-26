@@ -306,12 +306,16 @@ async function action(sdk: string | undefined, options: ActionOptions) {
       'expo/expo',
       '--label',
       label,
+      // A merge updates the PR, so recently merged PRs stay inside the limit.
+      '--search',
+      'sort:updated-desc',
       '--state',
       'all',
       '--json',
       'number,title,state,mergeCommit,author,mergedAt,updatedAt,reviewDecision,url',
+      // The search API that `gh pr list --label` uses returns at most 1000 results.
       '--limit',
-      '500',
+      '1000',
     ]);
   } catch (error: any) {
     if (error.message?.includes('ENOENT') || error.message?.includes('not found')) {

@@ -161,7 +161,6 @@ Each of these has an `spm.config.json` in its package root:
 | `expo-ui` | `ExpoUI` |
 | `expo-updates-interface` | `EXUpdatesInterface` |
 | `expo-video` | `ExpoVideo` |
-| `expo-video-thumbnails` | `ExpoVideoThumbnails` |
 | `expo-web-browser` | `ExpoWebBrowser` |
 | `expo-widgets` | `ExpoWidgets` |
 | `unimodules-app-loader` | `UMAppLoader` |

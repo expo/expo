@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 
 @testable import ExpoAppMetrics
@@ -5,17 +6,20 @@ import Testing
 
 @Suite("Span JavaScript class", .serialized)
 @JavaScriptActor
-struct SpanClassTests {
+final class SpanClassTests {
   let appContext: AppContext
   let runtime: ExpoRuntime
+  let consent = Mutex(true)
 
   init() throws {
     appContext = AppContext.create()
     runtime = try appContext.runtime
+    let module = AppMetricsModule(appContext: appContext)
+    module.isConsentGranted = { [weak self] in self?.consent.withLock { $0 } ?? false }
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
         appContext: appContext,
-        module: AppMetricsModule(appContext: appContext),
+        module: module,
         name: "ExpoAppMetrics"
       )
     )
@@ -56,5 +60,35 @@ struct SpanClassTests {
   @Test
   func `recording a span with an unusable time does not throw`() throws {
     try runtime.eval("expo.modules.ExpoAppMetrics.recordSpan('decode', { startTime: 123.4, endTime: 567.8 })")
+  }
+
+  @Test
+  func `reports captured without consent are dropped even when the database is open at write time`() async throws {
+    let id = UUID().uuidString
+    _ = AppMetrics.mainSession
+    for granted in [false, true] {
+      consent.withLock { $0 = granted }
+      let value = "\(id)-\(granted)"
+      try runtime.eval(
+        """
+        (() => {
+          const m = expo.modules.ExpoAppMetrics;
+          m.reportError({ message: '\(value)' });
+          m.reportFeedback({ id: 'checkout', message: '\(value)' });
+          m.logEvent('checkout', { body: '\(value)' });
+          m.recordSpan('\(value)', { startTime: Date.now(), endTime: Date.now() });
+        })()
+        """
+      )
+    }
+
+    try await AppMetricsActor.isolated {
+      let logs = try AppMetrics.getLogs(afterId: -1)
+      let matchingLogs = logs.filter { $0.body?.contains(id) == true || $0.attributes?.contains(id) == true }
+      #expect(matchingLogs.map(\.name).sorted() == ["checkout", "expo.feedback", "js.exception"])
+      #expect(matchingLogs.allSatisfy { $0.body == "\(id)-true" || $0.attributes?.contains("\(id)-true") == true })
+      let spans = try AppMetrics.getSpans(afterId: -1).filter { $0.name.contains(id) }
+      #expect(spans.map(\.name) == ["\(id)-true"])
+    }
   }
 }

@@ -1,18 +1,15 @@
 import spawnAsync from '@expo/spawn-async';
 
-export type PullRequestDraft = { base: string; head: string; title: string; body: string };
-
 export type GitHub = {
-  /** Returns the number of the new pull request. */
-  createPullRequestAsync(pullRequest: PullRequestDraft): Promise<number>;
-  addLabelAsync(prNumber: number, label: string): Promise<void>;
   commentAsync(prNumber: number, body: string): Promise<void>;
+  /** Asks GitHub, because the bot's shallow clone does not hold the history to check it. */
+  branchContainsAsync(branch: string, sha: string): Promise<boolean>;
 };
 
 type PullRequestView = {
   state: string;
   mergeCommit: { oid: string };
-  title: string;
+  baseRefName: string;
   author: { login: string };
 };
 
@@ -20,46 +17,36 @@ type PullRequestView = {
 export function ghCli(repo: string): GitHub & {
   viewPullRequestAsync(
     prNumber: number
-  ): Promise<{ mergeSha: string; title: string; author: string }>;
+  ): Promise<{ mergeSha: string; baseBranch: string; author: string }>;
 } {
   const gh = async (...args: string[]) =>
     (await spawnAsync('gh', [...args, '--repo', repo])).stdout.trim();
   return {
-    async createPullRequestAsync({ base, head, title, body }) {
-      const url = await gh(
-        'pr',
-        'create',
-        '--base',
-        base,
-        '--head',
-        head,
-        '--title',
-        title,
-        '--body',
-        body
-      );
-      const number = Number(url.split('/').pop());
-      if (Number.isNaN(number)) {
-        throw new Error(
-          `"gh pr create" printed "${url}", which does not end in a pull request number. Check whether the pull request from ${head} was opened.`
-        );
-      }
-      return number;
-    },
-    async addLabelAsync(prNumber, label) {
-      await gh('pr', 'edit', String(prNumber), '--add-label', label);
-    },
     async commentAsync(prNumber, body) {
       await gh('pr', 'comment', String(prNumber), '--body', body);
     },
+    async branchContainsAsync(branch, sha) {
+      const { stdout } = await spawnAsync('gh', [
+        'api',
+        `repos/${repo}/compare/${sha}...${branch}`,
+        '--jq',
+        '.status',
+      ]);
+      // "ahead" or "identical": every commit up to `sha` is on `branch`.
+      return ['ahead', 'identical'].includes(stdout.trim());
+    },
     async viewPullRequestAsync(prNumber) {
       const view: PullRequestView = JSON.parse(
-        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,title,author')
+        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,baseRefName,author')
       );
       if (view.state !== 'MERGED') {
         throw new Error(`#${prNumber} is not merged, so there is nothing to backport.`);
       }
-      return { mergeSha: view.mergeCommit.oid, title: view.title, author: view.author.login };
+      return {
+        mergeSha: view.mergeCommit.oid,
+        baseBranch: view.baseRefName,
+        author: view.author.login,
+      };
     },
   };
 }

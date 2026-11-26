@@ -135,6 +135,25 @@ export function reportHomeClick(params: HomeClickParams) {
   }
 }
 
+type DocsClickParams = HomeClickParams & {
+  page_location: string;
+};
+
+export function reportDocsClick(params: DocsClickParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'eas_docs_click', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['eas_docs_click', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 export function reportSectionView(section: string) {
   if (isAnalyticsConsented()) {
     window?.gtag?.('event', 'home_section_view', { section });
@@ -145,6 +164,27 @@ export function reportSectionView(section: string) {
     enqueueAnalyticsEvent({
       type: 'track',
       args: ['home_section_view', { section }],
+      timestamp: Date.now(),
+    });
+  }
+}
+
+export type WebMcpToolCallParams = {
+  webmcp_tool_name: string;
+  webmcp_outcome: 'success' | 'invalid_input' | 'not_found' | 'error' | 'cancelled';
+  webmcp_tool_page: string;
+};
+
+export function reportWebMcpToolCall(params: WebMcpToolCallParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'webmcp_tool_call', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['webmcp_tool_call', params],
       timestamp: Date.now(),
     });
   }
@@ -189,9 +229,19 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
         window?.gtag?.('event', 'home_click', params);
         break;
       }
+      case 'eas_docs_click': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'eas_docs_click', params);
+        break;
+      }
       case 'home_section_view': {
         const params = data as Record<string, unknown>;
         window?.gtag?.('event', 'home_section_view', params);
+        break;
+      }
+      case 'webmcp_tool_call': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'webmcp_tool_call', params);
         break;
       }
     }

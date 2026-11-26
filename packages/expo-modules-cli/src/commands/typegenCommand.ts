@@ -118,8 +118,8 @@ export async function typegenCommand(argv: string[]) {
 }
 
 /** `1 module`, `2 modules`. */
-function count(n: number, noun: string): string {
-  return `${n} ${noun}${n === 1 ? '' : 's'}`;
+function count(n: number, noun: string, plural = `${noun}s`): string {
+  return `${n} ${n === 1 ? noun : plural}`;
 }
 
 /**
@@ -190,16 +190,17 @@ export function describeWarnings(warnings: GenerateTypesWarning[]): string | nul
 
 /** The non-zero declaration counts, e.g. `1 module, 4 enums`. */
 export function describeCounts(counts: DeclarationCounts): string {
-  const parts: [number, string][] = [
+  const parts: [number, string, string?][] = [
     [counts.modules, 'module'],
     [counts.sharedObjects, 'shared object'],
+    [counts.classes, 'class', 'classes'],
     [counts.records, 'record'],
     [counts.enums, 'enum'],
     [counts.unions, 'union'],
   ];
   return parts
     .filter(([n]) => n > 0)
-    .map(([n, noun]) => count(n, noun))
+    .map(([n, noun, plural]) => count(n, noun, plural))
     .join(', ');
 }
 

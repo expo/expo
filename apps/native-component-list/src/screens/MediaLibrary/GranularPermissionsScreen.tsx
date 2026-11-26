@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Query, Asset, requestPermissionsAsync } from 'expo-media-library';
+import { Query, Asset, MediaLibrary } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -37,7 +37,7 @@ const GranularPermissionsScreen = () => {
 
   const requestPermissionAndFetch = async (type: 'photo' | 'video') => {
     try {
-      await requestPermissionsAsync(false, [type]);
+      await MediaLibrary.requestPermissions(false, [type]);
       fetchAssets();
     } catch (e) {
       console.error(e);

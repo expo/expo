@@ -1,10 +1,4 @@
-import {
-  type ExpoCalendar,
-  getCalendarPermissions,
-  presentPicker,
-  requestCalendarPermissions,
-  useCalendarPermissions,
-} from 'expo-calendar';
+import { Calendar, useCalendarPermissions } from 'expo-calendar';
 import { type ReactNode, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -32,14 +26,14 @@ function Step({ number, title, description, children }: StepProps) {
 }
 
 export default function WriteOnlyPermissionsScreen() {
-  const [calendar, setCalendar] = useState<ExpoCalendar | null>(null);
+  const [calendar, setCalendar] = useState<Calendar | null>(null);
   const [, requestWriteOnlyPermission] = useCalendarPermissions({
     writeOnly: true,
   });
 
   const pickWriteOnlyCalendar = async () => {
     try {
-      const calendar = await presentPicker();
+      const calendar = await Calendar.presentPicker();
       if (calendar) {
         setCalendar(calendar);
         Alert.alert('Calendar picked', `Title: ${calendar.title}\nID: ${calendar.id}`);
@@ -62,7 +56,7 @@ export default function WriteOnlyPermissionsScreen() {
 
   const checkWriteOnlyPermission = async () => {
     try {
-      const output = await getCalendarPermissions(true);
+      const output = await Calendar.getPermissions(true);
       Alert.alert('Write-Only Permission Status', JSON.stringify(output, null, 2));
     } catch (e: any) {
       Alert.alert('Failed to check write-only permission', e.message);
@@ -71,7 +65,7 @@ export default function WriteOnlyPermissionsScreen() {
 
   const checkFullAccessPermission = async () => {
     try {
-      const output = await getCalendarPermissions();
+      const output = await Calendar.getPermissions();
       Alert.alert('Full Access Permission Status', JSON.stringify(output, null, 2));
     } catch (e: any) {
       Alert.alert('Failed to check full access permission', e.message);
@@ -80,7 +74,7 @@ export default function WriteOnlyPermissionsScreen() {
 
   const requestFullAccessPermission = async () => {
     try {
-      const output = await requestCalendarPermissions();
+      const output = await Calendar.requestPermissions();
       Alert.alert('Full Access Permission Status', JSON.stringify(output, null, 2));
     } catch (e: any) {
       Alert.alert('Failed to request full access', e.message);

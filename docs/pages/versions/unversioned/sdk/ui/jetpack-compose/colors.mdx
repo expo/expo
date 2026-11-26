@@ -54,6 +54,12 @@ export default function BrandedHostExample() {
 
 Use the `colorOverrides` prop on [`Host`](./host) to set specific Material 3 roles. `Host` builds the palette from `seedColor` and `colorScheme` first. Then it replaces each role that you pass. The other roles keep their palette values. Compose components under the `Host` and [`useMaterialColors()`](#usematerialcolorsoptions) both use the result.
 
+<ComponentExample
+  title="ColorOverridesExample.tsx"
+  src="/static/images/expo-ui/examples/colors-overrides-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/colors-overrides-android-dark.webp"
+  alt="A blue button labeled Blue primary, purple palette">
+
 ```tsx
 import { Button, Host, Text } from '@expo/ui/jetpack-compose';
 
@@ -72,6 +78,8 @@ export default function ColorOverridesExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Reading the current palette inside Host
 

@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
@@ -64,7 +63,6 @@ import expo.modules.sensors.modules.LightSensorModule
 import expo.modules.sensors.modules.MagnetometerModule
 import expo.modules.sensors.modules.MagnetometerUncalibratedModule
 import expo.modules.sensors.modules.PedometerModule
-import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
 import expo.modules.storereview.StoreReviewModule
@@ -76,7 +74,6 @@ import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
-import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 import expo.modules.webview.DomWebViewModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
@@ -112,7 +109,6 @@ object ExperiencePackagePicker : ModulesProvider {
     AudioModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
-    AssetModule::class.java to null,
     BarometerModule::class.java to null,
     GyroscopeModule::class.java to null,
     LightSensorModule::class.java to null,
@@ -171,14 +167,12 @@ object ExperiencePackagePicker : ModulesProvider {
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
     // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java to null,
-    SharingModule::class.java to null,
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,
     StoreReviewModule::class.java to null,
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,
-    VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
     WebBrowserModule::class.java to null,
     BrightnessModule::class.java to null

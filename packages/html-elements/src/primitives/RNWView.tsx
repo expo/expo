@@ -8,38 +8,32 @@
  */
 import * as React from 'react';
 import StyleSheet from 'react-native-web/dist/exports/StyleSheet';
-import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext';
+import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext.js';
 import type { ViewProps } from 'react-native-web/dist/exports/View/types';
 import createElement from 'react-native-web/dist/exports/createElement';
 import * as forwardedProps from 'react-native-web/dist/modules/forwardedProps';
 import pick from 'react-native-web/dist/modules/pick';
+import setPlatformMethods from 'react-native-web/dist/modules/setPlatformMethods';
 import useElementLayout from 'react-native-web/dist/modules/useElementLayout';
 import { useLocaleContext, getLocaleDirection } from 'react-native-web/dist/modules/useLocale';
 import useMergeRefs from 'react-native-web/dist/modules/useMergeRefs';
-import usePlatformMethods from 'react-native-web/dist/modules/usePlatformMethods';
 import useResponderEvents from 'react-native-web/dist/modules/useResponderEvents';
 
-const forwardPropsList = Object.assign(
-  {},
-  forwardedProps.defaultProps,
-  forwardedProps.accessibilityProps,
-  forwardedProps.clickProps,
-  forwardedProps.defaultProps,
-  forwardedProps.accessibilityProps,
-  forwardedProps.clickProps,
-  forwardedProps.focusProps,
-  forwardedProps.keyboardProps,
-  forwardedProps.mouseProps,
-  forwardedProps.touchProps,
-  forwardedProps.styleProps,
-  {
-    href: true,
-    lang: true,
-    onScroll: true,
-    onWheel: true,
-    pointerEvents: true,
-  }
-);
+const forwardPropsList = new Set([
+  ...forwardedProps.defaultProps,
+  ...forwardedProps.accessibilityProps,
+  ...forwardedProps.clickProps,
+  ...forwardedProps.focusProps,
+  ...forwardedProps.keyboardProps,
+  ...forwardedProps.mouseProps,
+  ...forwardedProps.touchProps,
+  ...forwardedProps.styleProps,
+  'href',
+  'lang',
+  'onScroll',
+  'onWheel',
+  'pointerEvents',
+]);
 
 function pickProps(props: React.ComponentProps<any>) {
   return pick(props, forwardPropsList);
@@ -133,8 +127,7 @@ function View(props: ViewProps) {
     }
   }
 
-  const platformMethodsRef = usePlatformMethods(supportedProps);
-  const setRef = useMergeRefs(hostRef, platformMethodsRef, forwardedRef);
+  const setRef = useMergeRefs(hostRef, setPlatformMethods, forwardedRef);
 
   return createElement(
     component,

@@ -58,14 +58,14 @@ export async function isAvailableAsync(): Promise<boolean> {
 }
 
 /**
- * @deprecated Use `getCalendars()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.getAll()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   throw errorOnLegacyMethodUse('getCalendarsAsync');
 }
 
 /**
- * @deprecated Use `createCalendar()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.create()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function createCalendarAsync(details: Partial<Calendar> = {}): Promise<string> {
   throw errorOnLegacyMethodUse('createCalendarAsync');
@@ -89,7 +89,7 @@ export async function deleteCalendarAsync(id: string): Promise<void> {
 }
 
 /**
- * @deprecated Use `listEvents()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `CalendarEvent.list()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getEventsAsync(
   calendarIds: string[],
@@ -100,7 +100,7 @@ export async function getEventsAsync(
 }
 
 /**
- * @deprecated Use `ExpoCalendarEvent.get()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `CalendarEvent.get()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getEventAsync(
   id: string,
@@ -172,7 +172,7 @@ export async function deleteAttendeeAsync(id: string): Promise<void> {
 }
 
 /**
- * @deprecated Use `getDefaultCalendarSync()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.getDefaultSync()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getDefaultCalendarAsync(): Promise<Calendar> {
   throw errorOnLegacyMethodUse('getDefaultCalendarAsync');
@@ -191,7 +191,7 @@ export async function getRemindersAsync(
 }
 
 /**
- * @deprecated Use `ExpoCalendarReminder.get()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `CalendarReminder.get()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getReminderAsync(id: string): Promise<Reminder> {
   throw errorOnLegacyMethodUse('getReminderAsync');
@@ -222,7 +222,7 @@ export async function deleteReminderAsync(id: string): Promise<void> {
 }
 
 /**
- * @deprecated Use `getSourcesSync()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.getSourcesSync()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getSourcesAsync(): Promise<Source[]> {
   throw errorOnLegacyMethodUse('getSourcesAsync');
@@ -243,35 +243,35 @@ export function openEventInCalendar(id: string): void {
 }
 
 /**
- * @deprecated Use `requestCalendarPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.requestPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   throw errorOnLegacyMethodUse('requestPermissionsAsync');
 }
 
 /**
- * @deprecated Use `getCalendarPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.getPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getCalendarPermissionsAsync(): Promise<PermissionResponse> {
   throw errorOnLegacyMethodUse('getCalendarPermissionsAsync');
 }
 
 /**
- * @deprecated Use `getRemindersPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.getRemindersPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function getRemindersPermissionsAsync(): Promise<PermissionResponse> {
   throw errorOnLegacyMethodUse('getRemindersPermissionsAsync');
 }
 
 /**
- * @deprecated Use `requestCalendarPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.requestPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function requestCalendarPermissionsAsync(): Promise<PermissionResponse> {
   throw errorOnLegacyMethodUse('requestCalendarPermissionsAsync');
 }
 
 /**
- * @deprecated Use `requestRemindersPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
+ * @deprecated Use `Calendar.requestRemindersPermissions()` or import this method from `expo-calendar/legacy`. This method will throw in runtime.
  */
 export async function requestRemindersPermissionsAsync(): Promise<PermissionResponse> {
   throw errorOnLegacyMethodUse('requestRemindersPermissionsAsync');

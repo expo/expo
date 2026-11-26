@@ -31,6 +31,13 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the symbol belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   /// Mutable so that ``takeValue()`` can move the engine value out of a consumed symbol.
   internal var pointee: facebook.jsi.Symbol
 
@@ -77,6 +84,17 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   @JavaScriptActor
   public static func wellKnown(_ runtime: borrowing JavaScriptRuntime, _ symbol: WellKnown) throws -> JavaScriptSymbol {
     return try cache(in: runtime).wellKnown(symbol)
+  }
+
+  /// Returns the given shared symbol, with ``wellKnown(_:_:)`` or ``for(_:_:)``.
+  @JavaScriptActor
+  public init(_ runtime: borrowing JavaScriptRuntime, _ symbol: Shared) throws {
+    switch symbol {
+    case .wellKnown(let symbol):
+      self = try Self.wellKnown(runtime, symbol)
+    case .for(let key):
+      self = try Self.for(runtime, key)
+    }
   }
 
   /// Converts the symbol to a string, like `toString()` in JavaScript. The result has the form
@@ -149,6 +167,24 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     case toPrimitive
     case toStringTag
     case unscopables
+  }
+
+  // MARK: - Shared symbols
+
+  /// A symbol that all code shares: a well-known symbol or a symbol from the global symbol registry. The runtime
+  /// can return the symbol again at any time, so native code can keep this value instead of an engine value.
+  /// ``init(_:_:)`` returns the symbol.
+  ///
+  /// A string literal is the key of a symbol from the registry: `"app.id"` is the same as `.for("app.id")`.
+  public enum Shared: Hashable, Sendable, ExpressibleByStringLiteral {
+    /// A well-known symbol, such as `Symbol.iterator`.
+    case wellKnown(WellKnown)
+    /// The symbol that the global symbol registry holds for the key, like `Symbol.for(key)` in JavaScript.
+    case `for`(String)
+
+    public init(stringLiteral key: String) {
+      self = .for(key)
+    }
   }
 }
 

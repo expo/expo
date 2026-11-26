@@ -69,6 +69,46 @@ struct JavaScriptNativeStateTests {
   }
 
   @Test
+  func `trySetNativeState sets native state`() {
+    let object = runtime.createObject()
+    let nativeState = CustomNativeState()
+    #expect(object.trySetNativeState(nativeState) == true)
+    #expect(object.getNativeState(as: CustomNativeState.self) === nativeState)
+  }
+
+  @Test
+  func `trySetNativeState fails for a frozen object`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    #expect(object.trySetNativeState(CustomNativeState()) == false)
+    #expect(object.hasNativeState() == false)
+  }
+
+  @Test
+  func `trySetNativeState keeps the native state of a frozen object`() throws {
+    let object = runtime.createObject()
+    let nativeState = CustomNativeState()
+    object.setNativeState(nativeState)
+    runtime.global().setProperty("frozenObject", value: object.asValue())
+    try runtime.eval("Object.freeze(frozenObject)")
+    #expect(object.trySetNativeState(OtherNativeState()) == false)
+    #expect(object.getNativeState(as: CustomNativeState.self) === nativeState)
+  }
+
+  @Test
+  func `trySetNativeState fails for a Proxy`() throws {
+    let proxy = try runtime.eval("new Proxy({}, {})").getObject()
+    #expect(proxy.trySetNativeState(CustomNativeState()) == false)
+    #expect(proxy.hasNativeState() == false)
+  }
+
+  @Test
+  func `trySetNativeState fails for a host object`() {
+    let hostObject = runtime.createHostObject(get: { _ in .undefined() }, getPropertyNames: { [] })
+    #expect(hostObject.trySetNativeState(CustomNativeState()) == false)
+    #expect(hostObject.hasNativeState() == false)
+  }
+
+  @Test
   func `shares native state between objects`() {
     let object1 = runtime.createObject()
     let object2 = runtime.createObject()
