@@ -17,7 +17,7 @@ enum UpdatesDatabaseInitializationError: Error, Sendable, LocalizedError {
   case migrateAndRemoveOldDatabaseFailure(cause: Error)
   case moveExistingCorruptedDatabaseFailure(cause: Error)
   case openAfterMovingCorruptedDatabaseFailure
-  case openInitialDatabaseOtherFailure
+  case openInitialDatabaseOtherFailure(info: UpdatesDatabaseUtilsError.UpdatesDatabaseUtilsErrorInfo)
   case openDatabaseFalure
   case databseSchemaInitializationFailure
 
@@ -29,8 +29,8 @@ enum UpdatesDatabaseInitializationError: Error, Sendable, LocalizedError {
       return "Failed to archive corrupted databse: \(cause.localizedDescription)"
     case .openAfterMovingCorruptedDatabaseFailure:
       return "Failed to open new database after corrupted database archive operation"
-    case .openInitialDatabaseOtherFailure:
-      return "Failed to open database: other failure"
+    case let .openInitialDatabaseOtherFailure(info):
+      return "Failed to open database: other failure \(info.localizedDescription)"
     case .openDatabaseFalure:
       return "Failed to open database"
     case .databseSchemaInitializationFailure:
@@ -151,7 +151,8 @@ internal final class UpdatesDatabaseInitialization {
     }
 
     if resultCode != SQLITE_OK {
-      logger.warn(.localDatabaseOpenFailed, values: ["cause": UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db).message])
+      let errorInfo = UpdatesDatabaseUtils.errorCodesAndMessage(fromSqlite: db)
+      logger.warn(.localDatabaseOpenFailed, values: ["cause": errorInfo.message])
       sqlite3_close(db)
 
       if resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB {
@@ -176,7 +177,7 @@ internal final class UpdatesDatabaseInitialization {
 
         shouldInitializeDatabaseSchema = true
       } else {
-        throw UpdatesDatabaseInitializationError.openInitialDatabaseOtherFailure
+        throw UpdatesDatabaseInitializationError.openInitialDatabaseOtherFailure(info: errorInfo)
       }
     }
 
