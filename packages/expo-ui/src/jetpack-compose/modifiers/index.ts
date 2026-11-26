@@ -678,3 +678,4 @@ export const scrollDismissesKeyboard = () => createModifier('scrollDismissesKeyb
 
 export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';
+export * from './widgets';
