@@ -1190,28 +1190,11 @@ export function findInternalTargetModuleReferences(
 }
 
 /**
- * Whether the SDK ships `moduleName` as a framework or as a cross-import overlay. Swift loads the
- * overlay `_A_B` when a module imports both `A` and `B`, and prints it in the interface as an
- * `@_exported import`.
+ * Whether the SDK ships `moduleName` as a framework. Cross-import overlays (`_A_B`, which Swift
+ * loads when a module imports both `A` and `B`) ship as frameworks too.
  */
-const isDeclaredBySdk = (moduleName: string, sdkPath: string): boolean => {
-  const sdkFrameworksPath = path.join(sdkPath, 'System', 'Library', 'Frameworks');
-  const overlay = moduleName.match(/^_([A-Za-z0-9]+)_([A-Za-z0-9]+)$/);
-  if (overlay) {
-    const [, declaringModule, bystandingModule] = overlay;
-    const overlayPath = path.join(
-      sdkFrameworksPath,
-      `${declaringModule}.framework`,
-      'Modules',
-      `${declaringModule}.swiftcrossimport`,
-      `${bystandingModule}.swiftoverlay`
-    );
-    if (fs.existsSync(overlayPath)) {
-      return true;
-    }
-  }
-  return fs.existsSync(path.join(sdkFrameworksPath, `${moduleName}.framework`));
-};
+const isDeclaredBySdk = (moduleName: string, sdkPath: string): boolean =>
+  fs.existsSync(path.join(sdkPath, 'System', 'Library', 'Frameworks', `${moduleName}.framework`));
 
 /**
  * Verifies that imports in a swiftinterface file are valid.
@@ -1222,7 +1205,7 @@ const isDeclaredBySdk = (moduleName: string, sdkPath: string): boolean => {
  * @param swiftInterfacePath Path to the .swiftinterface file
  * @param frameworkPath Path to the framework containing the swiftinterface
  * @param dependencyModules Modules declared by sibling xcframeworks; treated as defined
- * @param sdkPath SDK of the slice; frameworks and cross-import overlays it declares are treated as system modules
+ * @param sdkPath SDK of the slice; frameworks it ships are treated as system modules
  * @returns Array of issue descriptions (empty if all imports are valid)
  */
 export const verifySwiftInterfaceImports = async (

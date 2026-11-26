@@ -193,17 +193,14 @@ describe('verifySwiftInterfaceImports', () => {
       return sdkPath;
     }
 
-    const APP_INTENTS_SWIFTUI_OVERLAY =
-      'AppIntents.framework/Modules/AppIntents.swiftcrossimport/SwiftUI.swiftoverlay';
-
     const interfaceExporting = (moduleName: string) =>
       ['// swift-interface-format-version: 1.0', `@_exported import ${moduleName}`].join('\n');
 
-    it('accepts an exported cross-import overlay that the SDK declares', async () => {
+    it('accepts an exported cross-import overlay that the SDK ships', async () => {
       const { frameworkPath, swiftInterfacePath } = await createFrameworkFixtureAsync(
         interfaceExporting('_AppIntents_SwiftUI')
       );
-      const sdkPath = await createSdkFixtureAsync([APP_INTENTS_SWIFTUI_OVERLAY]);
+      const sdkPath = await createSdkFixtureAsync(['_AppIntents_SwiftUI.framework/Info.plist']);
 
       assert.deepEqual(
         await verifySwiftInterfaceImports(swiftInterfacePath, frameworkPath, new Set(), sdkPath),
