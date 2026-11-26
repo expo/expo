@@ -21,8 +21,7 @@ let package = Package(
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
-      path: "ios",
-      exclude: ["ExpoBrownfield.podspec"]
+      path: "ios/ExpoBrownfield"
     )
   ],
   swiftLanguageModes: [.v5]
