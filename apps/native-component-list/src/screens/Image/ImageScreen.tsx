@@ -221,6 +221,13 @@ if (Platform.OS === 'ios') {
       getComponent() {
         return optionalRequire(() => require('./ImageCacheEvictionScreen'));
       },
+    },
+    {
+      name: 'New view comparison',
+      route: 'image/new-view',
+      getComponent() {
+        return optionalRequire(() => require('./ImageNewViewComparisonScreen'));
+      },
     }
   );
 }
