@@ -1541,6 +1541,8 @@ public class ViewModifierRegistry {
   public static var widgetKit: WidgetKitModifiers?
 
   private init() {
+    // The number of built-in modifiers, so the dictionary doesn't grow and rehash while they register.
+    registrations.reserveCapacity(164)
     registerBuiltInModifiers()
   }
 
