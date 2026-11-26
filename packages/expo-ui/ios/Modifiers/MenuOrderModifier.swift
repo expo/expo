@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum MenuOrderType: String, Enumerable {
+internal enum MenuOrderType: String, UIEnum {
   case automatic
   case fixed
   case priority

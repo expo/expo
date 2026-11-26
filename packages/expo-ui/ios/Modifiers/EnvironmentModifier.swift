@@ -3,14 +3,14 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum EnvironmentKeyType: String, Enumerable {
+internal enum EnvironmentKeyType: String, UIEnum {
   case editMode
   case colorScheme
   case locale
   case timeZone
 }
 
-internal enum EditModeType: String, Enumerable {
+internal enum EditModeType: String, UIEnum {
   case active
   case inactive
   case transient
@@ -29,7 +29,7 @@ internal enum EditModeType: String, Enumerable {
 #endif
 }
 
-internal enum ColorSchemeType: String, Enumerable {
+internal enum ColorSchemeType: String, UIEnum {
   case light
   case dark
 

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ListStyleType: String, Enumerable {
+internal enum ListStyleType: String, UIEnum {
   case automatic
   case grouped
   case plain

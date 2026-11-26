@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum MenuStyleType: String, Enumerable {
+internal enum MenuStyleType: String, UIEnum {
   case automatic
   case button
 }

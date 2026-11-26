@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum TextContentTypeValue: String, Enumerable {
+internal enum TextContentTypeValue: String, UIEnum {
   // Web addresses
   case url = "URL"
 

@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ScrollEdgeEffectStyleOptions: String, Enumerable {
+internal enum ScrollEdgeEffectStyleOptions: String, UIEnum {
   case automatic
   case hard
   case soft

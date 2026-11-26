@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum PickerStyleType: String, Enumerable {
+internal enum PickerStyleType: String, UIEnum {
   case automatic
   case inline
   case menu
