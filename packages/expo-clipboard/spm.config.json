@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoClipboard",
+          "path": "ios/ExpoClipboard",
           "dependencies": [
             "Hermes",
             "React",
