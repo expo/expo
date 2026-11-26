@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.resource_bundles = {'ExpoNotifications_privacy' => ['PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'ExpoNotifications_privacy' => ['ExpoNotifications/PrivacyInfo.xcprivacy']}
 
   s.source_files = "#{s.name}/**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
@@ -26,10 +26,10 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'ExpoNotificationsTests/'
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = "Tests/**/*.{m,mm,swift}"
+    test_spec.source_files = "ExpoNotificationsTests/**/*.{m,mm,swift}"
   end
 end
