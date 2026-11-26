@@ -85,7 +85,7 @@ struct SpanWriterTests {
   @Test
   func `a span that starts without consent is not written after a grant`() async throws {
     try await withTemporaryDatabase { database in
-      let writes = Mutex<[@Sendable @AppMetricsActor () -> Void]>([])
+      let writes = ExpoObserve.Mutex<[@Sendable @AppMetricsActor () -> Void]>([])
       let writer = SpanWriter(database: database) { write in
         writes.withLock { $0.append(write) }
       }

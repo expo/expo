@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-// Copy of the ExpoModulesCore `Mutex`, so the shared code does not depend on ExpoModulesCore.
+// Based on the ExpoModulesCore `Mutex`, so the shared code does not depend on ExpoModulesCore.
 
 import Foundation
 

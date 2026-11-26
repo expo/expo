@@ -9,7 +9,7 @@ import Testing
 final class SpanClassTests {
   let appContext: AppContext
   let runtime: ExpoRuntime
-  let consent = Mutex(true)
+  let consent = ExpoObserve.Mutex(true)
 
   init() throws {
     appContext = AppContext.create()
