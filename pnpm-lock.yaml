@@ -2282,7 +2282,7 @@ importers:
         version: link:../internal-scripts
       '@expo/mcp-tunnel':
         specifier: ~0.2.3
-        version: 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))
+        version: 0.2.4(@modelcontextprotocol/sdk@1.32.2(zod@3.25.76))
       '@expo/ngrok':
         specifier: ^4.1.3
         version: 4.1.3
@@ -8906,8 +8906,8 @@ packages:
     resolution: {integrity: sha512-6QEf6yqFbETdwGITKq57aYoPfX/3K8XFNwsAlx0C1M7o8cb79sv1M3w+tWuWvIcSbNqrLF7OD7YpZMVVz335hQ==}
     engines: {node: '>=20.0.0'}
 
-  '@modelcontextprotocol/sdk@1.27.1':
-    resolution: {integrity: sha512-sr6GbP+4edBwFndLbM60gf07z0FQ79gaExpnsjMGePXqFcSSb7t6iscpjk9DhFhwd+mTEQrzNafGP8/iGGFYaA==}
+  '@modelcontextprotocol/sdk@1.32.2':
+    resolution: {integrity: sha512-SWsVtH/0vULSQStoZ6xxH2K09Li8fXYTMC64ZeogCdpZ3XSi1eCPOByV1OpuJxuI3OcmHhosDWYyii07tpPsLw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@cfworker/json-schema': ^4.1.1
@@ -17575,9 +17575,9 @@ snapshots:
 
   '@expo/material-symbols@0.1.1': {}
 
-  '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))':
+  '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.32.2(zod@3.25.76))':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
+      '@modelcontextprotocol/sdk': 1.32.2(zod@3.25.76)
       ws: 8.19.0
       zod: 3.25.76
       zod-to-json-schema: 3.25.2(zod@3.25.76)
@@ -18201,7 +18201,7 @@ snapshots:
       tinyglobby: 0.2.15
       yaml: 2.9.0
 
-  '@modelcontextprotocol/sdk@1.27.1(zod@3.25.76)':
+  '@modelcontextprotocol/sdk@1.32.2(zod@3.25.76)':
     dependencies:
       '@hono/node-server': 1.19.17(hono@4.12.32)
       ajv: 8.20.0
@@ -21702,8 +21702,8 @@ snapshots:
 
   expo-mcp@0.2.4:
     dependencies:
-      '@expo/mcp-tunnel': 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))
-      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
+      '@expo/mcp-tunnel': 0.2.4(@modelcontextprotocol/sdk@1.32.2(zod@3.25.76))
+      '@modelcontextprotocol/sdk': 1.32.2(zod@3.25.76)
       debug: 4.4.3
       glob: 11.0.3
       jimp-compact: 0.16.1
