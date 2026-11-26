@@ -249,4 +249,11 @@ function unusablePropertiesError(propertiesPath, reason, options) {
   );
 }
 
-module.exports = { readPodfileProperties, resolveAppTarget };
+/** The Xcode projects under `appRoot` whose project.pbxproj contains `text`. */
+function xcodeProjectsContaining(appRoot, text) {
+  return listXcodeProjects(appRoot).filter((project) =>
+    fs.readFileSync(path.join(project, 'project.pbxproj'), 'utf8').includes(text)
+  );
+}
+
+module.exports = { readPodfileProperties, resolveAppTarget, xcodeProjectsContaining };

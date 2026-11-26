@@ -5358,3 +5358,49 @@ describe('ExpoModulesJSI', () => {
     });
   });
 });
+
+describe('a precompiled expo-widgets whose widget extension references its source package', () => {
+  captureConsole();
+  let tmp;
+  let thrown;
+
+  beforeAll(() => {
+    tmp = makeTempDir('expo-spm-widgets-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const widgetsPackage = path.join(tmp, 'expo-widgets');
+    const widgets = mixedModule(widgetsPackage, 'ExpoWidgets');
+    const project = path.join(tmp, 'app', 'ios', 'App.xcodeproj');
+    fs.mkdirSync(project, { recursive: true });
+    fs.writeFileSync(
+      path.join(project, 'project.pbxproj'),
+      'relativePath = build/generated/autolinking/expo/direct/expo-widgets;\n'
+    );
+
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-widgets', [['ExpoWidgets', widgets]]]])
+    );
+    prebuiltMetadata.mockReturnValue({
+      ExpoWidgets: metadataEntry(widgetsPackage, 'ExpoWidgets'),
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoWidgets'
+        ? { id: frameworkName, frameworkName }
+        : null
+    );
+    providerWrittenTo(path.join(tmp, 'out'));
+    thrown = thrownBy(() => runPlugin(tmp));
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('fails the sync and says to build expo-widgets from source', () => {
+    expect(thrown).toBeInstanceOf(Error);
+    expect(thrown.message).toMatch(/^\[expo-spm-plugin\] /);
+    expect(thrown.message).toContain(path.join(tmp, 'app', 'ios', 'App.xcodeproj'));
+    expect(thrown.message).toContain('build/generated/autolinking/expo/direct/expo-widgets');
+    expect(thrown.message).toContain(
+      'Add "expo-widgets" to `"expo": { "autolinking": { "buildFromSource": [...] } }`'
+    );
+    expect(thrown.message).toContain(rerunSpmUpdate);
+  });
+});
