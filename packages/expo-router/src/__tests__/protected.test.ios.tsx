@@ -1060,6 +1060,30 @@ it('replaces a fully guarded nested navigator with the parent fallback when they
   expect(screen).toHaveSegments([]);
 });
 
+it('throws when the redirectTo of a passing Protected component is an external URL', async () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  try {
+    await expect(
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Protected guard redirectTo="https://example.com/login">
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        ),
+        index: () => <Text testID="home">home</Text>,
+        secret: () => <Text testID="secret">secret</Text>,
+      })
+    ).rejects.toThrow(
+      '`Protected` in "app/_layout" requires an app route for `redirectTo`. Open external URLs with `Linking.openURL`.'
+    );
+  } finally {
+    errorSpy.mockRestore();
+  }
+});
+
 describe('all routes guarded', () => {
   let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
 
