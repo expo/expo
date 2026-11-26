@@ -260,6 +260,12 @@ export function getDisableAntiBrickingMeasures(
   return config.updates?.disableAntiBrickingMeasures;
 }
 
+export function getUpdatesUseReactNativeHttpClient(
+  config: Pick<ExpoConfigUpdates, 'updates'>
+): boolean | undefined {
+  return config.updates?.useReactNativeHttpClient;
+}
+
 export function getUpdatesExcludeFromBackup(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
   return config.updates?.excludeFromBackup ?? false;
 }

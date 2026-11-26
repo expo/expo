@@ -1,7 +1,6 @@
 package expo.modules.updates.loader
 
 import androidx.annotation.VisibleForTesting
-import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
@@ -80,7 +79,7 @@ class FileDownloader(
   // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
   // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
   // the HTTP timeout should be at least 20 seconds.
-  private var client: OkHttpClient = OkHttpClientProvider.getOkHttpClient().newBuilder()
+  private var client: OkHttpClient = createBaseClientBuilder(configuration.useReactNativeHttpClient)
     .cache(getCache())
     .connectTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
     .readTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)

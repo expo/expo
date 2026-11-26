@@ -188,6 +188,10 @@ export interface ExpoConfig {
      * Number of updates to keep, including the one currently running. For example, 3 keeps the running update and up to two older updates. Updates that match the manifest filters take priority, with the newest updates kept first. Defaults to 2. This value controls how many older updates to keep alongside the running update. Cleanup leaves updates from other scopes and updates with the same or a newer commit time than the running update untouched, so the cache can contain more updates than this value.
      */
     maxUpdatesToKeep?: number;
+    /**
+     * Android only. Whether expo-updates downloads update manifests and assets with the OkHttp client that React Native's `OkHttpClientProvider` supplies, so that interceptors, certificate pinning and other customizations installed through `OkHttpClientProvider.setOkHttpClientFactory` also apply to update downloads. Defaults to true. When set to false, expo-updates builds its own OkHttp client, so a broken app-wide network customization (for example an outdated certificate pin) cannot block the update that fixes it.
+     */
+    useReactNativeHttpClient?: boolean;
   };
   /**
    * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.
