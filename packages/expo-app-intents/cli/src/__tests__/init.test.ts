@@ -1072,10 +1072,7 @@ describe(runInit, () => {
     expect(warned).toContain("plugins: ['expo-app-intents']");
   });
 
-  // A dynamic config can point the plugin at a child directory that init cannot see. Because the
-  // watched parent recursively covers both locations, adding another setup at the requested parent
-  // would make autolinking collect two files with the same name and break the Swift build.
-  it('refuses to scaffold a second setup under a dynamically configured watched tree', async () => {
+  it('refuses to repoint a plugin that a dynamic config points at a watched child directory', async () => {
     writeProject(null);
     write({
       'project/app.config.js': `module.exports = { expo: { name: 'my-app', slug: 'my-app', plugins: [['expo-app-intents', { directory: 'app-intents/legacy' }]], experiments: { inlineModules: { watchedDirectories: ['app-intents'] } } } };`,
@@ -1084,7 +1081,7 @@ describe(runInit, () => {
 
     await expect(
       runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir })
-    ).rejects.toThrow(/app-intents\/legacy\/AppIntentsSetup\.swift/);
+    ).rejects.toThrow(/already configured to use the 'app-intents\/legacy' directory/);
 
     expect(exists('app-intents/AppIntentsSetup.swift')).toBe(false);
   });
@@ -1103,14 +1100,25 @@ describe(runInit, () => {
 
     await expect(
       runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir })
-    ).rejects.toThrow(/legacy\/AppIntentsSetup\.swift/);
+    ).rejects.toThrow(/already configured to use the 'legacy' directory/);
 
     expect(exists('app-intents/AppIntentsSetup.swift')).toBe(false);
     expect(readConfig().expo.experiments.inlineModules.watchedDirectories).toEqual(['legacy']);
   });
 
-  // A setup at the requested path is the one this run intends to keep, so it is not a conflict even
-  // though the dynamic plugin entry itself cannot be inspected.
+  it('adds only the watched directory when a dynamic config already declares the plugin', async () => {
+    writeProject(staticConfig());
+    write({
+      'project/app.config.js': `module.exports = ({ config }) => ({ ...config, plugins: ['expo-app-intents'] });`,
+    });
+
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+
+    expect(readConfig().expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
+    expect(readConfig().expo.plugins).toBeUndefined();
+    expect(messages(warn)).not.toContain('Could not update the Expo app config');
+  });
+
   it('allows an existing setup at the requested path under a dynamic config', async () => {
     writeProject(null);
     write({

@@ -252,9 +252,9 @@ const SHORTCUT_ENTRIES: Partial<Record<InitExample, ShortcutEntry>> = {
 };
 
 const PLUGIN_NAME = 'expo-app-intents';
-const APP_INTENTS_SETUP_FILE_NAME = 'AppIntentsSetup.swift';
 
 type PluginEntry = string | [string, Record<string, any>];
+type DeclaredPluginEntry = NonNullable<ExpoConfig['plugins']>[number];
 
 function createPluginEntry(directory: string): PluginEntry {
   if (directory === DEFAULT_DIRECTORY) {
@@ -721,15 +721,13 @@ async function writeFileIfMissing(
 }
 
 /**
- * Reading the config through `@expo/config` runs the static `plugins` array by default. The
+ * Reading the config through `@expo/config` runs the `plugins` array by default. The
  * `expo-app-intents` plugin throws while `experiments.inlineModules` is still missing, which is
- * exactly the state `init` exists to repair, so plugins are never evaluated here. The SDK version
+ * exactly the state `init` exists to repair, so plugins are only inspected here. The SDK version
  * is not needed either, and requiring it would break projects that have not installed `expo` yet.
  */
 const CONFIG_READ_OPTIONS = {
-  pluginMode: 'skip',
-  // Older versions of the project's expo/config only recognize skipPlugins.
-  skipPlugins: true,
+  pluginMode: 'inspect',
   skipSDKVersionRequirement: true,
 } as const;
 
@@ -768,34 +766,16 @@ function readAppConfig(projectRoot: string, directory: string): ProjectConfig {
   }
 }
 
-/** The static config, unwrapped from the optional top-level `expo` key. */
-function getStaticExpoConfig(rootConfig: ProjectConfig['rootConfig']): Record<string, any> {
-  const config: Record<string, any> = rootConfig ?? {};
-  return config.expo ?? config;
-}
-
-/**
- * The `expo-app-intents` entry in the config's `plugins` array, read from the raw static config.
- *
- * `getConfig` deletes `exp.plugins` whenever plugins are skipped, and they have to be skipped here
- * (see `CONFIG_READ_OPTIONS`), so the static config is the only place an entry can be read from. It
- * is the whole config for a static project, but a dynamic `app.config.js` can add, remove or rewrite
- * plugins afterwards, so for those projects a missing entry proves nothing.
- */
-function findPluginEntry(rootConfig: ProjectConfig['rootConfig']): PluginEntry | undefined {
-  const plugins = getStaticExpoConfig(rootConfig).plugins;
-  if (!Array.isArray(plugins)) {
-    return undefined;
-  }
-  return plugins.find(
-    (plugin: unknown) =>
-      plugin === PLUGIN_NAME || (Array.isArray(plugin) && plugin[0] === PLUGIN_NAME)
+/** The `expo-app-intents` entry in the evaluated config's `plugins` array. */
+function findPluginEntry(config: ProjectConfig): DeclaredPluginEntry | undefined {
+  return config.exp.plugins?.find(
+    (plugin) => plugin === PLUGIN_NAME || (Array.isArray(plugin) && plugin[0] === PLUGIN_NAME)
   );
 }
 
 /** The directory an existing plugin entry points at. Entries without props use the default. */
-function getPluginDirectory(entry: PluginEntry): string {
-  if (Array.isArray(entry)) {
+function getPluginDirectory(entry: DeclaredPluginEntry): string {
+  if (Array.isArray(entry) && entry.length === 2) {
     const props = entry[1];
     if (props && typeof props === 'object' && typeof props.directory === 'string') {
       return props.directory;
@@ -804,10 +784,7 @@ function getPluginDirectory(entry: PluginEntry): string {
   return DEFAULT_DIRECTORY;
 }
 
-/**
- * The watched directories, read from the evaluated config. Unlike `plugins` these survive plugin
- * skipping, so this is the same list autolinking will scan, whichever file it came from.
- */
+/** The watched directories, read from the evaluated config. Autolinking scans the same list. */
 function getWatchedDirectories(config: ProjectConfig): string[] {
   return config.exp.experiments?.inlineModules?.watchedDirectories ?? [];
 }
@@ -879,41 +856,6 @@ function findWatchedEntriesCovering(
   );
 }
 
-/** Finds a setup file that autolinking already compiles from somewhere other than `directory`. */
-async function findOtherAppIntentsSetupAsync(
-  projectRoot: string,
-  watchedDirectories: string[],
-  directory: string
-): Promise<string | null> {
-  const requestedSetupPath = path.resolve(projectRoot, directory, APP_INTENTS_SETUP_FILE_NAME);
-  const queue = watchedDirectories.map((watchedDirectory) =>
-    path.resolve(projectRoot, watchedDirectory)
-  );
-
-  while (queue.length > 0) {
-    const currentDirectory = queue.shift()!;
-    const entries = await fs.readdir(currentDirectory, { withFileTypes: true }).catch(() => null);
-    if (!entries) {
-      continue;
-    }
-
-    for (const entry of entries) {
-      const entryPath = path.join(currentDirectory, entry.name);
-      if (entry.isDirectory() && entry.name !== 'node_modules') {
-        queue.push(entryPath);
-      } else if (
-        entry.isFile() &&
-        entry.name === APP_INTENTS_SETUP_FILE_NAME &&
-        path.resolve(entryPath) !== requestedSetupPath
-      ) {
-        return path.relative(projectRoot, entryPath).split(path.sep).join('/');
-      }
-    }
-  }
-
-  return null;
-}
-
 /**
  * Refuses to move an existing setup to another directory while the old one is still watched.
  * Repointing the plugin does not remove the old directory from `watchedDirectories`, and both
@@ -924,33 +866,7 @@ async function assertDirectoryIsNotAlreadyConfiguredAsync(
   config: ProjectConfig,
   directory: string
 ): Promise<void> {
-  // A dynamic config can add, remove or rewrite a plugin entry inherited from the static config, so
-  // the raw entry is never authoritative when one exists. Inspect the evaluated watched trees
-  // instead: an existing setup anywhere other than the requested path is concrete evidence that
-  // this run would create a duplicate, while a tree with no other setup is safe to scaffold.
-  if (config.dynamicConfigPath) {
-    const existingSetup = await findOtherAppIntentsSetupAsync(
-      projectRoot,
-      getWatchedDirectories(config),
-      directory
-    );
-    if (existingSetup) {
-      throw new Error(
-        `Could not check which directory expo-app-intents is configured to use because the ` +
-          `plugins list is computed in JavaScript in ` +
-          `${path.relative(projectRoot, config.dynamicConfigPath)}, but the watched inline-module ` +
-          `tree already contains '${existingSetup}'. This run would also create ` +
-          `'${directory}/${APP_INTENTS_SETUP_FILE_NAME}', and autolinking would compile ` +
-          `both files into the app target, making the iOS build fail with ` +
-          `\`error: filename "${APP_INTENTS_SETUP_FILE_NAME}" used twice\`. Point the existing ` +
-          `expo-app-intents plugin entry at '${directory}' and move the Swift files there, or ` +
-          `re-run init with the directory that contains the existing setup.`
-      );
-    }
-    return;
-  }
-
-  const pluginEntry = findPluginEntry(config.rootConfig);
+  const pluginEntry = findPluginEntry(config);
   if (!pluginEntry) {
     return;
   }
@@ -1009,7 +925,7 @@ function getConfigModifications(
     modifications.experiments = { inlineModules: { watchedDirectories: [directory] } };
   }
 
-  const pluginEntry = findPluginEntry(config.rootConfig);
+  const pluginEntry = findPluginEntry(config);
   if (!pluginEntry) {
     modifications.plugins = [createPluginEntry(directory)];
   } else if (!isSameDirectory(projectRoot, getPluginDirectory(pluginEntry), directory)) {
@@ -1117,7 +1033,7 @@ export async function runInit(options: InitOptions): Promise<void> {
     }
     if (modifications.plugins) {
       console.log(
-        findPluginEntry(config.rootConfig)
+        findPluginEntry(config)
           ? `Pointed '${PLUGIN_NAME}' at '${directory}' in plugins`
           : `Added '${PLUGIN_NAME}' to plugins`
       );
