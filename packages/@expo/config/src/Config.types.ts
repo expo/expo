@@ -176,7 +176,7 @@ export type GetConfigOptions = {
   isModdedConfig?: boolean;
   skipSDKVersionRequirement?: boolean;
   /**
-   * Dangerously skip resolving plugins.
+   * @deprecated Use `pluginMode: 'skip'` for `true` or `pluginMode: 'apply'` for `false`.
    */
   skipPlugins?: boolean;
   /**
