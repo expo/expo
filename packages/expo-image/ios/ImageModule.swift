@@ -103,6 +103,12 @@ public final class ImageModule: Module {
         #endif
       }
 
+      Prop("liveTextSupplementaryInterfaceHidden") { (view, hidden: Bool?) in
+        #if !os(tvOS)
+        view.liveTextSupplementaryInterfaceHidden = hidden ?? false
+        #endif
+      }
+
       Prop("accessible") { (view, accessible: Bool?) in
         view.sdImageView.isAccessibilityElement = accessible ?? false
       }

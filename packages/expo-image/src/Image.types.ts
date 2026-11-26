@@ -468,6 +468,15 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   enableLiveTextInteraction?: boolean;
 
   /**
+   * Hides the Live Text buttons that iOS shows over the image, such as the Live Text button and the Quick Actions.
+   * Text selection still works.
+   * Has no effect when `enableLiveTextInteraction` is `false`.
+   * @default false
+   * @platform ios 16.0+
+   */
+  liveTextSupplementaryInterfaceHidden?: boolean;
+
+  /**
    * Whether the image should be downscaled to match the size of the view container.
    * Turning off this functionality could negatively impact the application's performance, particularly when working with large assets.
    * However, it would result in smoother image resizing, and end-users would always have access to the highest possible asset quality.
