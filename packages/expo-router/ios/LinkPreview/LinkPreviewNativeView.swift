@@ -139,7 +139,9 @@ class NativeLinkPreviewView: DisplayContentsView, UIContextMenuInteractionDelega
       let target = UIPreviewTarget(
         container: superview,
         center: triggerView.convert(
-          CGPoint(x: triggerView.bounds.midX, y: triggerView.bounds.midY), to: superview)
+          CGPoint(x: triggerView.bounds.midX, y: triggerView.bounds.midY),
+          to: superview
+        )
       )
 
       let parameters = UIPreviewParameters()

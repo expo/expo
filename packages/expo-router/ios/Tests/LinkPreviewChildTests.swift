@@ -42,7 +42,8 @@ struct LinkPreviewChildTests {
         UIContextMenuInteraction(delegate: view),
         configuration: UIContextMenuConfiguration(),
         highlightPreviewForItemWithIdentifier: "" as NSString
-      ))
+      )
+    )
 
     #expect(preview.target.container === host)
     #expect(preview.target.center == CGPoint(x: 126, y: 140))
