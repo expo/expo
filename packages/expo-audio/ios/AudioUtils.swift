@@ -187,6 +187,27 @@ struct AudioUtils {
     return nil
   }
 
+#if !os(tvOS)
+  static func playAndRecordOptions(for mode: AudioMode) -> AVAudioSession.CategoryOptions {
+    var options: AVAudioSession.CategoryOptions = []
+    if !mode.shouldRouteThroughEarpiece {
+      options.insert(.defaultToSpeaker)
+    }
+    switch mode.bluetoothProfile {
+    case .hfp:
+#if compiler(>=6.2) // Xcode 26
+      options.insert(.allowBluetoothHFP)
+#else
+      options.insert(.allowBluetooth)
+#endif
+    case .a2dp:
+      // Do not also allow HFP. iOS prefers HFP for a device that supports both profiles.
+      options.insert(.allowBluetoothA2DP)
+    }
+    return options
+  }
+#endif
+
   static func validateAudioMode(mode: AudioMode) throws {
     if !mode.playsInSilentMode && mode.interruptionMode == .duckOthers {
       throw InvalidAudioModeException("playsInSilentMode == false and duckOthers == true cannot be set on iOS")

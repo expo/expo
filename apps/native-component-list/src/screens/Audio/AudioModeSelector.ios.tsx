@@ -26,6 +26,7 @@ export default function AudioModeSelector({
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
+      bluetoothProfile: 'hfp',
     },
     current: {
       interruptionMode: 'mixWithOthers',
@@ -34,6 +35,7 @@ export default function AudioModeSelector({
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
+      bluetoothProfile: 'hfp',
     },
   });
 
@@ -51,7 +53,8 @@ export default function AudioModeSelector({
     modeA.playsInSilentMode === modeB.playsInSilentMode &&
     modeA.allowsRecording === modeB.allowsRecording &&
     modeA.shouldPlayInBackground === modeB.shouldPlayInBackground &&
-    modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording;
+    modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording &&
+    modeA.bluetoothProfile === modeB.bluetoothProfile;
 
   const setMode = (interruptionMode: AudioMode['interruptionMode']) => () =>
     setState((state) => ({ ...state, next: { ...state.next, interruptionMode } }));
@@ -138,6 +141,16 @@ export default function AudioModeSelector({
         valueName: 'allowsBackgroundRecording',
         disabled: !state.next.allowsRecording,
         value: !state.next.allowsRecording ? false : undefined,
+      })}
+      {renderToggle({
+        title: 'Bluetooth output only (A2DP)',
+        disabled: !state.next.allowsRecording,
+        value: state.next.allowsRecording ? state.next.bluetoothProfile === 'a2dp' : false,
+        onValueChange: (a2dp) =>
+          setState((state) => ({
+            ...state,
+            next: { ...state.next, bluetoothProfile: a2dp ? 'a2dp' : 'hfp' },
+          })),
       })}
       {keepAudioSessionActive !== undefined &&
         onKeepAudioSessionActiveChange &&

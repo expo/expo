@@ -905,14 +905,7 @@ public class AudioModule: Module {
 
 #if !os(tvOS)
       if category == .playAndRecord {
-        if !mode.shouldRouteThroughEarpiece {
-          categoryOptions.insert(.defaultToSpeaker)
-        }
-#if compiler(>=6.2) // Xcode 26
-        categoryOptions.insert(.allowBluetoothHFP)
-#else
-        categoryOptions.insert(.allowBluetooth)
-#endif
+        categoryOptions.formUnion(AudioUtils.playAndRecordOptions(for: mode))
       }
 #endif
 

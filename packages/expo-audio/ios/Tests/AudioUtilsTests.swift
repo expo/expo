@@ -148,3 +148,33 @@ struct GetFileExtensionTests {
     #expect(AudioUtils.getFileExtension(for: "not-a-real/mime-type") == "dat")
   }
 }
+
+#if !os(tvOS)
+@Suite("AudioUtils.playAndRecordOptions")
+struct PlayAndRecordOptionsTests {
+#if compiler(>=6.2)
+  private let allowBluetoothHFP: AVAudioSession.CategoryOptions = .allowBluetoothHFP
+#else
+  private let allowBluetoothHFP: AVAudioSession.CategoryOptions = .allowBluetooth
+#endif
+
+  @Test
+  func `allows Bluetooth HFP by default`() {
+    let options = AudioUtils.playAndRecordOptions(for: AudioMode())
+
+    #expect(options.contains(allowBluetoothHFP))
+    #expect(!options.contains(.allowBluetoothA2DP))
+  }
+
+  @Test
+  func `allows only Bluetooth A2DP for the a2dp profile`() {
+    let mode = AudioMode()
+    mode.bluetoothProfile = .a2dp
+
+    let options = AudioUtils.playAndRecordOptions(for: mode)
+
+    #expect(options.contains(.allowBluetoothA2DP))
+    #expect(!options.contains(allowBluetoothHFP))
+  }
+}
+#endif

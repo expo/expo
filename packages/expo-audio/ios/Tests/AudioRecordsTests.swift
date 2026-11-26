@@ -48,4 +48,12 @@ struct AudioRecordsTests {
 
     #expect(mode.playsInSilentMode == true)
   }
+
+  @Test func `keeps the Bluetooth profile when a partial audio mode omits it`() throws {
+    let current = AudioMode()
+    current.bluetoothProfile = .a2dp
+    let partial = try PartialAudioMode(from: ["allowsRecording": true], appContext: AppContext())
+
+    #expect(partial.merged(into: current).bluetoothProfile == .a2dp)
+  }
 }

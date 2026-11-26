@@ -7,6 +7,7 @@ struct AudioMode: Record {
   @Field var shouldPlayInBackground: Bool = false
   @Field var shouldRouteThroughEarpiece: Bool = false
   @Field var allowsBackgroundRecording: Bool = false
+  @Field var bluetoothProfile: BluetoothProfile = .hfp
 }
 
 struct PartialAudioMode: Record {
@@ -16,6 +17,7 @@ struct PartialAudioMode: Record {
   @Field var shouldPlayInBackground: Bool?
   @Field var shouldRouteThroughEarpiece: Bool?
   @Field var allowsBackgroundRecording: Bool?
+  @Field var bluetoothProfile: BluetoothProfile?
 
   // `AudioMode` fields are reference types, so build a new mode instead of mutating `current`.
   func merged(into current: AudioMode) -> AudioMode {
@@ -26,6 +28,7 @@ struct PartialAudioMode: Record {
     mode.shouldPlayInBackground = shouldPlayInBackground ?? current.shouldPlayInBackground
     mode.shouldRouteThroughEarpiece = shouldRouteThroughEarpiece ?? current.shouldRouteThroughEarpiece
     mode.allowsBackgroundRecording = allowsBackgroundRecording ?? current.allowsBackgroundRecording
+    mode.bluetoothProfile = bluetoothProfile ?? current.bluetoothProfile
     return mode
   }
 }
@@ -43,6 +46,11 @@ enum InterruptionMode: String, Enumerable {
   var shouldNotifyOthersOnDeactivation: Bool {
     self != .doNotMixPersistent
   }
+}
+
+enum BluetoothProfile: String, Enumerable {
+  case hfp
+  case a2dp
 }
 
 enum LoopMode: String, Enumerable {
