@@ -23,7 +23,7 @@
             "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation"],
-          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
+          "resources": [{ "path": "ios/EASClient/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }
