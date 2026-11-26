@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import { Platform, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { alpha } from '../../../utils/color';
 import { PlatformPressable, Text } from '../../elements';
@@ -131,8 +131,8 @@ export function DrawerItem(props: Props) {
         onPress={onPress}
         role="button"
         aria-label={accessibilityLabel}
-        aria-current={Platform.OS === 'web' ? (focused ? 'page' : undefined) : undefined}
-        aria-selected={Platform.OS === 'web' ? undefined : focused}
+        aria-current={process.env.EXPO_OS === 'web' ? (focused ? 'page' : undefined) : undefined}
+        aria-selected={process.env.EXPO_OS === 'web' ? undefined : focused}
         pressColor={pressColor}
         pressOpacity={pressOpacity}
         hoverEffect={{ color }}
