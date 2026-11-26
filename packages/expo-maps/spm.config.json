@@ -17,6 +17,7 @@
         {
           "type": "swift",
           "name": "ExpoMaps",
+          "path": "ios/ExpoMaps",
           "dependencies": [
             "Hermes",
             "React",

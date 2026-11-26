@@ -21,8 +21,7 @@ let package = Package(
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
-      path: "ios",
-      exclude: ["ExpoMaps.podspec", "Tests"]
+      path: "ios/ExpoMaps"
     )
   ],
   swiftLanguageModes: [.v5]
