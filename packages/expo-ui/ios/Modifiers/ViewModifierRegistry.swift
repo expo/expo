@@ -1532,8 +1532,8 @@ public class ViewModifierRegistry {
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
 
   internal enum Registration {
-    case type(any (ViewModifier & Record).Type)
-    case eventDispatchingType(any (EventDispatchingViewModifier & Record).Type)
+    case type(() -> any (ViewModifier & Record).Type)
+    case eventDispatchingType(() -> any (EventDispatchingViewModifier & Record).Type)
     case factory(ModifierFactory)
   }
   private(set) internal var registrations: [String: Registration] = [:]
@@ -1594,15 +1594,19 @@ public class ViewModifierRegistry {
 
   /**
    * Registers a new modifier type with the given type name.
+   * The type is an autoclosure, so the Swift runtime creates the witness tables of the modifier type when
+   * a view first uses it, not for all built-in modifiers when the registry starts. Keep this overload non-generic:
+   * a generic function gets the witness tables from its caller, so the caller creates them at registration.
    */
-  internal func register<Modifier: ViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+  internal func register(_ type: String, _ modifierType: @autoclosure @escaping () -> any (ViewModifier & Record).Type) {
     register(type, .type(modifierType))
   }
 
   /**
    * Registers a new modifier type that sends events with the given type name.
+   * The type is an autoclosure for the same reason as in the overload above.
    */
-  internal func register<Modifier: EventDispatchingViewModifier & Record>(_ type: String, _ modifierType: Modifier.Type) {
+  internal func register(_ type: String, _ modifierType: @autoclosure @escaping () -> any (EventDispatchingViewModifier & Record).Type) {
     register(type, .eventDispatchingType(modifierType))
   }
 
@@ -1632,9 +1636,9 @@ public class ViewModifierRegistry {
   ) throws -> (any ViewModifier)? {
     switch registrations[type] {
     case .type(let modifierType):
-      return try modifierType.from(dictionary: params, appContext: appContext)
+      return try modifierType().from(dictionary: params, appContext: appContext)
     case .eventDispatchingType(let modifierType):
-      var modifier = try modifierType.from(dictionary: params, appContext: appContext)
+      var modifier = try modifierType().from(dictionary: params, appContext: appContext)
       modifier.eventDispatcher = eventDispatcher
       return modifier
     case .factory(let factory):
