@@ -16,6 +16,7 @@
         {
           "type": "swift",
           "name": "ExpoCrypto",
+          "path": "ios/ExpoCrypto",
           "dependencies": [
             "Hermes",
             "React",
