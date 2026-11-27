@@ -2,4 +2,4 @@
 'expo-modules-jsi': patch
 ---
 
-[iOS] Speed up integer, `BigInt`, and `Optional` decoding and safe-integer encoding by inlining common numeric paths, reading `BigInt` values without cloning handles, and combining tag/value checks across the module boundary.
+[iOS] Reduce the overhead of converting the integer and optional arguments of `@JS` functions, including `BigInt` arguments, and of returning `Int` and `UInt` values.

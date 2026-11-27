@@ -619,8 +619,9 @@ extension UInt64: JavaScriptCodable {
 // The numeric decode and safe-integer encode entry points are `@inlinable` so client modules can
 // inline the common `number` fast path without a cross-module call. The decode overloads spell out
 // `Int8(exactly:)`..`UInt64(exactly:)` concretely rather than delegating to an `@inlinable` generic
-// helper, because calling `T(exactly:)` through a generic `FixedWidthInteger` parameter fails to
-// specialize across the module boundary and falls back to witness-table dispatch. The non-number
+// helper: on a generic `FixedWidthInteger` parameter, `T(exactly:)` binds to the generic
+// `BinaryFloatingPoint` initializer, which runs `_convert(from:)` even when fully specialized, while
+// the concrete `init?(exactly: Double)` is a range check and one `fptosi`. The non-number
 // fallback (`decodeWideIntegerNonNumber`) stays `@usableFromInline` and non-generic so the cold
 // BigInt and error path stays out of line in the framework, specialized per integer type.
 
@@ -880,6 +881,20 @@ func safeIntegerNumber(_ value: UInt) throws -> Double {
 
 // MARK: - Generic integer conversions
 
+@JavaScriptActor
+private func bigIntExactly<T: FixedWidthInteger>(
+  _ value: borrowing facebook.jsi.Value,
+  in runtime: facebook.jsi.IRuntime,
+  as type: T.Type
+) -> T? {
+  if T.isSigned {
+    var int64Value: Int64 = 0
+    return expo.getBigIntInt64(runtime, value, &int64Value) ? T(exactly: int64Value) : nil
+  }
+  var uint64Value: UInt64 = 0
+  return expo.getBigIntUint64(runtime, value, &uint64Value) ? T(exactly: uint64Value) : nil
+}
+
 /// Decodes a non-number value into a 64-bit-wide integer. Reads a `bigint` straight from the
 /// underlying `jsi::Value` without cloning its handle; anything else throws `TypeError`.
 @JavaScriptActor
@@ -890,16 +905,8 @@ func genericDecodeWideNonNumber<T: FixedWidthInteger>(_ value: borrowing JavaScr
   guard let jsiRuntime = value.jsiRuntime else {
     FatalError.runtimeLost()
   }
-  if T.isSigned {
-    var int64Value: Int64 = 0
-    if expo.getBigIntInt64(jsiRuntime, value.pointee, &int64Value), let result = T(exactly: int64Value) {
-      return result
-    }
-  } else {
-    var uint64Value: UInt64 = 0
-    if expo.getBigIntUint64(jsiRuntime, value.pointee, &uint64Value), let result = T(exactly: uint64Value) {
-      return result
-    }
+  if let result = bigIntExactly(value.pointee, in: jsiRuntime, as: T.self) {
+    return result
   }
   throw BigIntOutOfRangeException(value: (try? value.getBigInt().toString()) ?? "<bigint>", type: "\(T.self)")
 }
@@ -914,16 +921,8 @@ func genericDecodeWideNonNumber<T: FixedWidthInteger>(
   guard value.pointer.pointee.isBigInt() else {
     throw JavaScriptValue.TypeError(type: Double.self)
   }
-  if T.isSigned {
-    var int64Value: Int64 = 0
-    if expo.getBigIntInt64(value.runtime, value.pointer.pointee, &int64Value), let result = T(exactly: int64Value) {
-      return result
-    }
-  } else {
-    var uint64Value: UInt64 = 0
-    if expo.getBigIntUint64(value.runtime, value.pointer.pointee, &uint64Value), let result = T(exactly: uint64Value) {
-      return result
-    }
+  if let result = bigIntExactly(value.pointer.pointee, in: value.runtime, as: T.self) {
+    return result
   }
   throw BigIntOutOfRangeException(
     value: (try? value.getBigInt(in: runtime).toString()) ?? "<bigint>",
