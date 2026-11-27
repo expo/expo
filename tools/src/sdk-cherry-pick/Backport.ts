@@ -14,6 +14,8 @@ export type BackportOptions = {
   prNumber: number;
   sdkVersion: number;
   mergeSha: string;
+  /** The base branch that GitHub reports for the pull request. */
+  baseBranch: string;
   /** The login of the pull request author, whom the `CHANGELOG.md` entries credit. */
   author: string;
   /**
@@ -212,8 +214,12 @@ git cherry-pick -x ${mergeSha}`;
     let base = await fetchTargetAsync();
     // Each pull request of a merged stack gets its own run, and the runs finish in any order. A
     // commit that lands before the commits below it can apply cleanly and still not compile.
+    // Only an upper pull request of a stack has a base other than `main`. The bot token could not
+    // make the stack read.
+    const stackBelow =
+      options.baseBranch === 'main' ? [] : await github.readStackBelowAsync(prNumber);
     const blockers: string[] = [];
-    for (const entry of await github.readStackBelowAsync(prNumber)) {
+    for (const entry of stackBelow) {
       if (!entry.mergeSha || !entry.mergedAt) {
         blockers.push(`#${entry.number} is not merged.`);
       } else if (
