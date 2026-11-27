@@ -3,11 +3,11 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { useRouteNode, useContextKey } from '../Route';
+import { LocalRouteParamsContext, useRouteNode, useContextKey } from '../Route';
 import { useComponent } from '../fork/useComponent';
-import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
+import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
@@ -165,7 +165,8 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
   const linking = use(LinkingContext).options;
-  const routeInfo = useRouteInfo();
+  const localParams = use(LocalRouteParamsContext);
+  const { params: previewParams, segments: previewSegments } = usePreviewInfo();
 
   if (!routeNode || !linking) {
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
@@ -179,8 +180,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     routeNode,
     linking,
     parentTriggerMap,
-    routeInfo,
-    contextKey
+    // Route params are string values at this boundary, even though the context accepts any object.
+    (previewParams ?? localParams ?? {}) as Record<string, string | string[] | undefined>,
+    contextKey,
+    previewSegments
   );
 
   const navigatorContext = useNavigationBuilder<
