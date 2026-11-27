@@ -312,11 +312,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
     onComposableChildrenChanged()
   }
 
-  /**
-   * Called when the children to compose change. It is not called while a removed child is
-   * still animating out, so the old content stays on screen until the transition ends.
-   * Subclasses that keep their own child state (e.g. a child count) update it here.
-   */
+  // Called when children change, but not while a removed child is still animating out.
   protected open fun onComposableChildrenChanged() {
     recomposeScope?.invalidate()
   }
