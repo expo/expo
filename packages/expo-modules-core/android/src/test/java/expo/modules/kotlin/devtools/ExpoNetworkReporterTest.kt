@@ -28,6 +28,10 @@ private class RecordingSink : ExpoNetworkReporter.Sink {
     events.add("start $requestId ${request.method} ${request.url}")
   }
 
+  override fun willFollowRedirect(requestId: String, request: Request, redirectResponse: Response) {
+    events.add("redirect $requestId ${request.method} ${request.url} from ${redirectResponse.code} ${redirectResponse.request.url}")
+  }
+
   override fun didReceiveResponse(requestId: String, response: Response) {
     events.add("response $requestId ${response.code}")
   }
@@ -202,5 +206,34 @@ class ExpoNetworkReporterTest {
 
     Truth.assertThat(ExpoNetworkReporter.requestBodyPreview(unknownLength)).isEmpty()
     Truth.assertThat(ExpoNetworkReporter.requestBodyPreview(unwritable)).isEmpty()
+  }
+
+  @Test
+  fun `reports each redirect a request follows`() {
+    MockWebServer().use { server ->
+      server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/next"))
+      server.enqueue(MockResponse().setResponseCode(301).setHeader("Location", "/final"))
+      server.enqueue(MockResponse().setBody("done"))
+      val reporter = ExpoNetworkReporter(sink)
+      val client = OkHttpClient.Builder()
+        .addInterceptor(reporter)
+        .addNetworkInterceptor(reporter.redirectInterceptor)
+        .build()
+      val request = Request.Builder()
+        .url(server.url("/start"))
+        .tag(DevToolsRequestId::class.java, DevToolsRequestId("js-3"))
+        .build()
+
+      client.newCall(request).execute().use { it.body?.string() }
+
+      Truth.assertThat(sink.events).containsExactly(
+        "start js-3 GET ${server.url("/start")}",
+        "redirect js-3 GET ${server.url("/next")} from 302 ${server.url("/start")}",
+        "redirect js-3 GET ${server.url("/final")} from 301 ${server.url("/next")}",
+        "response js-3 200",
+        "data js-3 4",
+        "end js-3 4"
+      ).inOrder()
+    }
   }
 }
