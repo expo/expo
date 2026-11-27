@@ -196,7 +196,7 @@ async function readAsync<TJSONObject extends JSONObject>(
       return defaultValue;
     }
   }
-  return parseJsonString(json, options);
+  return parseJsonString(json, options, file);
 }
 
 function parseJsonString<TJSONObject extends JSONObject>(
