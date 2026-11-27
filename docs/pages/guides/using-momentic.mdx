@@ -202,7 +202,7 @@ jobs:
             --channel eas --tag "$BUILD_ID" --upload-results -y
 ```
 
-Momentic needs Node.js 22.12.0 or later. The Android test job also needs the Android SDK platform-tools with `ANDROID_HOME` set, because the Momentic CLI connects to the remote emulator through adb. See [Momentic's Android app setup](https://momentic.ai/docs/platforms/android/app-setup).
+Momentic needs Node.js 22.12.0 or later. The Momentic CLI connects to the remote emulator through Android Debug Bridge (`adb`), so the Android test job needs `ANDROID_HOME`. Expo Workflows workers set it for you. See [Momentic's Android app setup](https://momentic.ai/docs/platforms/android/app-setup).
 
 To start the workflow without a push, run:
 
@@ -316,6 +316,8 @@ jobs:
             --channel eas \
             --tag "$BUILD_ID"
 ```
+
+If you use the [fingerprint and repack jobs](#skip-native-builds-with-fingerprint-and-repack), replace `needs` with `after: [repack_android, build_android, test_android]`, and take `BUILD_ID` from `after.repack_android.outputs.build_id || after.build_android.outputs.build_id`, as `test_android` does.
 
 `qa start` prints a link to the session. Mo keeps testing in the cloud. The report is in your Momentic dashboard. To fix what Mo found with a coding agent, export the report with `qa report <session-id>` and give it to the agent. See [Mo's coding agent loop](https://momentic.ai/docs/mo/cli#export-the-report).
 
