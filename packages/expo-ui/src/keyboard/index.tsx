@@ -9,7 +9,7 @@ import {
   type Ref,
   type RefObject,
 } from 'react';
-import type { ReactNativeElement } from 'react-native';
+import type { HostInstance } from 'react-native';
 
 import { useMergeRefs } from '../utils/useMergeRefs';
 import { attachHostController, detachHostController } from './interop';
@@ -40,7 +40,7 @@ type HostEntry = {
 
 /** The wrapper component that `requireNativeView` returns. */
 type NativeViewWrapper = {
-  getNativeRef?: () => ReactNativeElement | null;
+  getNativeRef?: () => HostInstance | null;
 };
 
 /** The subset of a field's imperative handle a host needs. */
@@ -52,7 +52,7 @@ type TextInputHandle = {
 // Weak so a host whose fields never unregister cannot outlive its view tree.
 // Entries are still removed explicitly, since unregistering from React Native
 // matters for correctness, not only for memory.
-const hosts = new WeakMap<ReactNativeElement, HostEntry>();
+const hosts = new WeakMap<HostInstance, HostEntry>();
 
 const HostInstanceContext = createContext<RefObject<NativeViewWrapper | null> | null>(null);
 
@@ -79,7 +79,7 @@ export function TextInputHostProvider({
   return <HostInstanceContext.Provider value={hostRef}>{children}</HostInstanceContext.Provider>;
 }
 
-function addField(instance: ReactNativeElement, field: HostedField) {
+function addField(instance: HostInstance, field: HostedField) {
   let entry = hosts.get(instance);
   if (!entry) {
     entry = { mounted: new Set(), focused: new Set(), lastFocused: null };
@@ -94,7 +94,7 @@ function addField(instance: ReactNativeElement, field: HostedField) {
   entry.mounted.add(field);
 }
 
-function removeField(instance: ReactNativeElement, field: HostedField) {
+function removeField(instance: HostInstance, field: HostedField) {
   const entry = hosts.get(instance);
   if (!entry) {
     return;
@@ -117,7 +117,7 @@ function removeField(instance: ReactNativeElement, field: HostedField) {
   }
 }
 
-function setFieldFocused(instance: ReactNativeElement, field: HostedField, focused: boolean) {
+function setFieldFocused(instance: HostInstance, field: HostedField, focused: boolean) {
   const entry = hosts.get(instance);
   if (!entry) {
     return;
@@ -156,7 +156,7 @@ export function useHostedTextInput<T extends TextInputHandle>(
 ) {
   const hostRef = useContext(HostInstanceContext);
   const nativeRef = useRef<T | null>(null);
-  const hostInstance = useRef<ReactNativeElement | null>(null);
+  const hostInstance = useRef<HostInstance | null>(null);
   // An `autoFocus` field can report focus before its registration effect runs.
   const focusBeforeRegistered = useRef<boolean | null>(null);
   // Last focus state this field reported, so unmount only blurs a field that holds focus.
