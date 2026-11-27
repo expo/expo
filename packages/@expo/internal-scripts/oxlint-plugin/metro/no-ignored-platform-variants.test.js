@@ -75,6 +75,7 @@ const exportsPath = path.join('node_modules', 'exact-export', 'src');
 new RuleTester({ cwd }).run('metro/no-ignored-platform-variants', rule, {
   valid: [
     { filename, code: `import './Image';` },
+    { filename, code: `import './Image.tsx';` },
     { filename, code: `import 'barrel-export';` },
     { filename, code: `import 'condition-export';` },
     { filename, code: `import 'platform-main';` },
@@ -128,16 +129,6 @@ new RuleTester({ cwd }).run('metro/no-ignored-platform-variants', rule, {
             name: 'index',
             variants: '"index.native.js"',
           },
-        },
-      ],
-    },
-    {
-      filename,
-      code: `import './Image.tsx';`,
-      errors: [
-        {
-          messageId: 'fileExtension',
-          data: { specifier: './Image.tsx', variants: '"Image.web.tsx"' },
         },
       ],
     },

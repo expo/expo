@@ -246,13 +246,11 @@ export default {
     type: 'problem',
     docs: {
       description:
-        'Disallow imports that Metro resolves to an exact file when that file has a platform-specific variant.',
+        'Disallow package imports that Metro resolves to an exact file when that file has a platform-specific variant.',
     },
     messages: {
       ignoredVariant:
         'Metro resolves "{{specifier}}" to "{{resolved}}" and ignores {{variants}}. For an exact file path, Metro does not select platform files. Make the specifier resolve to a file that imports "./{{name}}" without a file extension.',
-      fileExtension:
-        '"{{specifier}}" has a file extension, so Metro ignores {{variants}}. Remove the file extension.',
     },
     schema: [],
   },
@@ -265,12 +263,7 @@ export default {
         return;
       }
       const specifier = source.value;
-      if (isBuiltin(specifier)) {
-        return;
-      }
-      const isPath = isRelativeOrAbsolute(specifier);
-      // Metro adds the platform to a relative specifier that has no source file extension.
-      if (isPath && !SOURCE_EXT_SET.has(path.extname(specifier).slice(1))) {
+      if (isBuiltin(specifier) || isRelativeOrAbsolute(specifier)) {
         return;
       }
       for (const { resolved, name, variants } of findIgnoredVariants(
@@ -280,7 +273,7 @@ export default {
       )) {
         context.report({
           node: source,
-          messageId: isPath ? 'fileExtension' : 'ignoredVariant',
+          messageId: 'ignoredVariant',
           data: {
             specifier,
             resolved: path.relative(context.cwd, resolved),
