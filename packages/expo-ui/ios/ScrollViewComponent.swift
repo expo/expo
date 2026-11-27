@@ -3,27 +3,25 @@
 import SwiftUI
 import ExpoModulesCore
 
-public final class ScrollViewComponentProps: UIBaseViewProps {
-  @Field var axes: AxisOptions = .vertical
-  @Field var showsIndicators: Bool = true
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct ScrollViewComponentProps {
+  var axes: AxisOptions = .vertical
+  var showsIndicators: Bool = true
 }
 
-public struct ScrollViewComponent: ExpoSwiftUI.View {
-  @ObservedObject public var props: ScrollViewComponentProps
+@ExpoView<ScrollViewComponentProps>
+public struct ScrollViewComponent: View {
   // A fraction on this view is a real size only when the parent opted in.
-  @Environment(\.resolvesOwnPercentage) private var resolvesOwnPercentage
-
-  public init(props: ScrollViewComponentProps) {
-    self.props = props
-  }
+  @Environment(\.universalPercentageParent) private var resolvesOwnPercentage
 
   public var body: some View {
     ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
-      Children()
+      children
     }
     // The cross axis resolves a child percentage against the viewport.
     // The scroll axis stays unbounded, so a percentage on that axis does not.
     .environment(\.universalPercentageParent, resolvesChildPercentages)
+    .applyExpoUIViewProps(props.base, appContext: appContext)
   }
 
   /// A vertical scroll view fills the width it is offered.
@@ -34,7 +32,7 @@ public struct ScrollViewComponent: ExpoSwiftUI.View {
     case .vertical:
       return true
     case .horizontal:
-      let dimensions = universalLayoutDimensions(from: props.modifiers)
+      let dimensions = universalLayoutDimensions(from: props.base.modifiers?.modifiers)
       return dimensions.heightPoints != nil || (dimensions.heightFraction != nil && resolvesOwnPercentage)
     case .both:
       return false

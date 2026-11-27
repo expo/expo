@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 import { useCallback } from 'react';
 import { type NativeSyntheticEvent, processColor } from 'react-native';
 
@@ -26,12 +26,14 @@ export interface ColorPickerProps extends CommonViewModifierProps {
 
 type onSelectionChangeEvent = NativeSyntheticEvent<{ value: string }>;
 
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
 const ColorPickerNativeView: React.ComponentType<
   Omit<ColorPickerProps, 'selection' | 'onSelectionChange'> & {
     selection: ReturnType<typeof processColor>;
     onSelectionChange: (event: onSelectionChangeEvent) => void;
   }
-> = requireNativeView('ExpoUI', 'ColorPickerView');
+> = requireOptionalNative('@expo/ui')?.ColorPickerView;
 
 /**
  * Renders a `ColorPicker` component using SwiftUI.

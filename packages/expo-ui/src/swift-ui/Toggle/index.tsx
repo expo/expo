@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -34,10 +34,10 @@ type NativeToggleProps = Omit<ToggleProps, 'onIsOnChange'> & {
   onIsOnChange: (event: NativeSyntheticEvent<{ isOn: boolean }>) => void;
 };
 
-const ToggleNativeView: React.ComponentType<NativeToggleProps> = requireNativeView(
-  'ExpoUI',
-  'ToggleView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const ToggleNativeView: React.ComponentType<NativeToggleProps> =
+  requireOptionalNative('@expo/ui')?.ToggleView;
 
 /**
  * A control that toggles between on and off states.

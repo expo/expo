@@ -5,6 +5,8 @@ const nativeModuleStubs: Record<string, any> = { ExpoUI };
 // The objects of `expo.packages`. List each view that `@expo/ui` registers for its package (a public `@ExpoView`).
 const nativePackageStubs: Record<string, Record<string, any>> = {
   '@expo/ui': {
+    ColorPickerView: createViewStub('ColorPickerView'),
+    ConcentricRectangleView: createViewStub('ConcentricRectangleView'),
     FormView: createViewStub('FormView'),
     GlassEffectContainerView: createViewStub('GlassEffectContainerView'),
     GridRowView: createViewStub('GridRowView'),
@@ -15,7 +17,9 @@ const nativePackageStubs: Record<string, Record<string, any>> = {
     ListView: createViewStub('ListView'),
     NamespaceView: createViewStub('NamespaceView'),
     NavigationLinkView: createViewStub('NavigationLinkView'),
+    ScrollViewComponent: createViewStub('ScrollViewComponent'),
     StepperView: createViewStub('StepperView'),
+    ToggleView: createViewStub('ToggleView'),
   },
 };
 

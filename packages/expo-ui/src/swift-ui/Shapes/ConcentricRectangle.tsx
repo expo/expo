@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
@@ -35,8 +35,10 @@ export const EdgeCornerStyle = {
   }),
 };
 
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
 const ConcentricRectangleNativeView: React.ComponentType<ConcentricRectangleProps> =
-  requireNativeView('ExpoUI', 'ConcentricRectangleView');
+  requireOptionalNative('@expo/ui')?.ConcentricRectangleView;
 
 export function ConcentricRectangle(props: ConcentricRectangleProps) {
   const { modifiers, ...restProps } = props;

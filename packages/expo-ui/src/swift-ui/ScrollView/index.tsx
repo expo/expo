@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -44,10 +44,10 @@ export interface ScrollViewProps extends CommonViewModifierProps {
   showsIndicators?: boolean;
 }
 
-const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeView(
-  'ExpoUI',
-  'ScrollViewComponent'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const ScrollViewNativeView: React.ComponentType<ScrollViewProps> =
+  requireOptionalNative('@expo/ui')?.ScrollViewComponent;
 
 /**
  * SwiftUI `ScrollView` wrapper. To control scroll position, pair this with the

@@ -8,30 +8,28 @@ internal enum EdgeCornerStyleType: String, Enumerable {
   case fixed
 }
 
-internal struct CornerStyleConfig: Record {
-  @Field var type: EdgeCornerStyleType = .concentric
-  @Field var radius: CGFloat?
-  @Field var minimumRadius: CGFloat?
+@Record
+internal struct CornerStyleConfig {
+  var type: EdgeCornerStyleType = .concentric
+  var radius: CGFloat?
+  var minimumRadius: CGFloat?
 }
 
-internal struct ConcentricRectangleCornerParams: Record {
-  @Field var topLeadingCorner: CornerStyleConfig?
-  @Field var topTrailingCorner: CornerStyleConfig?
-  @Field var bottomLeadingCorner: CornerStyleConfig?
-  @Field var bottomTrailingCorner: CornerStyleConfig?
+@Record
+internal struct ConcentricRectangleCornerParams {
+  var topLeadingCorner: CornerStyleConfig?
+  var topTrailingCorner: CornerStyleConfig?
+  var bottomLeadingCorner: CornerStyleConfig?
+  var bottomTrailingCorner: CornerStyleConfig?
 }
 
-public final class ConcentricRectangleViewProps: UIBaseViewProps {
-  @Field var corners: ConcentricRectangleCornerParams?
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct ConcentricRectangleViewProps {
+  var corners: ConcentricRectangleCornerParams?
 }
 
-public struct ConcentricRectangleView: ExpoSwiftUI.View {
-  @ObservedObject public var props: ConcentricRectangleViewProps
-
-  public init(props: ConcentricRectangleViewProps) {
-    self.props = props
-  }
-
+@ExpoView<ConcentricRectangleViewProps>
+public struct ConcentricRectangleView: View {
 #if compiler(>=6.2) // Xcode 26
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func cornerStyle(from config: CornerStyleConfig?) -> Edge.Corner.Style {
@@ -56,6 +54,11 @@ public struct ConcentricRectangleView: ExpoSwiftUI.View {
 #endif
 
   public var body: some View {
+    shape.applyExpoUIViewProps(props.base, appContext: appContext)
+  }
+
+  @ViewBuilder
+  private var shape: some View {
 #if compiler(>=6.2) // Xcode 26
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       let topLeadingCorner = cornerStyle(from: props.corners?.topLeadingCorner)
