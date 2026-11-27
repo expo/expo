@@ -46,7 +46,7 @@ internal func decodeJavaScriptUint8Array(
     )
     var result = Data()
     let matched = withUnsafeMutablePointer(to: &result) { resultPtr in
-      expo.withUint8ArrayBytes(runtime.pointee, value.pointer.pointee, UnsafeMutableRawPointer(resultPtr)) {
+      expo.withUint8ArrayBytes(value.runtime, value.pointer.pointee, UnsafeMutableRawPointer(resultPtr)) {
         ctx,
         data,
         byteLength in

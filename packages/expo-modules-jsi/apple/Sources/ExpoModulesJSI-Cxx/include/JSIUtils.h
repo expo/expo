@@ -495,14 +495,57 @@ class PointerValueAccess : public jsi::Runtime {
 #endif
 } __attribute__((availability(swift, unavailable)));
 
-inline bool isTypedArrayValue([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Value &value) {
+inline bool isTypedArrayValue([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Value &value) noexcept {
 #if EXPO_JSI_HAS_RN_086
   if (!value.isObject()) {
     return false;
   }
   alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
   const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return runtime.isTypedArray(*object);
+  try {
+    return runtime.isTypedArray(*object);
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
+#else
+  std::abort();
+#endif
+}
+
+/**
+ * Reads `byteLength`, `byteOffset`, and `length` from a TypedArray object using JSI's RN 0.86+
+ * `IRuntime` TypedArray accessors. Only call when `hasNativeTypedArraySupport()` is `true` and
+ * `jsObj` has been verified as a TypedArray.
+ */
+inline TypedArrayProperties getNativeTypedArrayProperties(
+  [[maybe_unused]] jsi::IRuntime &runtime,
+  [[maybe_unused]] const jsi::Object &jsObj
+) {
+#if EXPO_JSI_HAS_RN_086
+  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
+  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(jsObj));
+  return {
+    runtime.byteLength(*ta),
+    runtime.byteOffset(*ta),
+    runtime.length(*ta),
+  };
+#else
+  std::abort();
+#endif
+}
+
+/**
+ * Returns the backing `ArrayBuffer` of a TypedArray using JSI's RN 0.86+ accessor.
+ * Only call when `hasNativeTypedArraySupport()` is `true` and `jsObj` has been verified as a TypedArray.
+ */
+inline jsi::ArrayBuffer getNativeTypedArrayBuffer(
+  [[maybe_unused]] jsi::IRuntime &runtime,
+  [[maybe_unused]] const jsi::Object &jsObj
+) {
+#if EXPO_JSI_HAS_RN_086
+  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
+  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(jsObj));
+  return runtime.buffer(*ta);
 #else
   std::abort();
 #endif
@@ -511,35 +554,40 @@ inline bool isTypedArrayValue([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_u
 /**
  * If `value` is a `Uint8Array` (RN 0.86+), invokes `callback` with its raw data pointer and byte
  * length while keeping its backing `ArrayBuffer` alive, and returns `true`. Otherwise returns `false`
- * without calling `callback`. Avoids handle clones and JS property lookups entirely.
+ * without calling `callback`. Avoids handle clones and JS property lookups on Hermes V1, and catches
+ * `jsi::JSIException` so engines using `jsi::Runtime`'s default fallbacks return `false` safely.
  */
 inline bool withUint8ArrayBytes(
   [[maybe_unused]] jsi::IRuntime &runtime,
   [[maybe_unused]] const jsi::Value &value,
   [[maybe_unused]] void *ctx,
   [[maybe_unused]] void (*callback)(void *_Nonnull ctx, const uint8_t *_Nullable data, size_t byteLength)
-) {
+) noexcept {
 #if EXPO_JSI_HAS_RN_086
   if (!value.isObject()) {
     return false;
   }
   alignas(jsi::Object) unsigned char objStorage[sizeof(jsi::Object)];
   const jsi::Object *object = new (objStorage) jsi::Object(PointerValueAccess::borrowObject(value));
-  if (!runtime.isUint8Array(*object)) {
+  try {
+    if (!runtime.isUint8Array(*object)) {
+      return false;
+    }
+    alignas(jsi::TypedArray) unsigned char taStorage[sizeof(jsi::TypedArray)];
+    const jsi::TypedArray *ta = new (taStorage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(*object));
+    size_t byteLength = runtime.byteLength(*ta);
+    if (byteLength == 0) {
+      callback(ctx, nullptr, 0);
+      return true;
+    }
+    size_t byteOffset = runtime.byteOffset(*ta);
+    jsi::ArrayBuffer buffer = runtime.buffer(*ta);
+    uint8_t *base = buffer.data(runtime);
+    callback(ctx, base != nullptr ? base + byteOffset : nullptr, byteLength);
+    return true;
+  } catch (const jsi::JSIException &) {
     return false;
   }
-  alignas(jsi::TypedArray) unsigned char taStorage[sizeof(jsi::TypedArray)];
-  const jsi::TypedArray *ta = new (taStorage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(*object));
-  size_t byteLength = runtime.byteLength(*ta);
-  if (byteLength == 0) {
-    callback(ctx, nullptr, 0);
-    return true;
-  }
-  size_t byteOffset = runtime.byteOffset(*ta);
-  jsi::ArrayBuffer buffer = runtime.buffer(*ta);
-  uint8_t *base = buffer.data(runtime);
-  callback(ctx, base != nullptr ? base + byteOffset : nullptr, byteLength);
-  return true;
 #else
   std::abort();
 #endif

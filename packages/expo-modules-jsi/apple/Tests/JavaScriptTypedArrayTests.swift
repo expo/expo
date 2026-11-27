@@ -334,13 +334,36 @@ struct JavaScriptTypedArrayTests {
 
   @Test
   func `decoding rejects a value that is not a typed array`() throws {
-    for source in ["new ArrayBuffer(4)", "new DataView(new ArrayBuffer(4))", "[1, 2]", "42"] {
+    for source in [
+      "new ArrayBuffer(4)",
+      "new DataView(new ArrayBuffer(4))",
+      "new Proxy(new Uint8Array(4), {})",
+      "Object.create(Uint8Array.prototype)",
+      "(() => { const r = Proxy.revocable(new Uint8Array(4), {}); r.revoke(); return r.proxy; })()",
+      "[1, 2]",
+      "42",
+    ] {
       let value = try runtime.eval(source)
       #expect(value.isTypedArray() == false)
       #expect(throws: JavaScriptValue.TypeError.self) {
         _ = try JavaScriptTypedArray.decode(value, in: runtime)
       }
     }
+  }
+
+  @Test
+  func `detects kind for TypedArray subclasses`() throws {
+    let bytes = try runtime.eval("(() => { class Bytes extends Uint8Array {} return new Bytes([1, 2, 3]); })()")
+    #expect(bytes.isTypedArray() == true)
+    let decodedBytes = try JavaScriptTypedArray.decode(bytes, in: runtime)
+    #expect(decodedBytes.kind == .Uint8Array)
+    #expect(decodedBytes.length == 3)
+
+    let floats = try runtime.eval("(() => { class Floats extends Float32Array {} return new Floats([1.5, 2.5]); })()")
+    #expect(floats.isTypedArray() == true)
+    let decodedFloats = try JavaScriptTypedArray.decode(floats, in: runtime)
+    #expect(decodedFloats.kind == .Float32Array)
+    #expect(decodedFloats.length == 2)
   }
 
   @Test

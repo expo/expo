@@ -37,22 +37,20 @@ public struct JavaScriptTypedArray: ~Copyable {
     return runtimeHandle === runtime.handle
   }
 
-  /// Returns whether `object` is a TypedArray (excluding `DataView`) using a cached
-  /// `TypedArray` (`Object.getPrototypeOf(Uint8Array)`) `instanceOf` check.
+  /// Returns whether `object` is a supported TypedArray (excluding `DataView`, proxies, and
+  /// prototype-forged objects) using the cached intrinsic `TypedArray.prototype[Symbol.toStringTag]` getter.
   internal static func isTypedArrayFallback(
     _ object: borrowing facebook.jsi.Object,
     in runtime: borrowing JavaScriptRuntime
   ) -> Bool {
     let jsiRuntime = runtime.pointee
     return JavaScriptActor.assumeIsolated {
-      let ctorRef: JavaScriptFunction.Ref? = try? runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayConstructor) {
-        let uint8Array = try runtime.global().getPropertyAsFunction("Uint8Array")
-        let typedArrayProto = uint8Array.asObject().getPrototype()
-        return JavaScriptFunction.Ref(try typedArrayProto.asFunction())
+      guard
+        let getters = try? runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayGetters, { try Getters(in: runtime) })
+      else {
+        return false
       }
-      return ctorRef?.withUnwrappedValue { ctor in
-        return expo.safeInstanceOf(jsiRuntime, object, ctor.pointee)
-      } ?? false
+      return expo.getTypedArrayKind(jsiRuntime, object, getters.toStringTag.pointee) != .Unknown
     }
   }
 
@@ -65,10 +63,19 @@ public struct JavaScriptTypedArray: ~Copyable {
       if expo.isUint8Array(jsiRuntime, object) {
         self.kind = .Uint8Array
       } else {
-        let propNames = runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
-        self.kind = Kind(
-          rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
-        )!
+        precondition(expo.isTypedArray(jsiRuntime, object), "Value is not a typed array")
+        guard
+          let getters = try? runtime.cached(
+            JavaScriptRuntime.CacheKeys.typedArrayGetters,
+            { try Getters(in: runtime) }
+          ),
+          let kind = Kind(
+            rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, getters.toStringTag.pointee).rawValue)
+          )
+        else {
+          preconditionFailure("Value is not a supported typed array")
+        }
+        self.kind = kind
       }
       let props = expo.getNativeTypedArrayProperties(jsiRuntime, object)
       self.byteLength = Int(props.byteLength)
@@ -76,35 +83,64 @@ public struct JavaScriptTypedArray: ~Copyable {
       self.length = Int(props.length)
       self.arrayBuffer = expo.getNativeTypedArrayBuffer(jsiRuntime, object)
     } else {
-      let propNames = runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
-      self.kind = Kind(
-        rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
-      )!
-      self.byteLength = Int(object.getProperty(jsiRuntime, propNames.byteLength).getNumber())
-      self.byteOffset = Int(object.getProperty(jsiRuntime, propNames.byteOffset).getNumber())
-      self.length = Int(object.getProperty(jsiRuntime, propNames.length).getNumber())
-      self.arrayBuffer = expo.getTypedArrayBuffer(jsiRuntime, object, propNames.buffer)
+      guard
+        let getters = try? runtime.cached(
+          JavaScriptRuntime.CacheKeys.typedArrayGetters,
+          { try Getters(in: runtime) }
+        ),
+        let kind = Kind(
+          rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, getters.toStringTag.pointee).rawValue)
+        )
+      else {
+        preconditionFailure("Value is not a supported typed array")
+      }
+      self.kind = kind
+      let props = expo.getFallbackTypedArrayProperties(
+        jsiRuntime,
+        object,
+        getters.byteLength.pointee,
+        getters.byteOffset.pointee,
+        getters.length.pointee
+      )
+      let buffer = expo.getFallbackTypedArrayBuffer(jsiRuntime, object, getters.buffer.pointee)
+      let bufferSize = expo.arrayBufferSize(jsiRuntime, buffer)
+      precondition(
+        props.byteOffset <= bufferSize && props.byteLength <= bufferSize - props.byteOffset,
+        "TypedArray bounds exceed backing ArrayBuffer size"
+      )
+      self.byteLength = Int(props.byteLength)
+      self.byteOffset = Int(props.byteOffset)
+      self.length = Int(props.length)
+      self.arrayBuffer = buffer
     }
     self.pointee = object
   }
 
-  /// The property names the initializer reads. Creating a property name costs about as much as
-  /// reading the property, so they are created once per runtime and kept in its cache.
-  internal final class PropNames {
-    let constructor: facebook.jsi.PropNameID
-    let name: facebook.jsi.PropNameID
-    let byteLength: facebook.jsi.PropNameID
-    let byteOffset: facebook.jsi.PropNameID
-    let length: facebook.jsi.PropNameID
-    let buffer: facebook.jsi.PropNameID
+  /// The intrinsic `TypedArray.prototype` getters, cached once per runtime. Calling them directly
+  /// reads internal slots without running user code or being shadowed by own properties.
+  internal final class Getters {
+    let toStringTag: JavaScriptFunction
+    let byteLength: JavaScriptFunction
+    let byteOffset: JavaScriptFunction
+    let length: JavaScriptFunction
+    let buffer: JavaScriptFunction
 
-    init(_ jsiRuntime: facebook.jsi.IRuntime) {
-      constructor = "constructor".toJSIPropNameID(in: jsiRuntime)
-      name = "name".toJSIPropNameID(in: jsiRuntime)
-      byteLength = "byteLength".toJSIPropNameID(in: jsiRuntime)
-      byteOffset = "byteOffset".toJSIPropNameID(in: jsiRuntime)
-      length = "length".toJSIPropNameID(in: jsiRuntime)
-      buffer = "buffer".toJSIPropNameID(in: jsiRuntime)
+    @JavaScriptActor
+    init(in runtime: borrowing JavaScriptRuntime) throws {
+      let array = try runtime.eval(
+        """
+        (() => {
+          const proto = Object.getPrototypeOf(Uint8Array.prototype);
+          const get = (k) => Object.getOwnPropertyDescriptor(proto, k).get;
+          return [get(Symbol.toStringTag), get('byteLength'), get('byteOffset'), get('length'), get('buffer')];
+        })()
+        """
+      ).getArray()
+      self.toStringTag = try array.getValue(at: 0).asFunction()
+      self.byteLength = try array.getValue(at: 1).asFunction()
+      self.byteOffset = try array.getValue(at: 2).asFunction()
+      self.length = try array.getValue(at: 3).asFunction()
+      self.buffer = try array.getValue(at: 4).asFunction()
     }
   }
 

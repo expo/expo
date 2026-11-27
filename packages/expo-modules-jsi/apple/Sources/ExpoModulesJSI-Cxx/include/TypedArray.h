@@ -15,6 +15,7 @@ namespace expo {
 // Please keep it in-sync with the `EXTypedArrayKind` in Objective-C.
 // We need to maintain two implementations to expose this enum to Swift.
 enum class TypedArrayKind {
+  Unknown = 0,
   Int8Array = 1,
   Int16Array = 2,
   Int32Array = 3,
@@ -28,58 +29,36 @@ enum class TypedArrayKind {
   BigUint64Array = 11,
 };
 
-// Returns whether the JSI runtime supports native TypedArray predicates and accessors (RN 0.86+).
+// Returns whether the JSI headers provide the RN 0.86+ `IRuntime` TypedArray predicates and accessors.
 inline bool hasNativeTypedArraySupport() noexcept {
   return EXPO_JSI_HAS_RN_086 != 0;
 }
 
-bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj);
+bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj) noexcept;
 
-/**
- * Checks `object instanceof ctor` without propagating JSI exceptions across the C++/Swift boundary
- * (for example, when a `Proxy` has a throwing `getPrototypeOf` trap).
- */
-inline bool safeInstanceOf(
-  jsi::IRuntime &runtime,
-  const jsi::Object &object,
-  const jsi::Function &ctor
-) noexcept {
+inline bool isUint8Array([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Object &jsObj) noexcept {
+#if EXPO_JSI_HAS_RN_086
   try {
-    return object.instanceOf(runtime, ctor);
+    return runtime.isUint8Array(jsObj);
   } catch (const jsi::JSIException &) {
     return false;
   }
-}
-
-inline bool isUint8Array([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Object &jsObj) {
-#if EXPO_JSI_HAS_RN_086
-  return runtime.isUint8Array(jsObj);
 #else
   std::abort();
 #endif
 }
 
 /**
- * Returns the `TypedArrayKind` of the given typed-array object, derived from its
- * `constructor.name` (e.g. `Uint8Array`, `Float32Array`). The property names are passed in,
- * so callers can create them once per runtime.
+ * Returns the `TypedArrayKind` of `jsObj` by invoking the intrinsic
+ * `TypedArray.prototype[Symbol.toStringTag]` getter with `jsObj` as `this`. Returns
+ * `TypedArrayKind::Unknown` for non-typed-array objects (including `DataView`, proxies, and
+ * prototype-forged objects) or unsupported kinds, without running user code or throwing.
  */
 TypedArrayKind getTypedArrayKind(
   jsi::IRuntime &runtime,
   const jsi::Object &jsObj,
-  const jsi::PropNameID &constructorPropName,
-  const jsi::PropNameID &namePropName
-);
-
-/**
- * Returns the underlying `ArrayBuffer` backing the given typed-array object.
- * Throws if the object has no attached ArrayBuffer.
- */
-jsi::ArrayBuffer getTypedArrayBuffer(
-  jsi::IRuntime &runtime,
-  const jsi::Object &jsObj,
-  const jsi::PropNameID &bufferPropName
-);
+  const jsi::Function &toStringTagGetter
+) noexcept;
 
 struct TypedArrayProperties {
   size_t byteLength;
@@ -88,22 +67,24 @@ struct TypedArrayProperties {
 };
 
 /**
- * Reads `byteLength`, `byteOffset`, and `length` from a TypedArray object using JSI's native
- * RN 0.86+ `IRuntime` TypedArray accessors (no JS property lookups). Only call when
- * `hasNativeTypedArraySupport()` is `true`.
+ * Reads `byteLength`, `byteOffset`, and `length` by invoking the intrinsic `TypedArray.prototype`
+ * getters so own properties on the JS object cannot shadow the internal slots.
  */
-TypedArrayProperties getNativeTypedArrayProperties(
+TypedArrayProperties getFallbackTypedArrayProperties(
   jsi::IRuntime &runtime,
-  const jsi::Object &jsObj
+  const jsi::Object &jsObj,
+  const jsi::Function &byteLengthGetter,
+  const jsi::Function &byteOffsetGetter,
+  const jsi::Function &lengthGetter
 );
 
 /**
- * Returns the backing `ArrayBuffer` of a TypedArray using JSI's native RN 0.86+ accessor.
- * Only call when `hasNativeTypedArraySupport()` is `true`.
+ * Returns the backing `ArrayBuffer` by invoking the intrinsic `TypedArray.prototype.buffer` getter.
  */
-jsi::ArrayBuffer getNativeTypedArrayBuffer(
+jsi::ArrayBuffer getFallbackTypedArrayBuffer(
   jsi::IRuntime &runtime,
-  const jsi::Object &jsObj
+  const jsi::Object &jsObj,
+  const jsi::Function &bufferGetter
 );
 
 } // namespace expo

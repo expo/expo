@@ -1,8 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#include <cstdlib>
 #include <cstring>
-#include <new>
 #include <stdexcept>
 #include "TypedArray.h"
 
@@ -10,18 +8,7 @@ namespace expo {
 
 namespace {
 
-class TypedArrayPointerAccess : public jsi::Runtime {
- public:
-  TypedArrayPointerAccess() = delete;
-
-#if EXPO_JSI_HAS_RN_086
-  static jsi::TypedArray borrowTypedArray(const jsi::Object &object) noexcept {
-    return make<jsi::TypedArray>(const_cast<PointerValue *>(getPointerValue(object)));
-  }
-#endif
-};
-
-TypedArrayKind getTypedArrayKindForName(const std::string &name) {
+TypedArrayKind getTypedArrayKindForName(const std::string &name) noexcept {
   const char *data = name.data();
   switch (name.size()) {
     case 9:
@@ -74,7 +61,7 @@ TypedArrayKind getTypedArrayKindForName(const std::string &name) {
     default:
       break;
   }
-  throw std::out_of_range("Unknown TypedArray kind: " + name);
+  return TypedArrayKind::Unknown;
 }
 
 } // namespace
@@ -82,82 +69,82 @@ TypedArrayKind getTypedArrayKindForName(const std::string &name) {
 TypedArrayKind getTypedArrayKind(
   jsi::IRuntime &runtime,
   const jsi::Object &jsObj,
-  const jsi::PropNameID &constructorPropName,
-  const jsi::PropNameID &namePropName
-) {
-  auto constructorName = jsObj.getProperty(runtime, constructorPropName)
-                             .asObject(runtime)
-                             .getProperty(runtime, namePropName)
-                             .asString(runtime)
-                             .utf8(runtime);
-  return getTypedArrayKindForName(constructorName);
+  const jsi::Function &toStringTagGetter
+) noexcept {
+  try {
+    jsi::Value tag = toStringTagGetter.callWithThis(runtime, jsObj);
+    if (tag.isString()) {
+      return getTypedArrayKindForName(std::move(tag).getString(runtime).utf8(runtime));
+    }
+  } catch (const jsi::JSIException &) {
+  }
+  return TypedArrayKind::Unknown;
 }
 
-jsi::ArrayBuffer getTypedArrayBuffer(
+TypedArrayProperties getFallbackTypedArrayProperties(
   jsi::IRuntime &runtime,
   const jsi::Object &jsObj,
-  [[maybe_unused]] const jsi::PropNameID &bufferPropName
+  const jsi::Function &byteLengthGetter,
+  const jsi::Function &byteOffsetGetter,
+  const jsi::Function &lengthGetter
 ) {
-#if EXPO_JSI_HAS_RN_086
-  return getNativeTypedArrayBuffer(runtime, jsObj);
-#else
-  auto buffer = jsObj.getProperty(runtime, bufferPropName);
+  return {
+    static_cast<size_t>(byteLengthGetter.callWithThis(runtime, jsObj).getNumber()),
+    static_cast<size_t>(byteOffsetGetter.callWithThis(runtime, jsObj).getNumber()),
+    static_cast<size_t>(lengthGetter.callWithThis(runtime, jsObj).getNumber()),
+  };
+}
+
+jsi::ArrayBuffer getFallbackTypedArrayBuffer(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj,
+  const jsi::Function &bufferGetter
+) {
+  jsi::Value buffer = bufferGetter.callWithThis(runtime, jsObj);
   if (buffer.isObject()) {
-    // Move the handle on rather than cloning it, since `buffer` isn't used afterwards.
-    auto bufferObject = std::move(buffer).getObject(runtime);
+    jsi::Object bufferObject = std::move(buffer).getObject(runtime);
     if (bufferObject.isArrayBuffer(runtime)) {
       return std::move(bufferObject).getArrayBuffer(runtime);
     }
   }
   throw std::runtime_error("no ArrayBuffer attached");
-#endif
 }
 
-TypedArrayProperties getNativeTypedArrayProperties(
-  [[maybe_unused]] jsi::IRuntime &runtime,
-  [[maybe_unused]] const jsi::Object &jsObj
-) {
+bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj) noexcept {
 #if EXPO_JSI_HAS_RN_086
-  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
-  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(TypedArrayPointerAccess::borrowTypedArray(jsObj));
-  return {
-    runtime.byteLength(*ta),
-    runtime.byteOffset(*ta),
-    runtime.length(*ta),
-  };
-#else
-  std::abort();
-#endif
-}
-
-jsi::ArrayBuffer getNativeTypedArrayBuffer(
-  [[maybe_unused]] jsi::IRuntime &runtime,
-  [[maybe_unused]] const jsi::Object &jsObj
-) {
-#if EXPO_JSI_HAS_RN_086
-  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
-  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(TypedArrayPointerAccess::borrowTypedArray(jsObj));
-  return runtime.buffer(*ta);
-#else
-  std::abort();
-#endif
-}
-
-bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj) {
-#if EXPO_JSI_HAS_RN_086
-  return runtime.isTypedArray(jsObj);
+  try {
+    return runtime.isTypedArray(jsObj);
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
 #else
   try {
-    jsi::Object uint8Array = runtime.global().getPropertyAsObject(runtime, "Uint8Array");
-    jsi::Value typedArrayProto = uint8Array.getPrototype(runtime);
+    jsi::Object objectCtor = runtime.global().getPropertyAsObject(runtime, "Object");
+    jsi::Object uint8Proto = runtime.global()
+      .getPropertyAsObject(runtime, "Uint8Array")
+      .getPropertyAsObject(runtime, "prototype");
+    jsi::Value typedArrayProto = uint8Proto.getPrototype(runtime);
     if (!typedArrayProto.isObject()) {
       return false;
     }
-    jsi::Object typedArrayCtor = std::move(typedArrayProto).getObject(runtime);
-    if (!typedArrayCtor.isFunction(runtime)) {
+    jsi::Value toStringTag = runtime.global()
+      .getPropertyAsObject(runtime, "Symbol")
+      .getProperty(runtime, "toStringTag");
+    jsi::Value descriptor = objectCtor
+      .getPropertyAsFunction(runtime, "getOwnPropertyDescriptor")
+      .callWithThis(runtime, objectCtor, std::move(typedArrayProto), toStringTag);
+    if (!descriptor.isObject()) {
       return false;
     }
-    return jsObj.instanceOf(runtime, std::move(typedArrayCtor).getFunction(runtime));
+    jsi::Value getterVal = std::move(descriptor).getObject(runtime).getProperty(runtime, "get");
+    if (!getterVal.isObject()) {
+      return false;
+    }
+    jsi::Object getterObj = std::move(getterVal).getObject(runtime);
+    if (!getterObj.isFunction(runtime)) {
+      return false;
+    }
+    return getTypedArrayKind(runtime, jsObj, std::move(getterObj).getFunction(runtime)) != TypedArrayKind::Unknown;
   } catch (const jsi::JSIException &) {
     return false;
   }

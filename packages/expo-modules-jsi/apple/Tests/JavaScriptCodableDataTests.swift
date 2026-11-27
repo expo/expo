@@ -79,18 +79,37 @@ struct JavaScriptCodableDataTests {
     #expect(Array(unownedDecoded) == [20, 30, 40])
   }
 
+  @Test
+  func `decodes Data from a Uint8Array subclass and ignores shadowed byteLength`() throws {
+    let subclass = try runtime.eval("(() => { class Bytes extends Uint8Array {} return new Bytes([7, 8, 9]); })()")
+    #expect(Array(try Data.decode(subclass, in: runtime)) == [7, 8, 9])
+
+    let shadowed = try runtime.eval(
+      """
+      (() => {
+        const u8 = new Uint8Array([1, 2, 3, 4]);
+        Object.defineProperty(u8, 'byteLength', { value: 1 << 30 });
+        return u8;
+      })()
+      """
+    )
+    #expect(Array(try Data.decode(shadowed, in: runtime)) == [1, 2, 3, 4])
+  }
+
   // MARK: - Error paths
 
   @Test
   func `Data decode throws on a non-Uint8Array`() throws {
-    #expect(throws: DataNotUint8ArrayException.self) {
-      _ = try Data.decode(runtime.eval("[1, 2, 3]"), in: runtime)
-    }
-    #expect(throws: DataNotUint8ArrayException.self) {
-      _ = try Data.decode(runtime.eval("new Float64Array([1, 2])"), in: runtime)
-    }
-    #expect(throws: DataNotUint8ArrayException.self) {
-      _ = try Data.decode(runtime.eval("new DataView(new ArrayBuffer(4))"), in: runtime)
+    for source in [
+      "[1, 2, 3]",
+      "new Float64Array([1, 2])",
+      "new DataView(new ArrayBuffer(4))",
+      "new Proxy(new Uint8Array(4), {})",
+      "Object.create(Uint8Array.prototype)",
+    ] {
+      #expect(throws: DataNotUint8ArrayException.self) {
+        _ = try Data.decode(runtime.eval(source), in: runtime)
+      }
     }
   }
 }
