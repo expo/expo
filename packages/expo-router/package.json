@@ -303,7 +303,6 @@
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
     "expo-status-bar": "workspace:^",
-    "nanoid": "^3.3.18",
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.12",

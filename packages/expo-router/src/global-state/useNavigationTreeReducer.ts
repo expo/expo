@@ -1,6 +1,5 @@
 'use client';
 
-import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 
 import type { RouteNode } from '../Route';
@@ -15,6 +14,7 @@ import type {
   RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
+import { nanoid } from '../utils/nanoid';
 import useLatestCallback from '../utils/useLatestCallback';
 import {
   applyRouterHistoryAction,

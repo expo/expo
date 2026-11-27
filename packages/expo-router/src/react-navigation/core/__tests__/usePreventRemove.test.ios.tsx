@@ -9,7 +9,7 @@ import { usePreventRemove } from '../usePreventRemove';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouterKey } from './__fixtures__/MockRouter';
 
-jest.mock('nanoid/non-secure', () => {
+jest.mock('../../../utils/nanoid', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
 
   return m;
@@ -20,7 +20,7 @@ let consoleWarnSpy: jest.SpyInstance;
 beforeEach(() => {
   MockRouterKey.current = 0;
 
-  require('nanoid/non-secure').__key = 0;
+  require('../../../utils/nanoid').__key = 0;
   consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 

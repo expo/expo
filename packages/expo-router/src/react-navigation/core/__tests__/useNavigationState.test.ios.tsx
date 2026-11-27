@@ -10,7 +10,7 @@ import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer'
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 let mockNanoidCounter = 0;
-jest.mock('nanoid/non-secure', () => ({
+jest.mock('../../../utils/nanoid', () => ({
   nanoid: jest.fn(() => String(mockNanoidCounter++)),
 }));
 
