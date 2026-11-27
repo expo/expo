@@ -1,4 +1,3 @@
-import { Slot as RUISlot } from '@radix-ui/react-slot';
 import React, {
   forwardRef,
   useMemo,
@@ -7,6 +6,8 @@ import React, {
   type RefAttributes,
 } from 'react';
 import { StyleSheet, type ViewProps } from 'react-native';
+
+import { Slot as RUISlot, type SlotProps } from './RadixSlot';
 
 /**
  * RadixUI has special logic to handle the merging of `style` and `className` props.
@@ -21,8 +22,8 @@ import { StyleSheet, type ViewProps } from 'react-native';
  * @param Component
  * @returns
  */
-function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
-  return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
+function ShimSlotForReactNative(Component: typeof RUISlot) {
+  return forwardRef<HTMLElement, SlotProps>(function RNSlotHOC({ style, ...props }, ref) {
     const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
     if (process.env.NODE_ENV !== 'production') {
       if (React.isValidElement(props.children)) {

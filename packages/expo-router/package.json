@@ -296,7 +296,6 @@
     "@expo/log-box": "workspace:^",
     "@expo/metro-runtime": "workspace:^",
     "@expo/schema-utils": "workspace:^",
-    "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native/normalize-colors": "0.89.0-rc.3",
     "client-only": "^0.0.1",
