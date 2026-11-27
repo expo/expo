@@ -177,6 +177,7 @@ function manifestError(product: string, target: string, what: string, how: strin
  * Keyed by package identity, then product name.
  */
 const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
+  easclientheaders: { EASClientHeaders: 'expo-eas-client/EASClient' },
   expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
   expomodulesworkletsheaders: {
     ExpoModulesWorkletsHeaders: 'expo-modules-core/ExpoModulesWorklets',
