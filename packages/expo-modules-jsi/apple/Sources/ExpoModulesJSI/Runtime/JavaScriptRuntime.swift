@@ -659,31 +659,37 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // skipping the per-call owning-value allocation (see ``UnownedThisSyncFunctionClosure``).
     return createFunction(name) {
       (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
-      let promise = try JavaScriptPromise(self)
+      let settler = PromiseSettler(in: self)
+      let promiseValue = try settler.createPromise(in: self)
 
       do {
         // Decode phase: runs synchronously within the host function call, so the arguments
         // buffer passes straight through from the JS caller instead of being copied into the task.
         let body = try function(this, arguments)
 
-        // Switch to asynchronous context.
+        settler.register(in: self)
+        // Switch to asynchronous context using the sync `schedule` overload and a non-throwing
+        // `Task<Void, Never>` directly, avoiding the extra closure/throwing-Task layers of the
+        // async `schedule` overload.
         self.schedule {
-          // Invoke the asynchronous body and resolve/reject the promise.
-          do {
-            let result = try await body()
-            promise.resolve(result)
-          } catch {
-            promise.reject(error)
+          Task.immediate_polyfill {
+            // Invoke the asynchronous body and resolve/reject the promise.
+            do {
+              let result = try await body()
+              settler.resolve(result)
+            } catch {
+              settler.reject(error)
+            }
           }
         }
       } catch {
         // Match JavaScript's async-function semantics: an error thrown before the first
         // suspension still rejects the returned promise instead of throwing synchronously.
-        promise.reject(error)
+        settler.rejectSynchronously(error, in: self)
       }
 
       // Always return a promise in async functions
-      return promise.asValue()
+      return promiseValue
     }
   }
 

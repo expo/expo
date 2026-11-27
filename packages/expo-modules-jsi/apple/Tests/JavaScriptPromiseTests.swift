@@ -286,6 +286,109 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
+  func `wrapped promise setup throws cleanly when then getter throws`() throws {
+    let runtime = JavaScriptRuntime()
+    let thenableValue = try runtime.eval(
+      """
+      const obj = {};
+      Object.defineProperty(obj, 'then', {
+        get() { throw new Error('getter boom'); }
+      });
+      obj;
+      """
+    )
+
+    #expect(throws: Error.self) {
+      _ = try JavaScriptPromise(runtime, thenableValue.getObject())
+    }
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `reject promise with JavaScriptThrowable preserves message and code`() async throws {
+    struct CodedError: JavaScriptThrowable {
+      var message: String
+      var code: String
+    }
+
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let codedPromise = try JavaScriptPromise(runtime)
+      codedPromise.reject(CodedError(message: "coded failure", code: "ERR_CODED"))
+
+      let codedError = await #expect(throws: JavaScriptError.self) {
+        _ = try await codedPromise.await()
+      }
+      let thrownCoded = try #require(codedError)
+      try await runtime.execute {
+        let obj = thrownCoded.toValue().getObject()
+        #expect(obj.getProperty("message").getString() == "coded failure")
+        #expect(obj.getProperty("code").getString() == "ERR_CODED")
+        #expect(thrownCoded.toValue().is("Error") == true)
+      }
+
+      let messageOnlyPromise = try JavaScriptPromise(runtime)
+      messageOnlyPromise.reject(CodedError(message: "plain failure", code: ""))
+
+      let plainError = await #expect(throws: JavaScriptError.self) {
+        _ = try await messageOnlyPromise.await()
+      }
+      let thrownPlain = try #require(plainError)
+      try await runtime.execute {
+        let obj = thrownPlain.toValue().getObject()
+        #expect(obj.getProperty("message").getString() == "plain failure")
+        #expect(obj.getProperty("code").isUndefined() == true)
+        #expect(thrownPlain.toValue().is("Error") == true)
+      }
+    }
+  }
+
+  @Test
+  func `deferred promise handles reentrant custom Promise constructor and delayed executor calls`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      var innerPromiseRef: JavaScriptPromise.Ref?
+      let makeInner = runtime.createFunction("makeInner") { _, _ in
+        let inner = try JavaScriptPromise(runtime)
+        let value = inner.asValue()
+        innerPromiseRef = inner.ref()
+        return value
+      }
+      runtime.global().setProperty("makeInner", value: makeInner)
+
+      try runtime.eval(
+        """
+        const NativePromise = globalThis.Promise;
+        let depth = 0;
+        globalThis.savedExecutor = null;
+        globalThis.Promise = function CustomPromise(executor) {
+          depth++;
+          try {
+            if (depth === 1) {
+              globalThis.savedExecutor = executor;
+              globalThis.innerJsPromise = makeInner();
+            }
+            return new NativePromise(executor);
+          } finally {
+            depth--;
+          }
+        };
+        """
+      )
+
+      let outer = try JavaScriptPromise(runtime)
+      // Calling the saved executor after construction returned must be a safe no-op.
+      _ = try runtime.eval("globalThis.savedExecutor(() => {}, () => {})")
+
+      outer.resolve(1)
+      let innerRef = try #require(innerPromiseRef)
+      let inner: JavaScriptPromise = try innerRef.take()
+      inner.resolve(2)
+
+      #expect(try await outer.await().getInt() == 1)
+      #expect(try await inner.await().getInt() == 2)
+    }
+  }
+
+  @Test
   func `wrap pending promise that resolves later`() async throws {
     try await TestRuntimeScheduler().makeRuntime().run { runtime in
       let pendingPromise =

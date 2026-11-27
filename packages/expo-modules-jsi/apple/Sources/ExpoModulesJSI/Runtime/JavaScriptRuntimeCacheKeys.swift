@@ -37,10 +37,12 @@ extension JavaScriptRuntime {
     /// The factory of the classes created with `createClass`.
     static let classFactory = Cache.Key<JavaScriptFunction.Ref>()
 
-    /// The `() => [promise, resolve, reject]` function.
-    static let deferredPromiseFactory = Cache.Key<JavaScriptFunction.Ref>()
-
     /// The function that copies the entries of a JS `Set` into an array.
     static let setEntries = Cache.Key<JavaScriptFunction.Ref>()
+
+    // MARK: - Native host functions
+
+    /// The native executor host function passed to `new Promise(executor)`.
+    static let deferredPromiseExecutor = Cache.Key<JavaScriptFunction.Ref>()
   }
 }

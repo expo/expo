@@ -9,6 +9,7 @@
 #include <new>
 #include <swift/bridging>
 #include <type_traits>
+#include <utility>
 #include <TargetConditionals.h>
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
@@ -668,6 +669,181 @@ inline bool withUint8ArrayBytes(
 #else
   abortUnsupportedRNVersion(__func__);
 #endif
+}
+
+// MARK: - Promises & Errors
+
+/**
+ Moves the value out of `*source` and leaves `undefined` in its place, without cloning handles.
+ */
+inline jsi::Value takeJSIValue(jsi::Value *_Nonnull source) noexcept {
+  return std::exchange(*source, jsi::Value::undefined());
+}
+
+/**
+ Calls a `jsi::Value` holding a function with one argument, discarding the return value.
+ Borrows the function handle without cloning it.
+ */
+inline bool callValueAsFunctionIgnoringResult(
+  jsi::IRuntime &runtime,
+  const jsi::Value &functionValue,
+  const jsi::Value &arg
+) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    if (!functionValue.isObject()) {
+      throw jsi::JSError(runtime, "Value is not a function");
+    }
+    Borrowed<jsi::Object> object(functionValue);
+    if (!object->isFunction(runtime)) {
+      throw jsi::JSError(runtime, "Value is not a function");
+    }
+    Borrowed<jsi::Function> function(*object);
+    (void)function->call(runtime, arg);
+  });
+}
+
+/**
+ Checks whether `object[name]` is a callable function without cloning it into a `jsi::Function`.
+ Returns `false` if reading the property throws a JS exception (stored in `CppError`).
+ */
+inline bool hasFunctionProperty(
+  jsi::IRuntime &runtime,
+  const jsi::Object &object,
+  const jsi::PropNameID &name,
+  bool *_Nonnull outResult
+) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    jsi::Value prop = object.getProperty(runtime, name);
+    *outResult = prop.isObject() && Borrowed<jsi::Object>(prop)->isFunction(runtime);
+  });
+}
+
+struct DeferredPromiseSlots {
+  jsi::Value *_Nullable resolveOut = nullptr;
+  jsi::Value *_Nullable rejectOut = nullptr;
+} __attribute__((availability(swift, unavailable)));
+
+inline DeferredPromiseSlots *_Nullable &currentDeferredPromiseSlots() noexcept __attribute__((availability(swift, unavailable))) {
+  static thread_local DeferredPromiseSlots *slots = nullptr;
+  return slots;
+}
+
+/**
+ Creates a reusable native `Promise` executor `HostFunction` for a runtime. When invoked during
+ `createDeferredPromise`, it stores the engine's `resolve` and `reject` arguments directly into the
+ active stack slots without entering JS bytecode or allocating an intermediate JS array or closure.
+ */
+inline jsi::Function createDeferredPromiseExecutor(jsi::IRuntime &runtime) {
+  return jsi::Function::createFromHostFunction(
+    runtime,
+    jsi::PropNameID::forAscii(runtime, "deferredPromiseExecutor", 23),
+    2,
+    [](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *_Nullable args, size_t count) -> jsi::Value {
+      if (auto *slots = currentDeferredPromiseSlots(); slots != nullptr && args != nullptr) {
+        if (count >= 1) {
+          *slots->resolveOut = jsi::Value(rt, args[0]);
+        }
+        if (count >= 2) {
+          *slots->rejectOut = jsi::Value(rt, args[1]);
+        }
+      }
+      return jsi::Value::undefined();
+    }
+  );
+}
+
+/**
+ Calls `new Promise(executor)` using the current global `Promise` constructor and the cached native
+ executor, writing the resulting promise, resolve, and reject values directly into the out-parameters.
+ */
+inline bool createDeferredPromiseTriple(
+  jsi::IRuntime &runtime,
+  const jsi::PropNameID &promiseKey,
+  const jsi::Function &executor,
+  jsi::Value *_Nonnull promiseOut,
+  jsi::Value *_Nonnull resolveOut,
+  jsi::Value *_Nonnull rejectOut
+) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    jsi::Value promiseCtorVal = runtime.global().getProperty(runtime, promiseKey);
+    if (!promiseCtorVal.isObject()) {
+      throw jsi::JSError(runtime, "Promise constructor is not available");
+    }
+    Borrowed<jsi::Object> ctorObj(promiseCtorVal);
+    if (!ctorObj->isFunction(runtime)) {
+      throw jsi::JSError(runtime, "Promise constructor is not a function");
+    }
+    Borrowed<jsi::Function> ctor(*ctorObj);
+
+    DeferredPromiseSlots slots{resolveOut, rejectOut};
+    DeferredPromiseSlots *_Nullable &current = currentDeferredPromiseSlots();
+    DeferredPromiseSlots *_Nullable previous = current;
+    current = &slots;
+    struct ScopeGuard {
+      DeferredPromiseSlots *_Nullable &slot;
+      DeferredPromiseSlots *_Nullable prev;
+      ~ScopeGuard() noexcept {
+        slot = prev;
+      }
+    } guard{current, previous};
+
+    *promiseOut = ctor->callAsConstructor(runtime, executor);
+  });
+}
+
+/**
+ Creates a JS `Error` value with the given UTF-8 message, skipping `jsi::JSError`'s eager `.stack`
+ and `.message` C++ string readback on RN 0.86+. Never throws into Swift.
+ */
+inline jsi::Value createErrorValue(
+  jsi::IRuntime &runtime,
+  const uint8_t *_Nonnull messageUtf8,
+  size_t messageLength
+) noexcept {
+#if EXPO_JSI_HAS_RN_086
+  try {
+    return runtime.createError(jsi::String::createFromUtf8(runtime, messageUtf8, messageLength));
+  } catch (...) {
+    try {
+      return jsi::Value(jsi::String::createFromUtf8(runtime, messageUtf8, messageLength));
+    } catch (...) {
+      return jsi::Value::undefined();
+    }
+  }
+#else
+  try {
+    std::string message = messageLength == 0
+      ? std::string()
+      : std::string(reinterpret_cast<const char *>(messageUtf8), messageLength);
+    return jsi::Value(runtime, jsi::JSError(runtime, std::move(message)).value());
+  } catch (...) {
+    return jsi::Value::undefined();
+  }
+#endif
+}
+
+/**
+ Creates a JS `Error` value with the given UTF-8 message and attaches a string `code` property.
+ Never throws into Swift.
+ */
+inline jsi::Value createErrorValueWithCode(
+  jsi::IRuntime &runtime,
+  const uint8_t *_Nonnull messageUtf8,
+  size_t messageLength,
+  const jsi::PropNameID &codeKey,
+  const uint8_t *_Nonnull codeUtf8,
+  size_t codeLength
+) noexcept {
+  jsi::Value errorValue = createErrorValue(runtime, messageUtf8, messageLength);
+  if (codeLength > 0 && errorValue.isObject()) {
+    try {
+      Borrowed<jsi::Object> errorObject(errorValue);
+      jsi::Value codeValue(jsi::String::createFromUtf8(runtime, codeUtf8, codeLength));
+      errorObject->setProperty(runtime, codeKey, std::move(codeValue));
+    } catch (...) {
+    }
+  }
+  return errorValue;
 }
 
 // MARK: - Memory pressure

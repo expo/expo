@@ -30,13 +30,13 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// functions, which can no longer be called and are the bulk of a deferred promise's held state.
   @JavaScriptActor
   private final class LongLivedState: LongLivedObject {
-    // Stored as values, not as `JavaScriptObject` and `JavaScriptFunction`: the deferred promise's
-    // triple hands out values, and converting each one when the promise is created would clone it in
-    // the engine. Only the function that actually gets called is converted, when it is called. Stored
-    // inline rather than in `JavaScriptValue.Ref`s, which would cost an allocation each per promise.
-    nonisolated(unsafe) var object: JavaScriptValue?
-    nonisolated(unsafe) var resolveFunction: JavaScriptValue?
-    nonisolated(unsafe) var rejectFunction: JavaScriptValue?
+    let runtimeHandle: JavaScriptRuntimeHandle
+    // Stored as raw `jsi::Value`s with one shared `runtimeHandle`, rather than three
+    // `JavaScriptValue?` wrappers: avoids two redundant `runtimeHandle` retains/releases per promise
+    // and keeps `undefined` as the empty sentinel.
+    nonisolated(unsafe) var object: facebook.jsi.Value = .undefined()
+    nonisolated(unsafe) var resolveFunction: facebook.jsi.Value = .undefined()
+    nonisolated(unsafe) var rejectFunction: facebook.jsi.Value = .undefined()
     /// The Swift-side receiver `await()` suspends on, created together with the `then` callbacks that
     /// feed it on the first `await()`. Not created at construction: a promise that is only handed to
     /// JavaScript and settled from Swift never needs it, and the callbacks are two host functions plus
@@ -47,16 +47,28 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     /// before the runtime goes away; the actor's refs are the same references.
     var settledValue: DeferredPromise.SettledValue?
 
+    init(
+      runtimeHandle: JavaScriptRuntimeHandle,
+      object: consuming facebook.jsi.Value = .undefined(),
+      resolveFunction: consuming facebook.jsi.Value = .undefined(),
+      rejectFunction: consuming facebook.jsi.Value = .undefined()
+    ) {
+      self.runtimeHandle = runtimeHandle
+      self.object = object
+      self.resolveFunction = resolveFunction
+      self.rejectFunction = rejectFunction
+    }
+
     func allowRelease() {
-      object = nil
-      resolveFunction = nil
-      rejectFunction = nil
+      object = .undefined()
+      resolveFunction = .undefined()
+      rejectFunction = .undefined()
       settledValue?.handOut.release()
       settledValue?.kept.release()
     }
   }
 
-  private let longLivedState = LongLivedState()
+  private let longLivedState: LongLivedState
 
   /// Dropping the wrapper means no native code can settle or read this promise anymore, so release
   /// its long-lived state. The values can only be touched on the JS thread while the runtime is
@@ -81,30 +93,47 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     self.scheduler = runtime.scheduler
     // Reject a non-thenable here rather than at the first `await()`, which is where the `then`
     // callbacks are actually installed (see `deferredPromiseForAwait()`).
-    _ = try object.getPropertyAsFunction(.cached(runtime, "then"))
-    longLivedState.object = object.asValue()
+    let thenKey = JavaScriptPropNameID.cached(runtime, "then")
+    var hasThen = false
+    try throwCppErrorUnlessSucceeded(
+      expo.hasFunctionProperty(runtime.pointee, object.pointee, thenKey.pointee, &hasThen)
+    )
+    guard hasThen else {
+      throw JavaScriptObject.PropertyNotFunctionError(name: "then")
+    }
+    let state = LongLivedState(
+      runtimeHandle: runtime.handle,
+      object: expo.takeValueFromObject(&object.pointee)
+    )
+    self.longLivedState = state
     // Register only after validation succeeds, so a failed initializer doesn't leave the state pinned
     // in the collection until teardown. Owns the promise's JSI values from here until teardown (see
     // `LongLivedState`).
-    runtime.longLivedObjects.add(longLivedState)
+    runtime.longLivedObjects.add(state)
   }
 
   /// Creates a new promise whose resolver or rejecter must be called from the outside (also known as a deferred promise).
   @JavaScriptActor
   public init(_ runtime: borrowing JavaScriptRuntime) throws {
     self.scheduler = runtime.scheduler
+    var promiseVal = facebook.jsi.Value.undefined()
+    var resolveVal = facebook.jsi.Value.undefined()
+    var rejectVal = facebook.jsi.Value.undefined()
 
-    // The promise and its two settle functions come from a JavaScript closure that returns all three
-    // at once, rather than from `new Promise(executor)` with a host function as the executor. The
-    // host function route costs a native function and a Swift context object per promise, a re-entry
-    // from the engine into Swift while the constructor runs, and an owning copy of each settle
-    // function on the way back. The closure route is one JS call and three array reads.
-    let triple = try runtime.createDeferredPromiseTriple()
-    longLivedState.object = try triple.getValue(at: 0)
-    longLivedState.resolveFunction = try triple.getValue(at: 1)
-    longLivedState.rejectFunction = try triple.getValue(at: 2)
+    try runtime.createDeferredPromiseTriple(
+      promiseOut: &promiseVal,
+      resolveOut: &resolveVal,
+      rejectOut: &rejectVal
+    )
+    let state = LongLivedState(
+      runtimeHandle: runtime.handle,
+      object: promiseVal,
+      resolveFunction: resolveVal,
+      rejectFunction: rejectVal
+    )
+    self.longLivedState = state
     // Owns the promise's JSI values from here until teardown (see `LongLivedState`).
-    runtime.longLivedObjects.add(longLivedState)
+    runtime.longLivedObjects.add(state)
   }
 
   @JavaScriptActor
@@ -113,7 +142,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 
   public var isDeferred: Bool {
-    return longLivedState.resolveFunction != nil && longLivedState.rejectFunction != nil
+    return !longLivedState.resolveFunction.isUndefined() && !longLivedState.rejectFunction.isUndefined()
   }
 
   /// Waits for the promise to settle. Throws ``JavaScriptCallback/RuntimeLostError`` when the runtime
@@ -143,19 +172,35 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
   public func asValue() -> JavaScriptValue {
     // Read without consuming, so the state keeps owning the object.
-    switch longLivedState.object {
-    case .some(let object):
-      return object.copy()
-    case .none:
+    if longLivedState.object.isUndefined() {
       return .undefined()
     }
+    guard let jsiRuntime = longLivedState.runtimeHandle.pointee else {
+      return .undefined()
+    }
+    return JavaScriptValue(
+      longLivedState.runtimeHandle,
+      facebook.jsi.Value(jsiRuntime, longLivedState.object)
+    )
   }
 
   /// Resolves the promise with a JavaScript value. The value is consumed and moved into a
   /// `JavaScriptRef` so the hop to the JavaScript thread can carry it; see the representable
   /// overload for the semantics.
   public func resolve(_ value: consuming JavaScriptValue) {
-    resolve(value.ref())
+    guard scheduler.mayBeAlive else {
+      return
+    }
+    let valueRef = value.ref()
+    scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
+      guard !longLivedState.resolveFunction.isUndefined() else {
+        valueRef.release()
+        return
+      }
+      let resolver = expo.takeJSIValue(&longLivedState.resolveFunction)
+      let arg = valueRef.take() ?? .undefined()
+      Self.settleResolve(resolver: resolver, argument: arg.pointee, state: longLivedState, in: runtime)
+    }
   }
 
   /// Resolves the promise with a value that has a direct JavaScript representation.
@@ -173,25 +218,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // `resolve` is not isolated, so make sure to jump to JS thread.
     scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
       // If the promise is already settled, do nothing.
-      guard let resolver = longLivedState.resolveFunction.take() else {
+      guard !longLivedState.resolveFunction.isUndefined() else {
         return
       }
-      do {
-        // Call the actual resolver. If `await()` has installed the `then` callbacks, they forward
-        // the settlement to `deferredPromise`.
-        _ = try resolver.getFunction().call(argument: value.toJavaScriptValue(in: runtime))
-
-        // The rejecter can't be called anymore. The state stays registered so it keeps owning the
-        // object until the wrapper is dropped (or the teardown sweep runs).
-        longLivedState.rejectFunction = nil
-      } catch {
-        // The resolver call failed; reject with the error instead. The rejecter call itself can
-        // realistically only throw when the runtime is being torn down, where dropping the settle
-        // is harmless because the JS world is going away.
-        let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
-        longLivedState.resolveFunction = nil
-      }
+      let resolver = expo.takeJSIValue(&longLivedState.resolveFunction)
+      let arg = value.toJavaScriptValue(in: runtime)
+      Self.settleResolve(resolver: resolver, argument: arg.pointee, state: longLivedState, in: runtime)
     }
   }
 
@@ -211,23 +243,24 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // `resolve` is not isolated, so make sure to jump to JS thread; the encode happens there too.
     scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
       // If the promise is already settled, do nothing.
-      guard let resolver = longLivedState.resolveFunction.take() else {
+      guard !longLivedState.resolveFunction.isUndefined() else {
         return
       }
+      let resolver = expo.takeJSIValue(&longLivedState.resolveFunction)
       do {
         let encoded = try V.encode(value, in: runtime)
         // Call the actual resolver. If `await()` has installed the `then` callbacks, they forward
         // the settlement to `deferredPromise`.
-        _ = try resolver.getFunction().call(argument: encoded)
+        try throwCppErrorUnlessSucceeded(
+          expo.callValueAsFunctionIgnoringResult(runtime.pointee, resolver, encoded.pointee)
+        )
         // The state stays registered so it keeps owning the object until the wrapper is dropped.
-        longLivedState.rejectFunction = nil
+        longLivedState.rejectFunction = .undefined()
       } catch {
         // Encoding or the resolver call failed; reject with the error instead. The rejecter call
         // itself can realistically only throw when the runtime is being torn down, where dropping
         // the settle is harmless because the JS world is going away.
-        let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(argument: errorValue)
-        longLivedState.resolveFunction = nil
+        Self.settleReject(error: error, state: longLivedState, in: runtime)
       }
     }
   }
@@ -239,26 +272,54 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
     // `reject` is not isolated, so make sure to jump to JS thread.
     scheduler.schedule(priority: .immediate) { [longLivedState] runtime in
-      // If the promise is already settled, do nothing.
-      guard let rejecter = longLivedState.rejectFunction.take() else {
-        return
-      }
-      // Convert the error to its JavaScript representation. This preserves an existing
-      // `JavaScriptError`'s wrapped value and a `JavaScriptThrowable`'s structured `code`
-      // (mirroring the synchronous throw path in `forwardingSwiftErrorsToJS`), so the `code`
-      // is not lost on async rejection. See `JavaScriptError.from(_:in:)`.
-      let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-
-      // Call the actual rejecter. If `await()` has installed the `then` callbacks, they forward the
-      // settlement to `deferredPromise`.
-      // The call can realistically only throw when the runtime is being torn down, where dropping
-      // the settle is harmless because the JS world is going away.
-      _ = try? rejecter.getFunction().call(argument: errorValue)
-
-      // The resolver can't be called anymore. The state stays registered so it keeps owning the
-      // object until the wrapper is dropped (or the teardown sweep runs).
-      longLivedState.resolveFunction = nil
+      Self.settleReject(error: error, state: longLivedState, in: runtime)
     }
+  }
+
+  @JavaScriptActor
+  @inline(__always)
+  private static func settleResolve(
+    resolver: borrowing facebook.jsi.Value,
+    argument: borrowing facebook.jsi.Value,
+    state: LongLivedState,
+    in runtime: JavaScriptRuntime
+  ) {
+    do {
+      // Call the actual resolver. If `await()` has installed the `then` callbacks, they forward
+      // the settlement to `deferredPromise`.
+      try throwCppErrorUnlessSucceeded(
+        expo.callValueAsFunctionIgnoringResult(runtime.pointee, resolver, argument)
+      )
+      // The rejecter can't be called anymore. The state stays registered so it keeps owning the
+      // object until the wrapper is dropped (or the teardown sweep runs).
+      state.rejectFunction = .undefined()
+    } catch {
+      // The resolver call failed; reject with the error instead.
+      settleReject(error: error, state: state, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  private static func settleReject(
+    error: any Error,
+    state: LongLivedState,
+    in runtime: JavaScriptRuntime
+  ) {
+    // If the promise is already settled, do nothing.
+    guard !state.rejectFunction.isUndefined() else {
+      return
+    }
+    let rejecter = expo.takeJSIValue(&state.rejectFunction)
+    // Convert the error to its JavaScript representation without eagerly reading `.stack` into a
+    // `jsi::JSError`. Preserves an existing `JavaScriptError`'s wrapped value and a
+    // `JavaScriptThrowable`'s structured `code`.
+    let errorValue = makeRejectionErrorValue(from: error, in: runtime)
+    // The call can realistically only throw when the runtime is being torn down, where dropping
+    // the settle is harmless because the JS world is going away.
+    _ = expo.callValueAsFunctionIgnoringResult(runtime.pointee, rejecter, errorValue)
+    // The resolver can't be called anymore. The state stays registered so it keeps owning the
+    // object until the wrapper is dropped (or the teardown sweep runs).
+    state.resolveFunction = .undefined()
   }
 
   /// The receiver `await()` suspends on. Created on the first call, together with the `then`
@@ -306,11 +367,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // Parameter packs take copyable elements only, so the callbacks travel as refs.
       let onFulfilledRef = onFulfilled.ref()
       let onRejectedRef = onRejected.ref()
-      switch longLivedState.object {
-      case .some(let object):
-        try object.getObject().callFunction(.cached(runtime, "then"), arguments: onFulfilledRef, onRejectedRef)
-      case .none:
-        break
+      if !longLivedState.object.isUndefined() {
+        let object = JavaScriptObject(runtime, longLivedState.object.getObject(runtime.pointee))
+        try object.callFunction(.cached(runtime, "then"), arguments: onFulfilledRef, onRejectedRef)
       }
       // Stored only once the callbacks are in place, so a failed install (e.g. `then` unavailable) is
       // retried by the next `await()` instead of leaving a receiver nothing will ever settle.
@@ -320,28 +379,242 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   }
 }
 
+// MARK: - Single-owner promise settler
+
+/// Single-owner settler used by `JavaScriptRuntime.createAsyncFunction` and `Task.encode`, where
+/// the JS promise object is returned directly to JS (no `asValue()` clone) and no Swift caller
+/// holds a `JavaScriptPromise`. Deregisters its `LongLivedObject` immediately on settlement,
+/// avoiding a second `deinit` release hop.
+internal final class PromiseSettler: @unchecked Sendable {
+  @JavaScriptActor
+  private final class State: LongLivedObject {
+    nonisolated(unsafe) var resolveFunction: facebook.jsi.Value = .undefined()
+    nonisolated(unsafe) var rejectFunction: facebook.jsi.Value = .undefined()
+
+    func allowRelease() {
+      resolveFunction = .undefined()
+      rejectFunction = .undefined()
+    }
+  }
+
+  private let scheduler: JavaScriptRuntime.Scheduler
+  private let runtimeHandle: JavaScriptRuntimeHandle
+  private let state = State()
+  /// `true` between `register(in:)` and `finish(in:)`. Only mutated on the JavaScript thread and
+  /// never touched by `State.allowRelease()`, so reading it in `deinit` is synchronized by ARC's
+  /// release of the last reference to `self` without racing the teardown sweep.
+  private var needsCleanup = false
+
+  @JavaScriptActor
+  internal init(in runtime: borrowing JavaScriptRuntime) {
+    self.scheduler = runtime.scheduler
+    self.runtimeHandle = runtime.handle
+  }
+
+  @JavaScriptActor
+  internal func createPromise(in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    var promiseValue = facebook.jsi.Value.undefined()
+    var resolveValue = facebook.jsi.Value.undefined()
+    var rejectValue = facebook.jsi.Value.undefined()
+    try runtime.createDeferredPromiseTriple(
+      promiseOut: &promiseValue,
+      resolveOut: &resolveValue,
+      rejectOut: &rejectValue
+    )
+    state.resolveFunction = resolveValue
+    state.rejectFunction = rejectValue
+    return JavaScriptValue(runtimeHandle, promiseValue)
+  }
+
+  deinit {
+    guard needsCleanup, scheduler.mayBeAlive else {
+      return
+    }
+    scheduler.scheduleRelease { [state] runtime in
+      runtime.longLivedObjects.remove(state)
+      state.allowRelease()
+    }
+  }
+
+  @JavaScriptActor
+  internal func register(in runtime: borrowing JavaScriptRuntime) {
+    needsCleanup = true
+    runtime.longLivedObjects.add(state)
+  }
+
+  @JavaScriptActor
+  internal func rejectSynchronously(_ error: any Error, in runtime: JavaScriptRuntime) {
+    settleReject(error, in: runtime)
+  }
+
+  internal func resolve(_ value: consuming JavaScriptValue) {
+    guard scheduler.mayBeAlive else {
+      return
+    }
+    if scheduler.isOnJavaScriptThread() {
+      JavaScriptActor.assumeIsolated {
+        guard let runtime = runtimeHandle.runtime else {
+          return
+        }
+        settleResolve(value.pointee, in: runtime)
+      }
+      return
+    }
+    let valueRef = value.ref()
+    scheduler.schedule(priority: .immediate) { [self] runtime in
+      let taken = valueRef.take() ?? .undefined()
+      self.settleResolve(taken.pointee, in: runtime)
+    }
+  }
+
+  internal func resolve<V: JavaScriptEncodable>(_ value: sending V) {
+    guard scheduler.mayBeAlive else {
+      return
+    }
+    scheduler.runOrSchedule(priority: .immediate) { [self] runtime in
+      guard !self.state.resolveFunction.isUndefined() else {
+        self.finish(in: runtime)
+        return
+      }
+      let resolver = expo.takeJSIValue(&self.state.resolveFunction)
+      do {
+        let encoded = try V.encode(value, in: runtime)
+        try throwCppErrorUnlessSucceeded(
+          expo.callValueAsFunctionIgnoringResult(runtime.pointee, resolver, encoded.pointee)
+        )
+        self.finish(in: runtime)
+      } catch {
+        self.settleReject(error, in: runtime)
+      }
+    }
+  }
+
+  internal func reject(_ error: any Error) {
+    guard scheduler.mayBeAlive else {
+      return
+    }
+    scheduler.runOrSchedule(priority: .immediate) { [self] runtime in
+      self.settleReject(error, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  private func settleResolve(_ argument: borrowing facebook.jsi.Value, in runtime: JavaScriptRuntime) {
+    guard !state.resolveFunction.isUndefined() else {
+      finish(in: runtime)
+      return
+    }
+    let resolver = expo.takeJSIValue(&state.resolveFunction)
+    do {
+      try throwCppErrorUnlessSucceeded(
+        expo.callValueAsFunctionIgnoringResult(runtime.pointee, resolver, argument)
+      )
+      finish(in: runtime)
+    } catch {
+      settleReject(error, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  private func settleReject(_ error: any Error, in runtime: JavaScriptRuntime) {
+    guard !state.rejectFunction.isUndefined() else {
+      finish(in: runtime)
+      return
+    }
+    let rejecter = expo.takeJSIValue(&state.rejectFunction)
+    let errorValue = makeRejectionErrorValue(from: error, in: runtime)
+    _ = expo.callValueAsFunctionIgnoringResult(runtime.pointee, rejecter, errorValue)
+    finish(in: runtime)
+  }
+
+  @JavaScriptActor
+  private func finish(in runtime: JavaScriptRuntime) {
+    state.resolveFunction = .undefined()
+    state.rejectFunction = .undefined()
+    if needsCleanup {
+      needsCleanup = false
+      runtime.longLivedObjects.remove(state)
+    }
+  }
+}
+
 // MARK: - Deferred promise factory
 
+/// Creates a JS `Error` value directly without routing through `jsi::JSError` (which eagerly reads
+/// `.message` and `.stack` back into C++ strings). Preserves an existing `JavaScriptError`'s wrapped
+/// value and a `JavaScriptThrowable`'s `code`.
+@JavaScriptActor
+private func makeRejectionErrorValue(from error: any Error, in runtime: JavaScriptRuntime) -> facebook.jsi.Value {
+  let jsiRuntime = runtime.pointee
+  if let jsError = error as? JavaScriptError {
+    return expo.valueFromError(jsiRuntime, jsError.toJSError())
+  }
+  if let throwable = error as? JavaScriptThrowable {
+    var result = facebook.jsi.Value.undefined()
+    let code = throwable.code
+    if code.isEmpty {
+      throwable.message.withJSIUTF8 { msgUtf8, msgLen in
+        result = expo.createErrorValue(jsiRuntime, msgUtf8, msgLen)
+      }
+    } else {
+      let codeKey = JavaScriptPropNameID.cached(runtime, "code")
+      throwable.message.withJSIUTF8 { msgUtf8, msgLen in
+        code.withJSIUTF8 { codeUtf8, codeLen in
+          result = expo.createErrorValueWithCode(jsiRuntime, msgUtf8, msgLen, codeKey.pointee, codeUtf8, codeLen)
+        }
+      }
+    }
+    return result
+  }
+  var result = facebook.jsi.Value.undefined()
+  String(describing: error).withJSIUTF8 { msgUtf8, msgLen in
+    result = expo.createErrorValue(jsiRuntime, msgUtf8, msgLen)
+  }
+  return result
+}
+
 extension JavaScriptRuntime {
-  /// Calls the cached `() => [promise, resolve, reject]` function, creating it on first use.
-  /// Evaluated from source so it captures nothing native; it is plain JavaScript the engine can
-  /// optimize like any other closure.
+  /// Invokes `new Promise(executor)` using a cached native `HostFunction` executor that writes the
+  /// engine's `resolve` and `reject` functions straight into the out-parameters.
   @JavaScriptActor
-  fileprivate func createDeferredPromiseTriple() throws -> JavaScriptArray {
-    let makeFactory = {
-      return try self.eval(
-        label: "expo-modules-jsi/deferred-promise.js",
-        """
-        (function () {
-          let resolve, reject;
-          const promise = new Promise(function (a, b) { resolve = a; reject = b; });
-          return [promise, resolve, reject];
-        })
-        """
-      ).getFunction()
+  fileprivate func createDeferredPromiseTriple(
+    promiseOut: UnsafeMutablePointer<facebook.jsi.Value>,
+    resolveOut: UnsafeMutablePointer<facebook.jsi.Value>,
+    rejectOut: UnsafeMutablePointer<facebook.jsi.Value>
+  ) throws {
+    let promiseKey = JavaScriptPropNameID.cached(self, "Promise")
+    if let cachedExecutor = unretainedCachedValue(for: CacheKeys.deferredPromiseExecutor) {
+      try cachedExecutor._withUnsafeGuaranteedRef { ref in
+        try ref.withUnwrappedValue { (executor: borrowing JavaScriptFunction) in
+          try throwCppErrorUnlessSucceeded(
+            expo.createDeferredPromiseTriple(
+              self.pointee,
+              promiseKey.pointee,
+              executor.pointee,
+              promiseOut,
+              resolveOut,
+              rejectOut
+            )
+          )
+        }!
+      }
+      return
     }
-    return try withCached(CacheKeys.deferredPromiseFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
-      return try factory.call().getArray()
-    }
+    try withCached(
+      CacheKeys.deferredPromiseExecutor,
+      { JavaScriptFunction(self, expo.createDeferredPromiseExecutor(self.pointee)) },
+      { (executor: borrowing JavaScriptFunction) in
+        try throwCppErrorUnlessSucceeded(
+          expo.createDeferredPromiseTriple(
+            self.pointee,
+            promiseKey.pointee,
+            executor.pointee,
+            promiseOut,
+            resolveOut,
+            rejectOut
+          )
+        )
+      }
+    )
   }
 }
