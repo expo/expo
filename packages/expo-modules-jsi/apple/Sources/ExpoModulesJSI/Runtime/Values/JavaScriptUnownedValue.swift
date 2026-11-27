@@ -89,6 +89,16 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   // MARK: - Type checks
 
+  @usableFromInline
+  internal func isNullOrUndefined() -> Bool {
+    return pointer.pointee.isNull() || pointer.pointee.isUndefined()
+  }
+
+  @usableFromInline
+  internal func numberIfPresent() -> Double? {
+    return pointer.pointee.isNumber() ? pointer.pointee.getNumber() : nil
+  }
+
   public func isUndefined() -> Bool {
     return pointer.pointee.isUndefined()
   }

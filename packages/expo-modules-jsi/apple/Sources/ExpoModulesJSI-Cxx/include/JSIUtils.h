@@ -470,7 +470,43 @@ class PointerValueAccess : public jsi::Runtime {
   static jsi::String borrowString(const jsi::Value &value) noexcept {
     return make<jsi::String>(const_cast<PointerValue *>(getPointerValue(value)));
   }
+
+  /**
+   A `jsi::BigInt` holding the pointer of the given bigint value without cloning it. Must live in
+   raw storage that is never destroyed, like `borrowString`.
+   */
+  static jsi::BigInt borrowBigInt(const jsi::Value &value) noexcept {
+    return make<jsi::BigInt>(const_cast<PointerValue *>(getPointerValue(value)));
+  }
 } __attribute__((availability(swift, unavailable)));
+
+/**
+ Reads a signed 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
+ Returns `false` when the BigInt is outside `int64_t` range.
+ */
+inline bool getBigIntInt64(jsi::IRuntime &runtime, const jsi::Value &value, int64_t *_Nonnull out) {
+  alignas(jsi::BigInt) unsigned char storage[sizeof(jsi::BigInt)];
+  const jsi::BigInt *bigInt = new (storage) jsi::BigInt(PointerValueAccess::borrowBigInt(value));
+  if (!bigInt->isInt64(runtime)) {
+    return false;
+  }
+  *out = bigInt->getInt64(runtime);
+  return true;
+}
+
+/**
+ Reads an unsigned 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
+ Returns `false` when the BigInt is outside `uint64_t` range.
+ */
+inline bool getBigIntUint64(jsi::IRuntime &runtime, const jsi::Value &value, uint64_t *_Nonnull out) {
+  alignas(jsi::BigInt) unsigned char storage[sizeof(jsi::BigInt)];
+  const jsi::BigInt *bigInt = new (storage) jsi::BigInt(PointerValueAccess::borrowBigInt(value));
+  if (!bigInt->isUint64(runtime)) {
+    return false;
+  }
+  *out = bigInt->getUint64(runtime);
+  return true;
+}
 
 /**
  Same as `getStringData`, but reads the string straight from a string `jsi::Value`. `value.getString(runtime)`
