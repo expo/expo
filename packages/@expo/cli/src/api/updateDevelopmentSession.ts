@@ -60,6 +60,8 @@ export async function updateDevelopmentSessionAsync({
       data: createSessionInfo({ exp, runtime, url }),
     }),
   });
+  // An unread body keeps its socket open, and the CLI cannot exit.
+  await results.text().catch(() => {});
 
   if (!results.ok) {
     throw new CommandError(
@@ -89,6 +91,8 @@ export async function closeDevelopmentSessionAsync({
       session: { url },
     }),
   });
+  // An unread body keeps its socket open, and the CLI cannot exit.
+  await results.text().catch(() => {});
 
   if (!results.ok) {
     throw new CommandError(
