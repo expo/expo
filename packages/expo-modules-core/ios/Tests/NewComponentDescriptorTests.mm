@@ -272,13 +272,16 @@ NSString *joined(const std::vector<std::string> &names) {
 - (void)testPropNamesAreReadOnceAtTheFirstClone
 {
   // React Native constructs a descriptor for every registered view, also for the views that the app never renders,
-  // so the constructor doesn't read the names. Reading them creates the decoder.
+  // so the constructor doesn't read the names. Reading them creates the decoder. The props are `folly::dynamic`,
+  // because they use the prop index on every React Native version, while JSI props skip it before React Native 0.87.
   XCTAssertEqual(_decoder->propNamesCount, 0);
 
-  auto created = [self cloneProps:nullptr jsi:"({ title: 'Title' })"];
+  auto createdRawProps = react::RawProps(folly::dynamic::object("title", "Title"));
+  auto created = [self cloneProps:nullptr rawProps:&createdRawProps];
   XCTAssertEqual(_decoder->propNamesCount, 1);
 
-  [self cloneProps:created jsi:"({ title: 'New title' })"];
+  auto updatedRawProps = react::RawProps(folly::dynamic::object("title", "New title"));
+  [self cloneProps:created rawProps:&updatedRawProps];
   XCTAssertEqual(_decoder->propNamesCount, 1);
 }
 
