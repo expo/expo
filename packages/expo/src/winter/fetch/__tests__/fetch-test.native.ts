@@ -8,6 +8,7 @@ globalThis.TextDecoder = require('node:util').TextDecoder;
 globalThis.TextEncoder = require('node:util').TextEncoder;
 
 const mockStart = jest.fn();
+const mockCreateNativeRequest = jest.fn();
 
 jest.mock('../ExpoFetchModule', () => {
   class StubNativeResponse {
@@ -16,6 +17,9 @@ jest.mock('../ExpoFetchModule', () => {
     removeAllListeners() {}
   }
   class StubNativeRequest {
+    constructor() {
+      mockCreateNativeRequest();
+    }
     start(...args: unknown[]) {
       return mockStart(...args);
     }
@@ -211,5 +215,23 @@ describe('fetch', () => {
     (body as unknown as { _disturbed: boolean })._disturbed = true;
     await expect(fetch(request)).rejects.toThrow(TypeError);
     expect(mockStart).not.toHaveBeenCalled();
+  });
+
+  it('does not create a native request when the body was already used', async () => {
+    mockCreateNativeRequest.mockClear();
+    const body = new ReadableStream<Uint8Array>();
+    body.getReader();
+    await expect(fetch('https://example.test/', { method: 'POST', body })).rejects.toThrow(
+      TypeError
+    );
+    expect(mockCreateNativeRequest).not.toHaveBeenCalled();
+  });
+
+  it('names the stream, not a Request, when a locked init body is rejected', async () => {
+    const body = new ReadableStream<Uint8Array>();
+    body.getReader();
+    await expect(fetch('https://example.test/', { method: 'POST', body })).rejects.toThrow(
+      'the body stream is locked or was already read'
+    );
   });
 });

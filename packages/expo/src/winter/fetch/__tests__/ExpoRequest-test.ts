@@ -82,7 +82,7 @@ describe('Request', () => {
 
   it('sets the default content-type from the type of a Blob-like body', async () => {
     // Like a `File` from `expo-file-system`, which isn't an instance of `Blob`.
-    const body = { type: 'image/png', arrayBuffer: async () => new ArrayBuffer(0) };
+    const body = { size: 0, type: 'image/png', arrayBuffer: async () => new ArrayBuffer(0) };
     const request = new Request('https://example.test/', { method: 'POST', body: body as any });
     expect(request.headers.get('content-type')).toBe('image/png');
     expect((await request.blob()).type).toBe('image/png');
@@ -606,6 +606,12 @@ describe('Request', () => {
           TypeError
         );
       });
+
+      it('throws for an init signal that has no addEventListener()', () => {
+        expect(
+          () => new Request('https://example.test/', { signal: { aborted: false } as any })
+        ).toThrow(TypeError);
+      });
     });
 
     describe('body', () => {
@@ -627,6 +633,19 @@ describe('Request', () => {
           body: false as any,
         });
         expect(await booleanRequest.text()).toBe('false');
+      });
+
+      it('converts a Response-like body to a string', async () => {
+        // Like React Native's `whatwg-fetch` Response, which has `arrayBuffer()` and `type`, but isn't
+        // a Blob.
+        const body = {
+          type: 'default',
+          arrayBuffer: async () => new ArrayBuffer(0),
+          toString: () => '[object Response]',
+        };
+        const request = new Request('https://example.test/', { method: 'POST', body: body as any });
+        expect(request.headers.get('content-type')).toBe('text/plain;charset=UTF-8');
+        expect(await request.text()).toBe('[object Response]');
       });
 
       it('throws for a Symbol body', () => {

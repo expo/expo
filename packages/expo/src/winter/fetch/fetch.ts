@@ -67,6 +67,10 @@ export async function fetch(
     init?.headers ?? (initFromRequest ? input.headers : undefined)
   );
 
+  if (body instanceof ReadableStream) {
+    consumeRequestStreamBody(bodySource, body);
+  }
+
   let abortSubscription: AbortSubscriptionCleanupFunction | null = null;
 
   const response = new FetchResponse(() => {
@@ -75,9 +79,6 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
-  if (body instanceof ReadableStream) {
-    consumeRequestStreamBody(bodySource, body);
-  }
   const {
     body: requestBody,
     defaultHeaders,

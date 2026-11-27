@@ -1,7 +1,7 @@
 import { HTTP_TOKEN, isBlob, normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
 import { convertFormDataAsync, createBoundary } from './convertFormData';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
-import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
+import type { FetchRequestInit } from './fetch.types';
 
 // React Native's FormData is not fully compatible with the web standard, so the global FormData
 // type carries extra members (e.g. `getParts`). Mirror `FetchResponse` and return the intersection.
@@ -145,7 +145,11 @@ export function consumeRequestStreamBody(
       ? isStateBodyUnusable(state)
       : (request as { bodyUsed?: boolean } | null | undefined)?.bodyUsed === true)
   ) {
-    throw new TypeError("Failed to execute 'fetch': Request body is already used.");
+    throw new TypeError(
+      state != null || isRequest(request)
+        ? "Failed to execute 'fetch': the request body is already used. Create a new request with a fresh body, or clone the request before reading its body."
+        : "Failed to execute 'fetch': the body stream is locked or was already read. Pass a fresh ReadableStream."
+    );
   }
   if (state != null) {
     state.consumed = true;
@@ -347,13 +351,19 @@ async function consumeStateAsText(state: RequestInternalState, method: string): 
   return new TextDecoder().decode(bytes);
 }
 
+// Also accepts a Blob-like object, e.g. a file from `expo-file-system`, which isn't an instance of
+// `Blob`. `size` tells it apart from a `Response`, which also has `arrayBuffer()` and `type`.
+function isBlobLike(body: object): body is Blob {
+  return body instanceof Blob || (isBlob(body) && 'size' in body);
+}
+
 function setDefaultContentType(headers: Headers, body: BodyInit | null): void {
   if (body == null || headers.has('content-type')) {
     return;
   }
   if (typeof body === 'string') {
     headers.set('content-type', 'text/plain;charset=UTF-8');
-  } else if ((body instanceof Blob || isBlob(body)) && body.type) {
+  } else if (isBlobLike(body) && body.type) {
     headers.set('content-type', body.type);
   } else if (body instanceof URLSearchParams) {
     headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
@@ -386,9 +396,7 @@ function isEmptyInit(init: FetchRequestInit | null | undefined): boolean {
 
 function isBodyInit(body: object): boolean {
   return (
-    body instanceof Blob ||
-    // Blob-like objects, e.g. files from `expo-file-system`.
-    isBlob(body) ||
+    isBlobLike(body) ||
     body instanceof ArrayBuffer ||
     ArrayBuffer.isView(body) ||
     body instanceof URLSearchParams ||
@@ -397,7 +405,7 @@ function isBodyInit(body: object): boolean {
   );
 }
 
-type RequestInput = string | URL | Request | globalThis.Request | FetchRequestLike;
+type RequestInput = string | URL | Request | globalThis.Request;
 
 /**
  * A `Request` implementation for `expo/fetch` that follows the Fetch standard, with a few
@@ -437,7 +445,13 @@ export class Request implements Body {
     if (init?.window != null) {
       throw new TypeError("Failed to construct 'Request': 'window' can only be null.");
     }
-    if (signal != null && (typeof signal !== 'object' || !('aborted' in signal))) {
+    // `fetch()` listens for `abort` with `addEventListener()`.
+    if (
+      signal != null &&
+      (typeof signal !== 'object' ||
+        !('aborted' in signal) ||
+        typeof signal.addEventListener !== 'function')
+    ) {
       throw new TypeError(
         "Failed to construct 'Request': 'signal' must be an AbortSignal or null."
       );
