@@ -1,6 +1,8 @@
 #pragma once
 #ifdef __cplusplus
 
+#include <cstdio>
+#include <cstdlib>
 #include <jsi/jsi.h>
 
 // React Native 0.86 split the JSI API into the abstract `jsi::IRuntime` base
@@ -30,5 +32,19 @@ namespace facebook::jsi {
 using IRuntime = Runtime;
 } // namespace facebook::jsi
 #endif
+
+namespace expo {
+
+[[noreturn]] __attribute__((availability(swift, unavailable)))
+inline void abortUnsupportedRNVersion(const char *functionName) noexcept {
+  std::fprintf(
+    stderr,
+    "ExpoModulesJSI: %s requires React Native 0.86+ and must be gated behind hasNativeTypedArraySupport()\n",
+    functionName
+  );
+  std::abort();
+}
+
+} // namespace expo
 
 #endif // __cplusplus

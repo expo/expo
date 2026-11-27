@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <cstdlib>
-
 #include "IRuntimeCompat.h"
 
 namespace jsi = facebook::jsi;
@@ -44,7 +42,7 @@ inline bool isUint8Array([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused
     return false;
   }
 #else
-  std::abort();
+  abortUnsupportedRNVersion(__func__);
 #endif
 }
 
