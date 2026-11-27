@@ -29,7 +29,11 @@ import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
-import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
+import {
+  TabNavigatorStatesContext,
+  TabTriggerMapContext,
+  TabTriggerNavigatorContext,
+} from './TabContext';
 import { isTabList } from './TabList';
 import type { ExpoTabRouterOptions } from './TabRouter';
 import { ExpoTabRouter } from './TabRouter';
@@ -226,15 +230,26 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     () => ({ ...parentNavigatorStates, [contextKey]: state }),
     [contextKey, parentNavigatorStates, state]
   );
-
-  const navigatorContextValue = useMemo<NavigatorContextValue>(
+  const hiddenRoutesKey = JSON.stringify(
+    Object.entries(descriptors).map(([key, descriptor]) => [
+      key,
+      descriptor.options.hidden === true,
+    ])
+  );
+  const triggerNavigatorContext = useMemo(
     () => ({
-      ...(navigatorContext as unknown as NavigatorContextValue),
-      descriptors: descriptors as unknown as NavigatorContextValue['descriptors'],
+      // The tab builder's generics are narrower than the shared navigator context.
+      state: state as NavigatorContextValue['state'],
+      navigation: navigation as unknown as NavigatorContextValue['navigation'],
       contextKey,
-      router: ExpoTabRouter,
+      hiddenRoutes: Object.fromEntries(
+        Object.entries(descriptors).map(([key, descriptor]) => [
+          key,
+          descriptor.options.hidden === true,
+        ])
+      ),
     }),
-    [navigatorContext, descriptors, contextKey, ExpoTabRouter]
+    [state, navigation, contextKey, hiddenRoutesKey]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
@@ -243,9 +258,18 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       <TabVisibilityRedirect state={state} descriptors={descriptors} backBehavior={backBehavior} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
-          <NavigatorContext.Provider value={navigatorContextValue}>
-            <RNNavigationContent>{children}</RNNavigationContent>
-          </NavigatorContext.Provider>
+          <TabTriggerNavigatorContext.Provider value={triggerNavigatorContext}>
+            <NavigatorContext.Provider
+              value={{
+                // The tab builder's generics are narrower than the shared navigator context.
+                ...(navigatorContext as unknown as NavigatorContextValue),
+                descriptors: descriptors as unknown as NavigatorContextValue['descriptors'],
+                contextKey,
+                router: ExpoTabRouter,
+              }}>
+              <RNNavigationContent>{children}</RNNavigationContent>
+            </NavigatorContext.Provider>
+          </TabTriggerNavigatorContext.Provider>
         </TabNavigatorStatesContext.Provider>
       </TabTriggerMapContext.Provider>
     </GuardContextProvider>
