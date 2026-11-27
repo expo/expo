@@ -107,6 +107,22 @@ agent-device also has a `logs` command that collects the logs of the app that it
 
 <Terminal cmd={['$ eas simulator:exec npx agent-device@latest help debugging']} />
 
+### Read Android logs
+
+`eas simulator:logs` does not read Android sessions. An Android session records the emulator output and uploads it as a session artifact after the session stops. To also record the device logcat, select the log sources when you start the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform android --log-source emulator-output --log-source device-logcat',
+  ]}
+/>
+
+`--log-source` replaces the default selection, so pass `emulator-output` again to keep it. This flag needs EAS CLI 27.7.2 or later.
+
+Each source becomes one artifact, **emulator-output.log** or **device-logcat.log**. An artifact keeps at most the last 20 MiB of its log. The device logcat includes logs from all apps and from the system, which can contain credentials and personal data. Expo Simulators does not redact logs.
+
+After the session stops, find the log files in its [artifacts](#find-artifacts-on-expodev), or in the `artifacts` array of `eas simulator:get --id <session-id> --json`.
+
 ## Find artifacts on expo.dev
 
 The session page on expo.dev shows the evidence that Expo Simulators stores for the session:
