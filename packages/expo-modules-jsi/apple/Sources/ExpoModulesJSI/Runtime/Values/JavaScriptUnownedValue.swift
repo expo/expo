@@ -177,7 +177,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is an array. The zero-copy counterpart of ``JavaScriptValue/isArray()``.
   public func isArray() -> Bool {
-    return expo.isArrayValue(runtime, pointer.pointee)
+    return pointer.pointee.isObject() && pointer.pointee.withBorrowedObject { $0.isArray(runtime) }
   }
 
   /// Returns the value as a ``JavaScriptArray``, or asserts if it is not an array. The zero-copy
@@ -194,7 +194,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is a function. The zero-copy counterpart of ``JavaScriptValue/isFunction()``.
   public func isFunction() -> Bool {
-    return expo.isFunctionValue(runtime, pointer.pointee)
+    return pointer.pointee.isObject() && pointer.pointee.withBorrowedObject { $0.isFunction(runtime) }
   }
 
   /// Returns the value as a ``JavaScriptFunction``, or asserts if it is not a function. The zero-copy
@@ -221,7 +221,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is an `ArrayBuffer`. The zero-copy counterpart of ``JavaScriptValue/isArrayBuffer()``.
   public func isArrayBuffer() -> Bool {
-    return expo.isArrayBufferValue(runtime, pointer.pointee)
+    return pointer.pointee.isObject() && pointer.pointee.withBorrowedObject { $0.isArrayBuffer(runtime) }
   }
 
   /// Returns the value as a ``JavaScriptTypedArray``, or asserts if it is not a typed array. The
@@ -305,16 +305,18 @@ public struct JavaScriptUnownedValue: ~Copyable {
       "`forEachProperty` must be passed the runtime that owns the borrowed value"
     )
     let jsiRuntime = self.runtime
-    let propertyNames = expo.getPropertyNamesOfObjectValue(jsiRuntime, pointer.pointee)
-    let count = propertyNames.size(jsiRuntime)
-    reserveCapacity(count)
+    try pointer.pointee.withBorrowedObject { object in
+      let propertyNames = object.getPropertyNames(jsiRuntime)
+      let count = propertyNames.size(jsiRuntime)
+      reserveCapacity(count)
 
-    for i in 0..<count {
-      let name = expo.stringAtIndex(jsiRuntime, propertyNames, i)
-      let property = expo.getPropertyOfObjectValue(jsiRuntime, pointer.pointee, name)
-      let swiftName = String(jsiString: name, in: jsiRuntime)
-      try withUnowned(property, in: jsiRuntime) { value in
-        try body(swiftName, value)
+      for i in 0..<count {
+        let name = expo.stringAtIndex(jsiRuntime, propertyNames, i)
+        let property = object.getProperty(jsiRuntime, name)
+        let swiftName = String(jsiString: name, in: jsiRuntime)
+        try withUnowned(property, in: jsiRuntime) { value in
+          try body(swiftName, value)
+        }
       }
     }
   }
@@ -454,5 +456,51 @@ internal func withUnowned<R>(
     }
     let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
     return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+  }
+}
+
+extension facebook.jsi.Value {
+  /// Borrows this object value as a `facebook.jsi.Object` without cloning its handle.
+  /// Must only be called when `isObject()` is `true`.
+  @inline(__always)
+  internal func withBorrowedObject<R: ~Copyable, E: Error>(
+    _ body: (borrowing facebook.jsi.Object) throws(E) -> R
+  ) throws(E) -> R {
+    assert(isObject(), "Value is not an object")
+    let borrowed = expo.BorrowedObject(self)
+    // `withUnsafeBytes(of:)` pins `borrowed` in memory for the duration of `body` and avoids the
+    // Swift SIL optimizer crash with `withUnsafePointer(to:)` on C++ interop value types.
+    return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
+      let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedObject.self)
+      return try body(ptr.pointee.pointer().pointee)
+    }
+  }
+
+  /// Borrows this BigInt value as a `facebook.jsi.BigInt` without cloning its handle.
+  /// Must only be called when `isBigInt()` is `true`.
+  @inline(__always)
+  internal func withBorrowedBigInt<R: ~Copyable, E: Error>(
+    _ body: (borrowing facebook.jsi.BigInt) throws(E) -> R
+  ) throws(E) -> R {
+    assert(isBigInt(), "Value is not a BigInt")
+    let borrowed = expo.BorrowedBigInt(self)
+    return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
+      let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedBigInt.self)
+      return try body(ptr.pointee.pointer().pointee)
+    }
+  }
+
+  /// Borrows this string value as a `facebook.jsi.String` without cloning its handle.
+  /// Must only be called when `isString()` is `true`.
+  @inline(__always)
+  internal func withBorrowedString<R: ~Copyable, E: Error>(
+    _ body: (borrowing facebook.jsi.String) throws(E) -> R
+  ) throws(E) -> R {
+    assert(isString(), "Value is not a string")
+    let borrowed = expo.BorrowedString(self)
+    return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
+      let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedString.self)
+      return try body(ptr.pointee.pointer().pointee)
+    }
   }
 }

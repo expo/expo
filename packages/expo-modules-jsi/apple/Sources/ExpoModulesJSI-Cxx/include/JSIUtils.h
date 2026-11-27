@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <new>
+#include <swift/bridging>
 #include <type_traits>
 #include <TargetConditionals.h>
 
@@ -503,7 +504,7 @@ class PointerValueAccess : public jsi::Runtime {
  The source must outlive the `Borrowed<T>`.
  */
 template <typename T>
-class __attribute__((availability(swift, unavailable))) Borrowed {
+class Borrowed {
   static_assert(std::is_base_of_v<jsi::Pointer, T>, "Borrowed<T> requires a jsi::Pointer subclass");
 
  public:
@@ -520,14 +521,23 @@ class __attribute__((availability(swift, unavailable))) Borrowed {
 
   Borrowed(const Borrowed &) = delete;
   Borrowed &operator=(const Borrowed &) = delete;
-  Borrowed(Borrowed &&) = delete;
+  // Swift's `SWIFT_NONCOPYABLE` C++ interop requires a move constructor to import a non-copyable
+  // value type. Moving only copies the non-owning `PointerValue*` and leaves `other` inert (`~Borrowed()` is empty).
+  Borrowed(Borrowed &&other) noexcept
+    : value_(PointerValueAccess::borrow<T>(other.value_)) {}
   Borrowed &operator=(Borrowed &&) = delete;
 
   const T &operator*() const noexcept {
     return value_;
   }
 
-  const T *operator->() const noexcept {
+  const T *_Nonnull operator->() const noexcept {
+    return &value_;
+  }
+
+  // Raw pointer to the borrowed handle for Swift's `withBorrowed*` wrappers, which pin `Borrowed`
+  // inside `withUnsafeBytes(of:)` so the pointer cannot outlive it.
+  const T *_Nonnull pointer() const noexcept SWIFT_RETURNS_INDEPENDENT_VALUE {
     return &value_;
   }
 
@@ -535,7 +545,11 @@ class __attribute__((availability(swift, unavailable))) Borrowed {
   union {
     T value_;
   };
-};
+} SWIFT_NONCOPYABLE;
+
+using BorrowedObject = Borrowed<jsi::Object>;
+using BorrowedBigInt = Borrowed<jsi::BigInt>;
+using BorrowedString = Borrowed<jsi::String>;
 
 inline bool isTypedArrayValue([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Value &value) noexcept {
 #if EXPO_JSI_HAS_RN_086
@@ -627,81 +641,6 @@ inline bool withUint8ArrayBytes(
 #else
   abortUnsupportedRNVersion(__func__);
 #endif
-}
-
-/**
- Reads a signed 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
- Returns `false` when the BigInt is outside `int64_t` range.
- */
-inline bool getBigIntInt64(jsi::IRuntime &runtime, const jsi::Value &value, int64_t *_Nonnull out) {
-  Borrowed<jsi::BigInt> bigInt(value);
-  if (!bigInt->isInt64(runtime)) {
-    return false;
-  }
-  *out = bigInt->getInt64(runtime);
-  return true;
-}
-
-/**
- Reads an unsigned 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
- Returns `false` when the BigInt is outside `uint64_t` range.
- */
-inline bool getBigIntUint64(jsi::IRuntime &runtime, const jsi::Value &value, uint64_t *_Nonnull out) {
-  Borrowed<jsi::BigInt> bigInt(value);
-  if (!bigInt->isUint64(runtime)) {
-    return false;
-  }
-  *out = bigInt->getUint64(runtime);
-  return true;
-}
-
-/**
- Checks whether `value` is a JavaScript `Array` without cloning its object handle.
- */
-inline bool isArrayValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  return value.isObject() && Borrowed<jsi::Object>(value)->isArray(runtime);
-}
-
-/**
- Checks whether `value` is a JavaScript `Function` without cloning its object handle.
- */
-inline bool isFunctionValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  return value.isObject() && Borrowed<jsi::Object>(value)->isFunction(runtime);
-}
-
-/**
- Checks whether `value` is a JavaScript `ArrayBuffer` without cloning its object handle.
- */
-inline bool isArrayBufferValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  return value.isObject() && Borrowed<jsi::Object>(value)->isArrayBuffer(runtime);
-}
-
-/**
- Same as `getStringData`, but reads the string straight from a string `jsi::Value`. `value.getString(runtime)`
- clones the handle into a `jsi::String` for the call and releases it after; this lends the value's
- own pointer instead, so the read costs no reference counting.
- */
-inline void getStringDataFromValue(
-  jsi::IRuntime &runtime,
-  const jsi::Value &value,
-  void *ctx,
-  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
-) {
-  getStringData(runtime, *Borrowed<jsi::String>(value), ctx, callback);
-}
-
-/**
- Returns the enumerable property names of an object `jsi::Value` without cloning its object handle.
- */
-inline jsi::Array getPropertyNamesOfObjectValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  return Borrowed<jsi::Object>(value)->getPropertyNames(runtime);
-}
-
-/**
- Reads property `name` from an object `jsi::Value` without cloning its object handle.
- */
-inline jsi::Value getPropertyOfObjectValue(jsi::IRuntime &runtime, const jsi::Value &value, const jsi::String &name) {
-  return Borrowed<jsi::Object>(value)->getProperty(runtime, name);
 }
 
 // MARK: - Memory pressure

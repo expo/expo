@@ -887,12 +887,12 @@ private func bigIntExactly<T: FixedWidthInteger>(
   in runtime: facebook.jsi.IRuntime,
   as type: T.Type
 ) -> T? {
-  if T.isSigned {
-    var int64Value: Int64 = 0
-    return expo.getBigIntInt64(runtime, value, &int64Value) ? T(exactly: int64Value) : nil
+  return value.withBorrowedBigInt { bigInt in
+    if T.isSigned {
+      return bigInt.isInt64(runtime) ? T(exactly: bigInt.getInt64(runtime)) : nil
+    }
+    return bigInt.isUint64(runtime) ? T(exactly: bigInt.getUint64(runtime)) : nil
   }
-  var uint64Value: UInt64 = 0
-  return expo.getBigIntUint64(runtime, value, &uint64Value) ? T(exactly: uint64Value) : nil
 }
 
 /// Decodes a non-number value into a 64-bit-wide integer. Reads a `bigint` straight from the
