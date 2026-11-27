@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -63,13 +62,8 @@ class LazyItemsView(context: Context, appContext: AppContext) :
     onWindowChange(WindowChangeEvent(first, last, revision))
   }
 
-  override fun onViewAdded(child: View?) {
-    super.onViewAdded(child)
-    pool.value = findChildOfType<LazyItemsPoolView>(this)
-  }
-
-  override fun onViewRemoved(child: View?) {
-    super.onViewRemoved(child)
+  override fun onComposableChildrenChanged() {
+    super.onComposableChildrenChanged()
     pool.value = findChildOfType<LazyItemsPoolView>(this)
   }
 
@@ -94,13 +88,8 @@ class LazyItemsPoolView(context: Context, appContext: AppContext) :
 
   internal val slotCount: MutableIntState = mutableIntStateOf(0)
 
-  override fun onViewAdded(child: View?) {
-    super.onViewAdded(child)
-    slotCount.intValue = childCount
-  }
-
-  override fun onViewRemoved(child: View?) {
-    super.onViewRemoved(child)
+  override fun onComposableChildrenChanged() {
+    super.onComposableChildrenChanged()
     slotCount.intValue = childCount
   }
 
