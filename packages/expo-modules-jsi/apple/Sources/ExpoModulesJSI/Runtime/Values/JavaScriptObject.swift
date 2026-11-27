@@ -187,23 +187,6 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return try withUnowned(property, in: jsiRuntime, body)
   }
 
-  private func withUnowned<R>(
-    _ property: borrowing facebook.jsi.Value,
-    in jsiRuntime: facebook.jsi.IRuntime,
-    _ body: (borrowing JavaScriptUnownedValue) throws -> R
-  ) rethrows -> R {
-    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
-    return try withUnsafeBytes(of: property) { bytes in
-      guard let baseAddress = bytes.baseAddress else {
-        preconditionFailure(
-          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
-        )
-      }
-      let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
-      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
-    }
-  }
-
   /// Returns the property of the object with the given prop name id,
   /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
