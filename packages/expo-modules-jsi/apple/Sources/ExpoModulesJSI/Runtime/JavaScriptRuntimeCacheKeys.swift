@@ -42,7 +42,8 @@ extension JavaScriptRuntime {
 
     // MARK: - Native host functions
 
-    /// The native executor host function passed to `new Promise(executor)`.
-    static let deferredPromiseExecutor = Cache.Key<JavaScriptFunction.Ref>()
+    /// The native executor host function passed to `new Promise(executor)`, stored as a value so
+    /// `callAsConstructor` passes `&executor` without cloning a `jsi::Function` into a `jsi::Value`.
+    static let deferredPromiseExecutor = Cache.Key<JavaScriptValue.Ref>()
   }
 }

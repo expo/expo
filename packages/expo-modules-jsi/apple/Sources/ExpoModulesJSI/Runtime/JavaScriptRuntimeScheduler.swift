@@ -30,6 +30,16 @@ extension JavaScriptRuntime {
       uncheckedState: []
     )
 
+    /// Pointer-bearing `JavaScriptValue.Ref`s queued from off the JavaScript thread (for example by
+    /// `resolve(_ value: consuming JavaScriptValue)`), swept on teardown so a dropped or late task
+    /// never destroys a `jsi::Value` against freed engine memory. Keyed by raw pointer identity to
+    /// avoid casting `JavaScriptRef<~Copyable>` to `AnyObject` (which requires iOS 18+).
+    private let pendingValues = OSAllocatedUnfairLock<
+      (isCleared: Bool, refs: [UnsafeMutableRawPointer: JavaScriptValue.Ref])
+    >(
+      uncheckedState: (false, [:])
+    )
+
     /// Captured at construction time, which runs on the JavaScript thread.
     private let jsThreadID: UInt64 = {
       var id: UInt64 = 0
@@ -52,6 +62,40 @@ extension JavaScriptRuntime {
     /// Called from the runtime's `deinit`.
     internal func markRuntimeGone() {
       pointee.markRuntimeGone()
+    }
+
+    /// Registers an off-thread pending value ref for teardown sweep. Returns `false` if the
+    /// teardown sweep has already run.
+    internal func trackPendingValue(_ ref: JavaScriptValue.Ref) -> Bool {
+      let key = Unmanaged.passUnretained(ref).toOpaque()
+      return pendingValues.withLockUnchecked { state in
+        guard !state.isCleared else {
+          return false
+        }
+        state.refs[key] = ref
+        return true
+      }
+    }
+
+    internal func untrackPendingValue(_ ref: JavaScriptValue.Ref) {
+      let key = Unmanaged.passUnretained(ref).toOpaque()
+      pendingValues.withLockUnchecked { state in
+        state.refs[key] = nil
+      }
+    }
+
+    /// Releases every tracked off-thread pending value ref while the runtime is still valid.
+    @JavaScriptActor
+    internal func clearPendingValues() {
+      let survivors = pendingValues.withLockUnchecked { state -> [JavaScriptValue.Ref] in
+        state.isCleared = true
+        let values = Array(state.refs.values)
+        state.refs.removeAll()
+        return values
+      }
+      for ref in survivors {
+        ref.release()
+      }
     }
 
     internal var supportsAsyncScheduling: Bool {

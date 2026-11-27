@@ -1016,6 +1016,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // deallocates, and the sweep must still call `allowRelease()` on survivors. Holding the
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
+      let scheduler = self.scheduler
       let nativeState = JavaScriptNativeState()
       nativeState.setDeallocator { [handle] nativeState in
         // Hermes runs this on its finalizer thread while the JavaScript thread waits in the runtime's
@@ -1025,6 +1026,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
+          scheduler.clearPendingValues()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
           // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
           // the freed runtime when it deallocates. Reached through the handle so the teardown object doesn't

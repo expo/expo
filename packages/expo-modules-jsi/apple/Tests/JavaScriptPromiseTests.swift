@@ -916,4 +916,147 @@ struct JavaScriptPromiseTests {
     }
     #expect(isCollected)
   }
+
+  @Test
+  func `resolving with a thenable whose then getter reads isDeferred does not trap`() throws {
+    let runtime = JavaScriptRuntime()
+    let promiseRef = try JavaScriptPromise(runtime).ref()
+    var seenDeferred: Bool?
+    let checkDeferred = runtime.createFunction("checkDeferred") { _, _ in
+      seenDeferred = promiseRef.withUnwrappedValue { $0.isDeferred }
+      return .undefined()
+    }
+    runtime.global().setProperty("checkDeferred", value: checkDeferred)
+    let thenable = try runtime.eval(
+      """
+      ({
+        get then() {
+          checkDeferred();
+          return undefined;
+        }
+      })
+      """
+    )
+
+    promiseRef.withUnwrappedValue { $0.resolve(thenable.copy()) }
+    #expect(seenDeferred == false)
+  }
+
+  @Test
+  func `throwing custom rejecter does not leak CppError into subsequent JSI calls`() throws {
+    struct TestError: Error {}
+    let runtime = JavaScriptRuntime()
+    try runtime.eval(
+      """
+      const NativePromise = globalThis.Promise;
+      globalThis.Promise = function ThrowingRejectPromise(executor) {
+        executor(() => {}, () => { throw new Error('rejecter boom'); });
+        return new NativePromise(() => {});
+      };
+      """
+    )
+
+    let promise = try JavaScriptPromise(runtime)
+    promise.reject(TestError())
+
+    // Must not surface the discarded rejecter exception from thread-local CppError storage.
+    #expect(try runtime.eval("1 + 1").getInt() == 2)
+  }
+
+  @Test
+  func `a resolve with a JS object queued before the runtime goes away does not crash on teardown`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let (promise, objectValue) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime!
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      return (UncheckedSendable(value: promise), object.asValue().ref())
+    }
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      if let value = objectValue.take() {
+        promise.value.resolve(value)
+      }
+    })
+
+    await testRuntime.tearDown()
+  }
+
+  @Test
+  func `deferred promise slots reject cross-runtime and second executor invocations`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtimeA in
+      let runtimeB = JavaScriptRuntime()
+      try runtimeB.eval(
+        """
+        const NativeB = globalThis.Promise;
+        globalThis.savedExecutorB = null;
+        globalThis.Promise = function (executor) {
+          globalThis.savedExecutorB = executor;
+          return new NativeB(executor);
+        };
+        """
+      )
+      _ = try JavaScriptPromise(runtimeB)
+
+      let invokeOtherRuntimeExecutor = runtimeA.createFunction("invokeOtherRuntimeExecutor") { _, _ in
+        _ = try runtimeB.eval("globalThis.savedExecutorB(() => {}, () => {})")
+        return .undefined()
+      }
+      runtimeA.global().setProperty("invokeOtherRuntimeExecutor", value: invokeOtherRuntimeExecutor)
+
+      try runtimeA.eval(
+        """
+        const NativeA = globalThis.Promise;
+        globalThis.Promise = function (executor) {
+          // Cross-runtime call before the real executor runs must be ignored.
+          invokeOtherRuntimeExecutor();
+          const p = new NativeA(executor);
+          // A second invocation on the same runtime must not overwrite captured handles.
+          executor(() => {}, () => {});
+          return p;
+        };
+        """
+      )
+
+      let promise = try JavaScriptPromise(runtimeA)
+      promise.resolve(42)
+      #expect(try await promise.await().getInt() == 42)
+    }
+  }
+
+  @Test
+  func `async function throwing a CppError rejects with the original JS error object`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      try runtime.eval(
+        """
+        globalThis.throwTagged = function () {
+          const e = new Error('inner boom');
+          e.code = 'ERR_INNER';
+          throw e;
+        };
+        """
+      )
+      let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged").ref()
+      let fn = runtime.createAsyncFunction("failingAsync") { _, _ in
+        _ = try throwTagged.withUnwrappedValue { try $0.call() }
+        return { .undefined() }
+      }
+      runtime.global().setProperty("failingAsync", value: fn)
+
+      let value = try await runtime.evalAsync(
+        """
+        failingAsync().then(
+          () => null,
+          (e) => [e instanceof Error, e.message, e.code]
+        )
+        """
+      ).ref()
+      try await runtime.execute {
+        let result = try value.take().getArray()
+        #expect(result[0].getBool() == true)
+        #expect(result[1].getString() == "inner boom")
+        #expect(result[2].getString() == "ERR_INNER")
+      }
+    }
+  }
 }

@@ -682,7 +682,7 @@ inline jsi::Value takeJSIValue(jsi::Value *_Nonnull source) noexcept {
 
 /**
  Calls a `jsi::Value` holding a function with one argument, discarding the return value.
- Borrows the function handle without cloning it.
+ Borrows the function handle without cloning it or cloning `arg`.
  */
 inline bool callValueAsFunctionIgnoringResult(
   jsi::IRuntime &runtime,
@@ -698,8 +698,31 @@ inline bool callValueAsFunctionIgnoringResult(
       throw jsi::JSError(runtime, "Value is not a function");
     }
     Borrowed<jsi::Function> function(*object);
-    (void)function->call(runtime, arg);
+    (void)function->call(runtime, &arg, size_t{1});
   });
+}
+
+/**
+ Calls a `jsi::Value` holding a function with one argument, discarding both the return value and
+ any thrown exception without populating `CppError`'s thread-local slot.
+ */
+inline void callValueAsFunctionIgnoringErrors(
+  jsi::IRuntime &runtime,
+  const jsi::Value &functionValue,
+  const jsi::Value &arg
+) noexcept {
+  try {
+    if (!functionValue.isObject()) {
+      return;
+    }
+    Borrowed<jsi::Object> object(functionValue);
+    if (!object->isFunction(runtime)) {
+      return;
+    }
+    Borrowed<jsi::Function> function(*object);
+    (void)function->call(runtime, &arg, size_t{1});
+  } catch (...) {
+  }
 }
 
 /**
@@ -719,8 +742,10 @@ inline bool hasFunctionProperty(
 }
 
 struct DeferredPromiseSlots {
-  jsi::Value *_Nullable resolveOut = nullptr;
-  jsi::Value *_Nullable rejectOut = nullptr;
+  const jsi::IRuntime *_Nonnull runtime;
+  jsi::Value *_Nonnull resolveOut;
+  jsi::Value *_Nonnull rejectOut;
+  bool captured = false;
 } __attribute__((availability(swift, unavailable)));
 
 inline DeferredPromiseSlots *_Nullable &currentDeferredPromiseSlots() noexcept __attribute__((availability(swift, unavailable))) {
@@ -729,17 +754,25 @@ inline DeferredPromiseSlots *_Nullable &currentDeferredPromiseSlots() noexcept _
 }
 
 /**
- Creates a reusable native `Promise` executor `HostFunction` for a runtime. When invoked during
- `createDeferredPromise`, it stores the engine's `resolve` and `reject` arguments directly into the
- active stack slots without entering JS bytecode or allocating an intermediate JS array or closure.
+ Creates a reusable native `Promise` executor `HostFunction` wrapped in a `jsi::Value` so callers
+ can pass `&executor` directly to `callAsConstructor` without cloning on each promise creation.
+ When invoked during `createDeferredPromiseTriple`, it stores the engine's `resolve` and `reject`
+ arguments once into the active stack slots for the matching runtime.
  */
-inline jsi::Function createDeferredPromiseExecutor(jsi::IRuntime &runtime) {
-  return jsi::Function::createFromHostFunction(
+inline jsi::Value createDeferredPromiseExecutor(jsi::IRuntime &runtime) {
+  return jsi::Value(jsi::Function::createFromHostFunction(
     runtime,
     jsi::PropNameID::forAscii(runtime, "deferredPromiseExecutor", 23),
     2,
     [](jsi::Runtime &rt, const jsi::Value &, const jsi::Value *_Nullable args, size_t count) -> jsi::Value {
-      if (auto *slots = currentDeferredPromiseSlots(); slots != nullptr && args != nullptr) {
+      if (
+        auto *slots = currentDeferredPromiseSlots();
+        slots != nullptr &&
+        !slots->captured &&
+        slots->runtime == static_cast<const jsi::IRuntime *>(&rt) &&
+        args != nullptr
+      ) {
+        slots->captured = true;
         if (count >= 1) {
           *slots->resolveOut = jsi::Value(rt, args[0]);
         }
@@ -749,7 +782,7 @@ inline jsi::Function createDeferredPromiseExecutor(jsi::IRuntime &runtime) {
       }
       return jsi::Value::undefined();
     }
-  );
+  ));
 }
 
 /**
@@ -759,7 +792,7 @@ inline jsi::Function createDeferredPromiseExecutor(jsi::IRuntime &runtime) {
 inline bool createDeferredPromiseTriple(
   jsi::IRuntime &runtime,
   const jsi::PropNameID &promiseKey,
-  const jsi::Function &executor,
+  const jsi::Value &executor,
   jsi::Value *_Nonnull promiseOut,
   jsi::Value *_Nonnull resolveOut,
   jsi::Value *_Nonnull rejectOut
@@ -775,7 +808,7 @@ inline bool createDeferredPromiseTriple(
     }
     Borrowed<jsi::Function> ctor(*ctorObj);
 
-    DeferredPromiseSlots slots{resolveOut, rejectOut};
+    DeferredPromiseSlots slots{&runtime, resolveOut, rejectOut};
     DeferredPromiseSlots *_Nullable &current = currentDeferredPromiseSlots();
     DeferredPromiseSlots *_Nullable previous = current;
     current = &slots;
@@ -787,7 +820,7 @@ inline bool createDeferredPromiseTriple(
       }
     } guard{current, previous};
 
-    *promiseOut = ctor->callAsConstructor(runtime, executor);
+    *promiseOut = ctor->callAsConstructor(runtime, &executor, size_t{1});
   });
 }
 
