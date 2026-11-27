@@ -35,19 +35,15 @@ export default async function prompt(
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (!isInteractive() && questions.length) {
-    let message = `Input is required, but 'npx expo' is in non-interactive mode.\n`;
-    if (nonInteractiveHelp) {
-      message += nonInteractiveHelp;
-    } else {
-      const question = questions[0]!;
-      const questionMessage =
-        typeof question.message === 'function'
-          ? question.message(undefined, {}, question)
-          : question.message;
-
-      message += `Required input:\n${(questionMessage || '').trim().replace(/^/gm, '> ')}`;
-    }
-    throw new CommandError('NON_INTERACTIVE', message);
+    throw createInputRequiredError(
+      `Input is required, but 'npx expo' is in non-interactive mode.`,
+      questions,
+      nonInteractiveHelp
+    );
+  }
+  const stdinEndedMessage = `Input is required, but stdin was closed.`;
+  if (process.stdin.readableEnded && questions.length) {
+    throw createInputRequiredError(stdinEndedMessage, questions, nonInteractiveHelp);
   }
 
   const kind =
@@ -58,19 +54,52 @@ export default async function prompt(
         ? 'permission'
         : 'question');
   const msg = typeof questions[0]?.message === 'string' ? questions[0].message : undefined;
+  let removeStdinEndListener = () => {};
+  const stdinEnded = new Promise<never>((_, reject) => {
+    const onEnd = () => {
+      process.stdout.write('\n');
+      reject(createInputRequiredError(stdinEndedMessage, questions, nonInteractiveHelp));
+    };
+    process.stdin.once('end', onEnd);
+    removeStdinEndListener = () => process.stdin.off('end', onEnd);
+  });
   pauseInteractions();
   try {
     return await withProgramStatus({ state: 'blocked', kind, msg }, () =>
-      prompts(questions, {
-        onCancel() {
-          throw new AbortCommandError();
-        },
-        ...options,
-      })
+      Promise.race([
+        prompts(questions, {
+          onCancel() {
+            throw new AbortCommandError();
+          },
+          ...options,
+        }),
+        stdinEnded,
+      ])
     );
   } finally {
+    removeStdinEndListener();
     resumeInteractions();
   }
+}
+
+function createInputRequiredError(
+  reason: string,
+  questions: Question[],
+  nonInteractiveHelp?: string
+): CommandError {
+  let message = `${reason}\n`;
+  if (nonInteractiveHelp) {
+    message += nonInteractiveHelp;
+  } else {
+    const question = questions[0]!;
+    const questionMessage =
+      typeof question.message === 'function'
+        ? question.message(undefined, {}, question)
+        : question.message;
+
+    message += `Required input:\n${(questionMessage || '').trim().replace(/^/gm, '> ')}`;
+  }
+  return new CommandError('NON_INTERACTIVE', message);
 }
 
 /**
