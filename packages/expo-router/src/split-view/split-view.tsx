@@ -1,15 +1,12 @@
 import React, { use, useState, type ReactNode } from 'react';
 
-import {
-  Split,
-  splitColumnProps,
-  type SplitHostProps,
-} from '../optional-libraries/react-native-screens';
+import { isScreens5, Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { useWarnOnce } from '../useDeprecated';
 import { isChildOfType } from '../utils/children';
 import { Slot } from '../views/Navigator';
 import {
+  getSafeAreaChildren,
   getSplitColumnChildren,
   SplitViewColumn,
   SplitViewContent,
@@ -58,12 +55,20 @@ function SplitViewNavigator({
   );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
-  // Hooks must run before the early returns below, so the guard repeats their conditions.
+  const contentProps = contentChildren[0]?.props;
+  // Hooks must run before the early returns below, so the guards repeat their conditions.
+  const isIOS = process.env.EXPO_OS === 'ios';
   useWarnOnce(
     'SplitView.Content is missing. Add <SplitView.Content /> to SplitView to configure the content column.',
-    process.env.EXPO_OS === 'ios' &&
-      numberOfSidebars + numberOfInspectors > 0 &&
-      contentChildren.length === 0
+    isIOS && numberOfSidebars + numberOfInspectors > 0 && contentChildren.length === 0
+  );
+  useWarnOnce(
+    'SplitView.Inspector ignores the header prop, because react-native-screens 5 does not support a header in the inspector. Remove header from SplitView.Inspector.',
+    isIOS && inspectorChildren.some((child) => child.props.header)
+  );
+  useWarnOnce(
+    'SplitView.Content ignores the header prop when stackIntegration is set, because the stack of the content route shows the navigation bar. Set the title in the screen options of that stack, or remove stackIntegration.',
+    isIOS && !!contentProps?.stackIntegration && !!contentProps.header
   );
 
   if (use(IsWithinNativeNavigator)) {
@@ -75,6 +80,12 @@ function SplitViewNavigator({
       'SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.'
     );
     return <Slot activityEnabled={activityEnabled} />;
+  }
+
+  if (!isScreens5) {
+    throw new Error(
+      'SplitView requires react-native-screens 5. The installed version is older and does not have the Split and Stack integration. Install react-native-screens 5.0.0-beta.2 or newer.'
+    );
   }
 
   if (
@@ -105,16 +116,16 @@ function SplitViewNavigator({
 
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
-    <Split.Column key={child.key} {...splitColumnProps}>
+    <Split.Column key={child.key}>
       {getSplitColumnChildren(child.props, applyHorizontalInsets)}
     </Split.Column>
   ));
   const inspectors = inspectorChildren.map((child) => (
     <Split.Inspector key={child.key}>
-      {getSplitColumnChildren(child.props, applyHorizontalInsets)}
+      {getSafeAreaChildren(child.props.children, applyHorizontalInsets)}
     </Split.Inspector>
   ));
-  const contentHeader = contentChildren[0]?.props.header;
+  const slot = <Slot activityEnabled={activityEnabled} />;
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
@@ -131,11 +142,13 @@ function SplitViewNavigator({
           onExpand?.(event);
         }}>
         {columns}
-        <Split.Column {...splitColumnProps}>
-          {getSplitColumnChildren(
-            { children: <Slot activityEnabled={activityEnabled} />, header: contentHeader },
-            applyHorizontalInsets
-          )}
+        <Split.Column>
+          {contentProps?.stackIntegration
+            ? slot
+            : getSplitColumnChildren(
+                { children: slot, header: contentProps?.header },
+                applyHorizontalInsets
+              )}
         </Split.Column>
         {inspectors}
       </Split.Host>

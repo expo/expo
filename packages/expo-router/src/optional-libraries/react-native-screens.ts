@@ -1,26 +1,15 @@
-import type { ComponentProps, ComponentType, ReactNode } from 'react';
+import type { ComponentProps } from 'react';
 import * as Screens from 'react-native-screens';
 import * as ScreensExperimental from 'react-native-screens/experimental';
 
-type ScreensV5Exports = Pick<typeof ScreensExperimental, 'Stack' | 'Split'>;
+type NavigatorExports = Pick<typeof Screens & typeof ScreensExperimental, 'Stack' | 'Split'>;
 
-// react-native-screens 5 exports `Stack` and `Split` from the main entry, 4.x only from
-// `experimental`. Our types target 4.x, where the main entry doesn't declare them, hence the cast.
-const screensV5 = Screens as unknown as Partial<ScreensV5Exports>;
+// The installed types declare the navigators in experimental on v4 and in the main entry on v5.
+const main = Screens as typeof Screens & Partial<NavigatorExports>;
+const experimental = ScreensExperimental as typeof ScreensExperimental & NavigatorExports;
 
-export const isScreens5 = screensV5.Stack !== undefined;
-// A Screens 5 stack must be a direct child to navigate a column. Router wraps it in safe area views.
-export const splitColumnProps = isScreens5 ? { disableStackIntegration: true } : {};
-export const StackV5 = screensV5.Stack ?? ScreensExperimental.Stack;
-// react-native-screens 5 adds column stacks and header configs to `Split`. 4.x doesn't have them.
-type SplitV5Components = {
-  Column: ComponentType<
-    ComponentProps<typeof ScreensExperimental.Split.Column> & { disableStackIntegration?: boolean }
-  >;
-  Stack?: ComponentType<{ children?: ReactNode }>;
-  HeaderConfig?: ComponentType<object>;
-};
-export const Split: Omit<typeof ScreensExperimental.Split, 'Column'> & SplitV5Components =
-  screensV5.Split ?? ScreensExperimental.Split;
-// react-native-screens 4.x and 5 export `SafeAreaView` only from `experimental`.
-export { SafeAreaView, type SplitHostProps } from 'react-native-screens/experimental';
+export const isScreens5 = main.Stack !== undefined;
+export const StackV5: NavigatorExports['Stack'] = main.Stack ?? experimental.Stack;
+export const Split: NavigatorExports['Split'] = main.Split ?? experimental.Split;
+export type SplitHostProps = ComponentProps<typeof Split.Host>;
+export { SafeAreaView } from 'react-native-screens/experimental';

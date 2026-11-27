@@ -16,7 +16,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **important** SplitView is an [alpha](/more/release-statuses/#alpha) API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes and is not ready for production usage yet.
+> **important** `SplitView` is an [alpha](/more/release-statuses/#alpha) API for iOS. It requires `react-native-screens` 5.0.0-beta.2 or later.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
 
@@ -42,15 +42,13 @@ Accepted values are `primary`, `supplementary`, and `secondary`. When not set, t
 
 ### Navigating between columns
 
-> **info** The `.show()` method requires `react-native-screens` 4.24.0 or later. SDK 55 bundles `~4.23.0`, so you need to install `react-native-screens@~4.24.0` manually to use this feature.
-
 Use a `ref` to programmatically show a specific column with the `show` method:
 
 ```tsx
 import { useRef } from 'react';
 import { Pressable, Text } from 'react-native';
 import { SplitView } from 'expo-router/unstable-split-view';
-import type { SplitHostCommands } from 'react-native-screens/experimental';
+import type { SplitHostCommands } from 'react-native-screens';
 
 export default function Layout() {
   const ref = useRef<SplitHostCommands>(null);
@@ -83,13 +81,7 @@ There can only be one `SplitView` in the navigation hierarchy. Attempting to nes
 
 <Collapsible summary="Only specific children allowed">
 
-`SplitView` only accepts `SplitView.Column` and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
-
-</Collapsible>
-
-<Collapsible summary="Header cannot be customized yet">
-
-The header (navigation bar) within split view columns cannot be customized. Custom header configurations are not yet supported.
+`SplitView` only accepts `SplitView.Column`, `SplitView.Content`, and `SplitView.Inspector` as direct children. Other components will be ignored with a warning.
 
 </Collapsible>
 
@@ -244,6 +236,70 @@ export default function Layout() {
   );
 }
 ```
+
+## Column headers
+
+Use the `header` prop of `SplitView.Column` and `SplitView.Content` to configure the column's navigation bar. The prop accepts [`Stack.HeaderConfig` props from React Native Screens](https://github.com/software-mansion/react-native-screens/blob/5.0.0-beta.2/src/components/stack/header/StackHeaderConfig.types.ts). Set iOS-specific options under `ios`.
+
+> **warning** The column header configuration API can change in patch releases.
+
+```tsx app/_layout.tsx
+<SplitView>
+  <SplitView.Column
+    header={{
+      title: 'Mailboxes',
+      ios: {
+        largeTitleEnabled: true,
+        trailingItems: [{ type: 'item', id: 'edit', title: 'Edit', onPress: () => {} }],
+      },
+    }}>
+    {/* Mailbox list */}
+  </SplitView.Column>
+  <SplitView.Content header={{ title: 'Mail' }} />
+</SplitView>
+```
+
+If you used the earlier SplitView header API, move `largeTitle` to `ios.largeTitleEnabled`, `leftToolbar` to `ios.leadingItems`, and `rightToolbar` to `ios.trailingItems`. Give each toolbar button a unique `id` and set its `type` to `'item'`. Set title colors through `ios.standardAppearance` and `ios.scrollEdgeAppearance`.
+
+`SplitView.Inspector` does not support `header`. `SplitView` ignores it and logs a warning only in development builds.
+
+## Navigation stack in the content column
+
+Set `stackIntegration` on `SplitView.Content` to navigate the content column with an [`ExperimentalStack`](/versions/latest/sdk/router/experimental-stack/). The layout of the content route must render the stack as its root. The stack pushes screens in the content column and provides its navigation bar.
+
+<FileTree
+  files={[
+    'app/_layout.tsx',
+    'app/(content)/_layout.tsx',
+    'app/(content)/index.tsx',
+    'app/(content)/[id].tsx',
+  ]}
+/>
+
+```tsx app/_layout.tsx
+import { SplitView } from 'expo-router/unstable-split-view';
+
+export default function Layout() {
+  return (
+    <SplitView>
+      <SplitView.Column>{/* Message list */}</SplitView.Column>
+      <SplitView.Content stackIntegration />
+    </SplitView>
+  );
+}
+```
+
+```tsx app/(content)/_layout.tsx
+import { ExperimentalStack as Stack } from 'expo-router';
+
+export default function ContentLayout() {
+  return <Stack />;
+}
+```
+
+With `stackIntegration`, the content column ignores `header` and does not apply the horizontal safe area insets.
+
+> **important** With `react-native-screens` 5.0.0-beta.2, replacing the only screen in the content stack with `<Link replace>` can crash an iOS debug build. See [react-native-screens issue #5340](https://github.com/software-mansion/react-native-screens/issues/5340).
 
 ## Using `SplitView.Inspector`
 
