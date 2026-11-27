@@ -255,6 +255,16 @@ export default class VideoPlayerWeb
   }
 
   mountVideoView(video: HTMLVideoElement) {
+    // The player sets `src`, not the `VideoView` render. Setting `src` again restarts the load and
+    // rejects a pending `play()`, so a render after `replace()` would stop the new source.
+    // Set it before the properties below, because the load resets `playbackRate`.
+    const uri = getSourceUri(this.src);
+    if (uri && video.getAttribute('src') !== uri) {
+      video.setAttribute('src', uri);
+    } else if (!uri && video.hasAttribute('src')) {
+      video.removeAttribute('src');
+      video.load();
+    }
     // The video will be the first video, it should inherit the properties set in the setup() function
     if (this._mountedVideos.size === 0) {
       video.preservesPitch = this._preservesPitch;
@@ -262,15 +272,6 @@ export default class VideoPlayerWeb
       video.volume = this._volume;
       video.muted = this._muted;
       video.playbackRate = this._playbackRate;
-    }
-    // The player sets `src`, not the `VideoView` render. Setting `src` again restarts the load and
-    // rejects a pending `play()`, so a render after `replace()` would stop the new source.
-    const uri = getSourceUri(this.src);
-    if (uri && video.getAttribute('src') !== uri) {
-      video.setAttribute('src', uri);
-    } else if (!uri && video.hasAttribute('src')) {
-      video.removeAttribute('src');
-      video.load();
     }
     this._mountedVideos.add(video);
     this._addListeners(video);
