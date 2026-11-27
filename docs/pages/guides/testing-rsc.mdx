@@ -101,6 +101,8 @@ Use the `server-only` and `client-only` modules to assert that a module should n
 import 'server-only';
 ```
 
+Expo Router does not include the `client-only` module. Run `npx expo install client-only` in your project before you import it.
+
 RSC supports package exports by default. You can use the `react-server` condition to change what file is imported from a module:
 
 ```json package.json

@@ -5636,9 +5636,6 @@ importers:
       '@react-native/normalize-colors':
         specifier: 0.88.1
         version: 0.88.1
-      client-only:
-        specifier: ^0.0.1
-        version: 0.0.1
       expo:
         specifier: '*'
         version: link:../expo
@@ -11302,9 +11299,6 @@ packages:
   cli-width@3.0.0:
     resolution: {integrity: sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==}
     engines: {node: '>= 10'}
-
-  client-only@0.0.1:
-    resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
 
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
@@ -20427,8 +20421,6 @@ snapshots:
       string-width: 8.2.1
 
   cli-width@3.0.0: {}
-
-  client-only@0.0.1: {}
 
   cliui@8.0.1:
     dependencies:
