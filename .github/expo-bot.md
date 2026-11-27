@@ -16,6 +16,7 @@ Comment `@expo-bot help` on an expo/expo thread for a short list. That command a
 | `@expo-bot review` | `/review`, `/expo-review` | PR | One-shot AI review; router picks agents |
 | `@expo-bot review all` | `/review all` | PR | Review with every agent |
 | `@expo-bot review <agents>` | `/review <agents>` | PR | Review with a named subset (`correctness security`, …) |
+| `@expo-bot review autonomous` | `/review autonomous` | PR | Autonomous review of every changed file, for any package. expo-bot approves the PR or requests changes. The commenter needs write access. No approval or request for changes when the PR changes `.github/`, `.expo-agents/`, `scripts/expo-code-review`, or a `REVIEW.md`. |
 | `@expo-bot check` | — | PR (on an issue, only the verify half runs) | Verify + review from one comment. `--fix` / `--no-fix` apply to the verify half; the review router picks agents. |
 | `@expo-bot dismiss <id>…` | `/dismiss <id>…` | PR | Hide reviewer finding(s); optional `-- reason` |
 | `@expo-bot undismiss <id>…` | `/undismiss <id>…` | PR | Restore finding(s) |

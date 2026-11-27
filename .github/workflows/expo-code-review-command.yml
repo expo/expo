@@ -8,6 +8,10 @@ name: AI code review (command)
 #                            Each named agent must exist in every routing scope
 #                            the PR touches, or that scope fails. `correctness`
 #                            and `security` are in every scope.
+#   /review autonomous (either command, or @expo-bot review autonomous)
+#                            The autonomous review of every changed file, for any
+#                            package. expo-bot approves the PR or requests changes.
+#                            The commenter needs write access.
 #   @expo-bot check          the review half of "verify + review from one
 #                            comment" (verify-comment.yml owns the verify
 #                            half). Any tail belongs to verify (--fix), so
@@ -153,11 +157,15 @@ jobs:
             esac
           fi
           # A bare command -> router picks; "all" -> every agent; names -> subset.
+          # "autonomous" -> every agent, with every changed file in the autonomous scope.
           # Sanitize agent ids to [a-zA-Z0-9,_-] to keep the value shell-safe.
           agents=""
           route=false
+          autonomous=false
           if [ -z "$rest" ]; then
             route=true
+          elif [ "$rest" = "autonomous" ]; then
+            autonomous=true
           elif [ "$rest" != "all" ]; then
             agents=$(printf '%s' "$rest" | tr ' ' ',' | tr -cd 'a-zA-Z0-9,_-')
           fi
@@ -165,6 +173,7 @@ jobs:
             echo "run=true"
             echo "agents=$agents"
             echo "route=$route"
+            echo "autonomous=$autonomous"
           } >> "$GITHUB_OUTPUT"
 
       # A maintainer typed a command and it did not launch — say so where it
@@ -295,6 +304,8 @@ jobs:
       # with files in the autonomous scope, and on a fork PR only with the ai-review
       # label. The comment gate admits any collaborator, so a commenter also needs write
       # access. If this step fails, the review runs without a sandbox.
+      # `/review autonomous` from a commenter with write access puts every changed file
+      # in the scope. From another commenter it is a review with every agent.
       - name: Check whether the review gets a sandbox
         id: scope
         if: steps.cmd.outputs.run == 'true'
@@ -304,6 +315,7 @@ jobs:
           REPO: ${{ github.repository }}
           PR: ${{ github.event.issue.number || inputs.pr }}
           COMMENTER: ${{ github.event.comment.user.login }}
+          AUTONOMOUS: ${{ steps.cmd.outputs.autonomous }}
         run: |
           writer=true
           if [ -n "$COMMENTER" ]; then
@@ -313,7 +325,16 @@ jobs:
             esac
           fi
           echo "writer=$writer" >> "$GITHUB_OUTPUT"
-          bash .github/scripts/ai-review-scope.sh
+          whole_pr=false
+          if [ "$AUTONOMOUS" = true ]; then
+            if [ "$writer" = true ]; then
+              whole_pr=true
+            else
+              echo "::notice::/review autonomous needs write access, and $COMMENTER does not have it. The review runs with every agent, and expo-bot does not approve the PR or request changes."
+            fi
+          fi
+          echo "whole_pr=$whole_pr" >> "$GITHUB_OUTPUT"
+          WHOLE_PR=$whole_pr bash .github/scripts/ai-review-scope.sh
           gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels,headRefOid \
             --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))", "head=\(.headRefOid)"' >> "$GITHUB_OUTPUT"
 
@@ -354,6 +375,7 @@ jobs:
           CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
           HEAD_SHA: ${{ steps.scope.outputs.head }}
+          WHOLE_PR: ${{ steps.scope.outputs.whole_pr }}
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
@@ -388,6 +410,17 @@ jobs:
               # so trust this base-ref checkout's config — still never the PR head.
               ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-agents/code-review")
             fi
+          fi
+          if [ "$WHOLE_PR" = "true" ]; then
+            # ecr routes files only by the paths in routing.jsonc, so give it a copy of
+            # this checkout's config that sends every file to the autonomous scope.
+            # ecr still loads that scope's prompts from the PR's base commit.
+            WHOLE_PR_CONFIG="$RUNNER_TEMP/whole-pr-review/.expo-agents/code-review"
+            mkdir -p "$WHOLE_PR_CONFIG"
+            cp -R .expo-agents/code-review/. "$WHOLE_PR_CONFIG"
+            sed 's#^[[:space:]]*//.*##' .expo-agents/code-review/routing.jsonc \
+              | jq '(.scopes[] | select(.name == "autonomous")).paths = ["**/*"]' > "$WHOLE_PR_CONFIG/routing.jsonc"
+            ARGS+=(--config-dir "$WHOLE_PR_CONFIG")
           fi
           # REVIEW_SANDBOX_TOKEN is the child token. The config's mcpServers.sandbox reads it.
           if [ -f "$SANDBOX_MCP_CONFIG" ]; then
