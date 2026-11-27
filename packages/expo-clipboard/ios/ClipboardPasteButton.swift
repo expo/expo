@@ -2,8 +2,19 @@
 import ExpoModulesCore
 import UniformTypeIdentifiers
 
+@available(iOS 16.0, *)
+private class FittingPasteControl: UIPasteControl {
+  var onIntrinsicContentSizeChange: (() -> Void)?
+
+  override func invalidateIntrinsicContentSize() {
+    super.invalidateIntrinsicContentSize()
+    DispatchQueue.main.async { [weak self] in self?.onIntrinsicContentSizeChange?() }
+  }
+}
+
 class ClipboardPasteButton: ExpoView {
   let onPastePressed = EventDispatcher()
+  let onFittingSizeChange = EventDispatcher()
 
   // MARK: - Properties
   var baseBackgroundColor: UIColor?
@@ -14,6 +25,23 @@ class ClipboardPasteButton: ExpoView {
   var imageOptions = GetImageOptions()
 
   private var childView: UIView?
+  private var reportedFittingSize: CGSize?
+
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    reportFittingSize()
+  }
+
+  private func reportFittingSize() {
+    guard let size = childView?.intrinsicContentSize,
+      size.width > 0,
+      size.height > 0,
+      size != reportedFittingSize else {
+      return
+    }
+    reportedFittingSize = size
+    onFittingSizeChange(["width": size.width, "height": size.height])
+  }
 
   func update() {
     unmountChild()
@@ -32,7 +60,8 @@ class ClipboardPasteButton: ExpoView {
     configuration.cornerStyle = cornerStyle.toCornerStyle()
     configuration.displayMode = displayMode.toUIDisplayMode()
 
-    let control = UIPasteControl(configuration: configuration)
+    let control = FittingPasteControl(configuration: configuration)
+    control.onIntrinsicContentSizeChange = { [weak self] in self?.reportFittingSize() }
     control.translatesAutoresizingMaskIntoConstraints = false
     control.target = self
     setContentTypes()
