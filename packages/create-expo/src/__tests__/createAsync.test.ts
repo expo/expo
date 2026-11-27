@@ -5,7 +5,6 @@ import ora from 'ora';
 import { downloadAndExtractExampleAsync } from '../Examples';
 import { extractAndPrepareTemplateAppAsync, installPodsAsync } from '../Template';
 import { createAsync, logNodeInstallWarning, setupDependenciesAsync } from '../createAsync';
-import { SwiftPMUnsupportedError } from '../error';
 import { installDependenciesAsync } from '../resolvePackageManager';
 
 jest.mock('fs');
@@ -87,7 +86,7 @@ describe(setupDependenciesAsync, () => {
       new Error('npm install exited with non-zero code: 1')
     );
 
-    await setupDependenciesAsync('/foo/bar', { install: true });
+    await setupDependenciesAsync('/foo/bar', { install: true, useCocoaPods: false });
 
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('make sure you have modules installed')
@@ -97,7 +96,7 @@ describe(setupDependenciesAsync, () => {
   it(`does not warn when the install succeeds`, async () => {
     asMock(installDependenciesAsync).mockResolvedValueOnce(undefined);
 
-    await setupDependenciesAsync('/foo/bar', { install: true });
+    await setupDependenciesAsync('/foo/bar', { install: true, useCocoaPods: false });
 
     expect(console.log).not.toHaveBeenCalledWith(
       expect.stringContaining('make sure you have modules installed')
@@ -105,7 +104,7 @@ describe(setupDependenciesAsync, () => {
   });
 });
 
-describe('setupDependenciesAsync with swiftpm', () => {
+describe('setupDependenciesAsync for iOS', () => {
   const projectRoot = '/foo/bar';
   const prebuildArgs = ['expo', 'prebuild', '--platform', 'ios'];
   const prebuildNextStep = `npx ${prebuildArgs.join(' ')}`;
@@ -133,184 +132,184 @@ describe('setupDependenciesAsync with swiftpm', () => {
     vol.reset();
   });
 
-  it(`runs prebuild for iOS in the project root after installing node modules`, async () => {
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+  describe('without an ios directory', () => {
+    it(`sets up neither Swift Package Manager nor CocoaPods`, async () => {
+      await setupDependenciesAsync(projectRoot, { install: true, useCocoaPods: false });
 
-    expect(asMock(spawnAsync).mock.calls).toEqual([
-      ['npx', prebuildArgs, expect.objectContaining({ cwd: projectRoot })],
-    ]);
-    expect(asMock(installDependenciesAsync).mock.invocationCallOrder[0]).toBeLessThan(
-      asMock(spawnAsync).mock.invocationCallOrder[0]!
-    );
+      expect(spawnAsync).not.toHaveBeenCalled();
+      expect(installPodsAsync).not.toHaveBeenCalled();
+      expect(vol.existsSync(`${projectRoot}/ios`)).toBe(false);
+      expect(loggedOutput()).not.toContain('Swift Package Manager');
+    });
   });
 
-  it(`never installs CocoaPods when the template ships an ios directory`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
+  describe('with an ios directory and Swift Package Manager', () => {
+    const useSwiftPM = { install: true, useCocoaPods: false };
 
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+    beforeEach(() => {
+      vol.mkdirSync(`${projectRoot}/ios`);
+    });
 
-    expect(asMock(spawnAsync).mock.calls).toEqual([
-      ['npx', prebuildArgs, expect.objectContaining({ cwd: projectRoot })],
-    ]);
-    expect(installPodsAsync).not.toHaveBeenCalled();
+    it(`runs prebuild for iOS after installing node modules instead of installing CocoaPods`, async () => {
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      expect(asMock(spawnAsync).mock.calls).toEqual([
+        ['npx', prebuildArgs, expect.objectContaining({ cwd: projectRoot })],
+      ]);
+      expect(asMock(installDependenciesAsync).mock.invocationCallOrder[0]).toBeLessThan(
+        asMock(spawnAsync).mock.invocationCallOrder[0]!
+      );
+      expect(installPodsAsync).not.toHaveBeenCalled();
+    });
+
+    it(`names the CocoaPods opt-out without calling Swift Package Manager a preview`, async () => {
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      const output = loggedOutput();
+      expect(output).toMatch(/Swift Package Manager for iOS instead of CocoaPods/);
+      expect(output).toContain('"ios": { "useCocoaPods": true }');
+      expect(output).toMatch(/do not run `pod install`/i);
+      expect(output).not.toMatch(/preview/i);
+      expect(output).not.toContain('experiments.swiftPackageManager');
+      expect(output).not.toContain(prebuildNextStep);
+    });
+
+    it(`prints prebuild as a next step instead of running it when not on macOS`, async () => {
+      setPlatform('linux');
+
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      expect(spawnAsync).not.toHaveBeenCalled();
+      const output = loggedOutput();
+      expect(output).toContain(`cd ${projectRoot}/`);
+      expect(output).toContain(prebuildNextStep);
+    });
+
+    it(`prints prebuild as a next step instead of running it with --no-install`, async () => {
+      await setupDependenciesAsync(projectRoot, { ...useSwiftPM, install: false });
+
+      expect(spawnAsync).not.toHaveBeenCalled();
+      const output = loggedOutput();
+      expect(output).toContain(prebuildNextStep);
+      expect(output).not.toContain('npx pod-install');
+      expect(output.indexOf(' install')).toBeLessThan(output.indexOf(prebuildNextStep));
+    });
+
+    it(`does not run prebuild when the node modules failed to install`, async () => {
+      asMock(installDependenciesAsync).mockRejectedValueOnce(new Error('npm install failed'));
+
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      expect(spawnAsync).not.toHaveBeenCalled();
+      expect(loggedOutput()).toContain(prebuildNextStep);
+    });
+
+    it(`prints prebuild as the remaining step when it fails`, async () => {
+      asMock(spawnAsync).mockRejectedValueOnce(
+        Object.assign(new Error('npx exited with non-zero code: 1'), { stderr: 'prebuild broke' })
+      );
+
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      expect(asMock(spawnAsync).mock.calls).toHaveLength(1);
+      expect(loggedOutput()).toContain(prebuildNextStep);
+      expect(console.error).toHaveBeenCalledWith('prebuild broke');
+    });
+
+    it(`tells the user how to finish the setup when prebuild fails`, async () => {
+      asMock(ora).mockClear();
+      asMock(spawnAsync).mockRejectedValueOnce(new Error('npx exited with non-zero code: 1'));
+
+      await setupDependenciesAsync(projectRoot, useSwiftPM);
+
+      const failMessages = asMock(ora).mock.results.flatMap(
+        ({ value }) => asMock(value.fail).mock.calls
+      );
+      expect(failMessages).toContainEqual([
+        'Setting up Swift Package Manager for iOS failed. The app is still created. Run the command below to finish the setup.',
+      ]);
+    });
   });
 
-  it(`explains the app.json setting and warns not to run pod install`, async () => {
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+  describe('with an ios directory and CocoaPods', () => {
+    it(`installs CocoaPods and skips prebuild`, async () => {
+      vol.mkdirSync(`${projectRoot}/ios`);
 
-    const output = loggedOutput();
-    expect(output).toMatch(/Swift Package Manager for iOS instead of CocoaPods/);
-    expect(output).toMatch(/preview/i);
-    expect(output).toContain('experiments.swiftPackageManager');
-    expect(output).toContain('app.json');
-    expect(output).toMatch(/do not run `pod install`/i);
-    expect(output).not.toContain('--swiftpm');
-    expect(output).not.toContain(prebuildNextStep);
-  });
+      await setupDependenciesAsync(projectRoot, { install: true, useCocoaPods: true });
 
-  it(`prints prebuild as a next step instead of running it when not on macOS`, async () => {
-    setPlatform('linux');
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
-    const output = loggedOutput();
-    expect(output).toContain(`cd ${projectRoot}/`);
-    expect(output).toContain(prebuildNextStep);
-    expect(output).toMatch(/do not run `pod install`/i);
-  });
-
-  it(`prints prebuild as a next step instead of running it with --no-install`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
-
-    await setupDependenciesAsync(projectRoot, { install: false, swiftpm: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
-    const output = loggedOutput();
-    expect(output).toContain(prebuildNextStep);
-    expect(output).not.toContain('npx pod-install');
-    expect(output.indexOf(' install')).toBeLessThan(output.indexOf(prebuildNextStep));
-  });
-
-  it(`does not run prebuild when the node modules failed to install`, async () => {
-    asMock(installDependenciesAsync).mockRejectedValueOnce(new Error('npm install failed'));
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
-    expect(loggedOutput()).toContain(prebuildNextStep);
-  });
-
-  it(`prints prebuild as the remaining step when it fails`, async () => {
-    asMock(spawnAsync).mockRejectedValueOnce(
-      Object.assign(new Error('npx exited with non-zero code: 1'), { stderr: 'prebuild broke' })
-    );
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(asMock(spawnAsync).mock.calls).toHaveLength(1);
-    expect(loggedOutput()).toContain(prebuildNextStep);
-    expect(console.error).toHaveBeenCalledWith('prebuild broke');
-  });
-
-  it(`tells the user how to finish the setup when prebuild fails`, async () => {
-    asMock(ora).mockClear();
-    asMock(spawnAsync).mockRejectedValueOnce(new Error('npx exited with non-zero code: 1'));
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    const failMessages = asMock(ora).mock.results.flatMap(
-      ({ value }) => asMock(value.fail).mock.calls
-    );
-    expect(failMessages).toContainEqual([
-      'Setting up Swift Package Manager for iOS failed. The app is still created. Run the command below to finish the setup.',
-    ]);
-  });
-
-  it(`still installs CocoaPods and skips prebuild without swiftpm`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: false });
-
-    expect(installPodsAsync).toHaveBeenCalledWith(projectRoot);
-    expect(spawnAsync).not.toHaveBeenCalled();
-    expect(loggedOutput()).not.toContain('Swift Package Manager');
-  });
-
-  it(`skips prebuild when swiftpm is omitted`, async () => {
-    await setupDependenciesAsync(projectRoot, { install: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
+      expect(installPodsAsync).toHaveBeenCalledWith(projectRoot);
+      expect(spawnAsync).not.toHaveBeenCalled();
+      expect(loggedOutput()).not.toContain('Swift Package Manager');
+    });
   });
 });
 
 describe(createAsync, () => {
   const projectRoot = '/foo/app';
-  const options = { install: false, yes: true, agentsMd: false, swiftpm: true };
+  const options = { install: false, yes: true, agentsMd: false };
 
   beforeEach(() => {
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
+    asMock(extractAndPrepareTemplateAppAsync).mockResolvedValue({ useCocoaPods: false });
+    asMock(downloadAndExtractExampleAsync).mockResolvedValue({ useCocoaPods: false });
   });
   afterEach(() => {
     vol.reset();
   });
 
-  it(`passes swiftpm to the template extraction`, async () => {
-    await createAsync(projectRoot, { ...options, template: 'expo-template-blank' });
+  it(`passes cocoapods to the template extraction`, async () => {
+    await createAsync(projectRoot, {
+      ...options,
+      cocoapods: true,
+      template: 'expo-template-blank',
+    });
 
     expect(extractAndPrepareTemplateAppAsync).toHaveBeenCalledWith(
       projectRoot,
-      expect.objectContaining({ swiftpm: true })
+      expect.objectContaining({ cocoapods: true })
     );
   });
 
-  it(`passes swiftpm to the example extraction`, async () => {
-    await createAsync(projectRoot, { ...options, example: 'with-router' });
+  it(`passes cocoapods to the example extraction`, async () => {
+    await createAsync(projectRoot, { ...options, cocoapods: true, example: 'with-router' });
 
     expect(downloadAndExtractExampleAsync).toHaveBeenCalledWith(projectRoot, 'with-router', {
-      swiftpm: true,
+      cocoapods: true,
     });
   });
 
-  describe('when the React Native version does not support SwiftPM', () => {
-    const failMessages = () =>
-      asMock(ora).mock.results.flatMap(({ value }) => asMock(value.fail).mock.calls.flat());
-
+  describe('with an ios directory', () => {
     beforeEach(() => {
-      asMock(ora).mockClear();
-      asMock(installDependenciesAsync).mockReset();
+      vol.mkdirSync(`${projectRoot}/ios`);
+      asMock(installPodsAsync).mockReset();
       asMock(spawnAsync).mockReset();
     });
 
-    it.each([
-      ['template', { template: 'expo-template-blank@sdk-55' }, extractAndPrepareTemplateAppAsync],
-      ['example', { example: 'with-router' }, downloadAndExtractExampleAsync],
-    ] as const)(
-      `stops without installing when the %s React Native is too old and prints the reason as-is`,
-      async (source, sourceOption, extract) => {
-        const error = new SwiftPMUnsupportedError(source, '^0.83.0', 'app');
-        asMock(extract).mockRejectedValueOnce(error);
+    it(`sets up Swift Package Manager when the template uses it`, async () => {
+      await createAsync(projectRoot, { ...options, install: true, template: 'bare-minimum' });
 
-        await expect(
-          createAsync(projectRoot, { ...options, install: true, ...sourceOption })
-        ).rejects.toBe(error);
-
-        expect(failMessages()).toEqual([error.message]);
-        expect(installDependenciesAsync).not.toHaveBeenCalled();
-        expect(spawnAsync).not.toHaveBeenCalled();
-      }
-    );
-
-    it(`keeps the prefix for other extraction errors`, async () => {
-      asMock(extractAndPrepareTemplateAppAsync).mockRejectedValueOnce(new Error('404'));
-
-      await expect(
-        createAsync(projectRoot, { ...options, template: 'expo-template-blank' })
-      ).rejects.toThrow('404');
-
-      expect(failMessages()).toEqual([
-        'Something went wrong in downloading and extracting the project files: 404',
-      ]);
+      expect(installPodsAsync).not.toHaveBeenCalled();
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npx',
+        ['expo', 'prebuild', '--platform', 'ios'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
     });
+  });
+
+  it(`prefixes extraction errors`, async () => {
+    asMock(ora).mockClear();
+    asMock(extractAndPrepareTemplateAppAsync).mockRejectedValueOnce(new Error('404'));
+
+    await expect(
+      createAsync(projectRoot, { ...options, template: 'expo-template-blank' })
+    ).rejects.toThrow('404');
+
+    const failMessages = asMock(ora).mock.results.flatMap(({ value }) =>
+      asMock(value.fail).mock.calls.flat()
+    );
+    expect(failMessages).toEqual([
+      'Something went wrong in downloading and extracting the project files: 404',
+    ]);
   });
 });

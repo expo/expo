@@ -1,14 +1,9 @@
-import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import { maybePromptToSyncPodsAsync } from '../cocoapods';
 
 jest.mock('../../log');
-jest.mock('@expo/config', () => {
-  const actual = jest.requireActual('@expo/config');
-  return { ...actual, getConfig: jest.fn(actual.getConfig) };
-});
 
 const mockInstallAsync = jest.fn(async () => {});
 jest.mock('@expo/package-manager', () => ({
@@ -39,50 +34,27 @@ afterEach(() => {
 
 describe(maybePromptToSyncPodsAsync, () => {
   const marker = `${projectRoot}/ios/App.xcodeproj/.spm-injected.json`;
-  const writeAppConfig = (experiments: object) =>
-    vol.writeFileSync(`${projectRoot}/app.json`, JSON.stringify({ expo: { experiments } }));
 
-  it(`skips CocoaPods when experiments.swiftPackageManager is enabled and the iOS project uses Swift Package Manager`, async () => {
-    writeAppConfig({ swiftPackageManager: true });
+  it(`skips CocoaPods when the iOS project uses Swift Package Manager`, async () => {
     vol.writeFileSync(marker, '{}');
 
     await maybePromptToSyncPodsAsync(projectRoot);
 
     expect(mockInstallAsync).not.toHaveBeenCalled();
     expect(Log.log).toHaveBeenCalledWith(
-      expect.stringMatching(
-        /^Skipping CocoaPods because .*experiments\.swiftPackageManager.* is enabled in the app config\.$/
-      )
+      'Skipping CocoaPods because the iOS project uses Swift Package Manager.'
     );
   });
 
-  it(`tells the user to run prebuild when experiments.swiftPackageManager is enabled but the iOS project still uses CocoaPods`, async () => {
-    writeAppConfig({ swiftPackageManager: true });
-
-    await maybePromptToSyncPodsAsync(projectRoot);
-
-    expect(mockInstallAsync).not.toHaveBeenCalled();
-    expect(Log.log).toHaveBeenCalledWith(
-      expect.stringMatching(
-        /^Skipping CocoaPods because .*experiments\.swiftPackageManager.* is enabled in the app config\. .*npx expo prebuild.* to switch it to Swift Package Manager\.$/
-      )
+  it(`decides by the iOS project, not by ios.useCocoaPods in the app config`, async () => {
+    vol.writeFileSync(
+      `${projectRoot}/app.json`,
+      JSON.stringify({ expo: { ios: { useCocoaPods: true } } })
     );
-  });
-
-  it(`reads the app config with plugins applied, like expo prebuild`, async () => {
-    await maybePromptToSyncPodsAsync(projectRoot);
-
-    expect(getConfig).toHaveBeenCalledWith(projectRoot, { skipSDKVersionRequirement: true });
-  });
-
-  it(`throws when the iOS project uses Swift Package Manager but the setting is not enabled`, async () => {
     vol.writeFileSync(marker, '{}');
 
-    const result = maybePromptToSyncPodsAsync(projectRoot);
+    await expect(maybePromptToSyncPodsAsync(projectRoot)).resolves.toBeUndefined();
 
-    await expect(result).rejects.toMatchObject({ name: 'CommandError' });
-    await expect(result).rejects.toThrow(/ios\/App\.xcodeproj\/\.spm-injected\.json/);
-    await expect(result).rejects.toThrow(/npx expo prebuild --clean/);
     expect(mockInstallAsync).not.toHaveBeenCalled();
   });
 

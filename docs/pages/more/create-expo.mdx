@@ -36,7 +36,11 @@ Uses the default options to create a new project.
 
 ### `--no-install`
 
-Skips installing npm dependencies or CocoaPods.
+Skips installing npm dependencies, installing CocoaPods, and setting up Swift Package Manager for iOS.
+
+### `--cocoapods`
+
+Sets up iOS with CocoaPods instead of Swift Package Manager. This option sets `ios.useCocoaPods` to `true` in the project's [app config](/workflow/configuration/). Projects that use a React Native version older than 0.88 always use CocoaPods.
 
 ### `--no-agents-md`
 

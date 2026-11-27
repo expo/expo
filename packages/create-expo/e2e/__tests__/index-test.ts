@@ -34,6 +34,27 @@ it('prevents overwriting directories with projects', async () => {
   }
 });
 
+it('rejects the removed --swiftpm flag', async () => {
+  const projectName = 'rejects-swiftpm-flag';
+
+  createTestPath(projectName);
+  fs.writeFileSync(getTestPath(projectName, 'package.json'), '{ "version": "1.0.0" }');
+
+  expect.assertions(1);
+  try {
+    await execute([projectName, '--swiftpm']);
+  } catch (error: any) {
+    expect(error.stderr).toMatch(/Unknown arguments: --swiftpm/);
+  }
+});
+
+it('documents --cocoapods in the help', async () => {
+  const { stdout } = await executePassing(['--help']);
+
+  expect(stdout).toMatch(/--cocoapods\s+iOS: use CocoaPods instead of Swift Package Manager/);
+  expect(stdout).not.toContain('--swiftpm');
+});
+
 it('creates a full basic project by default', async () => {
   const projectName = 'defaults-to-basic';
   await executePassing([projectName]);
