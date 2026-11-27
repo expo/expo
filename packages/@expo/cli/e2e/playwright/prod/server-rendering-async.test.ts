@@ -186,4 +186,22 @@ test.describe('server rendering with async routes in production', () => {
     await expect(page.getByTestId('content')).toHaveText('About');
     expect(pageErrors.errors).toEqual([]);
   });
+
+  test('resolves async imports inside a web worker', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(new URL('/workers/async-imports', expoServe.url).href);
+
+    await expect(page.getByTestId('page-math')).toHaveText('4');
+    await expect(page.getByTestId('page-shared-importer')).toHaveText('6');
+
+    // A classic worker and a module worker run the same scenarios.
+    for (const worker of ['worker', 'module-worker']) {
+      await expect(page.getByTestId(`${worker}-worker-only`)).toHaveText('worker-only');
+      await expect(page.getByTestId(`${worker}-shared-target`)).toHaveText('6');
+      await expect(page.getByTestId(`${worker}-shared-importer`)).toHaveText('6');
+      await expect(page.getByTestId(`${worker}-maybe-sync`)).toHaveText('maybe-sync-target');
+      await expect(page.getByTestId(`${worker}-prefetch`)).toHaveText('prefetch-target');
+    }
+    expect(pageErrors.all).toEqual([]);
+  });
 });

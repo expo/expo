@@ -36,6 +36,8 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       assert(workerChunk, `Worker chunk not found for: ${dependency.absolutePath}`);
       return [workerChunk];
     }
+    // A worker chunk contains the modules that the worker imports asynchronously.
+    if (chunk.sealed) return [];
     const targets = requiredChunksByEntryPath.get(dependency.absolutePath);
     assert(targets, `Granular async entry not found: ${dependency.absolutePath}`);
     // The importing chunk is already loaded. Return the other chunks needed by
@@ -246,14 +248,16 @@ function collectWorkerChunks(
 ): { chunks: Set<Chunk>; chunksByEntryPath: Map<string, Chunk> } {
   const { preModules } = context;
   const workerChunksByEntryPath = new Map<string, Chunk>();
-  // Graphs with async imports inside workers use legacy chunking before this planner runs.
-  // Supported workers keep their own runtime and copies of dependencies shared with the application.
+  // A worker has its own module registry, so it cannot load the chunks of the application or of
+  // another worker. Each worker is one chunk with its own runtime, its own copies of the
+  // dependencies shared with the application, and the modules that it imports asynchronously.
   const workerChunks = new Set<Chunk>();
   const collectChunk = createChunkCollector(
     context,
     strategy,
     workerChunks,
-    (dependency) => dependency.data.data.asyncType !== 'weak'
+    (dependency) => dependency.data.data.asyncType !== 'weak',
+    true
   );
   for (const module of workerEntries) {
     const chunk = collectChunk(module.path, preModules, true, true);
@@ -261,10 +265,7 @@ function collectWorkerChunks(
     chunk.seal();
   }
   for (const workerChunk of workerChunks) {
-    assert(
-      workerChunk.sealed,
-      'Worker async edges must fall back to legacy before Granular planning.'
-    );
+    assert(workerChunk.sealed, `Worker chunk is not sealed: ${workerChunk.name}`);
     for (const module of workerChunk.entries) workerChunksByEntryPath.set(module.path, workerChunk);
   }
   return { chunks: workerChunks, chunksByEntryPath: workerChunksByEntryPath };
