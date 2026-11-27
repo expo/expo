@@ -1,6 +1,9 @@
-import { screen, act } from '@testing-library/react-native';
+import { act, fireEvent, screen } from '@testing-library/react-native';
+import { useState } from 'react';
+import { Pressable, Text } from 'react-native';
 
 import { router } from '../imperative-api';
+import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/StackClient';
 import { renderRouter } from '../testing-library';
 
@@ -503,4 +506,52 @@ it('pushes a dynamic route with different params in a nested stack when a screen
   expect(groupStack.routes[1]!.params).toEqual({ id: '1' });
   expect(groupStack.routes[2]!.params).toEqual({ id: '2' });
   expect(groupStack.index).toBe(2);
+});
+
+describe('JS stack', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('keeps the revealed screen touchable after dismissTo closes the screens above it at once', async () => {
+    // Runs the card transitions on the JS thread, so the card progress listeners fire.
+    const { default: NativeAnimatedHelper } = jest.requireMock<{
+      default: { shouldUseNativeDriver: (config: object) => boolean };
+    }>('react-native/src/private/animated/NativeAnimatedHelper');
+    jest.spyOn(NativeAnimatedHelper, 'shouldUseNativeDriver').mockReturnValue(false);
+
+    function Home() {
+      const [taps, setTaps] = useState(0);
+      return (
+        <Pressable testID="counter" onPress={() => setTaps((value) => value + 1)}>
+          <Text>Taps: {taps}</Text>
+        </Pressable>
+      );
+    }
+    const finishTransition = () => act(async () => jest.advanceTimersByTime(1000));
+
+    await renderRouter({
+      _layout: () => (
+        <JSStack>
+          <JSStack.Screen name="index" />
+          <JSStack.Screen name="details" />
+          <JSStack.Screen name="modal" options={{ presentation: 'transparentModal' }} />
+        </JSStack>
+      ),
+      index: Home,
+      details: () => null,
+      modal: () => null,
+    });
+
+    await act(() => router.push('/details'));
+    await finishTransition();
+    await act(() => router.push('/modal'));
+    await finishTransition();
+    await act(() => router.dismissTo('/'));
+    await finishTransition();
+
+    expect(screen).toHavePathname('/');
+    await act(() => fireEvent.press(screen.getByTestId('counter')));
+    expect(screen.getByText('Taps: 1')).toBeVisible();
+  });
 });
