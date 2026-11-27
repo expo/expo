@@ -28,6 +28,10 @@ extension JavaScriptRuntime {
     /// The global `Uint8Array` constructor.
     static let uint8ArrayConstructor = Cache.Key<JavaScriptFunction.Ref>()
 
+    /// The intrinsic `TypedArray.prototype` getters (`Symbol.toStringTag`, `byteLength`, `byteOffset`,
+    /// `length`, `buffer`).
+    static let typedArrayGetters = Cache.Key<JavaScriptTypedArray.Getters>()
+
     // MARK: - Functions evaluated from source
 
     /// The factory of the classes created with `createClass`.
@@ -38,10 +42,5 @@ extension JavaScriptRuntime {
 
     /// The function that copies the entries of a JS `Set` into an array.
     static let setEntries = Cache.Key<JavaScriptFunction.Ref>()
-
-    // MARK: - Property names
-
-    /// The property names that a typed array is read through.
-    static let typedArrayPropNames = Cache.Key<JavaScriptTypedArray.PropNames>()
   }
 }

@@ -1,6 +1,8 @@
 #pragma once
 #ifdef __cplusplus
 
+#include <cstdio>
+#include <cstdlib>
 #include <jsi/jsi.h>
 
 // React Native 0.86 split the JSI API into the abstract `jsi::IRuntime` base
@@ -17,11 +19,32 @@
 #include <cxxreact/ReactNativeVersion.h>
 #endif
 
-#if !defined(REACT_NATIVE_VERSION_MAJOR) || \
-    (REACT_NATIVE_VERSION_MAJOR == 0 && REACT_NATIVE_VERSION_MINOR < 86)
+// React Native 0.86 added native `TypedArray` / `Uint8Array` predicates and accessors on
+// `jsi::IRuntime`. Hermes V1 overrides these directly; engines that keep `jsi::Runtime`'s default
+// implementations (such as legacy Hermes with `RCT_HERMES_V1_ENABLED=0` or JSC) run JS fallbacks
+// that may throw `jsi::JSIException`, so callers catch `jsi::JSIException`.
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+#define EXPO_JSI_HAS_RN_086 1
+#else
+#define EXPO_JSI_HAS_RN_086 0
 namespace facebook::jsi {
 using IRuntime = Runtime;
 } // namespace facebook::jsi
 #endif
+
+namespace expo {
+
+[[noreturn]] __attribute__((availability(swift, unavailable)))
+inline void abortUnsupportedRNVersion(const char *functionName) noexcept {
+  std::fprintf(
+    stderr,
+    "ExpoModulesJSI: %s requires React Native 0.86+ and must be gated behind hasNativeTypedArraySupport()\n",
+    functionName
+  );
+  std::abort();
+}
+
+} // namespace expo
 
 #endif // __cplusplus
