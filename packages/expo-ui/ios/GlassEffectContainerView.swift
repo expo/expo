@@ -3,28 +3,29 @@
 import SwiftUI
 import ExpoModulesCore
 
-public final class GlassEffectContainerViewProps: UIBaseViewProps {
-  @Field var spacing: Double?
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct GlassEffectContainerViewProps {
+  var spacing: CGFloat?
 }
 
-public struct GlassEffectContainerView: ExpoSwiftUI.View {
-  @ObservedObject public var props: GlassEffectContainerViewProps
-
-  public init(props: GlassEffectContainerViewProps) {
-    self.props = props
+@ExpoView<GlassEffectContainerViewProps>
+public struct GlassEffectContainerView: View {
+  public var body: some View {
+    container.applyExpoUIViewProps(props.base, appContext: appContext)
   }
 
-  public var body: some View {
+  @ViewBuilder
+  private var container: some View {
     if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
 #if compiler(>=6.2) // Xcode 26
-      GlassEffectContainer(spacing: props.spacing.map { CGFloat($0) }) {
-        Children()
+      GlassEffectContainer(spacing: props.spacing) {
+        children
       }
 #else
-      Children()
+      children
 #endif
     } else {
-      Children()
+      children
     }
   }
 }

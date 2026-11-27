@@ -6,16 +6,23 @@ import { LazyVStack } from '../../LazyVStack';
 
 const mockForEach = jest.fn();
 
-jest.mock('expo', () => ({
-  requireNativeView: (_module: string, name: string) => {
-    const { createElement } = require('react');
-    const { View } = require('react-native');
-    return (props: any) => {
+jest.mock('expo', () => {
+  const { createElement } = require('react');
+  const { View } = require('react-native');
+  return {
+    requireNativeView: (_module: string, name: string) => (props: any) => {
       if (name === 'DataListForEachView') mockForEach(props);
       return createElement(View, props);
-    };
-  },
-}));
+    },
+    requireOptionalNative: () =>
+      new Proxy(
+        {},
+        {
+          get: () => (props: any) => createElement(View, props),
+        }
+      ),
+  };
+});
 
 const data = Array.from({ length: 10_000 }, (_, index) => ({ id: `item-${index}` }));
 const keyExtractor = (item: { id: string }) => item.id;
