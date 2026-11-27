@@ -188,21 +188,16 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> [String: Value]
   {
-    // Reads the object straight from the borrowed value and lends each property out unowned, so it's
-    // decoded without a `JavaScriptValue` per property.
-    let object = try value.asObject(in: runtime)
-    let keys = object.getPropertyNames()
-    var result = [String: Value](minimumCapacity: keys.count)
-    for key in keys {
-      let decoded: Value? = try object.withUnownedProperty(key) { property in
-        // Treat an `undefined`-valued property as an absent entry. Without this a non-optional
-        // `Value` would reject an object that simply omits the property as `undefined`.
-        return property.isUndefined() ? nil : try Value.decode(property, in: runtime)
+    // Borrows the object directly from the unowned value and iterates its properties using the
+    // engine's own key strings, skipping `undefined`-valued properties before converting their keys.
+    var result: [String: Value] = [:]
+    try value.forEachDefinedObjectProperty(
+      in: runtime,
+      reserveCapacity: { result.reserveCapacity($0) },
+      body: { key, property in
+        result[key] = try Value.decode(property, in: runtime)
       }
-      if let decoded {
-        result[key] = decoded
-      }
-    }
+    )
     return result
   }
 }
@@ -309,17 +304,14 @@ extension JavaScriptValue {
     in runtime: borrowing JavaScriptRuntime,
     value decodeValue: ElementDecoder<Value>
   ) throws -> [String: Value] {
-    let object = try value.asObject(in: runtime)
-    let keys = object.getPropertyNames()
-    var result = [String: Value](minimumCapacity: keys.count)
-    for key in keys {
-      let decoded: Value? = try object.withUnownedProperty(key) { property in
-        return property.isUndefined() ? nil : try decodeValue(property, runtime)
+    var result: [String: Value] = [:]
+    try value.forEachDefinedObjectProperty(
+      in: runtime,
+      reserveCapacity: { result.reserveCapacity($0) },
+      body: { key, property in
+        result[key] = try decodeValue(property, runtime)
       }
-      if let decoded {
-        result[key] = decoded
-      }
-    }
+    )
     return result
   }
 

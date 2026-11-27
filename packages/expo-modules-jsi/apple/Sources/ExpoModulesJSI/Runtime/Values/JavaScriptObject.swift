@@ -249,7 +249,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let count = propertyNames.size(jsiRuntime)
 
     return (0..<count).map { i in
-      return String(jsiString: propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime), in: jsiRuntime)
+      return String(jsiStringValue: propertyNames.getValueAtIndex(jsiRuntime, i), in: jsiRuntime)
     }
   }
 
@@ -266,7 +266,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let count = propertyNames.size(jsiRuntime)
 
     for i in 0..<count {
-      let name = propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime)
+      let name = expo.stringAtIndex(jsiRuntime, propertyNames, i)
       let property = pointee.getProperty(jsiRuntime, name)
       let swiftName = String(jsiString: name, in: jsiRuntime)
       try withUnowned(property, in: jsiRuntime) { value in
