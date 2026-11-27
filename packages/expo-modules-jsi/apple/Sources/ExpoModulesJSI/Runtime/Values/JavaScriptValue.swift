@@ -172,6 +172,16 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Type checks
 
+  @usableFromInline
+  internal func isNullOrUndefined() -> Bool {
+    return pointee.isNull() || pointee.isUndefined()
+  }
+
+  @usableFromInline
+  internal func numberIfPresent() -> Double? {
+    return pointee.isNumber() ? pointee.getNumber() : nil
+  }
+
   public func isUndefined() -> Bool {
     return pointee.isUndefined()
   }

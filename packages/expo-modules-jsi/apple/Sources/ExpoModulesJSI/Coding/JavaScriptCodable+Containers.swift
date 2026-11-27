@@ -117,7 +117,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable & ~Co
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Wrapped?
   {
-    if value.isNull() || value.isUndefined() {
+    if value.isNullOrUndefined() {
       return .none
     }
     return try Wrapped.decode(value, in: runtime)
@@ -129,7 +129,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable & ~Co
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Wrapped?
   {
-    if value.isNull() || value.isUndefined() {
+    if value.isNullOrUndefined() {
       return .none
     }
     return try Wrapped.decode(value, in: runtime)

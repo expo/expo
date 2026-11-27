@@ -1,6 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import CoreGraphics
+internal import ExpoModulesJSI_Cxx
+internal import jsi
 
 // `JavaScriptCodable` conformances for leaf primitive types — `Bool`, `String`, and the integer
 // and floating-point families. Each reads a JavaScript value directly via the corresponding
@@ -614,131 +616,264 @@ extension UInt64: JavaScriptCodable {
 
 // MARK: - Integer conversion entry points
 
-// The inlinable integer witnesses call these non-generic overloads rather than the generic
-// implementations below. A client can devirtualize a witness and inline it only when its body calls
-// non-generic functions; through a generic, non-inlinable call, it falls back to dynamic dispatch, and a
-// direct call runs the generic implementation unspecialized. Each overload runs a copy of the generic
-// implementation specialized inside the framework.
+// The numeric decode and safe-integer encode entry points are `@inlinable` so client modules can
+// inline the common `number` fast path without a cross-module call. The decode overloads spell out
+// `Int8(exactly:)`..`UInt64(exactly:)` concretely rather than delegating to an `@inlinable` generic
+// helper: on a generic `FixedWidthInteger` parameter, `T(exactly:)` binds to the generic
+// `BinaryFloatingPoint` initializer, which runs `_convert(from:)` even when fully specialized, while
+// the concrete `init?(exactly: Double)` is a range check and one `fptosi`. The non-number
+// fallback (`decodeWideIntegerNonNumber`) stays `@usableFromInline` and non-generic so the cold
+// BigInt and error path stays out of line in the framework, specialized per integer type.
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: Int8.Type) throws -> Int8 {
-  return try genericDecodeInteger(number, as: Int8.self)
+  guard number.isFinite, let result = Int8(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int8")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: Int16.Type) throws -> Int16 {
-  return try genericDecodeInteger(number, as: Int16.self)
+  guard number.isFinite, let result = Int16(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int16")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: Int32.Type) throws -> Int32 {
-  return try genericDecodeInteger(number, as: Int32.self)
+  guard number.isFinite, let result = Int32(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int32")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: UInt8.Type) throws -> UInt8 {
-  return try genericDecodeInteger(number, as: UInt8.self)
+  guard number.isFinite, let result = UInt8(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt8")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: UInt16.Type) throws -> UInt16 {
-  return try genericDecodeInteger(number, as: UInt16.self)
+  guard number.isFinite, let result = UInt16(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt16")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeInteger(_ number: Double, as type: UInt32.Type) throws -> UInt32 {
-  return try genericDecodeInteger(number, as: UInt32.self)
+  guard number.isFinite, let result = UInt32(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt32")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: Int.Type) throws -> Int {
-  return try genericDecodeWideInteger(value, as: Int.self)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: Int.self)
+  }
+  guard number.isFinite, let result = Int(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(
   _ value: borrowing JavaScriptUnownedValue,
   as type: Int.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> Int {
-  return try genericDecodeWideInteger(value, as: Int.self, runtime: runtime)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: Int.self, runtime: runtime)
+  }
+  guard number.isFinite, let result = Int(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: Int64.Type) throws -> Int64 {
-  return try genericDecodeWideInteger(value, as: Int64.self)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: Int64.self)
+  }
+  guard number.isFinite, let result = Int64(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int64")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(
   _ value: borrowing JavaScriptUnownedValue,
   as type: Int64.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> Int64 {
-  return try genericDecodeWideInteger(value, as: Int64.self, runtime: runtime)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: Int64.self, runtime: runtime)
+  }
+  guard number.isFinite, let result = Int64(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "Int64")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: UInt.Type) throws -> UInt {
-  return try genericDecodeWideInteger(value, as: UInt.self)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: UInt.self)
+  }
+  guard number.isFinite, let result = UInt(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(
   _ value: borrowing JavaScriptUnownedValue,
   as type: UInt.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> UInt {
-  return try genericDecodeWideInteger(value, as: UInt.self, runtime: runtime)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: UInt.self, runtime: runtime)
+  }
+  guard number.isFinite, let result = UInt(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: UInt64.Type) throws -> UInt64 {
-  return try genericDecodeWideInteger(value, as: UInt64.self)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: UInt64.self)
+  }
+  guard number.isFinite, let result = UInt64(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt64")
+  }
+  return result
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func decodeWideInteger(
   _ value: borrowing JavaScriptUnownedValue,
   as type: UInt64.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> UInt64 {
-  return try genericDecodeWideInteger(value, as: UInt64.self, runtime: runtime)
+  guard let number = value.numberIfPresent() else {
+    return try decodeWideIntegerNonNumber(value, as: UInt64.self, runtime: runtime)
+  }
+  guard number.isFinite, let result = UInt64(exactly: number.rounded()) else {
+    throw IntegerOutOfRangeException(value: number, type: "UInt64")
+  }
+  return result
 }
 
 @usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(_ value: borrowing JavaScriptValue, as type: Int.Type) throws -> Int {
+  return try genericDecodeWideNonNumber(value, as: Int.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: Int.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> Int {
+  return try genericDecodeWideNonNumber(value, as: Int.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(_ value: borrowing JavaScriptValue, as type: Int64.Type) throws -> Int64 {
+  return try genericDecodeWideNonNumber(value, as: Int64.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: Int64.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> Int64 {
+  return try genericDecodeWideNonNumber(value, as: Int64.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(_ value: borrowing JavaScriptValue, as type: UInt.Type) throws -> UInt {
+  return try genericDecodeWideNonNumber(value, as: UInt.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: UInt.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> UInt {
+  return try genericDecodeWideNonNumber(value, as: UInt.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(_ value: borrowing JavaScriptValue, as type: UInt64.Type) throws -> UInt64 {
+  return try genericDecodeWideNonNumber(value, as: UInt64.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideIntegerNonNumber(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: UInt64.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> UInt64 {
+  return try genericDecodeWideNonNumber(value, as: UInt64.self, runtime: runtime)
+}
+
+@inlinable
 @JavaScriptActor
 func encodeSafeInteger(_ value: Int) throws -> JavaScriptValue {
   return try genericEncodeSafeInteger(value)
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func encodeSafeInteger(_ value: UInt) throws -> JavaScriptValue {
   return try genericEncodeSafeInteger(value)
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func safeIntegerNumber(_ value: Int) throws -> Double {
   return try genericSafeIntegerNumber(value)
 }
 
-@usableFromInline
+@inlinable
 @JavaScriptActor
 func safeIntegerNumber(_ value: UInt) throws -> Double {
   return try genericSafeIntegerNumber(value)
@@ -746,77 +881,66 @@ func safeIntegerNumber(_ value: UInt) throws -> Double {
 
 // MARK: - Generic integer conversions
 
-/// Rounds a JavaScript number to the nearest integer and narrows it to `T`, throwing instead of
-/// trapping when the value is non-finite or outside `T`'s representable range. `T(exactly:)` on the
-/// already-rounded value is nil only when out of range, sidestepping the lossy `Double(T.max)`
-/// boundary comparison for 64-bit widths.
 @JavaScriptActor
-func genericDecodeInteger<T: FixedWidthInteger>(_ number: Double, as type: T.Type) throws -> T {
-  guard number.isFinite, let result = T(exactly: number.rounded()) else {
-    throw IntegerOutOfRangeException(value: number, type: "\(T.self)")
+private func bigIntExactly<T: FixedWidthInteger>(
+  _ value: borrowing facebook.jsi.Value,
+  in runtime: facebook.jsi.IRuntime,
+  as type: T.Type
+) -> T? {
+  if T.isSigned {
+    var int64Value: Int64 = 0
+    return expo.getBigIntInt64(runtime, value, &int64Value) ? T(exactly: int64Value) : nil
   }
-  return result
+  var uint64Value: UInt64 = 0
+  return expo.getBigIntUint64(runtime, value, &uint64Value) ? T(exactly: uint64Value) : nil
 }
 
-/// Decodes a 64-bit-wide integer that may arrive as either a JS `number` or a JS `bigint`. The `number`
-/// case is checked first since it's the common one: a single `isNumber()` tag check, then the
-/// assert-only `getDouble()` reads the value without re-checking the tag. A `bigint` is read losslessly
-/// through its 64-bit accessor; anything else throws the same `TypeError` the `number` read would.
+/// Decodes a non-number value into a 64-bit-wide integer. Reads a `bigint` straight from the
+/// underlying `jsi::Value` without cloning its handle; anything else throws `TypeError`.
 @JavaScriptActor
-func genericDecodeWideInteger<T: FixedWidthInteger>(_ value: borrowing JavaScriptValue, as type: T.Type) throws -> T {
-  guard value.isNumber() else {
-    guard value.isBigInt() else {
-      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`.
-      return try genericDecodeInteger(value.asDouble(), as: T.self)
-    }
-    return try genericDecodeBigInt(value.getBigInt(), as: T.self)
+func genericDecodeWideNonNumber<T: FixedWidthInteger>(_ value: borrowing JavaScriptValue, as type: T.Type) throws -> T {
+  guard value.pointee.isBigInt() else {
+    throw JavaScriptValue.TypeError(type: Double.self)
   }
-  return try genericDecodeInteger(value.getDouble(), as: T.self)
+  guard let jsiRuntime = value.jsiRuntime else {
+    FatalError.runtimeLost()
+  }
+  if let result = bigIntExactly(value.pointee, in: jsiRuntime, as: T.self) {
+    return result
+  }
+  throw BigIntOutOfRangeException(value: (try? value.getBigInt().toString()) ?? "<bigint>", type: "\(T.self)")
 }
 
-/// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path pays a single tag
-/// check (see the owning overload).
+/// `JavaScriptUnownedValue` counterpart of `genericDecodeWideNonNumber`.
 @JavaScriptActor
-func genericDecodeWideInteger<T: FixedWidthInteger>(
+func genericDecodeWideNonNumber<T: FixedWidthInteger>(
   _ value: borrowing JavaScriptUnownedValue,
   as type: T.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> T {
-  guard value.isNumber() else {
-    guard value.isBigInt() else {
-      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`.
-      return try genericDecodeInteger(value.asDouble(), as: T.self)
-    }
-    return try genericDecodeBigInt(value.getBigInt(in: runtime), as: T.self)
+  guard value.pointer.pointee.isBigInt() else {
+    throw JavaScriptValue.TypeError(type: Double.self)
   }
-  return try genericDecodeInteger(value.getDouble(), as: T.self)
-}
-
-/// Narrows a `JavaScriptBigInt` to `T`, reading it through the signed or unsigned 64-bit accessor to
-/// match `T`'s signedness and throwing rather than truncating when it falls outside `T`'s range.
-@JavaScriptActor
-func genericDecodeBigInt<T: FixedWidthInteger>(_ bigInt: borrowing JavaScriptBigInt, as type: T.Type) throws -> T {
-  let wide: T? =
-    if T.isSigned {
-      bigInt.isInt64() ? T(exactly: bigInt.getInt64()) : nil
-    } else {
-      bigInt.isUint64() ? T(exactly: bigInt.getUint64()) : nil
-    }
-  guard let result = wide else {
-    throw BigIntOutOfRangeException(value: (try? bigInt.toString()) ?? "<bigint>", type: "\(T.self)")
+  if let result = bigIntExactly(value.pointer.pointee, in: value.runtime, as: T.self) {
+    return result
   }
-  return result
+  throw BigIntOutOfRangeException(
+    value: (try? value.getBigInt(in: runtime).toString()) ?? "<bigint>",
+    type: "\(T.self)"
+  )
 }
 
 /// Encodes a 64-bit-wide integer to a JS `number`, throwing when it falls outside JavaScript's
 /// safe-integer range where a `Double` could no longer represent it exactly. Used by `Int`/`UInt`,
 /// whose JS mapping stays a `number`; the explicitly-sized 64-bit types encode as a `bigint` instead.
+@inlinable
 @JavaScriptActor
 func genericEncodeSafeInteger<T: FixedWidthInteger>(_ value: T) throws -> JavaScriptValue {
   return .number(try genericSafeIntegerNumber(value))
 }
 
 /// Converts a 64-bit-wide integer to the `Double` of a JS `number`, throwing like `genericEncodeSafeInteger`.
+@inlinable
 @JavaScriptActor
 func genericSafeIntegerNumber<T: FixedWidthInteger>(_ value: T) throws -> Double {
   // `Number.MAX_SAFE_INTEGER` (2^53 - 1): the largest magnitude where every integer up to it, and the

@@ -188,8 +188,7 @@ struct JavaScriptCodablePrimitivesTests {
 
   @Test
   func `decodes a 64-bit bigint from a borrowed argument buffer`() throws {
-    // The borrowing overload reads a `number` zero-copy but has to materialize an owning value on the
-    // `bigint` branch; this exercises that materialization path for a value beyond the safe-integer range.
+    // Exercises the borrowing `bigint` decode path for values beyond the safe-integer range.
     let buffer = JavaScriptValuesBuffer.allocate(
       in: runtime,
       with: JavaScriptValue(runtime, bigInt: Self.firstUnsafeInteger).ref(),
