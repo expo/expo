@@ -19,7 +19,7 @@ public final class MagnetometerUncalibratedModule: Module {
     }
 
     AsyncFunction("setUpdateInterval") { (intervalMs: Double) in
-      motionManager.magnetometerUpdateInterval = intervalMs
+      motionManager.magnetometerUpdateInterval = intervalMs / 1000.0
     }
 
     OnStartObserving {
