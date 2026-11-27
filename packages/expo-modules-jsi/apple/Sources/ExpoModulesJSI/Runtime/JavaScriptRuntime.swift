@@ -669,10 +669,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
         settler.register(in: self)
         // Switch to asynchronous context using the sync `schedule` overload and a non-throwing
-        // `Task<Void, Never>` directly, avoiding the extra closure/throwing-Task layers of the
-        // async `schedule` overload.
+        // `Task<Void, Never>` directly; `JavaScriptExecutor` already starts `@JavaScriptActor`
+        // tasks synchronously on the JS thread without needing `Task.immediate`.
         self.schedule {
-          Task.immediate_polyfill {
+          Task {
             // Invoke the asynchronous body and resolve/reject the promise.
             do {
               let result = try await body()

@@ -882,4 +882,38 @@ struct JavaScriptPromiseTests {
     }
     #expect(isCollected)
   }
+
+  @Test
+  func `the teardown sweep releases the error of an awaited rejected promise`() async throws {
+    // Same guarantee for rejections: `DeferredPromise` caches the `JavaScriptError` (which owns a
+    // `jsi::JSError`), so `allowRelease()` must drop `deferredPromise` before the runtime goes away.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      let weakObject = object.createWeak()
+      promise.reject(JavaScriptError(runtime, value: object.asValue()))
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakObject))
+    }
+
+    do {
+      _ = try await promise.value.await()
+    } catch {
+      // Drop the caught `JavaScriptError` on the JS thread so only `DeferredPromise` could still pin it.
+      let caught = error
+      try await testRuntime.scheduler.runIsolated {
+        _ = caught
+      }
+    }
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakObject.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
+  }
 }
