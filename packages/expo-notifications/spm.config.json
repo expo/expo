@@ -23,7 +23,7 @@
             "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation", "UIKit", "UserNotifications"],
-          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
+          "resources": [{ "path": "ios/ExpoNotifications/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }

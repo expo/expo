@@ -21,8 +21,7 @@ let package = Package(
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
-      path: "ios",
-      exclude: ["ExpoLocalization.podspec", "Tests"],
+      path: "ios/ExpoLocalization",
       sources: ["LocalizationModule.swift", "LocalizationRecords.swift"],
       resources: [.copy("PrivacyInfo.xcprivacy")]
     )

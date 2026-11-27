@@ -21,8 +21,7 @@ let package = Package(
       dependencies: [
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
-      path: "ios",
-      sources: ["Sources"]
+      path: "ios/ExpoAI"
     )
   ],
   swiftLanguageModes: [.v6]

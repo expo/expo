@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.resource_bundles = {'EASClient_privacy' => ['PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'EASClient_privacy' => ['EASClient/PrivacyInfo.xcprivacy']}
 
   s.source_files = "#{s.name}/**/*.{h,m,swift}"
   # Swift/Objective-C compatibility
@@ -36,6 +36,6 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/*.{h,m,swift}'
+    test_spec.source_files = 'EASClientTests/*.{h,m,swift}'
   end
 end

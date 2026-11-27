@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.resource_bundles = {'ExpoSystemUI_privacy' => ['PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'ExpoSystemUI_privacy' => ['ExpoSystemUI/PrivacyInfo.xcprivacy']}
 
   s.source_files = "#{s.name}/**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
@@ -31,6 +31,6 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoSystemUITests/**/*.{m,swift}'
   end
 end

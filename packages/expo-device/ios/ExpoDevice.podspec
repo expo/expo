@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.resource_bundles = {'ExpoDevice_privacy' => ['PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'ExpoDevice_privacy' => ['ExpoDevice/PrivacyInfo.xcprivacy']}
 
   s.source_files = "**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
