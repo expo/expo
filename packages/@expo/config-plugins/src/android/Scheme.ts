@@ -47,8 +47,8 @@ export function setScheme(
     return androidManifest;
   }
 
-  // Get the current schemes and remove them from the list of schemes to add.
-  const currentSchemes = getSchemesFromManifest(androidManifest);
+  // Keep duplicate detection scoped to singleTask activities when discovering launcher schemes.
+  const currentSchemes = getSchemesFromIntentFilters(getSchemeIntentFilters(androidManifest));
   for (const uri of currentSchemes) {
     const index = schemes.indexOf(uri);
     if (index > -1) schemes.splice(index, 1);
@@ -86,7 +86,10 @@ function propertiesFromIntentFilter(intentFilter: any): IntentFilterProps {
   };
 }
 
-function getSingleTaskIntentFilters(androidManifest: AndroidManifest): any[] {
+function getSchemeIntentFilters(
+  androidManifest: AndroidManifest,
+  includeSingleTopLauncher = false
+): any[] {
   if (!Array.isArray(androidManifest.manifest.application)) return [];
 
   let outputSchemes: any[] = [];
@@ -94,10 +97,22 @@ function getSingleTaskIntentFilters(androidManifest: AndroidManifest): any[] {
     const { activity } = application;
     // @ts-ignore
     const activities = Array.isArray(activity) ? activity : [activity];
-    const singleTaskActivities = (activities as ManifestActivity[]).filter(
-      (activity) => activity?.$?.['android:launchMode'] === 'singleTask'
+    const matchingActivities = (activities as ManifestActivity[]).filter(
+      (activity) =>
+        activity?.$?.['android:launchMode'] === 'singleTask' ||
+        (includeSingleTopLauncher &&
+          activity?.$?.['android:launchMode'] === 'singleTop' &&
+          activity?.['intent-filter']?.some(
+            (filter) =>
+              filter.action?.some(
+                ({ $ }) => $?.['android:name'] === 'android.intent.action.MAIN'
+              ) &&
+              filter.category?.some(
+                ({ $ }) => $?.['android:name'] === 'android.intent.category.LAUNCHER'
+              )
+          ))
     );
-    for (const activity of singleTaskActivities) {
+    for (const activity of matchingActivities) {
       const intentFilters = activity['intent-filter'];
       outputSchemes = outputSchemes.concat(intentFilters);
     }
@@ -109,10 +124,16 @@ export function getSchemesFromManifest(
   androidManifest: AndroidManifest,
   requestedHost: string | null = null
 ): string[] {
+  return getSchemesFromIntentFilters(getSchemeIntentFilters(androidManifest, true), requestedHost);
+}
+
+function getSchemesFromIntentFilters(
+  intentFilters: any[],
+  requestedHost: string | null = null
+): string[] {
   const outputSchemes: string[] = [];
 
-  const singleTaskIntentFilters = getSingleTaskIntentFilters(androidManifest);
-  for (const intentFilter of singleTaskIntentFilters) {
+  for (const intentFilter of intentFilters) {
     const properties = propertiesFromIntentFilter(intentFilter);
     if (isValidRedirectIntentFilter(properties) && properties.data) {
       for (const { scheme, host } of properties.data) {
@@ -160,7 +181,7 @@ export function ensureManifestHasValidIntentFilter(androidManifest: AndroidManif
 }
 
 export function hasScheme(scheme: string, androidManifest: AndroidManifest): boolean {
-  const schemes = getSchemesFromManifest(androidManifest);
+  const schemes = getSchemesFromIntentFilters(getSchemeIntentFilters(androidManifest));
   return schemes.includes(scheme);
 }
 

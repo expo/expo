@@ -99,6 +99,68 @@ function removeSingleTaskFromActivities(manifest: AndroidManifest) {
 }
 
 describe('Schemes', () => {
+  it('reads singleTop launcher schemes while preserving write scope', async () => {
+    const manifest = await getFixtureManifestAsync();
+    appendScheme('myapp', manifest);
+    appendScheme('exp+myapp', manifest);
+    const main = getMainActivity(manifest)!;
+    main.$['android:launchMode'] = 'singleTop';
+
+    expect(getSchemesFromManifest(manifest)).toEqual(['myapp', 'exp+myapp']);
+    expect(hasScheme('exp+myapp', manifest)).toBe(false);
+    for (const launchMode of ['standard', undefined] as const) {
+      main.$['android:launchMode'] = launchMode;
+      expect(getSchemesFromManifest(manifest)).toEqual([]);
+    }
+    main.$['android:launchMode'] = 'singleTop';
+
+    const target = structuredClone(main);
+    target.$['android:name'] = '.OtherActivity';
+    target.$['android:launchMode'] = 'singleTask';
+    target['intent-filter'] = [
+      {
+        action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+      },
+    ];
+    manifest.manifest.application![0]!.activity!.push(target);
+    setScheme({ scheme: 'exp+myapp' }, manifest);
+    expect(target['intent-filter'][0]!.data).toEqual([{ $: { 'android:scheme': 'exp+myapp' } }]);
+    expect(hasScheme('exp+myapp', manifest)).toBe(true);
+  });
+
+  it('keeps callback schemes from suppressing writes to the singleTask activity', async () => {
+    const manifest = await getFixtureManifestAsync();
+    const main = getMainActivity(manifest)!;
+    const callback = structuredClone(main);
+    callback.$['android:name'] = '.AuthCallbackActivity';
+    callback.$['android:launchMode'] = 'singleTop';
+    callback['intent-filter'] = [
+      {
+        action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+        data: [{ $: { 'android:scheme': 'myapp', 'android:host': 'auth' } }],
+      },
+    ];
+    manifest.manifest.application![0]!.activity!.push(callback);
+    // Read the launcher in singleTop mode before checking the existing write contract.
+    main.$['android:launchMode'] = 'singleTop';
+    main['intent-filter']!.push({
+      action: [{ $: { 'android:name': 'android.intent.action.VIEW' } }],
+      data: [{ $: { 'android:scheme': 'exp+myapp' } }],
+    });
+    expect(getSchemesFromManifest(manifest)).toEqual(['exp+myapp']);
+    main.$['android:launchMode'] = 'singleTask';
+    setScheme({ scheme: 'myapp' }, manifest);
+    setScheme({ scheme: 'myapp' }, manifest);
+    expect(
+      main['intent-filter']!.flatMap((filter) => filter.data ?? []).filter(
+        (data) => data.$['android:scheme'] === 'myapp'
+      )
+    ).toEqual([{ $: { 'android:scheme': 'myapp' } }]);
+    removeScheme('myapp', manifest);
+    expect(hasScheme('myapp', manifest)).toBe(false);
+    expect(callback['intent-filter']![0]!.data![0]!.$['android:host']).toBe('auth');
+  });
+
   it(`ensure manifest has valid intent filter added`, async () => {
     const manifest = await getFixtureManifestAsync();
     const manifestHasValidIntentFilter = ensureManifestHasValidIntentFilter(manifest);
