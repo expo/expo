@@ -81,7 +81,7 @@ A build is treated as a debug build if either the native app is a debug build or
 
 ## Custom endpoint
 
-Expo Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your Expo Services project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+Expo Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics`, logs to `<endpointUrl>/<project-id>/v1/logs`, and [trace spans](/eas/observe/traces/) to `<endpointUrl>/<project-id>/v1/traces`, where `<project-id>` is your Expo Services project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
 
 To change the endpoint, set the `endpointUrl` value in your **app config**:
 
@@ -101,7 +101,7 @@ To change the endpoint, set the `endpointUrl` value in your **app config**:
 
 The endpoint URL is baked into the native layer of the app at build time, so changing it requires regenerating native code. After updating your app config, run `npx expo prebuild` and create a new build to apply the change.
 
-The path includes your project ID before the standard `/v1/metrics` and `/v1/logs` OTLP paths. If your backend expects the standard OTLP path without that prefix, send the data to an OpenTelemetry Collector that receives it and re-exports it to your backend.
+The path includes your project ID before the standard `/v1/metrics`, `/v1/logs`, and `/v1/traces` OTLP paths. If your backend expects the standard OTLP path without that prefix, send the data to an OpenTelemetry Collector that receives it and re-exports it to your backend.
 
 ## Environments
 
@@ -113,7 +113,7 @@ The environment is a metadata tag attached to each metric and is independent of 
 
 > **info** Network traces require SDK 58 and later.
 
-Completed network requests can be recorded as trace spans. Recording is off by default, because each span counts toward your event quota. Turn it on with:
+Completed network requests can be recorded as trace spans. Recording is off by default, because each span counts toward your event quota. To view the spans and to measure your own operations, see [Traces](/eas/observe/traces/). Turn recording on with:
 
 ```ts
 import { Observe } from 'expo-observe';

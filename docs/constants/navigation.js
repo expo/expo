@@ -650,6 +650,7 @@ export const eas = [
     makePage('eas/observe/ai-agents.mdx'),
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
+    makePage('eas/observe/traces.mdx'),
     makePage('eas/observe/errors.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makeGroup('Integrations', [

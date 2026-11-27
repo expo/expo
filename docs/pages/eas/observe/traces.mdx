@@ -1,0 +1,153 @@
+---
+title: Traces
+description: Measure operations in your app with custom spans, and view them with network request spans in Expo Observe.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **info** Custom spans require SDK 58 with `expo-observe` 58.0.18 and later.
+
+A trace shows how long an operation takes and which steps it includes. Each step is a span: a named operation with a start time, an end time, and optional attributes and events. A span can have a parent span, so the spans of one trace form a tree. Spans use the OpenTelemetry data model, and their trace IDs and span IDs use the [W3C Trace Context](https://www.w3.org/TR/trace-context/) format.
+
+Expo Observe records two types of spans:
+
+- **Custom spans** measure operations in your code. You create them with `Observe.withSpan`, `Observe.startSpan`, or `Observe.recordSpan`.
+- **Network spans** measure completed network requests. Recording them is off by default. To turn it on, see [Network traces](/eas/observe/configuration/#network-traces).
+
+Each span counts as one event toward your event quota. For the full API, see the [`expo-observe` API reference](/versions/latest/sdk/observe/#startspanname-options).
+
+## Measure an operation
+
+Wrap the operation in `Observe.withSpan`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+async function checkout(cart: Cart) {
+  return await Observe.withSpan('checkout', async span => {
+    span.setAttributes({ 'cart.items': cart.items.length });
+    return await submitOrder(cart);
+  });
+}
+```
+
+The span starts before the callback runs. It ends when the callback returns or its promise settles. If the callback throws or its promise rejects, the span ends with the `'error'` status, and `withSpan` rejects with the same error.
+
+## Start and end a span
+
+Use `Observe.startSpan` when you want to end the span yourself, for example, to set its status. It returns a span that you end with `end()`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+async function upload(photo: Photo) {
+  const span = Observe.startSpan('photo.upload', { attributes: { 'photo.bytes': photo.size } });
+
+  try {
+    await uploadPhoto(photo);
+    span.end();
+  } catch (error) {
+    span.end({ status: 'error', message: String(error) });
+    throw error;
+  }
+}
+```
+
+Expo Observe saves the span when you call `end()`. If you never call `end()`, Expo Observe does not send the span. Only the first call to `end()` has an effect.
+
+## Record a measured operation
+
+When your own code already measured an operation, record it with `Observe.recordSpan`. Pass the start and end times in Unix epoch milliseconds, for example, from `Date.now()`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+const startTime = Date.now();
+decodeImage(file);
+Observe.recordSpan('image.decode', { startTime, endTime: Date.now() });
+```
+
+Expo Observe does not record the span when a time is missing or is not in Unix epoch milliseconds. The same applies when `endTime` is before `startTime`. A value from `performance.now()` is not a Unix epoch time.
+
+## Nest spans
+
+To show the steps of an operation, pass the span of the operation as the `parent` option of each step. A child span has the same trace ID as its parent:
+
+```tsx
+await Observe.withSpan('checkout', async checkout => {
+  await Observe.withSpan('checkout.validate-cart', () => validateCart(), { parent: checkout });
+  await Observe.withSpan('checkout.submit-order', () => submitOrder(), { parent: checkout });
+});
+```
+
+Expo Observe does not nest spans automatically. A span that you start without `parent` begins a new trace, even inside the callback of another span.
+
+## Add attributes and events
+
+Attributes describe the whole operation. Set them when the span starts, or later with `setAttributes`. Values can be strings, numbers, booleans, arrays, and nested objects, the same as for [user-defined events](/eas/observe/events/#attach-attributes).
+
+Events mark a point in time inside the operation, such as the end of a step. Add them with `addEvent`:
+
+```tsx
+const span = Observe.startSpan('feed.load', { attributes: { 'feed.type': 'home' } });
+const items = await fetchFeed();
+span.addEvent('feed.fetched', { attributes: { 'feed.items': items.length } });
+await renderFeed(items);
+span.setAttributes({ 'feed.cached': false });
+span.end();
+```
+
+At most 32 events of a span reach the server. After `end()`, `setAttributes` and `addEvent` have no effect.
+
+## Mark a failed operation
+
+To mark an operation as failed, end its span with the `'error'` status and a message that explains the failure:
+
+```tsx
+span.end({ status: 'error', message: 'The server rejected the payment.' });
+```
+
+Leave the status unset for a successful operation. Set `'ok'` only to mark a success explicitly. Expo Observe sends the message only with the `'error'` status. `withSpan` sets the `'error'` status and the message automatically when its callback fails.
+
+## Naming conventions
+
+- Use lowercase, dot-separated names, such as `checkout`, `feed.load`, or `photo.upload`.
+- Keep names stable. Put values that change, such as IDs and counts, in attributes.
+- Expo Observe does not record a span or an event whose name is empty, starts with `expo.`, or is longer than 256 characters.
+- Keep personally identifiable information (PII) out of span names, event names, and attributes. Expo Observe sends them off the device.
+
+## When spans are sent
+
+Expo Observe saves each span on the device when the span ends. It sends the span with the next dispatch, together with metrics and events. To send pending spans immediately, call [`Observe.dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents).
+
+Spans follow the same [configuration](/eas/observe/configuration/) as metrics:
+
+- `dispatchingEnabled`, `dispatchInDebug`, and `sampleRate` apply to spans. When one of them stops an installation from sending, the installation deletes its pending spans.
+- `errorSampleRate` and `ignoredEvents` do not apply to spans.
+
+The device keeps at most 2,000 spans that are not sent yet. When it saves a new span past that limit, it deletes the oldest one. Custom spans and network spans share this limit.
+
+With a [custom endpoint](/eas/observe/configuration/#custom-endpoint), Expo Observe sends spans to `<endpointUrl>/<project-id>/v1/traces`.
+
+## View traces
+
+In the dashboard: open your project and navigate to [**Observe > Traces**](https://expo.dev/accounts/[account]/projects/[project]/observe/traces).
+
+From the CLI:
+
+<Terminal
+  cmd={[
+    '# List span names with counts',
+    '$ eas observe:traces',
+    '',
+    '# List individual spans with one name',
+    '$ eas observe:traces --name checkout',
+    '',
+    '# Show every span of one trace as a tree',
+    '$ eas observe:trace <trace-id>',
+  ]}
+/>
+
+`eas observe:session` also shows spans in the timeline of a session. Run `eas observe:traces --help` for the other filters, such as `--status` and `--min-duration`. See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.
+
+An AI agent can also query traces through the Expo MCP Server. See [Analyze Expo Observe data with AI](/eas/observe/ai-agents/).
