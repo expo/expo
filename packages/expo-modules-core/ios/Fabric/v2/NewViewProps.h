@@ -7,6 +7,7 @@
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/RawProps.h>
+#include <react/renderer/core/RawPropsParser.h>
 
 #include "NewPropsDecoder.h"
 
@@ -48,5 +49,20 @@ public:
 };
 
 } // namespace expo::views
+
+#if REACT_NATIVE_TARGET_VERSION >= 87
+namespace facebook::react {
+
+/**
+ `ConcreteComponentDescriptor` prepares a `RawPropsParser` for each descriptor, which collects the keys of all base
+ view props. It costs more than the rest of registering a view, and every new descriptor registry does it again.
+ `NewComponentDescriptor::cloneProps` doesn't use the parser since React Native 0.87, so the parser of `NewViewProps`
+ isn't prepared.
+ */
+template <>
+inline void RawPropsParser::prepare<expo::views::NewViewProps>() noexcept {}
+
+} // namespace facebook::react
+#endif
 
 #endif // __cplusplus
