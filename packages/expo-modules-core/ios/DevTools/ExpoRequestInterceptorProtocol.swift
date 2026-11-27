@@ -198,13 +198,18 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // Fixes https://github.com/expo/expo/issues/28269
     // swiftlint:enable line_length
     guard let originalTask,
-      let originalSession = originalTask.value(forKey: "session") as? URLSession,
-      let delegate = originalTask.delegate ?? originalSession.delegate as? URLSessionTaskDelegate else {
+      let originalSession = originalTask.value(forKey: "session") as? URLSession else {
       return
     }
-    delegate.urlSession?(
-      originalSession, task: originalTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
-    )
+    // URLSession calls delegate methods on the session's `delegateQueue`, and delegates rely on it.
+    originalSession.delegateQueue.addOperation {
+      guard let delegate = originalTask.delegate ?? originalSession.delegate as? URLSessionTaskDelegate else {
+        return
+      }
+      delegate.urlSession?(
+        originalSession, task: originalTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+      )
+    }
   }
 
   /**
