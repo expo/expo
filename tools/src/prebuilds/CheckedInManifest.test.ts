@@ -708,6 +708,22 @@ it('direct stand-ins: requires externalDependencies to list "@expo/ui/ExpoUI"', 
   );
 });
 
+it('direct stand-ins: replaces EXUpdatesInterfaceHeaders with expo-updates-interface/EXUpdatesInterface', async () => {
+  const input = withHeadersStandIn('EXUpdatesInterfaceHeaders', [
+    'expo-updates-interface/EXUpdatesInterface',
+  ]);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-updates-interface/EXUpdatesInterface',
+  ]);
+});
+
+it('direct stand-ins: requires externalDependencies to list "expo-updates-interface/EXUpdatesInterface"', async () => {
+  await rejectsManifest(
+    withHeadersStandIn('EXUpdatesInterfaceHeaders', ['expo-modules-core/ExpoModulesCore']),
+    /: it names unknown dependency "expo-updates-interface\/EXUpdatesInterface", which the generated package/
+  );
+});
+
 for (const product of ['RNWorklets', 'RNScreens']) {
   it(`direct stand-ins: replaces ${product}Headers with ${product}`, async () => {
     const input = withHeadersStandIn(`${product}Headers`, [product]);
