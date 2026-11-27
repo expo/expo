@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Remove the direct `nanoid` dependency.
+[Internal] Vendor the `nanoid` dependency.
