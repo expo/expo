@@ -68,4 +68,15 @@ describe(withProgramStatus, () => {
 
     write.mockRestore();
   });
+
+  it('cuts the title to 192 bytes without splitting a character', async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    const write = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+
+    await withProgramStatus({ state: 'working', title: 'é'.repeat(200) }, async () => {});
+    const title = /:title=([^:\x1b]+)/.exec(String(write.mock.calls[0]![0]))?.[1];
+    expect(title && Buffer.from(title, 'base64').toString()).toBe('é'.repeat(96));
+
+    write.mockRestore();
+  });
 });
