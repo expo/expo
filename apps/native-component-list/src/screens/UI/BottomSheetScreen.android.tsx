@@ -10,6 +10,7 @@ import {
   Row,
   Switch,
   Text as ComposeText,
+  useMaterialColors,
 } from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import {
@@ -20,12 +21,13 @@ import {
   height,
   padding,
   Shapes,
+  semantics,
   weight,
   width,
 } from '@expo/ui/jetpack-compose/modifiers';
 import { FlashList } from '@shopify/flash-list';
 import * as React from 'react';
-import { Pressable, StyleSheet, Text as RNText, View } from 'react-native';
+import { Pressable, StyleSheet, Text as RNText, TextInput, View } from 'react-native';
 
 const LIST_DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
@@ -204,6 +206,8 @@ export default function BottomSheetScreen() {
             </Button>
           </Column>
         </Card>
+
+        <StickyFooterExample />
       </LazyColumn>
 
       {showSheet && (
@@ -404,6 +408,111 @@ export default function BottomSheetScreen() {
         </ModalBottomSheet>
       )}
     </Host>
+  );
+}
+
+function StickyFooterExample() {
+  const colors = useMaterialColors();
+  const [visible, setVisible] = React.useState(false);
+  const [fitToContents, setFitToContents] = React.useState(false);
+  const [shortContent, setShortContent] = React.useState(false);
+  const [showFooter, setShowFooter] = React.useState(true);
+  const sheetRef = React.useRef<ModalBottomSheetRef>(null);
+
+  const close = async () => {
+    await sheetRef.current?.hide();
+    setVisible(false);
+  };
+
+  return (
+    <Card modifiers={[fillMaxWidth()]}>
+      <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <ComposeText style={{ typography: 'titleMedium' }}>Sticky footer</ComposeText>
+        <Row modifiers={[fillMaxWidth()]} horizontalArrangement="spaceBetween">
+          <ComposeText>Fit to contents</ComposeText>
+          <Switch
+            value={fitToContents}
+            onCheckedChange={setFitToContents}
+            modifiers={[semantics({ contentDescription: 'Fit to contents' })]}
+          />
+        </Row>
+        <Row modifiers={[fillMaxWidth()]} horizontalArrangement="spaceBetween">
+          <ComposeText>Short content</ComposeText>
+          <Switch
+            value={shortContent}
+            onCheckedChange={setShortContent}
+            modifiers={[semantics({ contentDescription: 'Short content' })]}
+          />
+        </Row>
+        <Button onClick={() => setVisible(true)}>
+          <ComposeText>Open footer sheet</ComposeText>
+        </Button>
+      </Column>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          fitToContents={fitToContents}
+          onDismissRequest={() => setVisible(false)}>
+          <Column
+            modifiers={
+              shortContent ? [padding(16, 0, 16, 0)] : [fillMaxHeight(), padding(16, 0, 16, 0)]
+            }>
+            <Row horizontalArrangement={{ spacedBy: 8 }}>
+              <Button onClick={() => sheetRef.current?.expand()}>
+                <ComposeText>Expand</ComposeText>
+              </Button>
+              <Button onClick={() => sheetRef.current?.partialExpand()}>
+                <ComposeText>Collapse</ComposeText>
+              </Button>
+              <Button onClick={() => setShowFooter((value) => !value)}>
+                <ComposeText>Footer</ComposeText>
+              </Button>
+            </Row>
+            {shortContent ? (
+              <ComposeText modifiers={[padding(0, 16, 0, 16)]}>Short sheet content.</ComposeText>
+            ) : (
+              <RNHostView>
+                <FlashList
+                  nestedScrollEnabled
+                  style={styles.list}
+                  data={LIST_DATA}
+                  keyExtractor={(item) => item}
+                  renderItem={({ item }) => (
+                    <View style={styles.listRow}>
+                      <RNText style={[styles.listRowText, { color: colors.onSurface }]}>
+                        {item}
+                      </RNText>
+                    </View>
+                  )}
+                />
+              </RNHostView>
+            )}
+          </Column>
+          {showFooter && (
+            <ModalBottomSheet.Footer>
+              <Column modifiers={[fillMaxWidth(), padding(16, 8, 16, 16)]}>
+                <RNHostView matchContents>
+                  <TextInput
+                    accessibilityLabel="Footer message"
+                    placeholder="Footer message"
+                    style={{
+                      height: 48,
+                      width: 240,
+                      color: '#111111',
+                      backgroundColor: '#eeeeee',
+                      padding: 8,
+                    }}
+                  />
+                </RNHostView>
+                <Button onClick={close} modifiers={[fillMaxWidth()]}>
+                  <ComposeText>Confirm selection</ComposeText>
+                </Button>
+              </Column>
+            </ModalBottomSheet.Footer>
+          )}
+        </ModalBottomSheet>
+      )}
+    </Card>
   );
 }
 
