@@ -4,8 +4,12 @@ import { stageIosPrebuilds } from '../utils/iosPrebuilds.js';
 import { stageAndroidPrebuilds } from '../utils/androidPrebuilds.js';
 
 try {
-  if (stageIosPrebuilds()) console.log('Staged iOS prebuilds for publishing');
-  if (stageAndroidPrebuilds()) console.log('Staged Android prebuilds for publishing');
+  if (process.env.EXPO_PUBLISH_SKIP_PREBUILDS === '1') {
+    console.log('Skipping prebuilds during the release');
+  } else {
+    if (stageIosPrebuilds()) console.log('Staged iOS prebuilds for publishing');
+    if (stageAndroidPrebuilds()) console.log('Staged Android prebuilds for publishing');
+  }
 } catch (error) {
   console.error(error);
   process.exit(error.status || error.code || 1);

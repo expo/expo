@@ -113,10 +113,10 @@ export async function getPublishPlanAsync(): Promise<PublishPlanEntry[]> {
   }
 }
 
-export async function packChangesetsAsync(prefix: string): Promise<void> {
+export async function packChangesetsAsync(prefix: string, env?: NodeJS.ProcessEnv): Promise<void> {
   const directory = await fs.promises.mkdtemp(path.join(os.tmpdir(), prefix));
   try {
-    await runChangesetsAsync(['pack', '--out-dir', directory]);
+    await runChangesetsAsync(['pack', '--out-dir', directory], spawnAsync, env);
   } finally {
     await fs.promises.rm(directory, { recursive: true, force: true });
   }
