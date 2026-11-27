@@ -239,12 +239,26 @@ function registerCommonJsDependency(
   return dependency;
 }
 
+/**
+ * Transforms add imports that are not in the original source, such as `@babel/runtime` helpers and
+ * the JSX runtime, or rewrite a source import to a new specifier, such as `react-native` to
+ * `react-native-web`. Babel's pipeline only marks imports that exist in the original source as ESM,
+ * so these resolve as CommonJS there. Their quoted specifier does not appear in the original source.
+ */
+export function isInjectedImport(originalSource: string, name: string): boolean {
+  return !originalSource.includes(`'${name}'`) && !originalSource.includes(`"${name}"`);
+}
+
 export function registerNativeEsmDependency(
   state: MetroDependencyState,
   name: string,
   location: ReturnType<NativeNodePath['getLocation']>,
-  exportNames: readonly string[] = ['*']
+  exportNames: readonly string[] = ['*'],
+  originalSource?: string
 ) {
+  if (originalSource != null && isInjectedImport(originalSource, name)) {
+    return registerCommonJsDependency(state, name, location);
+  }
   const key = `${name}\0import`;
   let dependency = state.dependencies.get(key);
   if (!dependency) {
