@@ -186,6 +186,15 @@ function runSwitch(podDir: string, config: string, extraArgs: string[] = []) {
     expect(fs.lstatSync(path.join(podDir, 'SharedDep.xcframework')).isSymbolicLink()).toBe(true);
     expect(fs.readFileSync(sharedDepBinary)).toEqual(before);
   });
+
+  it('forgets the previous flavor when a switch fails', () => {
+    switchTo('Debug');
+    fs.writeFileSync(path.join(podDir, 'artifacts', 'ExpoFoo-release.tar.gz'), 'not a tarball');
+
+    expect(runSwitch(podDir, 'Release').status).not.toBe(0);
+
+    expect(fs.existsSync(path.join(podDir, 'artifacts', '.last_build_configuration'))).toBe(false);
+  });
 });
 
 function rubyAvailable(): boolean {

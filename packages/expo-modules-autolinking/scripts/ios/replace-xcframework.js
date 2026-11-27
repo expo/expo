@@ -71,7 +71,7 @@ function runBinaryTool(moduleName, binary, command, args) {
   if (result.status !== 0) {
     const detail = result.stderr?.trim() || result.error?.message || `exit code ${result.status}`;
     console.error(
-      `${LOG_PREFIX} ${moduleName}: Could not remove the mergeable library data (LC_ATOM_INFO) from ${binary}. \`${[command, ...args].join(' ')}\` failed: ${detail}. Without this step the app embeds the binary at about twice its size. Check that the selected Xcode (\`xcode-select -p\`) supports \`strip -no_atom_info\`, then build again.`
+      `${LOG_PREFIX} ${moduleName}: Could not remove the mergeable library data (LC_ATOM_INFO) from ${binary}. \`${[command, ...args].join(' ')}\` failed: ${detail}. Without this step the app embeds the binary at about twice its size. Check that the selected Xcode (\`xcode-select -p\`) provides \`otool\`, \`codesign\`, and a \`strip\` that supports \`-no_atom_info\`, then build again.`
     );
     process.exit(1);
   }
@@ -141,6 +141,10 @@ function processPerPodSwap(args, configLower) {
     console.log(`${LOG_PREFIX} ${moduleName}: Already extracted ${configLower}, skipping.`);
     return;
   }
+
+  // A failed extraction or strip below must not leave the old flavor recorded,
+  // or the next build of that flavor would skip extraction and keep these files.
+  fs.rmSync(lastConfigFile, { force: true });
 
   // Only remove the product xcframework — shared-dep symlinks staged by
   // ensure_shared_spm_deps are repointed separately below via --shared.
