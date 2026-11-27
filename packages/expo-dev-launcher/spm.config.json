@@ -22,7 +22,7 @@
           "name": "EXDevLauncher_ios_objc",
           "path": "ios",
           "pattern": "{EXDevLauncherUpdatesHelper.m,ReactNative/EXDevLauncherRCTDevSettings.m}",
-          "headerPattern": "{EXDevLauncher.h,EXDevLauncherController.h,EXDevLauncherUpdatesHelper.h,Headers/EXDevLauncherReactImports.h,Manifest/EXDevLauncherManifestParser.h,ReactNative/EXDevLauncherRCTDevSettings.h}",
+          "headerPattern": "{EXDevLauncherController.h,EXDevLauncherUpdatesHelper.h,Headers/EXDevLauncherReactImports.h,Manifest/EXDevLauncherManifestParser.h,ReactNative/EXDevLauncherRCTDevSettings.h}",
           "dependencies": [
             "Hermes",
             "React",
