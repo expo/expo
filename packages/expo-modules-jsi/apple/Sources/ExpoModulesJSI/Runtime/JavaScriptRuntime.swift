@@ -659,31 +659,37 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // skipping the per-call owning-value allocation (see ``UnownedThisSyncFunctionClosure``).
     return createFunction(name) {
       (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
-      let promise = try JavaScriptPromise(self)
+      let settler = PromiseSettler(in: self)
+      let promiseValue = try settler.createPromise(in: self)
 
       do {
         // Decode phase: runs synchronously within the host function call, so the arguments
         // buffer passes straight through from the JS caller instead of being copied into the task.
         let body = try function(this, arguments)
 
-        // Switch to asynchronous context.
+        settler.register(in: self)
+        // Switch to asynchronous context using the sync `schedule` overload and a non-throwing
+        // `Task<Void, Never>` directly; `JavaScriptExecutor` already starts `@JavaScriptActor`
+        // tasks synchronously on the JS thread without needing `Task.immediate`.
         self.schedule {
-          // Invoke the asynchronous body and resolve/reject the promise.
-          do {
-            let result = try await body()
-            promise.resolve(result)
-          } catch {
-            promise.reject(error)
+          Task {
+            // Invoke the asynchronous body and resolve/reject the promise.
+            do {
+              let result = try await body()
+              settler.resolve(result)
+            } catch {
+              settler.reject(error)
+            }
           }
         }
       } catch {
         // Match JavaScript's async-function semantics: an error thrown before the first
         // suspension still rejects the returned promise instead of throwing synchronously.
-        promise.reject(error)
+        settler.rejectSynchronously(error, in: self)
       }
 
       // Always return a promise in async functions
-      return promise.asValue()
+      return promiseValue
     }
   }
 
@@ -1010,6 +1016,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       // deallocates, and the sweep must still call `allowRelease()` on survivors. Holding the
       // collection keeps it alive for the sweep; it does not retain the runtime.
       let longLivedObjects = self.longLivedObjects
+      let scheduler = self.scheduler
       let nativeState = JavaScriptNativeState()
       nativeState.setDeallocator { [handle] nativeState in
         // Hermes runs this on its finalizer thread while the JavaScript thread waits in the runtime's
@@ -1019,6 +1026,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
+          scheduler.markRuntimeGone()
+          scheduler.clearPendingResources()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
           // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
           // the freed runtime when it deallocates. Reached through the handle so the teardown object doesn't

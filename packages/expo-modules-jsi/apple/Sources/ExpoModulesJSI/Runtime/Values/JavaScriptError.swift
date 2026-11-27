@@ -72,6 +72,10 @@ public final class JavaScriptError: Error, Sendable {
     return JavaScriptValue(runtimeHandle, expo.valueFromError(jsiRuntime, pointee))
   }
 
+  internal func toJSIValue(in jsiRuntime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
+    return expo.valueFromError(jsiRuntime, pointee)
+  }
+
   internal func toJSError() -> facebook.jsi.JSError {
     return pointee
   }

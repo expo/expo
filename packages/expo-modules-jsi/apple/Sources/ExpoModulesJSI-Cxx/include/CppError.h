@@ -63,7 +63,7 @@ public:
    Returns the underlying JavaScript value of the wrapped `jsi::JSError`.
    This is a JavaScript Error object with all its properties preserved.
    */
-  inline jsi::Value asValue(jsi::IRuntime &runtime) noexcept {
+  inline jsi::Value asValue(jsi::IRuntime &runtime) const {
     return jsi::Value(runtime, jsError.value());
   }
 

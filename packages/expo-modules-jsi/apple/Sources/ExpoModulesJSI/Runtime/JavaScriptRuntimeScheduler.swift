@@ -30,6 +30,21 @@ extension JavaScriptRuntime {
       uncheckedState: []
     )
 
+    /// Pointer-bearing `JavaScriptValue.Ref`s and JSI-owning errors (`PendingJSIError`) queued from
+    /// off the JavaScript thread (for example by `resolve(_ value: consuming JavaScriptValue)` or
+    /// `reject(_ error:)`), swept on teardown so a dropped or late task never destroys a `jsi::Value`
+    /// or `jsi::JSError` against freed engine memory. Value refs are keyed by raw pointer identity to
+    /// avoid casting `JavaScriptRef<~Copyable>` to `AnyObject` (which requires iOS 18+).
+    private let pendingTeardown = OSAllocatedUnfairLock<
+      (
+        isCleared: Bool,
+        values: [UnsafeMutableRawPointer: JavaScriptValue.Ref],
+        errors: [ObjectIdentifier: PendingJSIError]
+      )
+    >(
+      uncheckedState: (false, [:], [:])
+    )
+
     /// Captured at construction time, which runs on the JavaScript thread.
     private let jsThreadID: UInt64 = {
       var id: UInt64 = 0
@@ -49,9 +64,69 @@ extension JavaScriptRuntime {
       return pointee.isRuntimeAlive()
     }
 
-    /// Called from the runtime's `deinit`.
+    /// Called from the runtime's `deinit` and teardown sweep.
     internal func markRuntimeGone() {
       pointee.markRuntimeGone()
+    }
+
+    /// Registers an off-thread pending value ref for teardown sweep. Returns `false` if the
+    /// teardown sweep has already run.
+    internal func trackPendingValue(_ ref: JavaScriptValue.Ref) -> Bool {
+      let key = Unmanaged.passUnretained(ref).toOpaque()
+      return pendingTeardown.withLockUnchecked { state in
+        guard !state.isCleared else {
+          return false
+        }
+        state.values[key] = ref
+        return true
+      }
+    }
+
+    internal func untrackPendingValue(_ ref: JavaScriptValue.Ref) {
+      let key = Unmanaged.passUnretained(ref).toOpaque()
+      pendingTeardown.withLockUnchecked { state in
+        state.values[key] = nil
+      }
+    }
+
+    /// Registers an off-thread pending JSI error box for teardown sweep. Returns `false` if the
+    /// teardown sweep has already run.
+    internal func trackPendingError(_ error: PendingJSIError) -> Bool {
+      let key = ObjectIdentifier(error)
+      return pendingTeardown.withLockUnchecked { state in
+        guard !state.isCleared else {
+          return false
+        }
+        state.errors[key] = error
+        return true
+      }
+    }
+
+    internal func untrackPendingError(_ error: PendingJSIError) {
+      let key = ObjectIdentifier(error)
+      pendingTeardown.withLockUnchecked { state in
+        state.errors[key] = nil
+      }
+    }
+
+    /// Releases every tracked off-thread pending value ref and error while the runtime is still valid.
+    @JavaScriptActor
+    internal func clearPendingResources() {
+      let (values, errors) = pendingTeardown.withLockUnchecked {
+        state -> ([JavaScriptValue.Ref], [PendingJSIError]) in
+        state.isCleared = true
+        let values = Array(state.values.values)
+        let errors = Array(state.errors.values)
+        state.values.removeAll()
+        state.errors.removeAll()
+        return (values, errors)
+      }
+      for ref in values {
+        ref.release()
+      }
+      for error in errors {
+        error.release()
+      }
     }
 
     internal var supportsAsyncScheduling: Bool {

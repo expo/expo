@@ -17,7 +17,9 @@ extension Task: JavaScriptEncodable where Success: JavaScriptEncodable, Failure:
   public static func encode(_ value: Task<Success, Failure>, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    let promise = try JavaScriptPromise(runtime)
+    let settler = PromiseSettler(in: runtime)
+    let promiseValue = try settler.createPromise(in: runtime)
+    settler.register(in: runtime)
     // A detached task awaits the result off the JavaScript thread, then settles the promise. It must
     // not inherit `@JavaScriptActor`: that actor runs jobs synchronously on the current thread rather
     // than hopping to the JS thread, so a resumed continuation would land on whatever thread the task
@@ -25,11 +27,11 @@ extension Task: JavaScriptEncodable where Success: JavaScriptEncodable, Failure:
     // encodes there), so settling from here is safe regardless of this task's thread.
     Task<Void, Never>.detached {
       do {
-        promise.resolve(try await value.value)
+        settler.resolve(try await value.value)
       } catch {
-        promise.reject(error)
+        settler.reject(error)
       }
     }
-    return promise.asValue()
+    return promiseValue
   }
 }

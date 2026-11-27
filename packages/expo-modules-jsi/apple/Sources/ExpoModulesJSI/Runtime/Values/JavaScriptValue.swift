@@ -98,6 +98,13 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return runtimeHandle == nil || runtimeHandle === runtime.handle
   }
 
+  /// Whether this value owns a JSI engine handle (`object`, `string`, `bigint`, or `symbol`) that
+  /// must be destroyed before its runtime is torn down.
+  @inline(__always)
+  internal var hasEngineHandle: Bool {
+    return !pointee.isUndefined() && !pointee.isNull() && !pointee.isBool() && !pointee.isNumber()
+  }
+
   /// Copies the value.
   public func copy() -> JavaScriptValue {
     if let runtimeHandle, let jsiRuntime = runtimeHandle.pointee {

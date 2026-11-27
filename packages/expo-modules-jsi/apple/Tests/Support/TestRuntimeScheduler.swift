@@ -350,3 +350,44 @@ let scheduleOnTestRuntimeCounting:
     testDispatchCounter.increment()
     scheduleOnTestRuntime(schedulerPointer, priority, callback)
   }
+
+/// Captures scheduled host tasks without running them, so a test can destroy the owning runtime
+/// before dropping the queued closures (the reload / dying-scheduler UAF scenario).
+final class HeldTaskScheduler: @unchecked Sendable {
+  private let lock = NSLock()
+  private var tasks: [@convention(block) () -> Void] = []
+
+  var opaquePointer: UnsafeMutableRawPointer {
+    Unmanaged.passUnretained(self).toOpaque()
+  }
+
+  var count: Int {
+    lock.withLock { tasks.count }
+  }
+
+  fileprivate func append(_ task: @escaping @convention(block) () -> Void) {
+    lock.withLock { tasks.append(task) }
+  }
+
+  /// Drops all held tasks.
+  func dropAll() {
+    let drained = lock.withLock { () -> [@convention(block) () -> Void] in
+      defer { tasks.removeAll() }
+      return tasks
+    }
+    _ = consume drained
+  }
+}
+
+/// A host dispatch function that retains every task in the ``HeldTaskScheduler`` passed as
+/// `schedulerPointer` without executing it.
+let holdOnTestRuntime:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, _, callback in
+    guard let schedulerPointer else {
+      return
+    }
+    let holder = Unmanaged<HeldTaskScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    holder.append(callback)
+  }
