@@ -49,6 +49,18 @@ private final class PackageCardView: ExpoNativeView {}
 @ExpoView<NativeCardProps>
 private final class TwoNamesCardView: ExpoNativeView {}
 
+@ExpoView<NativeCardProps>
+private final class DefaultCardView: ExpoNativeView {}
+
+@ExpoModule("DefaultCards", views: [DefaultCardView.self])
+private final class DefaultCardsModule: Module {}
+
+private final class DefaultCardsModulesProvider: ModulesProvider {
+  override func getModuleClasses() -> [ExpoModuleTupleType] {
+    return [(module: DefaultCardsModule.self, name: nil)]
+  }
+}
+
 @ExpoModule("NativeCards", views: [NativeCardView.self])
 private final class NativeCardsModule: Module {}
 
@@ -245,7 +257,20 @@ struct NativeViewTests {
     ExpoNativeView.registerComponent(SecondSharedNameView.self, componentName: componentName)
 
     #expect(EXTestNewComponentDescriptor(viewClass: FirstSharedNameView.self).componentName == componentName)
+    #expect(EXTestNewComponentDescriptor(viewClass: SecondSharedNameView.self).componentName != componentName)
     #expect(NSClassFromString(componentName) == nil)
+  }
+
+  @Test
+  func `named view of a module is its class and the default view is a subclass`() throws {
+    let appContext = AppContext()
+    appContext.registerNativeModules(provider: DefaultCardsModulesProvider())
+
+    let namedComponentName = ExpoFabricView.componentName(moduleName: "DefaultCards", viewName: "DefaultCardView")
+    let defaultComponentName = ExpoFabricView.componentName(moduleName: "DefaultCards", viewName: DEFAULT_MODULE_VIEW)
+    #expect(EXTestNewComponentDescriptor(viewClass: DefaultCardView.self).componentName == namedComponentName)
+    let subclass: AnyClass = try #require(NSClassFromString(defaultComponentName))
+    #expect(class_getSuperclass(subclass) == DefaultCardView.self)
   }
 
   @Test

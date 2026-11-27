@@ -560,11 +560,19 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       for viewName in holder.definition.views.keys {
         ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
       }
-      // Views of Expo Modules v2, the `@ExpoView` classes in `@ExpoModule(views:)`.
-      for (viewName, viewType) in holder.nativeViewTypes {
+      // Views of Expo Modules v2, the `@ExpoView` classes in `@ExpoModule(views:)`. The default view is also under its
+      // own name, and a class can be one component only. The named views are registered first, so the named
+      // component always gets the class, and the default view gets a subclass.
+      for (viewName, viewType) in holder.nativeViewTypes where viewName != DEFAULT_MODULE_VIEW {
         ExpoNativeView.registerComponent(
           viewType,
           componentName: ExpoFabricView.componentName(moduleName: holder.name, viewName: viewName)
+        )
+      }
+      if let defaultViewType = holder.nativeViewTypes[DEFAULT_MODULE_VIEW] {
+        ExpoNativeView.registerComponent(
+          defaultViewType,
+          componentName: ExpoFabricView.componentName(moduleName: holder.name, viewName: DEFAULT_MODULE_VIEW)
         )
       }
     }

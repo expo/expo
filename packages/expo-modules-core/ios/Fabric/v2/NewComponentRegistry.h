@@ -11,7 +11,7 @@
 namespace expo::views {
 
 /**
- Returns the provider of the component that `+[ExpoNativeViewObjC registerComponentViewClass:propsDecoder:]`
+ Returns the provider of the component that `+[ExpoNativeViewObjC registerComponentViewClass:componentName:makePropsDecoder:]`
  registered for the given class, found by the class. A class that wasn't registered gets a component that decodes
  no props. The component views of UIKit and SwiftUI views of Expo Modules v2 share this registry.
  */

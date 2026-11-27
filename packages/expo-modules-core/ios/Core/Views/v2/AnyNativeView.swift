@@ -17,7 +17,8 @@ public protocol AnyNativeView {
   nonisolated static var _jsName: String { get }
 
   /// The class that the Fabric component views of the view type are based on: the view type itself for a UIKit
-  /// view, or the class that renders a SwiftUI view. Core registers a subclass of it for each component.
+  /// view, or the class that renders a SwiftUI view. Core registers it as the component of the view, or a subclass of it
+  /// when the class is already another component.
   /// Framework-internal (leading underscore). `AnyNativeUIKitView` and `AnyNativeSwiftUIView` implement it, so core
   /// gets the class without a dynamic cast, which would look up the conformance of the view type at launch.
   static var _componentViewBaseClass: AnyClass { get }

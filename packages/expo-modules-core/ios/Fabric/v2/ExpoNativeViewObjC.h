@@ -60,7 +60,7 @@
  Registers the given view class in the global `RCTComponentViewFactory` under its class name, as a
  component whose props the given decoder decodes. The class is registered once: its component
  descriptor keeps the decoder of the first registration, so its component handle stays the same after
- reloads.
+ reloads. It does nothing when the class is already the component with another name.
  */
 + (void)registerComponentViewClass:(nonnull Class)viewClass
                       propsDecoder:(nonnull id<EXViewPropsDecoding>)propsDecoder NS_SWIFT_UI_ACTOR;

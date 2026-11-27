@@ -54,7 +54,8 @@
                                    reason:[NSString stringWithFormat:
                                                       @"A SwiftUI view \"%@\" (tag: %ld) is being mounted inside a standard UIView. "
                                                       @"Wrap your component with `<Host>` from '@expo/ui/swift-ui'.",
-                                                      NSStringFromClass([self class]), (long)self.tag]
+                                                      @(expo::views::componentDescriptorProvider([self class]).name),
+                                                      (long)self.tag]
                                  userInfo:nil];
   }
   return [super forwardingTargetForSelector:aSelector];
