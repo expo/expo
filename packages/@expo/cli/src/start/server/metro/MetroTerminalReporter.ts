@@ -15,6 +15,8 @@ import {
   maybeSymbolicateAndFormatJSErrorStackLogAsync,
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
+import type { LiveLogLine } from './LiveLineTerminal';
+import { LiveLineTerminal } from './LiveLineTerminal';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import type {
   BuildPhase,
@@ -40,6 +42,14 @@ type ClientLogLevel =
   | 'groupCollapsed'
   | 'groupEnd'
   | 'debug';
+
+const CDP_LOG_MODE = 'cdp';
+
+interface RepeatedLog {
+  key: string;
+  count: number;
+  line: LiveLogLine;
+}
 
 declare module '2g' {
   interface EventRegistry {
@@ -268,7 +278,19 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   shouldFilterClientLog(event: TerminalReportableEvent): boolean {
-    return event.type === 'client_log' && isAppRegistryStartupMessage(event.data);
+    if (event.type !== 'client_log') {
+      return false;
+    }
+    const { mode } = event as { mode?: string };
+    return (
+      isAppRegistryStartupMessage(event.data) ||
+      (env.EXPO_UNSTABLE_CDP_LOGS && isNativeHmrLogMode(mode))
+    );
+  }
+
+  /** Prints a console call read from a connected app over CDP. */
+  logDeviceConsole(log: { level: ClientLogLevel; data: string[]; device?: string }): void {
+    this.update({ type: 'client_log', mode: CDP_LOG_MODE, ...log } as TerminalReportableEvent);
   }
 
   shouldFilterBundleEvent(event: TerminalReportableEvent): boolean {
@@ -362,12 +384,13 @@ export class MetroTerminalReporter extends TerminalReporter {
     level?: ClientLogLevel;
     data: unknown[];
     mode?: string;
+    device?: string;
   }) {
     const { level = 'log' } = evt;
     // Apply printf-style format substitution (e.g. %s, %d) that browsers handle
     // natively in console methods but Node/Metro terminal logging does not.
-    const data = applyConsoleFormatting(evt.data);
-    const platformTag = getPlatformTagForClientLog(evt.mode);
+    const data = evt.mode === CDP_LOG_MODE ? evt.data : applyConsoleFormatting(evt.data);
+    const platformTag = evt.device ?? getPlatformTagForClientLog(evt.mode);
     if (level === 'warn' || (level as string) === 'error') {
       let hasStack = false;
       const parsed = data.map((msg) => {
@@ -433,7 +456,7 @@ export class MetroTerminalReporter extends TerminalReporter {
               : symbolicated;
 
           event('client_log', { level, mode: evt.mode ?? null, data: symbolicated });
-          logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...filtered);
+          this.#printClientLog(evt.mode, level, platformTag, filtered);
         })();
         return;
       }
@@ -441,7 +464,45 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     event('client_log', { level, mode: evt.mode ?? null, data });
     // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-    logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...data);
+    this.#printClientLog(evt.mode, level, platformTag, data);
+  }
+
+  #repeatedLog: RepeatedLog | null = null;
+
+  #printClientLog(
+    mode: string | undefined,
+    level: ClientLogLevel,
+    platformTag: string | null,
+    data: unknown[]
+  ) {
+    const terminal = this.terminal;
+    if (mode !== CDP_LOG_MODE || !(terminal instanceof LiveLineTerminal) || isGroupLevel(level)) {
+      this.#repeatedLog = null;
+      logLikeMetro(terminal.log.bind(terminal), level, platformTag, ...data);
+      return;
+    }
+
+    const key = JSON.stringify([platformTag, level, data]);
+    const previous = this.#repeatedLog;
+    if (previous?.key === key) {
+      const text = formatClientLog(level, platformTag, data, previous.count + 1);
+      if (text != null && previous.line.update(text)) {
+        previous.count++;
+        return;
+      }
+    }
+
+    const text = formatClientLog(level, platformTag, data, 1);
+    if (text == null) {
+      this.#repeatedLog = null;
+      return;
+    }
+    const repeated: RepeatedLog = {
+      key,
+      count: 1,
+      line: terminal.logLive(text, { summary: () => formatRepeatSummary(repeated.count - 1) }),
+    };
+    this.#repeatedLog = repeated;
   }
 
   #captureLog(evt: TerminalReportableEvent) {
@@ -636,6 +697,52 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
     (/^Running application "main" with appParams:/.test(body[0]) ||
       /^Running "main" with \{/.test(body[0]))
   );
+}
+
+function isGroupLevel(level: ClientLogLevel): boolean {
+  return level === 'group' || level === 'groupCollapsed' || level === 'groupEnd';
+}
+
+/** @returns the line `logLikeMetro` prints, with a repeat count badge, or `undefined` inside a collapsed group */
+function formatClientLog(
+  level: ClientLogLevel,
+  platformTag: string | null,
+  data: unknown[],
+  count: number
+): string | undefined {
+  let line: string | undefined;
+  const badge = count > 1 ? [formatRepeatBadge(level, count)] : [];
+  logLikeMetro(
+    (...args: unknown[]) => {
+      line = utilFormat(...args);
+    },
+    level,
+    platformTag,
+    ...badge,
+    ...data
+  );
+  return line;
+}
+
+function formatRepeatBadge(level: ClientLogLevel, count: number): string {
+  const color =
+    level === 'error'
+      ? chalk.inverse.red
+      : level === 'warn'
+        ? chalk.inverse.yellow
+        : chalk.inverse.gray;
+  return color(` ${count} `);
+}
+
+function formatRepeatSummary(repeats: number): string | undefined {
+  if (repeats > 0) {
+    return chalk.gray(`  ↳ repeated ${repeats} more ${repeats === 1 ? 'time' : 'times'}`);
+  }
+  return undefined;
+}
+
+function isNativeHmrLogMode(mode: string | undefined): boolean {
+  return mode !== 'web' && mode !== 'dom' && mode !== CDP_LOG_MODE;
 }
 
 /** Apply printf-style format substitutions (%s, %d, %i, %f, %o, %O) that browsers handle natively */

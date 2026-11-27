@@ -322,6 +322,14 @@ class Env {
   }
 
   /**
+   * Read app logs over a CDP session with each connected app, instead of the logs apps send over
+   * the HMR socket.
+   */
+  get EXPO_UNSTABLE_CDP_LOGS(): boolean {
+    return boolish('EXPO_UNSTABLE_CDP_LOGS', false);
+  }
+
+  /**
    * Enable Bonjour advertising of the Expo CLI on local networks
    */
   get EXPO_UNSTABLE_BONJOUR(): boolean {
