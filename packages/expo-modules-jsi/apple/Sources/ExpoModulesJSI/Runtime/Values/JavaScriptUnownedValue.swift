@@ -468,11 +468,14 @@ extension facebook.jsi.Value {
   ) throws(E) -> R {
     assert(isObject(), "Value is not an object")
     let borrowed = expo.BorrowedObject(self)
+    // Keep `self` alive across `body` so `~Value()` cannot invalidate the borrowed `PointerValue*`
+    // if an inlined caller passes a temporary or owned value.
+    defer { withExtendedLifetime(self) {} }
     // `withUnsafeBytes(of:)` pins `borrowed` in memory for the duration of `body` and avoids the
     // Swift SIL optimizer crash with `withUnsafePointer(to:)` on C++ interop value types.
     return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
       let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedObject.self)
-      return try body(ptr.pointee.pointer().pointee)
+      return try body(expo.BorrowedObject.unsafePointer(ptr).pointee)
     }
   }
 
@@ -484,9 +487,10 @@ extension facebook.jsi.Value {
   ) throws(E) -> R {
     assert(isBigInt(), "Value is not a BigInt")
     let borrowed = expo.BorrowedBigInt(self)
+    defer { withExtendedLifetime(self) {} }
     return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
       let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedBigInt.self)
-      return try body(ptr.pointee.pointer().pointee)
+      return try body(expo.BorrowedBigInt.unsafePointer(ptr).pointee)
     }
   }
 
@@ -498,9 +502,10 @@ extension facebook.jsi.Value {
   ) throws(E) -> R {
     assert(isString(), "Value is not a string")
     let borrowed = expo.BorrowedString(self)
+    defer { withExtendedLifetime(self) {} }
     return try withUnsafeBytes(of: borrowed) { bytes throws(E) in
       let ptr = bytes.baseAddress!.assumingMemoryBound(to: expo.BorrowedString.self)
-      return try body(ptr.pointee.pointer().pointee)
+      return try body(expo.BorrowedString.unsafePointer(ptr).pointee)
     }
   }
 }

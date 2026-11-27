@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 
+#include <cassert>
 #include <cstring>
 #include <new>
 #include <swift/bridging>
@@ -489,19 +490,44 @@ class PointerValueAccess : public jsi::Runtime {
   template <typename T>
   friend class Borrowed;
 
-  template <typename T, typename Source>
-  static T borrow(const Source &source) noexcept {
+  template <typename T>
+  static T borrow(const jsi::Value &value) noexcept {
+    static_assert(
+      std::is_same_v<jsi::Object, T> ||
+        std::is_same_v<jsi::String, T> ||
+        std::is_same_v<jsi::BigInt, T> ||
+        std::is_same_v<jsi::Symbol, T>,
+      "jsi::Value cannot hold this jsi::Pointer subclass"
+    );
+    // Gate on `DEBUG` as well as `!NDEBUG`: Swift's Clang importer does not define `NDEBUG` in
+    // Release builds, so bare `assert(...)` would compile into Release and block inlining.
+#if defined(DEBUG) && !defined(NDEBUG)
+    if constexpr (std::is_same_v<jsi::Object, T>) {
+      assert(value.isObject() && "Borrowed<jsi::Object> requires an object jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::String, T>) {
+      assert(value.isString() && "Borrowed<jsi::String> requires a string jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::BigInt, T>) {
+      assert(value.isBigInt() && "Borrowed<jsi::BigInt> requires a BigInt jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::Symbol, T>) {
+      assert(value.isSymbol() && "Borrowed<jsi::Symbol> requires a Symbol jsi::Value");
+    }
+#endif
+    return make<T>(const_cast<PointerValue *>(getPointerValue(value)));
+  }
+
+  template <typename T>
+  static T borrow(const jsi::Pointer &pointer) noexcept {
     static_assert(std::is_base_of_v<jsi::Pointer, T>, "T must derive from jsi::Pointer");
-    return make<T>(const_cast<PointerValue *>(getPointerValue(source)));
+    return make<T>(const_cast<PointerValue *>(getPointerValue(pointer)));
   }
 } __attribute__((availability(swift, unavailable)));
 
 /**
  Non-owning view of a `jsi::Pointer` subclass (`jsi::Object`, `jsi::String`, `jsi::BigInt`,
- `jsi::TypedArray`) borrowed from an existing `jsi::Value` or `jsi::Pointer` without cloning its
- handle. The wrapped `T` lives inside an anonymous union whose destructor intentionally skips
- `~T()`, so the underlying `PointerValue` is not released when the `Borrowed<T>` goes out of scope.
- The source must outlive the `Borrowed<T>`.
+ `jsi::TypedArray`) borrowed from an existing `jsi::Value` or `jsi::Object` without cloning its
+ handle. `value_` is a variant member of an anonymous union, so `~Borrowed() noexcept {}` skips
+ calling `~T()` and leaves the underlying `PointerValue` owned by the source. The source must
+ outlive the `Borrowed<T>`.
  */
 template <typename T>
 class Borrowed {
@@ -511,11 +537,12 @@ class Borrowed {
   explicit Borrowed(const jsi::Value &value) noexcept
     : value_(PointerValueAccess::borrow<T>(value)) {}
 
-  explicit Borrowed(const jsi::Pointer &pointer) noexcept
-    : value_(PointerValueAccess::borrow<T>(pointer)) {}
+  template <typename U = T, std::enable_if_t<std::is_base_of_v<jsi::Object, U>, int> = 0>
+  explicit Borrowed(const jsi::Object &object) noexcept
+    : value_(PointerValueAccess::borrow<T>(object)) {}
 
   Borrowed(const jsi::Value &&) = delete;
-  Borrowed(const jsi::Pointer &&) = delete;
+  Borrowed(const jsi::Object &&) = delete;
 
   ~Borrowed() noexcept {}
 
@@ -535,10 +562,10 @@ class Borrowed {
     return &value_;
   }
 
-  // Raw pointer to the borrowed handle for Swift's `withBorrowed*` wrappers, which pin `Borrowed`
-  // inside `withUnsafeBytes(of:)` so the pointer cannot outlive it.
-  const T *_Nonnull pointer() const noexcept SWIFT_RETURNS_INDEPENDENT_VALUE {
-    return &value_;
+  // Takes a pointer to a pinned `Borrowed` (e.g. from Swift's `withUnsafeBytes(of:)`), so Swift
+  // callers cannot obtain a raw pointer into an unpinned temporary `Borrowed`.
+  static const T *_Nonnull unsafePointer(const Borrowed *_Nonnull borrowed) noexcept {
+    return &borrowed->value_;
   }
 
  private:
