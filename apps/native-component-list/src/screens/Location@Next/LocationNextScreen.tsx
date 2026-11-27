@@ -566,7 +566,7 @@ export default function LocationNextScreen() {
 
         <Section
           title="Heading"
-          note="iOS only. The simulator has no magnetometer, so start throws there; use a device. trueHeading stays null until CoreLocation has a location fix, which needs foreground access."
+          note="iOS: the simulator has no magnetometer, so start throws there; use a device. trueHeading stays null until CoreLocation has a location fix, which needs foreground access. Android: trueHeading uses the selected provider's last known position, read asynchronously, and stays null without one."
           right={<WatchIndicator status={headingStatus} />}>
           <GridButton
             label="start"
@@ -585,7 +585,7 @@ export default function LocationNextScreen() {
                   onError: (error) =>
                     setOutput({
                       actual: `[heading] ${error.code}: ${error.message}`,
-                      expected: 'An error code and message from CoreLocation.',
+                      expected: 'An error code and message from the heading source.',
                     }),
                 });
               }
@@ -619,7 +619,7 @@ export default function LocationNextScreen() {
             label="status"
             onPress={run(
               'heading',
-              'Immediate. { isSubscribed, isHandleAlive, isStarted, isPaused }.',
+              'Immediate. { isSubscribed, isHandleAlive, isStarted, isPaused }. Android adds canDeliverUpdates, areUpdatesAllowed, isInForeground.',
               withHeadingWatcher((handle) => handle.status())
             )}
           />

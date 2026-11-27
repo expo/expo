@@ -151,10 +151,12 @@ internal suspend fun Permissions.getLocationPermissions(background: Boolean): Lo
   )
 }
 
+internal fun Permissions.hasForegroundPermissions(): Boolean =
+  hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION) ||
+    hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+
 internal fun Permissions.ensureForegroundPermissions() {
-  val hasFine = hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
-  val hasCoarse = hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
-  if (!hasFine && !hasCoarse) {
+  if (!hasForegroundPermissions()) {
     throw ForegroundLocationPermissionsNotGrantedException()
   }
 }

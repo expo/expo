@@ -29,8 +29,11 @@ import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.location.next.BatchedPositions
 import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
+import expo.modules.location.next.PositionWatchSubscriptionException
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
+import expo.modules.location.next.WatchEvent
 import expo.modules.location.next.toPosition
+import expo.modules.location.next.toWatchEvent
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
@@ -172,7 +175,7 @@ private class AndroidPositionUpdatesSession(
   private val locationManager: LocationManager,
   private val jsLogger: Logger?
 ) : PositionUpdatesSession, BroadcastReceiver() {
-  private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
+  private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchEvent) -> Unit)
   private class SessionState(val listener: LocationListenerCompat, val provider: String)
 
   private var config: SessionConfig? = null
@@ -201,19 +204,19 @@ private class AndroidPositionUpdatesSession(
         .setQuality(config.parameters.priority.toQuality())
         .setMaxUpdateDelayMillis(config.parameters.maxUpdateDelay.inWholeMilliseconds)
         .build()
-      val listener = LocationListenerCompat { location -> config.onUpdate(WatchUpdate.Fix(location.toPosition())) }
+      val listener = LocationListenerCompat { location -> config.onUpdate(WatchEvent(data = location.toPosition())) }
       LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
       listener
     }.onFailure {
       jsLogger?.warn("[expo-location] Could not request location updates from \"$provider\"", it)
       if (emitError) {
-        config.onUpdate(WatchUpdate.Failure(it))
+        config.onUpdate(it.toWatchEvent())
       }
     }.getOrNull()
   }
 
   @Synchronized
-  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchEvent) -> Unit) {
     clearConfig()
     clearState()
 
@@ -228,7 +231,9 @@ private class AndroidPositionUpdatesSession(
     ContextCompat.registerReceiver(context, this, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED)
     config = desiredConfig
 
-    return listener != null
+    if (listener == null) {
+      throw PositionWatchSubscriptionException()
+    }
   }
 
   @Synchronized
