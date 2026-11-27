@@ -26,7 +26,7 @@ export type ContentShapeKind =
  * Pass `kind` to shape something other than the default `interaction` (hit-testing), such as
  * the preview used while a `List.ForEach` row is dragged to reorder it.
  *
- * @param shape - A shape configuration from the shapes API (rectangle, circle, capsule, ellipse, roundedRectangle).
+ * @param shape - A shape configuration from the shapes API (rectangle, circle, capsule, ellipse, roundedRectangle, unevenRoundedRectangle).
  * @param kind - The kinds to apply the shape to. Defaults to `interaction` when not provided.
  *
  * @example
