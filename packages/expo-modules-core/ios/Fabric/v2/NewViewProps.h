@@ -22,10 +22,10 @@ public:
   NewViewProps() = default;
 
   /**
-   Parses only the base view props and keeps the decoded props of `sourceProps`. React Native uses it
-   to collect the keys of the base view props (`RawPropsParser::prepare`). Since React Native 0.87,
-   `NewComponentDescriptor` copies the source props instead and sets the props of the update with
-   `setProp`. Before, it uses the constructor that takes the decoded props.
+   Parses only the base view props and keeps the decoded props of `sourceProps`. Before React Native 0.87,
+   React Native uses it to collect the keys of the base view props (`RawPropsParser::prepare`), and
+   `NewComponentDescriptor` uses the constructor that takes the decoded props. Since React Native 0.87,
+   `NewComponentDescriptor` copies the source props and sets the props of the update with `setProp`.
    */
   NewViewProps(
     const facebook::react::PropsParserContext &context,
