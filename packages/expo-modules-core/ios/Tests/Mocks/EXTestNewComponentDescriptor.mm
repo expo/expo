@@ -3,6 +3,7 @@
 #import "EXTestNewComponentDescriptor.h"
 
 #import <ExpoModulesCore/NewComponentDescriptor.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
 
 #include <memory>
@@ -49,6 +50,21 @@ static folly::dynamic dynamicPropsFromDictionary(NSDictionary<NSString *, id> *p
       .eventDispatcher = {},
       .contextContainer = _contextContainer,
       .flavor = _flavor,
+    });
+  }
+  return self;
+}
+
+- (instancetype)initWithViewClass:(Class)viewClass
+{
+  if (self = [super init]) {
+    _contextContainer = std::make_shared<react::ContextContainer>();
+    auto provider = views::componentDescriptorProvider(viewClass);
+    _flavor = std::static_pointer_cast<const views::NewComponentFlavor>(provider.flavor);
+    _descriptor = provider.constructor(react::ComponentDescriptorParameters{
+      .eventDispatcher = {},
+      .contextContainer = _contextContainer,
+      .flavor = provider.flavor,
     });
   }
   return self;

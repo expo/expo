@@ -12,6 +12,9 @@ private struct EndToEndProps {
   var radius = 4.0
 }
 
+@ExpoView<EndToEndProps>
+private final class EndToEndView: ExpoNativeView {}
+
 /// Runs props through the whole path that Fabric takes: `NewComponentDescriptor::cloneProps` in C++,
 /// `ObjCPropsDecoder`, `ViewPropsDecoderAdapter` and `ViewPropsDecoder` in Swift.
 @Suite
@@ -187,5 +190,48 @@ private final class LockingTestRuntime: JavaScriptRuntime, JavaScriptRuntimeLock
     lockCount += 1
     body()
     return true
+  }
+}
+
+/// A registered view creates its props decoder at the first decode, on the thread that decodes. Fabric decodes the
+/// props from React on the JavaScript thread, so the decoder must be created off the main thread.
+@Suite
+struct RegisteredViewDecodingTests {
+  @Test
+  func `registered view decodes its first props on the JavaScript thread`() async throws {
+    let componentName = ExpoNativeView.packageComponentName(packageName: "view-props-end-to-end-tests", viewName: "EndToEndView")
+    await MainActor.run {
+      ExpoNativeView.registerComponent(EndToEndView.self, componentName: componentName)
+    }
+    let viewClass: AnyClass = try #require(NSClassFromString(componentName))
+    let (title, isMainThread) = await decodeTitleOnJavaScriptThread(viewClass: viewClass, source: "({ title: 'Card' })")
+
+    #expect(title == "Card")
+    #expect(isMainThread == false)
+  }
+
+  /// Decodes the props on a thread with the name of React Native's JavaScript thread, and returns the decoded title.
+  private func decodeTitleOnJavaScriptThread(viewClass: AnyClass, source: String) async -> (String?, Bool) {
+    return await withCheckedContinuation { continuation in
+      let thread = Thread {
+        let result = JavaScriptActor.assumeIsolated { () -> (String?, Bool) in
+          let runtime = JavaScriptRuntime()
+          let descriptor = EXTestNewComponentDescriptor(viewClass: viewClass)
+          guard let props = try? runtime.eval(source) else {
+            return (nil, Thread.isMainThread)
+          }
+          let decoded = runtime.withUnsafePointee { runtimePointer in
+            props.withUnsafePointee { propsPointer in
+              descriptor.update(runtime: runtimePointer, props: propsPointer)
+            }
+          }
+          return ((decoded as? DecodedViewProps<EndToEndProps>)?.props.title, Thread.isMainThread)
+        }
+        continuation.resume(returning: result)
+      }
+      // The name of the JavaScript thread in `RCTJSThreadManager.mm`.
+      thread.name = "com.facebook.react.runtime.JavaScript"
+      thread.start()
+    }
   }
 }
