@@ -267,7 +267,10 @@ export function useHeaderConfigProps({
           headerTintColor
         : (headerTintColor ?? colors.text);
   const titleFontSize =
-    'fontSize' in headerTitleStyleFlattened ? headerTitleStyleFlattened.fontSize : undefined;
+    'fontSize' in headerTitleStyleFlattened &&
+    typeof headerTitleStyleFlattened.fontSize === 'number'
+      ? headerTitleStyleFlattened.fontSize
+      : undefined;
   const titleFontWeight = headerTitleStyleFlattened.fontWeight;
 
   // Also used by react-native-screens for the scroll edge appearance of a regular title
@@ -276,24 +279,20 @@ export function useHeaderConfigProps({
   const largeTitleColor =
     'color' in headerLargeTitleStyleFlattened ? headerLargeTitleStyleFlattened.color : undefined;
   const largeTitleFontSize =
-    'fontSize' in headerLargeTitleStyleFlattened
+    'fontSize' in headerLargeTitleStyleFlattened &&
+    typeof headerLargeTitleStyleFlattened.fontSize === 'number'
       ? headerLargeTitleStyleFlattened.fontSize
       : undefined;
   const largeTitleFontWeight = headerLargeTitleStyleFlattened.fontWeight;
 
-  const headerTitleStyleSupported: TextStyle = { color: titleColor };
-
-  if (headerTitleStyleFlattened.fontFamily != null) {
-    headerTitleStyleSupported.fontFamily = headerTitleStyleFlattened.fontFamily;
-  }
-
-  if (titleFontSize != null) {
-    headerTitleStyleSupported.fontSize = titleFontSize;
-  }
-
-  if (titleFontWeight != null) {
-    headerTitleStyleSupported.fontWeight = titleFontWeight;
-  }
+  const headerTitleStyleSupported: TextStyle = {
+    color: titleColor,
+    ...(headerTitleStyleFlattened.fontFamily != null
+      ? { fontFamily: headerTitleStyleFlattened.fontFamily }
+      : null),
+    ...(titleFontSize != null ? { fontSize: titleFontSize } : null),
+    ...(titleFontWeight != null ? { fontWeight: titleFontWeight } : null),
+  };
 
   const canGoBack = headerBack != null;
 
@@ -489,7 +488,7 @@ export function useHeaderConfigProps({
     largeTitleColor,
     largeTitleFontFamily,
     largeTitleFontSize,
-    largeTitleFontWeight,
+    largeTitleFontWeight: largeTitleFontWeight != null ? String(largeTitleFontWeight) : undefined,
     largeTitleHideShadow: headerLargeTitleShadowVisible === false,
     title: titleText,
     titleColor,

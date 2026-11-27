@@ -1,7 +1,7 @@
 'use client';
 
 import type { RefAttributes } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type ViewInstance } from 'react-native';
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -18,7 +18,7 @@ function WebSafeAreaProvider({
   initialSafeAreaInsets: _initialSafeAreaInsets,
   style,
   ...props
-}: SafeAreaProviderProps & RefAttributes<View>) {
+}: SafeAreaProviderProps & RefAttributes<ViewInstance>) {
   // Measuring and updating these contexts can discard pending streamed content during hydration.
   return (
     <View {...props} style={[styles.container, style]}>
