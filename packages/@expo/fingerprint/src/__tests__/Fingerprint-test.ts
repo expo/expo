@@ -532,6 +532,22 @@ describe(diffFingerprints, () => {
     };
     expect(diffFingerprints(fingerprint1, fingerprint2)).toEqual([]);
   });
+
+  it('should skip a source with a null hash that is on one side only', () => {
+    const withIos: Fingerprint = {
+      sources: [
+        { type: 'dir', filePath: 'ios', reasons: ['bareNativeDir'], hash: null },
+        { type: 'file', filePath: 'app.json', reasons: [''], hash: 'app' },
+      ],
+      hash: '111',
+    };
+    const withoutIos: Fingerprint = {
+      sources: [{ type: 'file', filePath: 'app.json', reasons: [''], hash: 'app' }],
+      hash: '111',
+    };
+    expect(diffFingerprints(withoutIos, withIos)).toEqual([]);
+    expect(diffFingerprints(withIos, withoutIos)).toEqual([]);
+  });
 });
 
 describe('function api stability', () => {
