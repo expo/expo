@@ -163,8 +163,10 @@ func downloadFileWithStore(
           try FileManager.default.moveItem(at: fileURL, to: destination)
           promise.resolve(destination.absoluteString)
         }
+      } catch let exception as Exception {
+        promise.reject(exception)
       } catch {
-        promise.reject(error)
+        promise.reject(UnableToDownloadException(error.localizedDescriptionWithCode))
       }
     }
     downloadTask.resume()
@@ -278,8 +280,10 @@ class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
         return dest.absoluteString
       }
       promise.resolve(resolvedUrl)
+    } catch let exception as Exception {
+      promise.reject(exception)
     } catch {
-      promise.reject(error)
+      promise.reject(UnableToDownloadException(error.localizedDescriptionWithCode))
     }
   }
 
