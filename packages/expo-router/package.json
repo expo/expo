@@ -28,6 +28,7 @@
     "internal",
     "vendor",
     "_ctx-html.js",
+    "_ctx-platform.js",
     "_ctx-shared.js",
     "_ctx.*",
     "_error.js",
@@ -259,8 +260,7 @@
     "./_ctx-shared": "./_ctx-shared.js",
     "./_ctx": {
       "types": "./_ctx.d.ts",
-      "browser": "./_ctx.web.js",
-      "default": "./_ctx.js"
+      "default": "./_ctx-platform.js"
     },
     "./_error.js": "./_error.js",
     "./_error": "./_error.js",
