@@ -6,12 +6,20 @@ import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 jest.mock('../../utils/port');
 
 describe(resolveBundlerPropsAsync, () => {
-  afterEach(() => vol.reset());
+  afterEach(() => {
+    vol.reset();
+    delete process.env.RCT_METRO_PORT;
+  });
 
-  it(`asserts bad args`, async () => {
-    await expect(resolveBundlerPropsAsync('/', { bundler: false, port: 3000 })).rejects.toThrow(
-      /mutually exclusive arguments/
-    );
+  it(`uses the port when the bundler is skipped`, async () => {
+    expect(await resolveBundlerPropsAsync('/', { bundler: false, port: 8083 })).toEqual({
+      port: 8083,
+      shouldStartBundler: false,
+    });
+  });
+  it(`exposes the port to the native build when the bundler is skipped`, async () => {
+    await resolveBundlerPropsAsync('/', { bundler: false, port: 8083 });
+    expect(process.env.RCT_METRO_PORT).toBe('8083');
   });
   it(`ignores an invalid port when the bundler is skipped`, async () => {
     expect(await resolveBundlerPropsAsync('/', { bundler: false, port: NaN })).toEqual({

@@ -52,7 +52,7 @@ export const expoRunIos: Command = async (argv) => {
         chalk`--configuration <configuration>  Xcode configuration to use. Debug or Release. {dim Default: Debug}`,
         chalk`-d, --device [device]            Device name, UDID, or "generic" for build-only`,
         `-o, --output <path>              Directory to output the built app binary`,
-        chalk`-p, --port <port>                Port to start the Metro bundler on. {dim Default: 8081}`,
+        chalk`-p, --port <port>                Port to start the Metro bundler on, or to connect to with --no-bundler. {dim Default: 8081}`,
         `-h, --help                       Usage info`,
       ].join('\n'),
       [
