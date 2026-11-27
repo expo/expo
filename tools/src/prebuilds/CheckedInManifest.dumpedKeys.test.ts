@@ -189,6 +189,18 @@ for (const { object, key, fallback, nonDefault, hint, term = key } of DEFAULTS) 
   }
 }
 
+it('dumped keys: accepts package cxxLanguageStandard "c++20", the standard et prebuild compiles with', () => {
+  const manifest = dump();
+  setKey(manifest, 'cxxLanguageStandard', 'c++20');
+  check(manifest);
+});
+
+it('dumped keys: rejects package cxxLanguageStandard "gnu++20" and names .cxx20 as the fix', () => {
+  const manifest = dump();
+  setKey(manifest, 'cxxLanguageStandard', 'gnu++20');
+  rejects(manifest, /Set cxxLanguageStandard to \.cxx20/);
+});
+
 const MACRO_PLUGIN_FLAGS = [
   '-Xfrontend',
   '-load-plugin-executable',
