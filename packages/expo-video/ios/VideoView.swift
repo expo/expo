@@ -120,9 +120,9 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     self.playerViewController.endAppearanceTransition()
     // Ensure playing state is preserved
     if wasPlaying {
-      self.player?.ref.play()
+      self.player?.play()
     } else {
-      self.player?.ref.pause()
+      self.player?.pause()
     }
   }
   #endif
@@ -146,7 +146,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     coordinator.animate(alongsideTransition: nil) { context in
       if !context.isCancelled && wasPlaying {
         DispatchQueue.main.async {
-          self.player?.ref.play()
+          self.player?.play()
         }
       }
 

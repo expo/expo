@@ -16,6 +16,9 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
   private let players = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
+  private var remoteCommandPlayer: VideoPlayer? {
+    return players.allObjects.first { $0.ref === mostRecentInteractionPlayer }
+  }
   private var artworkDataTask: URLSessionDataTask?
 
   private var playTarget: Any?
@@ -181,23 +184,21 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       }
 
       playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
-        guard let self, let player = self.mostRecentInteractionPlayer else {
+        guard let self, let player = self.remoteCommandPlayer else {
           return .commandFailed
         }
 
-        if player.rate == 0.0 {
-          player.play()
-        }
+        player.play(onlyIfPaused: true)
         return .success
       }
 
       pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
-        guard let self, let player = self.mostRecentInteractionPlayer else {
+        guard let self, self.mostRecentInteractionPlayer != nil else {
           return .commandFailed
         }
 
         for player in players.allObjects {
-          player.ref.pause()
+          player.pause()
         }
         return .success
       }
@@ -222,12 +223,12 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
       }
 
       playbackPositionTarget = commandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
-        guard let self, let player = self.mostRecentInteractionPlayer else {
+        guard let self, let player = self.remoteCommandPlayer else {
           return .commandFailed
         }
         if let event = event as? MPChangePlaybackPositionCommandEvent {
-          player.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: .max)) { _ in
-            player.play()
+          player.ref.seek(to: CMTime(seconds: event.positionTime, preferredTimescale: .max)) { [weak player] _ in
+            player?.play()
           }
           return .success
         }

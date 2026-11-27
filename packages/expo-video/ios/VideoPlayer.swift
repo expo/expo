@@ -14,6 +14,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   lazy var seeker: VideoPlayerSeeker = VideoPlayerSeeker(player: self)
   private var tracksLoadingTask: Task<(), Never>?
   private let didRelease = Mutex(false)
+  private let playback = PlaybackState()
 
   var loop = false
   var audioMixingMode: AudioMixingMode = .auto {
@@ -23,22 +24,19 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       }
     }
   }
-  private(set) var isPlaying = false
+  var isPlaying: Bool { playback.read(\.playing) }
   private(set) var status: PlayerStatus = .idle
 
-  var playbackRate: Float = 1.0 {
-    didSet {
-      if oldValue != playbackRate {
-        let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
-        safeEmit(event: "playbackRateChange", payload: payload)
-      }
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        ref.defaultRate = playbackRate
-      }
-      if ref.rate != 0 {
-        ref.rate = playbackRate
-      }
+  var playbackRate: Float {
+    get { playback.read(\.rate.value) }
+    set {
+      playback.setRate(newValue, notify: notifyPlaybackRateChanged, apply: apply)
     }
+  }
+
+  private func notifyPlaybackRateChanged(_ previous: Float, _ value: Float) {
+    let payload = PlaybackRateChangedEventPayload(playbackRate: value, oldPlaybackRate: previous)
+    safeEmit(event: "playbackRateChange", payload: payload)
   }
 
   var currentTime: Double {
@@ -75,25 +73,29 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  var volume: Float = 1.0 {
-    didSet {
-      if oldValue != volume {
-        let payload = VolumeChangedEventPayload(volume: volume, oldVolume: oldValue)
-        safeEmit(event: "volumeChange", payload: payload)
-      }
-      ref.volume = volume
+  var volume: Float {
+    get { playback.read(\.volume.value) }
+    set {
+      playback.setVolume(newValue, notify: notifyVolumeChanged, apply: apply)
     }
   }
 
-  var isMuted: Bool = false {
-    didSet {
-      if oldValue != isMuted {
-        let payload = MutedChangedEventPayload(muted: isMuted, oldMuted: oldValue)
-        safeEmit(event: "mutedChange", payload: payload)
-      }
-      ref.isMuted = isMuted
-      VideoManager.shared.setAppropriateAudioSessionOrWarn()
+  private func notifyVolumeChanged(_ previous: Float, _ value: Float) {
+    let payload = VolumeChangedEventPayload(volume: value, oldVolume: previous)
+    safeEmit(event: "volumeChange", payload: payload)
+  }
+
+  var isMuted: Bool {
+    get { playback.read(\.muted.value) }
+    set {
+      playback.setMuted(newValue, notify: notifyMutedChanged, apply: apply)
     }
+  }
+
+  private func notifyMutedChanged(_ previous: Bool, _ value: Bool) {
+    let payload = MutedChangedEventPayload(muted: value, oldMuted: previous)
+    safeEmit(event: "mutedChange", payload: payload)
+    VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   var showNowPlayingNotification = false {
@@ -199,6 +201,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   override func sharedObjectWillRelease() {
+    playback.close()
     // Strong self capture is intentional: it keeps the player alive until the teardown
     // has run on the main thread, so `deinit` can never race with it.
     runOnMainThread {
@@ -333,7 +336,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
       if wasPlaying {
         await MainActor.run {
-          self.ref.play()
+          self.play()
         }
       }
     }
@@ -389,6 +392,47 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return didRelease.withLock { $0 }
   }
 
+  func play(onlyIfPaused: Bool = false) {
+    playback.request(.play(onlyIfPaused: onlyIfPaused), apply: apply)
+  }
+
+  func pause() {
+    playback.request(.pause, apply: apply)
+  }
+
+  func replay() {
+    seeker.seek(to: .zero)
+    play()
+  }
+
+  @MainActor
+  private func apply(_ changes: PlaybackState.Changes) {
+    // The rate goes first, so that a play request in the same pass starts at the new rate.
+    if let rate = changes.rate {
+      ref.defaultRate = rate
+      if changes.action != .pause && ref.rate != 0 {
+        ref.rate = rate
+      }
+    }
+    if let volume = changes.volume {
+      ref.volume = volume
+    }
+    if let muted = changes.muted {
+      ref.isMuted = muted
+    }
+    switch changes.action {
+    case .play(let onlyIfPaused):
+      if !onlyIfPaused || ref.rate == 0 {
+        ref.play()
+      }
+    case .pause:
+      ref.pause()
+    case nil:
+      return
+    }
+    playback.observedPlaying(ref.timeControlStatus == .playing, notify: notifyPlayingChanged)
+  }
+
   private func getBufferedPosition() -> Double {
     guard let currentItem = ref.currentItem else {
       return -1
@@ -415,39 +459,39 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {
-    let payload = IsPlayingEventPayload(isPlaying: newIsPlaying, oldIsPlaying: oldIsPlaying)
-    safeEmit(event: "playingChange", payload: payload)
-    isPlaying = newIsPlaying
+    runOnMainThread {
+      self.playback.observedPlaying(newIsPlaying, notify: self.notifyPlayingChanged)
+    }
+  }
 
+  private func notifyPlayingChanged(_ previous: Bool, _ value: Bool) {
+    let payload = IsPlayingEventPayload(isPlaying: value, oldIsPlaying: previous)
+    safeEmit(event: "playingChange", payload: payload)
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      if player.defaultRate != playbackRate {
-        // User changed the playback speed in the native controls. Update the desiredRate variable
-        playbackRate = player.defaultRate
-      }
-    } else if newRate != 0 && newRate != playbackRate {
-      // On iOS < 16 play() method always returns the rate to 1.0, we have to keep resetting it back to desiredRate
-      // iOS < 16 uses an older player UI, so we don't have to worry about changes to the rate that come from the player UI
-      ref.rate = playbackRate
+    runOnMainThread {
+      self.playback.observed(\.rate, value: player.defaultRate, notify: self.notifyPlaybackRateChanged)
     }
   }
 
   func onVolumeChanged(player: AVPlayer, oldVolume: Float?, newVolume: Float) {
-    volume = newVolume
+    runOnMainThread {
+      self.playback.observed(\.volume, value: player.volume, notify: self.notifyVolumeChanged)
+    }
   }
 
   func onIsMutedChanged(player: AVPlayer, oldIsMuted: Bool?, newIsMuted: Bool) {
-    isMuted = newIsMuted
+    runOnMainThread {
+      self.playback.observed(\.muted, value: player.isMuted, notify: self.notifyMutedChanged)
+    }
   }
 
   func onPlayedToEnd(player: AVPlayer) {
     safeEmit(event: "playToEnd")
     if loop {
-      seeker.seek(to: .zero)
-      self.ref.play()
+      replay()
     }
   }
 
