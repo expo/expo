@@ -1,6 +1,7 @@
 package expo.modules.webbrowser
 
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsSession
 import io.mockk.CapturingSlot
 import io.mockk.Runs
 import io.mockk.every
@@ -28,6 +29,12 @@ internal fun mockkCustomTabsActivitiesHelper(
   }
 }
 
-internal fun mockkCustomTabsConnectionHelper(): CustomTabsConnectionHelper {
-  return mockk(relaxed = true)
+internal fun mockkCustomTabsConnectionHelper(
+  keepAliveSession: CustomTabsSession? = null
+): CustomTabsConnectionHelper {
+  return mockk<CustomTabsConnectionHelper>(relaxed = true).also {
+    every { it.requestKeepAliveSession(any(), any()) } answers {
+      secondArg<(CustomTabsSession?) -> Unit>().invoke(keepAliveSession)
+    }
+  }
 }

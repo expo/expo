@@ -13,5 +13,8 @@
         android:launchMode="singleTop"
         android:theme="@android:style/Theme.Translucent.NoTitleBar"
         android:exported="false"/>
+    <service
+        android:name=".KeepAliveService"
+        android:exported="true"/>
   </application>
 </manifest>

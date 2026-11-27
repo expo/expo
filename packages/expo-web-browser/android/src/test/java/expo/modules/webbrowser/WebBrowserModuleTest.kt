@@ -1,6 +1,7 @@
 package expo.modules.webbrowser
 
 import android.content.ComponentName
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
@@ -17,11 +18,14 @@ import io.mockk.slot
 import io.mockk.verify
 import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
+
+private const val KEEP_ALIVE_EXTRA = "android.support.customtabs.extra.KEEP_ALIVE"
 
 private fun assertSetsEqual(first: Set<*>, second: Set<*>, message: String = "") {
   if (!first.all { second.contains(it) }) {
@@ -198,6 +202,26 @@ internal class WebBrowserModuleTest {
     )
 
     assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun `test intent asks the browser to keep the app alive when a session is available`() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val activitiesHelper = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    val session = CustomTabsSession.createMockSessionForTesting(
+      ComponentName("com.browser.package", "CustomTabsService")
+    )
+    val connectionHelper = mockkCustomTabsConnectionHelper(keepAliveSession = session)
+    initialize(moduleSpy, customTabsActivitiesHelper = activitiesHelper, customTabsConnectionHelper = connectionHelper)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions(browserPackage = "com.browser.package"))
+
+    // then
+    val keepAlive = intentSlot.captured.intent.getParcelableExtra<Intent>(KEEP_ALIVE_EXTRA)
+    assertEquals(KeepAliveService::class.java.name, keepAlive?.component?.className)
+    assertNotNull(intentSlot.captured.intent.extras?.getBinder(CustomTabsIntent.EXTRA_SESSION))
   }
 
   @Test

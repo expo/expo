@@ -1,5 +1,6 @@
 package expo.modules.webbrowser
 
+import android.content.Intent
 import android.os.Bundle
 import android.provider.Browser
 import android.text.TextUtils
@@ -10,6 +11,7 @@ import androidx.core.os.bundleOf
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.core.net.toUri
@@ -21,6 +23,8 @@ private const val PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage"
 private const val DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage"
 
 private const val MODULE_NAME = "ExpoWebBrowser"
+
+private const val EXTRA_KEEP_ALIVE = "android.support.customtabs.extra.KEEP_ALIVE"
 
 class WebBrowserModule : Module() {
   private val context
@@ -114,7 +118,27 @@ class WebBrowserModule : Module() {
       }
 
       if (headers == null) {
-        promise.resolve(open(null))
+        // Keep throwing synchronously when no browser can open the tab.
+        val probeIntent = createCustomTabsIntent(options, null).apply { intent.data = uri }
+        if (!customTabsResolver.canResolveIntent(probeIntent)) {
+          throw NoMatchingActivityException()
+        }
+
+        val keepAlivePackageName = keepAlivePackageNameOrNull(options)
+        if (keepAlivePackageName == null) {
+          promise.resolve(open(null))
+          return@AsyncFunction
+        }
+
+        // Ask the browser to keep this app alive while the tab is open. Without it, Android can
+        // reclaim the app as soon as the tab covers it, and the app loses the auth redirect.
+        connectionHelper.requestKeepAliveSession(keepAlivePackageName) { session ->
+          try {
+            promise.resolve(open(session))
+          } catch (error: Exception) {
+            promise.reject(error.toCodedException())
+          }
+        }
         return@AsyncFunction
       }
       if (!"https".equals(uri.scheme, ignoreCase = true) || uri.host.isNullOrEmpty() || uri.userInfo != null) {
@@ -162,6 +186,20 @@ class WebBrowserModule : Module() {
       if (session == null && !TextUtils.isEmpty(packageName)) {
         intent.setPackage(packageName)
       }
+      if (session != null) {
+        intent.putExtra(
+          EXTRA_KEEP_ALIVE,
+          Intent().setClassName(context.packageName, KeepAliveService::class.java.name)
+        )
+      }
+    }
+  }
+
+  private fun keepAlivePackageNameOrNull(options: OpenBrowserOptions): String? {
+    return try {
+      givenOrPreferredPackageName(options.browserPackage)
+    } catch (_: NoPreferredPackageFound) {
+      null
     }
   }
 
