@@ -490,7 +490,10 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   the same data.
   /// - SeeAlso: `asValue()` for converting to a `JavaScriptValue`
   public func toObject() -> JavaScriptObject {
-    return asValue().getObject()
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    return JavaScriptObject(runtimeHandle, expo.objectFromArray(jsiRuntime, pointee))
   }
 
   /// Errors that can occur when working with JavaScript arrays.

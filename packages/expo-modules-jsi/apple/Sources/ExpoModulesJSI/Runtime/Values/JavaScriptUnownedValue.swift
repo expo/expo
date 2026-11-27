@@ -177,7 +177,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is an array. The zero-copy counterpart of ``JavaScriptValue/isArray()``.
   public func isArray() -> Bool {
-    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isArray(runtime)
+    return expo.isArrayValue(runtime, pointer.pointee)
   }
 
   /// Returns the value as a ``JavaScriptArray``, or asserts if it is not an array. The zero-copy
@@ -189,12 +189,12 @@ public struct JavaScriptUnownedValue: ~Copyable {
       belongs(to: runtime),
       "`getArray(in:)` must be passed the runtime that owns the borrowed value"
     )
-    return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
+    return JavaScriptArray(runtime, expo.arrayFromValue(self.runtime, pointer.pointee))
   }
 
   /// Whether the value is a function. The zero-copy counterpart of ``JavaScriptValue/isFunction()``.
   public func isFunction() -> Bool {
-    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isFunction(runtime)
+    return expo.isFunctionValue(runtime, pointer.pointee)
   }
 
   /// Returns the value as a ``JavaScriptFunction``, or asserts if it is not a function. The zero-copy
@@ -221,7 +221,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is an `ArrayBuffer`. The zero-copy counterpart of ``JavaScriptValue/isArrayBuffer()``.
   public func isArrayBuffer() -> Bool {
-    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isArrayBuffer(runtime)
+    return expo.isArrayBufferValue(runtime, pointer.pointee)
   }
 
   /// Returns the value as a ``JavaScriptTypedArray``, or asserts if it is not a typed array. The

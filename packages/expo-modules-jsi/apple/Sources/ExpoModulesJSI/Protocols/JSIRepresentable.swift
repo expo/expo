@@ -121,7 +121,7 @@ extension Optional: JSIRepresentable where Wrapped: JSIRepresentable {
 @_spi(Internal)
 extension Array: JSIRepresentable where Element: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> [Element] {
-    let jsiArray = value.getObject(runtime).getArray(runtime)
+    let jsiArray = expo.arrayFromValue(runtime, value)
     let size = jsiArray.size(runtime)
     var result: Self = []
 
