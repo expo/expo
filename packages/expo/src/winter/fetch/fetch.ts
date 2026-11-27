@@ -1,5 +1,9 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
-import { getRequestBodyInit, getRequestFormDataBoundary } from './ExpoRequest';
+import {
+  getRequestBodyInit,
+  getRequestFormDataBoundary,
+  markRequestStreamBodyUsed,
+} from './ExpoRequest';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
@@ -71,6 +75,9 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
+  if (body instanceof ReadableStream && !body.locked && bodySource != null) {
+    markRequestStreamBodyUsed(bodySource);
+  }
   const {
     body: requestBody,
     defaultHeaders,

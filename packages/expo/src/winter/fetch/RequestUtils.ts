@@ -36,7 +36,7 @@ export async function convertReadableStreamToUint8ArrayAsync(
 
 // Also accept instances that don't extend blob but have required methods (for filesystem and custom blob module)
 export function isBlob(obj: any): obj is Blob {
-  if (typeof obj !== 'object') {
+  if (obj == null || typeof obj !== 'object') {
     return false;
   }
   if (!('arrayBuffer' in obj)) {

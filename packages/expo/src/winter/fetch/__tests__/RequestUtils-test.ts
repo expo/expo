@@ -10,6 +10,7 @@ import { ReadableStream as WebReadableStream } from 'web-streams-polyfill';
 import type { NativeHeadersType } from '../NativeRequest';
 import {
   convertReadableStreamToUint8ArrayAsync,
+  isBlob,
   normalizeBodyInitAsync,
   normalizeHeadersInit,
   overrideHeaders,
@@ -115,6 +116,18 @@ describe(normalizeBodyInitAsync, () => {
   it('should handle null body', async () => {
     const result = await normalizeBodyInitAsync(null);
     expect(result.body).toBeNull();
+  });
+});
+
+describe(isBlob, () => {
+  it('returns false for null and primitives', () => {
+    expect(isBlob(null)).toBe(false);
+    expect(isBlob(undefined)).toBe(false);
+    expect(isBlob('text')).toBe(false);
+  });
+
+  it('returns true for Blob-like objects', () => {
+    expect(isBlob({ arrayBuffer: async () => new ArrayBuffer(0), type: 'text/plain' })).toBe(true);
   });
 });
 

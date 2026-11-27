@@ -1,6 +1,6 @@
 /// <reference types="node" />
 
-import { Request } from '../ExpoRequest';
+import { getRequestBodyInit, Request } from '../ExpoRequest';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;
 globalThis.TextDecoder = require('node:util').TextDecoder;
@@ -91,8 +91,12 @@ describe('Request', () => {
   it('preserves the original body for later retrieval', () => {
     const request = new Request('https://example.test/', { method: 'POST', body: 'payload' });
     // The fetch implementation needs the raw body without consuming the request.
-    expect(request._bodyInit).toBe('payload');
+    expect(getRequestBodyInit(request)).toBe('payload');
     expect(request.bodyUsed).toBe(false);
+  });
+
+  it('throws when constructed with no arguments', () => {
+    expect(() => new (Request as unknown as new () => Request)()).toThrow(TypeError);
   });
 
   describe('body consumption', () => {
@@ -192,10 +196,17 @@ describe('Request', () => {
       expect(request.bodyUsed).toBe(true);
     });
 
-    it('marks the body used once the stream is locked', () => {
+    it('treats a locked stream as unusable without marking bodyUsed until read', async () => {
       const request = new Request('https://example.test/', { method: 'POST', body: 'hello' });
-      request.body!.getReader();
-      expect(request.bodyUsed).toBe(true);
+      const reader = request.body!.getReader();
+      expect(request.bodyUsed).toBe(false);
+      expect(() => request.clone()).toThrow(TypeError);
+      expect(() => new Request(request)).toThrow(TypeError);
+      await expect(request.text()).rejects.toThrow(TypeError);
+      // Releasing the lock without reading leaves the body usable per the Fetch spec.
+      reader.releaseLock();
+      expect(request.bodyUsed).toBe(false);
+      expect(await request.text()).toBe('hello');
     });
 
     it('throws from another read method after the stream has been read', async () => {
@@ -209,6 +220,13 @@ describe('Request', () => {
       const body = request.body!;
       await request.text();
       expect(body.locked).toBe(true);
+    });
+
+    it('returns a locked body stream when .body is accessed after consumption', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: 'hello' });
+      await request.text();
+      expect(request.body!.locked).toBe(true);
+      expect(() => request.body!.getReader()).toThrow(/locked/);
     });
 
     it('passes a ReadableStream body through unchanged', () => {
@@ -238,18 +256,42 @@ describe('Request', () => {
       expect(copy.headers.get('x-custom')).toBe('value');
       expect(copy.credentials).toBe('include');
       expect(copy.redirect).toBe('error');
-      expect(copy._bodyInit).toBe('payload');
+      expect(getRequestBodyInit(copy)).toBe('payload');
     });
 
-    it('marks the source request as used when its body is reused', () => {
+    it('marks the source request as used and locks its body stream when reused', () => {
       const original = new Request('https://example.test/', {
         method: 'POST',
         body: 'payload',
       });
-      // Passing no body in the init reuses the source body, consuming it.
+      const originalBody = original.body!;
+      // Passing no body in the init reuses the source body, consuming and locking it.
       const copy = new Request(original);
-      expect(copy._bodyInit).toBe('payload');
+      expect(getRequestBodyInit(copy)).toBe('payload');
       expect(original.bodyUsed).toBe(true);
+      expect(originalBody.locked).toBe(true);
+      expect(copy.body).not.toBe(originalBody);
+
+      // Also locked when `.body` is accessed only after reuse.
+      const original2 = new Request('https://example.test/', { method: 'POST', body: 'payload' });
+      new Request(original2);
+      expect(original2.body!.locked).toBe(true);
+    });
+
+    it('locks and proxies a ReadableStream body from the source request', async () => {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('streamed'));
+          controller.close();
+        },
+      });
+      const original = new Request('https://example.test/', { method: 'POST', body: stream });
+      const copy = new Request(original);
+      expect(original.bodyUsed).toBe(true);
+      expect(original.body!.locked).toBe(true);
+      expect(copy.body).not.toBe(original.body);
+      expect(copy.bodyUsed).toBe(false);
+      expect(await copy.text()).toBe('streamed');
     });
 
     it('throws when the source request body is already used', async () => {
@@ -274,7 +316,7 @@ describe('Request', () => {
         body: 'original',
       });
       const copy = new Request(original, { method: 'POST', body: 'override' });
-      expect(copy._bodyInit).toBe('override');
+      expect(getRequestBodyInit(copy)).toBe('override');
       expect(original.bodyUsed).toBe(false);
     });
 
@@ -332,6 +374,16 @@ describe('Request', () => {
       expect(copy.method).toBe('POST');
       expect(await copy.text()).toBe('payload');
     });
+    it('accepts a globalThis.Request typed value without casting', async () => {
+      const globalReq: globalThis.Request = new Request('https://example.test/', {
+        method: 'POST',
+        body: 'from-global',
+      });
+      const copy = new Request(globalReq);
+      expect(copy.url).toBe('https://example.test/');
+      expect(copy.method).toBe('POST');
+      expect(await copy.text()).toBe('from-global');
+    });
   });
 
   describe('clone', () => {
@@ -359,6 +411,38 @@ describe('Request', () => {
       expect(clone.body).not.toBe(request.body);
       expect(await request.text()).toBe('streamed');
       expect(await clone.text()).toBe('streamed');
+    });
+
+    it('does not re-add a deleted Content-Type header', async () => {
+      for (const body of ['hello', new URLSearchParams('a=1')]) {
+        const request = new Request('https://example.test/', { method: 'POST', body });
+        request.headers.delete('content-type');
+        const clone = request.clone();
+        expect(clone.headers.get('content-type')).toBeNull();
+      }
+      const form = new FormData();
+      form.append('a', 'b');
+      const formRequest = new Request('https://example.test/', { method: 'POST', body: form });
+      const boundary = formRequest.headers.get('content-type')!.split('boundary=')[1]!;
+      formRequest.headers.delete('content-type');
+      const formClone = formRequest.clone();
+      expect(formClone.headers.get('content-type')).toBeNull();
+      expect(await formClone.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
+    });
+
+    it('clones a keepalive request carrying a ReadableStream body copied from another request', async () => {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('streamed'));
+          controller.close();
+        },
+      });
+      const r1 = new Request('https://example.test/', { method: 'POST', body: stream });
+      const r2 = new Request(r1, { keepalive: true });
+      const r3 = r2.clone();
+      expect(r3.keepalive).toBe(true);
+      expect(await r2.text()).toBe('streamed');
+      expect(await r3.text()).toBe('streamed');
     });
 
     it('throws when cloning an already-used request', async () => {
@@ -536,6 +620,12 @@ describe('Request', () => {
       it('rejects formData() for a body that is not form data', async () => {
         const request = new Request('https://example.test/', { method: 'POST', body: 'a=1' });
         await expect(request.formData()).rejects.toThrow(TypeError);
+        const badMime = new Request('https://example.test/', {
+          method: 'POST',
+          body: 'a=1',
+          headers: { 'content-type': 'application/x-www-form-urlencoded-extra' },
+        });
+        await expect(badMime.formData()).rejects.toThrow(TypeError);
       });
 
       it('copies a URLSearchParams body at construction', async () => {
@@ -559,7 +649,7 @@ describe('Request', () => {
         });
         const bytes = await request.bytes();
         bytes[0] = 'x'.charCodeAt(0);
-        expect(new TextDecoder().decode(request._bodyInit as Uint8Array)).toBe('abc');
+        expect(new TextDecoder().decode(getRequestBodyInit(request) as Uint8Array)).toBe('abc');
       });
 
       it('copies a FormData body at construction', async () => {
@@ -627,6 +717,14 @@ describe('Request', () => {
       });
       expect(request.headers.get('content-type')).toBe('text/plain');
     });
+
+    it('preserves the source boundary without adding Content-Type when init replaces headers', async () => {
+      const original = new Request('https://example.test/', { method: 'POST', body: formData() });
+      const boundary = boundaryOf(original);
+      const copy = new Request(original, { headers: { 'X-Trace': '1' } });
+      expect(copy.headers.get('content-type')).toBeNull();
+      expect(await copy.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
+    });
   });
 
   // WebIDL: https://webidl.spec.whatwg.org/#es-interfaces
@@ -654,11 +752,13 @@ describe('Request', () => {
       }
     );
 
-    it('does not expose the FormData boundary', () => {
+    it('does not expose internal fields on instances', () => {
       const formData = new FormData();
       formData.append('a', 'b');
       const request = new Request('https://example.test/', { method: 'POST', body: formData });
       expect('_formDataBoundary' in request).toBe(false);
+      expect('_bodyInit' in request).toBe(false);
+      expect(Object.getOwnPropertyNames(request)).toEqual([]);
     });
   });
 

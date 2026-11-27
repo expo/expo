@@ -1,7 +1,7 @@
 import { HTTP_TOKEN, isBlob, normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
 import { convertFormDataAsync, createBoundary } from './convertFormData';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
-import type { FetchRequestInit } from './fetch.types';
+import type { FetchRequestInit, FetchRequestLike } from './fetch.types';
 
 // React Native's FormData is not fully compatible with the web standard, so the global FormData
 // type carries extra members (e.g. `getParts`). Mirror `FetchResponse` and return the intersection.
@@ -31,10 +31,11 @@ function validateMethod(method: string): string {
 // Parses the URL like the spec does, but keeps input that can't be parsed as-is instead of throwing,
 // for compatibility with React Native's `whatwg-fetch` Request.
 function serializeURL(input: string | URL): string {
+  const urlString = `${input}`;
   try {
-    return new URL(`${input}`).href;
+    return new URL(urlString).href;
   } catch {
-    return `${input}`;
+    return urlString;
   }
 }
 
@@ -87,13 +88,56 @@ function isRequest(input: unknown): input is Request {
   );
 }
 
-// The multipart boundary of a request's FormData body. Set at construction, like the spec's body
-// extraction, so the Content-Type header matches the body that `text()` and `fetch()` produce.
-// Kept out of the class, so it isn't part of the public `Request` type.
-const formDataBoundaries = new WeakMap<Request, string>();
+// Internal state for `Request` instances, kept out of the class so internal fields don't leak onto
+// the public `Request` type, own properties, or cross-realm `whatwg-fetch` detection.
+type RequestInternalState = {
+  url: string;
+  method: string;
+  headers: Headers;
+  credentials: RequestCredentials;
+  redirect: RequestRedirect;
+  signal: AbortSignal;
+  mode: RequestMode;
+  cache: RequestCache;
+  referrer: string;
+  referrerPolicy: ReferrerPolicy;
+  integrity: string;
+  keepalive: boolean;
+  // The raw body input, kept so `fetch()` can normalize it without consuming the request.
+  // Replaced by a tee branch when a stream body is cloned.
+  bodyInit: BodyInit | null;
+  // Whether the body has been read/disturbed.
+  consumed: boolean;
+  // The lazily-created body stream. Cached so `.body` returns the same object across gets.
+  bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null;
+  // The multipart boundary of a request's FormData body. Set at construction, like the spec's body
+  // extraction, so the Content-Type header matches the body that `text()` and `fetch()` produce.
+  formDataBoundary?: string;
+};
+
+const requestStates = new WeakMap<Request, RequestInternalState>();
+
+function getState(request: Request): RequestInternalState {
+  const state = requestStates.get(request);
+  if (state == null) {
+    throw new TypeError('Illegal invocation');
+  }
+  return state;
+}
 
 export function getRequestFormDataBoundary(request: object): string | undefined {
-  return request instanceof Request ? formDataBoundaries.get(request) : undefined;
+  return requestStates.get(request as Request)?.formDataBoundary;
+}
+
+/**
+ * Marks a `Request`'s stream body as consumed when `fetch()` reads it directly, so `bodyUsed`
+ * stays accurate even on runtimes whose `ReadableStream` doesn't expose a `_disturbed` flag.
+ */
+export function markRequestStreamBodyUsed(request: object): void {
+  const state = requestStates.get(request as Request);
+  if (state != null) {
+    state.consumed = true;
+  }
 }
 
 // Reads the boundary of a `multipart/form-data` content type.
@@ -108,8 +152,9 @@ function parseMultipartBoundary(contentType: string): string | null {
  * only the `body` stream.
  */
 export function getRequestBodyInit(request: object): BodyInit | null {
-  if (request instanceof Request) {
-    return request._bodyInit;
+  const state = requestStates.get(request as Request);
+  if (state != null) {
+    return state.bodyInit;
   }
   if (isWhatwgFetchRequest(request)) {
     return request._noBody !== true ? (request._bodyInit ?? null) : null;
@@ -172,10 +217,120 @@ function parseReferrer(referrer: string): string {
   return parsed;
 }
 
-// Whether a stream was already read from. `locked` is standard; `_disturbed` is set by the
-// `web-streams-polyfill` that provides `ReadableStream` in React Native.
+// `_disturbed` is set by `web-streams-polyfill` (React Native's `ReadableStream`).
+function isStreamDisturbed(stream: ReadableStream): boolean {
+  return (stream as { _disturbed?: boolean })._disturbed === true;
+}
+
+// Whether a stream is locked or already disturbed.
 function isStreamUnusable(stream: ReadableStream): boolean {
-  return stream.locked || (stream as { _disturbed?: boolean })._disturbed === true;
+  return stream.locked || isStreamDisturbed(stream);
+}
+
+// Locks `source` and returns a distinct stream that forwards its chunks, matching the Fetch
+// spec's proxy stream when constructing a `Request` from another `Request` with a stream body.
+function createProxyReadableStream(
+  source: ReadableStream
+): ReadableStream<Uint8Array<ArrayBuffer>> {
+  const reader = source.getReader();
+  return new ReadableStream<Uint8Array<ArrayBuffer>>(
+    {
+      async pull(controller) {
+        try {
+          const { done, value } = await reader.read();
+          if (done) {
+            controller.close();
+          } else {
+            controller.enqueue(value);
+          }
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+      cancel(reason) {
+        return reader.cancel(reason);
+      },
+    },
+    { highWaterMark: 0 }
+  );
+}
+
+function isStateBodyUsed(state: RequestInternalState): boolean {
+  if (state.consumed) {
+    return true;
+  }
+  return state.bodyInit instanceof ReadableStream && isStreamDisturbed(state.bodyInit);
+}
+
+function isStateBodyUnusable(state: RequestInternalState): boolean {
+  if (isStateBodyUsed(state)) {
+    return true;
+  }
+  if (state.bodyInit instanceof ReadableStream) {
+    return state.bodyInit.locked;
+  }
+  return state.bodyStream?.locked === true;
+}
+
+function isRequestBodyUnusable(request: object, body: BodyInit | null): boolean {
+  const state = requestStates.get(request as Request);
+  if (state != null) {
+    return isStateBodyUnusable(state);
+  }
+  if ((request as { bodyUsed?: boolean }).bodyUsed) {
+    return true;
+  }
+  return body instanceof ReadableStream && isStreamUnusable(body);
+}
+
+function markStateConsumed(state: RequestInternalState, method: string): void {
+  if (isStateBodyUnusable(state)) {
+    throw new TypeError(
+      `Failed to execute '${method}' on 'Request': Request body is already used.`
+    );
+  }
+  state.consumed = true;
+  // Lock a `.body` stream that was already created, so it can't read the body again. A stream
+  // body is skipped, because `consumeStateAsBytes()` must still get a reader for it.
+  if (state.bodyStream != null && state.bodyStream !== state.bodyInit) {
+    state.bodyStream.getReader();
+  }
+}
+
+async function consumeStateAsBytes(
+  state: RequestInternalState,
+  method: string
+): Promise<Uint8Array<ArrayBuffer>> {
+  const body = state.bodyInit;
+  // A null body can't be disturbed, so reading it doesn't mark the request as used.
+  if (body == null) {
+    return new Uint8Array(0);
+  }
+  markStateConsumed(state, method);
+  if (body instanceof FormData) {
+    const { body: bytes } = await convertFormDataAsync(body, state.formDataBoundary);
+    return bytes as Uint8Array<ArrayBuffer>;
+  }
+  const { body: bytes } = await normalizeBodyInitAsync(body);
+  return (bytes as Uint8Array<ArrayBuffer> | null) ?? new Uint8Array(0);
+}
+
+async function consumeStateAsText(state: RequestInternalState, method: string): Promise<string> {
+  const bytes = await consumeStateAsBytes(state, method);
+  return new TextDecoder().decode(bytes);
+}
+
+function setDefaultContentType(headers: Headers, body: BodyInit | null): void {
+  if (body == null || headers.has('content-type')) {
+    return;
+  }
+  if (typeof body === 'string') {
+    headers.set('content-type', 'text/plain;charset=UTF-8');
+  } else if ((body instanceof Blob || isBlob(body)) && body.type) {
+    headers.set('content-type', body.type);
+  } else if (body instanceof URLSearchParams) {
+    headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+  }
 }
 
 const REQUEST_INIT_MEMBERS: (keyof FetchRequestInit)[] = [
@@ -206,7 +361,7 @@ function isBodyInit(body: object): boolean {
   return (
     body instanceof Blob ||
     // Blob-like objects, e.g. files from `expo-file-system`.
-    ('arrayBuffer' in body && 'type' in body) ||
+    isBlob(body) ||
     body instanceof ArrayBuffer ||
     ArrayBuffer.isView(body) ||
     body instanceof URLSearchParams ||
@@ -215,20 +370,7 @@ function isBodyInit(body: object): boolean {
   );
 }
 
-type RequestState = {
-  url: string;
-  method: string;
-  headers: Headers;
-  credentials: RequestCredentials;
-  redirect: RequestRedirect;
-  signal: AbortSignal;
-  mode: RequestMode;
-  cache: RequestCache;
-  referrer: string;
-  referrerPolicy: ReferrerPolicy;
-  integrity: string;
-  keepalive: boolean;
-};
+type RequestInput = string | URL | Request | globalThis.Request | FetchRequestLike;
 
 /**
  * A `Request` implementation for `expo/fetch` that follows the Fetch standard, with a few
@@ -242,22 +384,14 @@ type RequestState = {
  * predictably. It is installed as the global `Request` on native.
  */
 export class Request implements Body {
-  // Backs the attribute getters, which are read-only like WebIDL attributes.
-  private readonly state: RequestState;
-
-  // The raw body input, kept so `fetch()` can normalize it without consuming the request.
-  // Replaced by a tee branch when a stream body is cloned.
-  _bodyInit: BodyInit | null;
-
-  // Whether the body has been read/disturbed. The `bodyUsed` getter also factors in a locked
-  // body stream.
-  private consumed = false;
-  // The lazily-created body stream. Cached so `.body` returns the same object across gets, and
-  // so reading or locking it disturbs this request's body (sets `consumed`) per the Fetch spec.
-  private bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
-
   // A default for `init` keeps `Request.length` at 1, like WebIDL's optional arguments.
-  constructor(input: string | URL | Request, init: FetchRequestInit = {}) {
+  constructor(input: RequestInput, init: FetchRequestInit = {}) {
+    if (arguments.length < 1) {
+      throw new TypeError(
+        "Failed to construct 'Request': 1 argument required, but only 0 present."
+      );
+    }
+
     let headers: HeadersInit | undefined = init?.headers;
     let method: string | undefined = init?.method;
     let credentials = validateEnum(init?.credentials, REQUEST_CREDENTIALS, 'credentials');
@@ -306,7 +440,7 @@ export class Request implements Body {
       }
       inputBody = getRequestBodyInit(input);
     } else {
-      url = serializeURL(input);
+      url = serializeURL(input as string | URL);
     }
 
     if (mode === 'navigate') {
@@ -367,16 +501,68 @@ export class Request implements Body {
       );
     }
     const reuseInputBody = initBody == null && inputBody != null;
-    if (reuseInputBody && (input as Request).bodyUsed) {
+    if (reuseInputBody && isRequestBodyUnusable(input as object, inputBody)) {
       throw new TypeError(
         "Failed to construct 'Request': the source request body is already used. Create a new request with a fresh body, or clone the source request before reading its body."
       );
     }
 
-    this.state = {
+    const requestHeaders = new Headers(headers);
+    const parsedReferrer = referrer != null ? parseReferrer(referrer) : 'about:client';
+
+    let bodyInit: BodyInit | null = initBody ?? inputBody;
+    // Per the spec, only a body from `init` sets a default Content-Type. A body from the input
+    // request keeps the input's headers, unless `init.headers` replaced them.
+    if (initBody != null) {
+      setDefaultContentType(requestHeaders, bodyInit);
+    }
+    if (bodyInit != null) {
+      bodyInit = copyBodyInit(bodyInit);
+    }
+
+    let formDataBoundary: string | undefined;
+    if (bodyInit instanceof FormData) {
+      const contentType = requestHeaders.get('content-type');
+      if (initBody != null) {
+        if (contentType == null) {
+          formDataBoundary = createBoundary();
+          requestHeaders.set('content-type', `multipart/form-data; boundary=${formDataBoundary}`);
+        } else {
+          // Keep the boundary of an explicit multipart content type, so the body matches the header.
+          formDataBoundary = parseMultipartBoundary(contentType) ?? undefined;
+        }
+      } else {
+        // Preserve the source request's FormData boundary without adding a default Content-Type
+        // when `init.headers` replaced the source headers.
+        formDataBoundary =
+          getRequestFormDataBoundary(input as object) ??
+          (contentType != null ? (parseMultipartBoundary(contentType) ?? undefined) : undefined);
+      }
+    }
+
+    // Consume the source body last, so a constructor that throws leaves the source usable.
+    if (reuseInputBody) {
+      const source = input as object;
+      if (bodyInit instanceof ReadableStream) {
+        // Lock the source stream and forward its chunks through a distinct stream, per the Fetch spec.
+        bodyInit = createProxyReadableStream(bodyInit);
+      }
+      const sourceState = requestStates.get(source as Request);
+      if (sourceState != null) {
+        sourceState.consumed = true;
+        if (sourceState.bodyStream != null && sourceState.bodyStream !== sourceState.bodyInit) {
+          sourceState.bodyStream.getReader();
+        }
+      } else if (isWhatwgFetchRequest(source)) {
+        source.bodyUsed = true;
+      }
+      // Other implementations only expose a `body` stream, which `createProxyReadableStream` locked above.
+    }
+
+    requestStates.set(this, {
       url,
       method: normalizedMethod,
-      headers: new Headers(headers),
+      headers: requestHeaders,
       credentials: credentials ?? 'same-origin',
       redirect: redirect ?? 'follow',
       // Kept as-is, like in `whatwg-fetch`. The spec's own signal that follows the given one needs an
@@ -384,86 +570,54 @@ export class Request implements Body {
       signal: signal ?? new AbortController().signal,
       mode: mode ?? 'cors',
       cache: cache ?? 'default',
-      referrer: referrer != null ? parseReferrer(referrer) : 'about:client',
+      referrer: parsedReferrer,
       referrerPolicy: referrerPolicy ?? '',
       integrity: integrity ?? '',
       // WebIDL converts the value to a boolean.
       keepalive: Boolean(keepalive),
-    };
-
-    this._bodyInit = initBody ?? inputBody;
-    // Per the spec, only a body from `init` sets a default Content-Type. A body from the input
-    // request keeps the input's headers, unless `init.headers` replaced them.
-    if (initBody != null) {
-      this.setDefaultContentType();
-    }
-    if (this._bodyInit != null) {
-      this._bodyInit = copyBodyInit(this._bodyInit);
-    }
-    if (this._bodyInit instanceof FormData) {
-      const contentType = this.headers.get('content-type');
-      if (contentType == null) {
-        const boundary = createBoundary();
-        formDataBoundaries.set(this, boundary);
-        this.headers.set('content-type', `multipart/form-data; boundary=${boundary}`);
-      } else {
-        // Keep the boundary of an explicit multipart content type, including one copied from a
-        // source request, so the body matches the header.
-        const boundary = parseMultipartBoundary(contentType);
-        if (boundary != null) {
-          formDataBoundaries.set(this, boundary);
-        }
-      }
-    }
-
-    // Consume the source body last, so a constructor that throws leaves the source usable.
-    if (reuseInputBody) {
-      const source = input as object;
-      if (source instanceof Request) {
-        source.consumed = true;
-      } else if (isWhatwgFetchRequest(source)) {
-        source.bodyUsed = true;
-      }
-      // Other implementations only expose a `body` stream, which is disturbed once we read it.
-    }
+      bodyInit,
+      consumed: false,
+      bodyStream: null,
+      formDataBoundary,
+    });
   }
 
   get url(): string {
-    return this.state.url;
+    return getState(this).url;
   }
   get method(): string {
-    return this.state.method;
+    return getState(this).method;
   }
   get headers(): Headers {
-    return this.state.headers;
+    return getState(this).headers;
   }
   get credentials(): RequestCredentials {
-    return this.state.credentials;
+    return getState(this).credentials;
   }
   get redirect(): RequestRedirect {
-    return this.state.redirect;
+    return getState(this).redirect;
   }
   get signal(): AbortSignal {
-    return this.state.signal;
+    return getState(this).signal;
   }
   // The attributes below are exposed for spec compatibility, but `expo/fetch` doesn't act on them.
   get mode(): RequestMode {
-    return this.state.mode;
+    return getState(this).mode;
   }
   get cache(): RequestCache {
-    return this.state.cache;
+    return getState(this).cache;
   }
   get referrer(): string {
-    return this.state.referrer;
+    return getState(this).referrer;
   }
   get referrerPolicy(): ReferrerPolicy {
-    return this.state.referrerPolicy;
+    return getState(this).referrerPolicy;
   }
   get integrity(): string {
-    return this.state.integrity;
+    return getState(this).integrity;
   }
   get keepalive(): boolean {
-    return this.state.keepalive;
+    return getState(this).keepalive;
   }
   get destination(): RequestDestination {
     return '';
@@ -479,36 +633,32 @@ export class Request implements Body {
   }
 
   get bodyUsed(): boolean {
-    // `fetch()` reads a stream body directly, so the stream itself shows whether it was used.
-    if (this._bodyInit instanceof ReadableStream) {
-      return this.consumed || isStreamUnusable(this._bodyInit);
-    }
-    // A locked stream counts as disturbed even before the first read completes.
-    return this.consumed || this.bodyStream?.locked === true;
+    return isStateBodyUsed(getState(this));
   }
 
   get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null {
-    if (this._bodyInit == null) {
+    const state = getState(this);
+    if (state.bodyInit == null) {
       return null;
     }
-    if (this.bodyStream != null) {
-      return this.bodyStream;
+    if (state.bodyStream != null) {
+      return state.bodyStream;
     }
-    if (this._bodyInit instanceof ReadableStream) {
-      this.bodyStream = this._bodyInit;
-      return this.bodyStream;
+    if (state.bodyInit instanceof ReadableStream) {
+      state.bodyStream = state.bodyInit;
+      return state.bodyStream;
     }
-    const bodyInit = this._bodyInit;
-    this.bodyStream = new ReadableStream<Uint8Array<ArrayBuffer>>(
+    const bodyInit = state.bodyInit;
+    const stream = new ReadableStream<Uint8Array<ArrayBuffer>>(
       {
         pull: async (controller) => {
           // The first pull disturbs the body. Done here rather than in `start` so that merely
           // getting `.body` (which constructs the stream) doesn't flip `bodyUsed`.
-          this.consumed = true;
+          state.consumed = true;
           try {
             // Serialize a FormData body with the boundary that the Content-Type header names.
             const { body } = await normalizeBodyInitAsync(bodyInit, {
-              formDataBoundary: formDataBoundaries.get(this),
+              formDataBoundary: state.formDataBoundary,
             });
             if (body != null) {
               controller.enqueue(new Uint8Array(body));
@@ -519,7 +669,7 @@ export class Request implements Body {
           }
         },
         cancel: () => {
-          this.consumed = true;
+          state.consumed = true;
         },
       },
       {
@@ -528,28 +678,35 @@ export class Request implements Body {
         highWaterMark: 0,
       }
     );
-    return this.bodyStream;
+    // If the body was already consumed before `.body` was accessed, lock the stream so it cannot
+    // be read again.
+    if (state.consumed) {
+      stream.getReader();
+    }
+    state.bodyStream = stream;
+    return state.bodyStream;
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    const bytes = await this.consumeAsBytes('arrayBuffer');
+    const bytes = await consumeStateAsBytes(getState(this), 'arrayBuffer');
     return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
   }
 
   async bytes(): Promise<Uint8Array<ArrayBuffer>> {
     // A byte body comes back as a view of the stored body, which `fetch()` can still send.
-    return (await this.consumeAsBytes('bytes')).slice();
+    return (await consumeStateAsBytes(getState(this), 'bytes')).slice();
   }
 
   async blob(): Promise<Blob> {
-    const body = this._bodyInit;
+    const state = getState(this);
+    const body = state.bodyInit;
     // Per the spec, the blob type comes from the `Content-Type` header.
-    const type = this.headers.get('content-type') ?? '';
+    const type = state.headers.get('content-type') ?? '';
     if (body instanceof Blob && body.type === type) {
-      this.markConsumed('blob');
+      markStateConsumed(state, 'blob');
       return body;
     }
-    const bytes = await this.consumeAsBytes('blob');
+    const bytes = await consumeStateAsBytes(state, 'blob');
     const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
     // React Native's Blob can't be created from bytes in JS, like in `FetchResponse.blob()`.
     if (isReactNativeBlobGlobal()) {
@@ -559,30 +716,32 @@ export class Request implements Body {
   }
 
   async text(): Promise<string> {
-    return this.consumeAsText('text');
+    return consumeStateAsText(getState(this), 'text');
   }
 
   async json(): Promise<any> {
-    return JSON.parse(await this.consumeAsText('json'));
+    return JSON.parse(await consumeStateAsText(getState(this), 'json'));
   }
 
   async formData(): Promise<UniversalFormData> {
-    const body = this._bodyInit;
+    const state = getState(this);
+    const body = state.bodyInit;
     if (body instanceof FormData) {
-      this.markConsumed('formData');
+      markStateConsumed(state, 'formData');
       return copyFormData(body) as UniversalFormData;
     }
-    const contentType = this.headers.get('content-type') ?? '';
-    if (!contentType.toLowerCase().startsWith('application/x-www-form-urlencoded')) {
+    const contentType = state.headers.get('content-type') ?? '';
+    const mimeType = contentType.split(';', 1)[0]!.trim().toLowerCase();
+    if (mimeType !== 'application/x-www-form-urlencoded') {
       if (body != null) {
-        this.markConsumed('formData');
+        markStateConsumed(state, 'formData');
       }
       throw new TypeError(
         `Failed to execute 'formData' on 'Request': the body can't be parsed as form data because its Content-Type is '${contentType}'. Use a FormData or URLSearchParams body, or set the Content-Type to 'application/x-www-form-urlencoded'.`
       );
     }
     // Mirrors the URL-encoded parsing in `FetchResponse.formData()`.
-    const text = await this.consumeAsText('formData');
+    const text = await consumeStateAsText(state, 'formData');
     const searchParams = new URLSearchParams(text);
     const formData = new FormData() as UniversalFormData;
     searchParams.forEach((value, key) => {
@@ -592,79 +751,30 @@ export class Request implements Body {
   }
 
   clone(): Request {
-    if (this.bodyUsed) {
+    const state = getState(this);
+    if (isStateBodyUnusable(state)) {
       throw new TypeError("Failed to execute 'clone' on 'Request': Request body is already used.");
     }
-    let body = this._bodyInit;
-    if (body instanceof ReadableStream) {
+    let cloneBody = state.bodyInit;
+    if (cloneBody instanceof ReadableStream) {
       // A stream can be read only once, so tee it: this request keeps one branch and the clone
       // gets the other, per the Fetch spec.
-      const [ownBranch, cloneBranch] = body.tee();
-      this._bodyInit = ownBranch;
-      this.bodyStream = null;
-      body = cloneBranch;
+      const [ownBranch, cloneBranch] = cloneBody.tee();
+      state.bodyInit = ownBranch;
+      state.bodyStream = null;
+      cloneBody = cloneBranch;
+    } else if (cloneBody != null) {
+      cloneBody = copyBodyInit(cloneBody);
     }
-    return new Request(this.url, {
-      method: this.method,
-      headers: this.headers,
-      credentials: this.credentials,
-      redirect: this.redirect,
-      signal: this.signal,
-      mode: this.mode,
-      cache: this.cache,
-      referrer: this.referrer,
-      referrerPolicy: this.referrerPolicy,
-      integrity: this.integrity,
-      keepalive: this.keepalive,
-      body,
+    const cloned = Object.create(Request.prototype) as Request;
+    requestStates.set(cloned, {
+      ...state,
+      headers: new Headers(state.headers),
+      bodyInit: cloneBody,
+      consumed: false,
+      bodyStream: null,
     });
-  }
-
-  private async consumeAsText(method: string): Promise<string> {
-    const bytes = await this.consumeAsBytes(method);
-    return new TextDecoder().decode(bytes);
-  }
-
-  private async consumeAsBytes(method: string): Promise<Uint8Array<ArrayBuffer>> {
-    const body = this._bodyInit;
-    // A null body can't be disturbed, so reading it doesn't mark the request as used.
-    if (body == null) {
-      return new Uint8Array(0);
-    }
-    this.markConsumed(method);
-    if (body instanceof FormData) {
-      const { body: bytes } = await convertFormDataAsync(body, formDataBoundaries.get(this));
-      return bytes as Uint8Array<ArrayBuffer>;
-    }
-    const { body: bytes } = await normalizeBodyInitAsync(body);
-    return (bytes as Uint8Array<ArrayBuffer> | null) ?? new Uint8Array(0);
-  }
-
-  private markConsumed(method: string): void {
-    if (this.bodyUsed) {
-      throw new TypeError(
-        `Failed to execute '${method}' on 'Request': Request body is already used.`
-      );
-    }
-    this.consumed = true;
-    // Lock a `.body` stream that was already created, so it can't read the body again. A stream
-    // body is skipped, because `consumeAsBytes()` must still get a reader for it.
-    if (this.bodyStream != null && this.bodyStream !== this._bodyInit) {
-      this.bodyStream.getReader();
-    }
-  }
-
-  private setDefaultContentType(): void {
-    if (this._bodyInit == null || this.headers.has('content-type')) {
-      return;
-    }
-    if (typeof this._bodyInit === 'string') {
-      this.headers.set('content-type', 'text/plain;charset=UTF-8');
-    } else if ((this._bodyInit instanceof Blob || isBlob(this._bodyInit)) && this._bodyInit.type) {
-      this.headers.set('content-type', this._bodyInit.type);
-    } else if (this._bodyInit instanceof URLSearchParams) {
-      this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
-    }
+    return cloned;
   }
 }
 
