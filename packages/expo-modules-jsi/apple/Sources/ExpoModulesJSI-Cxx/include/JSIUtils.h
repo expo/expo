@@ -47,6 +47,12 @@ inline jsi::Object objectFromFunction(jsi::IRuntime &runtime, const jsi::Functio
   return jsi::Value(runtime, function).getObject(runtime);
 }
 
+// Clones the array's handle into an object. The intermediate value is a C++ temporary, so its
+// rvalue `getObject` moves the handle on instead of cloning it a second time.
+inline jsi::Object objectFromArray(jsi::IRuntime &runtime, const jsi::Array &array) {
+  return jsi::Value(runtime, array).getObject(runtime);
+}
+
 // `jsi::Object::create` takes the prototype as a value, so the prototype's handle is cloned into one.
 inline jsi::Object createObjectWithPrototype(jsi::IRuntime &runtime, const jsi::Object &prototype) {
   return jsi::Object::create(runtime, jsi::Value(runtime, prototype));
@@ -180,9 +186,13 @@ inline jsi::Value takeValueFromSymbol(jsi::Symbol &symbol) noexcept {
   return jsi::Value(std::move(symbol));
 }
 
-// Clones a value's handle into a function or an array buffer. `value.getObject(runtime)` clones the
-// handle once, and the rvalue `getFunction` and `getArrayBuffer` move it on. Calling the two steps
-// from Swift clones it twice, since Swift only calls the `const&` overloads.
+// Clones a value's handle into an array, a function, or an array buffer. `value.getObject(runtime)`
+// clones the handle once, and the rvalue `getArray`, `getFunction`, and `getArrayBuffer` move it on.
+// Calling the two steps from Swift clones it twice, since Swift only calls the `const&` overloads.
+inline jsi::Array arrayFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  return value.getObject(runtime).getArray(runtime);
+}
+
 inline jsi::Function functionFromValue(jsi::IRuntime &runtime, const jsi::Value &value) {
   return value.getObject(runtime).getFunction(runtime);
 }
@@ -618,6 +628,42 @@ inline bool getBigIntUint64(jsi::IRuntime &runtime, const jsi::Value &value, uin
   }
   *out = bigInt->getUint64(runtime);
   return true;
+}
+
+/**
+ Checks whether `value` is a JavaScript `Array` without cloning its object handle.
+ */
+inline bool isArrayValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  if (!value.isObject()) {
+    return false;
+  }
+  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
+  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
+  return object->isArray(runtime);
+}
+
+/**
+ Checks whether `value` is a JavaScript `Function` without cloning its object handle.
+ */
+inline bool isFunctionValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  if (!value.isObject()) {
+    return false;
+  }
+  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
+  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
+  return object->isFunction(runtime);
+}
+
+/**
+ Checks whether `value` is a JavaScript `ArrayBuffer` without cloning its object handle.
+ */
+inline bool isArrayBufferValue(jsi::IRuntime &runtime, const jsi::Value &value) {
+  if (!value.isObject()) {
+    return false;
+  }
+  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
+  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
+  return object->isArrayBuffer(runtime);
 }
 
 /**
