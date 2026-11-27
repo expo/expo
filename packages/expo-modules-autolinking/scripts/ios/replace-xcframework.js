@@ -66,6 +66,59 @@ function readState(file) {
   }
 }
 
+function runBinaryTool(moduleName, binary, command, args) {
+  const result = spawnSync(command, args, { encoding: 'utf8' });
+  if (result.status !== 0) {
+    const detail = result.stderr?.trim() || result.error?.message || `exit code ${result.status}`;
+    console.error(
+      `${LOG_PREFIX} ${moduleName}: Could not remove the mergeable library data (LC_ATOM_INFO) from ${binary}. \`${[command, ...args].join(' ')}\` failed: ${detail}. Without this step the app embeds the binary at about twice its size. Check that the selected Xcode (\`xcode-select -p\`) supports \`strip -no_atom_info\`, then build again.`
+    );
+    process.exit(1);
+  }
+  return result.stdout;
+}
+
+// Each slice binary in the xcframeworks extracted into the pod directory. Shared
+// SPM deps are symlinks to files outside the pod and are skipped.
+function extractedFrameworkBinaries(xcframeworksDir) {
+  const binaries = [];
+  const directories = (dir) =>
+    fs.readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory());
+  for (const xcframework of directories(xcframeworksDir)) {
+    if (!xcframework.name.endsWith('.xcframework')) continue;
+    const xcframeworkPath = path.join(xcframeworksDir, xcframework.name);
+    for (const slice of directories(xcframeworkPath)) {
+      for (const framework of directories(path.join(xcframeworkPath, slice.name))) {
+        if (!framework.name.endsWith('.framework')) continue;
+        const binary = path.join(
+          xcframeworkPath,
+          slice.name,
+          framework.name,
+          path.basename(framework.name, '.framework')
+        );
+        if (fs.lstatSync(binary, { throwIfNoEntry: false })?.isFile()) binaries.push(binary);
+      }
+    }
+  }
+  return binaries;
+}
+
+// Release binaries are built as mergeable libraries. CocoaPods' "[CP] Embed Pods
+// Frameworks" copies them with rsync and keeps LC_ATOM_INFO, so an app that does
+// not merge them ships each binary at about twice its size.
+function stripAtomInfo(xcframeworksDir, moduleName) {
+  for (const binary of extractedFrameworkBinaries(xcframeworksDir)) {
+    const loadCommands = runBinaryTool(moduleName, binary, 'xcrun', ['otool', '-l', binary]);
+    if (!loadCommands.includes('LC_ATOM_INFO')) continue;
+
+    const signed = spawnSync('codesign', ['-d', binary], { stdio: 'pipe' }).status === 0;
+    runBinaryTool(moduleName, binary, 'xcrun', ['strip', '-x', '-no_atom_info', binary]);
+    if (signed) {
+      runBinaryTool(moduleName, binary, 'codesign', ['--force', '--sign', '-', binary]);
+    }
+  }
+}
+
 function processPerPodSwap(args, configLower) {
   const { xcframeworksDir, module: moduleName } = args;
   if (!fs.existsSync(xcframeworksDir) || !fs.statSync(xcframeworksDir).isDirectory()) {
@@ -104,6 +157,10 @@ function processPerPodSwap(args, configLower) {
   if (result.status !== 0) {
     console.error(`${LOG_PREFIX} ${moduleName}: tar failed: ${result.stderr?.toString().trim()}`);
     process.exit(1);
+  }
+
+  if (configLower === 'release') {
+    stripAtomInfo(xcframeworksDir, moduleName);
   }
 
   fs.writeFileSync(lastConfigFile, configLower);
