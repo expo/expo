@@ -1,9 +1,12 @@
 import type { RouteNode } from '../Route';
+import { findFocusedRoute } from '../fork/findFocusedRoute';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
+  getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { NavigationAction } from '../react-navigation/native';
@@ -50,11 +53,19 @@ export function getNavigateAction(
     return { status: 'invalid', href };
   }
 
+  // The href carries the source id on the destination screen only. The navigator that pushes the
+  // zoom transition screen can be an ancestor of that screen, so it needs the id as well.
+  const zoomTransitionSourceId = getInternalExpoRouterParams(findFocusedRoute(state)?.params)[
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME
+  ];
   const internalParams: InternalExpoRouterParams = {
     ...(options.__internal__previewId !== undefined
       ? {
           [INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME]: options.__internal__previewId,
         }
+      : {}),
+    ...(zoomTransitionSourceId !== undefined
+      ? { [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: zoomTransitionSourceId }
       : {}),
   };
   const action = resolveNavigationDestination({
