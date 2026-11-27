@@ -16,7 +16,7 @@ export type CompositionLocalValues = {
    * The color that text fields paint over their content after autofill fills them. Maps to
    * `LocalAutofillHighlightBrush` as a solid color. Set it to `transparent` to remove the
    * highlight, for example in a field whose own colors already show that it was filled.
-   * @default Compose's semi-transparent yellow (`#4DFFEB3B`)
+   * Defaults to Compose's semi-transparent yellow (`#4DFFEB3B`).
    */
   autofillHighlightColor?: ColorValue;
 };
