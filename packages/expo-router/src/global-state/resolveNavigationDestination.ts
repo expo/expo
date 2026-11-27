@@ -1,5 +1,4 @@
-import isEqual from 'react-fast-compare';
-
+import isEqual from '../../vendor/react-fast-compare';
 import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';

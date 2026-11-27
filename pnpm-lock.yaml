@@ -5724,9 +5724,6 @@ importers:
       react-dom:
         specifier: '*'
         version: 19.3.0(react@19.3.0)
-      react-fast-compare:
-        specifier: ^3.2.2
-        version: 3.2.2
       react-is:
         specifier: ^19.1.0
         version: 19.3.0

@@ -1,6 +1,6 @@
 // src/index.tsx
 import React3, { Component as Component3 } from "react";
-import fastCompare from "react-fast-compare";
+import fastCompare from "../../react-fast-compare/index.js";
 
 // src/Provider.tsx
 import React2, { Component } from "react";

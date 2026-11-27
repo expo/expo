@@ -36,7 +36,7 @@ __export(src_exports, {
 });
 module.exports = __toCommonJS(src_exports);
 var import_react4 = __toESM(require("react"));
-var import_react_fast_compare = __toESM(require("react-fast-compare"));
+var import_react_fast_compare = __toESM(require("../../react-fast-compare"));
 
 // src/Provider.tsx
 var import_react2 = __toESM(require("react"));
