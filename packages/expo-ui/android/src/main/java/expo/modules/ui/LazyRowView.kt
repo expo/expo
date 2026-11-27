@@ -5,7 +5,6 @@ import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
-import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
@@ -38,13 +37,8 @@ class LazyRowView(context: Context, appContext: AppContext) :
 
   private val composableChildCount: MutableIntState = mutableIntStateOf(0)
 
-  override fun onViewAdded(child: View?) {
-    super.onViewAdded(child)
-    composableChildCount.intValue = childCount
-  }
-
-  override fun onViewRemoved(child: View?) {
-    super.onViewRemoved(child)
+  override fun onComposableChildrenChanged() {
+    super.onComposableChildrenChanged()
     composableChildCount.intValue = childCount
   }
 
