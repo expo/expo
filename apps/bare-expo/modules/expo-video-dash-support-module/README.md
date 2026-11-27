@@ -1,6 +1,6 @@
 # Expo Video DASH Support Module
 
-This is a local `bare-expo` module for experimenting with native `expo-video` transport providers on Apple platforms.
+This is a local `bare-expo` module for experimenting with native `expo-video` transport providers.
 
 It registers a `VideoAssetTransportProvider` at module startup and uses it to translate a narrow subset of SegmentBase DASH sources into HLS so they can be played by `expo-video` on iOS.
 
@@ -26,9 +26,15 @@ It registers a `VideoAssetTransportProvider` at module startup and uses it to tr
 4. The load plan starts a small local translation layer that exposes generated HLS playlists to AVFoundation.
 5. `expo-video` then loads the translated HLS output instead of the original DASH manifest.
 
+## Android
+
+ExoPlayer plays DASH itself, so on Android the module shows the `VideoDataSourceProvider` hook instead. `CustomSchemeDataSourceProvider` handles `expo-video-https://` sources: it returns a `ResolvingDataSource` that reads each request over HTTPS. NCL's video source list has an Android-only entry, "Big Buck Bunny (custom scheme provider)", that plays through it.
+
 ## Files
 
-- `expo-module.config.json`: declares the Apple module entry point
+- `expo-module.config.json`: declares the Apple and Android module entry points
+- `android/.../ExpoVideoDashSupportModule.kt`: registers and unregisters the Android provider
+- `android/.../CustomSchemeDataSourceProvider.kt`: the custom-scheme data source provider
 - `ios/ExpoVideoDashSupportModule.swift`: registers and unregisters the provider
 - `ios/SegmentBaseDASHToHLSTransport.swift`: contains the demo DASH-to-HLS transport implementation
 

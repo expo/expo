@@ -1,0 +1,28 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '0.0.1'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.videodashsupport"
+  defaultConfig {
+    versionCode 1
+    versionName '0.0.1'
+  }
+}
+
+dependencies {
+  implementation project(':expo-video')
+
+  // Keep in sync with expo-video's androidxMedia3Version.
+  def androidxMedia3Version = "1.9.1"
+  implementation "androidx.media3:media3-common:${androidxMedia3Version}"
+  implementation "androidx.media3:media3-datasource:${androidxMedia3Version}"
+}
