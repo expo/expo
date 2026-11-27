@@ -48,7 +48,7 @@ public struct ModifierList: JavaScriptDecodable {
         continue
       }
       // Like a v1 view, skip a modifier that is not registered or that fails to decode.
-      switch ViewModifierRegistry.shared.registrations[type.getString()] {
+      switch ViewModifierRegistry.shared.registration(for: type.getString()) {
       case .type(let modifierType):
         if let modifier = try? modifierType().decode(element, in: runtime) {
           modifiers.append(.modifier(modifier))

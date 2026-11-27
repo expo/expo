@@ -1536,12 +1536,14 @@ public class ViewModifierRegistry {
     case eventDispatchingType(() -> any (EventDispatchingViewModifier & Record).Type)
     case factory(ModifierFactory)
   }
-  private(set) internal var registrations: [String: Registration] = [:]
+  // Modules register and unregister modifiers on any thread. Views of Expo Modules v2 read the registrations on
+  // the JavaScript thread, and v1 views read them on the main thread.
+  private let registrations: ExpoModulesCore.Mutex<[String: Registration]>
 
   public static var widgetKit: WidgetKitModifiers?
 
   private init() {
-    registrations = Dictionary(uniqueKeysWithValues: builtInModifiers())
+    registrations = ExpoModulesCore.Mutex(Dictionary(uniqueKeysWithValues: Self.builtInModifiers()))
   }
 
   /**
@@ -1607,7 +1609,7 @@ public class ViewModifierRegistry {
   }
 
   private func register(_ type: String, _ registration: Registration) {
-    if registrations.updateValue(registration, forKey: type) != nil {
+    if registrations.withLock({ $0.updateValue(registration, forKey: type) }) != nil {
       log.warn("ViewModifierRegistry: Overwriting existing modifier '\(type)'. This may cause unexpected behavior.")
     }
   }
@@ -1616,7 +1618,14 @@ public class ViewModifierRegistry {
    * Unregisters a modifier by type name.
    */
   internal func unregister(_ type: String) {
-    registrations.removeValue(forKey: type)
+    registrations.withLock { _ = $0.removeValue(forKey: type) }
+  }
+
+  /**
+   * Returns the registration of the modifier with the given type name.
+   */
+  internal func registration(for type: String) -> Registration? {
+    return registrations.withLock { $0[type] }
   }
 
   /**
@@ -1629,7 +1638,7 @@ public class ViewModifierRegistry {
     appContext: AppContext,
     eventDispatcher: EventDispatcher
   ) throws -> (any ViewModifier)? {
-    switch registrations[type] {
+    switch registration(for: type) {
     case .type(let modifierType):
       return try modifierType().from(dictionary: params, appContext: appContext)
     case .eventDispatchingType(let modifierType):
@@ -1655,7 +1664,7 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard registrations[type] != nil else {
+    guard registration(for: type) != nil else {
       return view
     }
     return AnyView(view.modifier(StableViewModifier(
@@ -1741,14 +1750,14 @@ public class ViewModifierRegistry {
    * Checks if a modifier type is registered.
    */
   func hasModifier(_ type: String) -> Bool {
-    return registrations[type] != nil
+    return registration(for: type) != nil
   }
 
   /**
    * Returns all registered modifier types.
    */
   func registeredTypes() -> [String] {
-    return Array(registrations.keys)
+    return registrations.withLock { Array($0.keys) }
   }
 }
 
@@ -1970,7 +1979,7 @@ internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
 
 // swiftlint:disable:next no_grouping_extension
 extension ViewModifierRegistry {
-  private func builtInModifiers() -> [(String, Registration)] {
+  private static func builtInModifiers() -> [(String, Registration)] {
     return [
       entry("listSectionSpacing", ListSectionSpacingModifier.self),
 
@@ -2307,7 +2316,7 @@ extension ViewModifierRegistry {
    * a view first uses it, not for all built-in modifiers when the registry starts. Keep this overload non-generic:
    * a generic function gets the witness tables from its caller, so the caller creates them for all built-in modifiers.
    */
-  private func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (ViewModifier & Record).Type) -> (String, Registration) {
+  private static func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (ViewModifier & Record).Type) -> (String, Registration) {
     return (type, .type(modifierType))
   }
 
@@ -2315,7 +2324,7 @@ extension ViewModifierRegistry {
    * Creates the registration of a built-in modifier type that sends events.
    * The type is an autoclosure for the same reason as in the overload above.
    */
-  private func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (EventDispatchingViewModifier & Record).Type) -> (String, Registration) {
+  private static func entry(_ type: String, _ modifierType: @autoclosure @escaping () -> any (EventDispatchingViewModifier & Record).Type) -> (String, Registration) {
     return (type, .eventDispatchingType(modifierType))
   }
 }
