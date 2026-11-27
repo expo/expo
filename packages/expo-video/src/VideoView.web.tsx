@@ -232,6 +232,24 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
     );
   }
 
+  // The `src` attribute is managed outside of React: `player.replace()` sets it
+  // imperatively, and React writing the same value restarts the media load algorithm,
+  // which aborts the pending `play()` with no `pause` event.
+  useEffect(() => {
+    const video = videoRef.current;
+    const uri = getSourceUri(props.player?.src) ?? null;
+    if (!video) return;
+    if (uri === null) {
+      if (video.hasAttribute('src')) {
+        video.removeAttribute('src');
+        video.load();
+      }
+    } else if (video.getAttribute('src') !== uri) {
+      video.setAttribute('src', uri);
+      video.load();
+    }
+  });
+
   useEffect(() => {
     videoRef.current && mountedPlayerRef.current?.unmountVideoView(videoRef.current);
 
@@ -285,7 +303,6 @@ export const VideoView = forwardRef((props: { player?: VideoPlayer } & VideoView
       }}
       disablePictureInPicture={!props.allowsPictureInPicture}
       playsInline={props.playsInline}
-      src={getSourceUri(props.player?.src) ?? undefined}
     />
   );
 });
