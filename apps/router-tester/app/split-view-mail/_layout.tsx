@@ -1,4 +1,4 @@
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { Link, useGlobalSearchParams } from 'expo-router';
 import { SplitView, type SplitViewHeader } from 'expo-router/unstable-split-view';
 import { SymbolView } from 'expo-symbols';
 import { type ComponentRef, useRef, useState } from 'react';
@@ -22,12 +22,10 @@ type HeaderItems = NonNullable<NonNullable<SplitViewHeader['ios']>['trailingItem
 type HeaderButton = Extract<HeaderItems[number], { type: 'item'; title?: string }>;
 
 export default function Layout() {
-  const router = useRouter();
   // Navigation does not reveal a column, so the selected column is shown with the split view commands.
   const splitRef = useRef<ComponentRef<typeof SplitView>>(null);
   const [collapsed, setCollapsed] = useState(false);
   const { id } = useGlobalSearchParams<{ id?: string }>();
-  const message = MESSAGES.find((m) => m.id === id);
 
   const [showHeaders, setShowHeaders] = useState(true);
   const [alternateTitles, setAlternateTitles] = useState(false);
@@ -38,7 +36,7 @@ export default function Layout() {
   const [threeColumns, setThreeColumns] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
   const [press, setPress] = useState({ title: '', count: 0 });
-  const [buttonStates, setButtonStates] = useState(false);
+  const [disabledArchive, setDisabledArchive] = useState(false);
   const [styledButtons, setStyledButtons] = useState(false);
 
   const button = (title: string, icon?: SFSymbol): HeaderButton => ({
@@ -57,25 +55,15 @@ export default function Layout() {
     scrollEdgeAppearance: appearance,
     trailingItems: [button('Edit')],
   };
-  const messageHeader = {
-    leadingItems: [button('Unread', 'envelope.badge')],
-    trailingItems: [
-      {
-        ...button('Search', 'magnifyingglass'),
-        tintColor: styledButtons ? 'orange' : undefined,
-      },
-      button('Move', 'folder'),
-      { ...button('Archive', 'archivebox'), disabled: buttonStates },
-      {
-        ...button('Forward', 'arrowshape.turn.up.right'),
-        hidesSharedBackground: styledButtons,
-      },
-      {
-        ...button('Reply All', 'arrowshape.turn.up.left.2'),
-        variant: styledButtons ? ('prominent' as const) : undefined,
-      },
-    ],
-  };
+  const messagesLeadingItems = [
+    { ...button('Archive', 'archivebox'), disabled: disabledArchive },
+    {
+      ...button('Reply All', 'arrowshape.turn.up.left.2'),
+      variant: styledButtons ? ('prominent' as const) : undefined,
+      tintColor: styledButtons ? 'orange' : undefined,
+      hidesSharedBackground: styledButtons,
+    },
+  ];
   const pressLabel = press.count ? `${press.title} (${press.count})` : 'None';
 
   return (
@@ -83,7 +71,9 @@ export default function Layout() {
       <SplitView
         ref={splitRef}
         preferredDisplayMode="twoBesideSecondary"
+        topColumnForCollapsing={threeColumns ? 'supplementary' : 'primary'}
         showInspector={showInspector}
+        onInspectorHide={() => setShowInspector(false)}
         onCollapse={() => setCollapsed(true)}
         onExpand={() => setCollapsed(false)}>
         <SplitView.Column
@@ -98,22 +88,25 @@ export default function Layout() {
           }>
           <ScrollView contentInsetAdjustmentBehavior="automatic">
             {MAILBOXES.map((mailbox) => (
-              <Pressable
+              <Link
                 key={mailbox.name}
-                style={styles.row}
+                href="/split-view-mail"
+                asChild
                 onPress={() => {
                   // When expanded, `show` would close the sidebar overlay.
                   if (collapsed && threeColumns) splitRef.current?.show('supplementary');
                 }}>
-                <SymbolView name={mailbox.icon} size={20} />
-                <Text style={styles.rowTitle}>{mailbox.name}</Text>
-              </Pressable>
+                <Pressable style={styles.row}>
+                  <SymbolView name={mailbox.icon} size={20} />
+                  <Text style={styles.rowTitle}>{mailbox.name}</Text>
+                </Pressable>
+              </Link>
             ))}
             <View style={styles.controls}>
               <Text style={styles.sectionTitle}>Test cases</Text>
-              <Pressable testID="split-view-mail-home" onPress={() => router.replace('/')}>
-                <Text style={styles.link}>Back to home</Text>
-              </Pressable>
+              <Link testID="split-view-mail-home" href="/" replace style={styles.link}>
+                Back to home
+              </Link>
               <Text testID="split-view-mail-press">Last toolbar press: {pressLabel}</Text>
               <ToggleRow
                 label="Headers"
@@ -152,10 +145,10 @@ export default function Layout() {
                 onValueChange={setIconButtons}
               />
               <ToggleRow
-                label="Disable Archive button"
-                testID="split-view-mail-button-states"
-                value={buttonStates}
-                onValueChange={setButtonStates}
+                label="Disabled Archive"
+                testID="split-view-mail-disabled-archive"
+                value={disabledArchive}
+                onValueChange={setDisabledArchive}
               />
               <ToggleRow
                 label="Styled buttons"
@@ -185,6 +178,7 @@ export default function Layout() {
                 ? {
                     title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
                     ios: {
+                      leadingItems: messagesLeadingItems,
                       trailingItems: [
                         {
                           type: 'item',
@@ -228,40 +222,33 @@ export default function Layout() {
             }>
             <ScrollView contentInsetAdjustmentBehavior="automatic">
               {MESSAGES.map((m) => (
-                <Pressable
+                <Link
                   key={m.id}
-                  style={[
-                    styles.message,
-                    m.id === id && { backgroundColor: PlatformColor('systemGray5') },
-                  ]}
-                  onPress={() => {
-                    router.replace(`/split-view-mail/${m.id}`);
-                    splitRef.current?.show('secondary');
-                  }}>
-                  <Text style={styles.sender}>{m.sender}</Text>
-                  <Text>{m.subject}</Text>
-                </Pressable>
+                  href={`/split-view-mail/${m.id}`}
+                  // screens v5 cannot replace the root screen of a stack, so the first message is pushed.
+                  push={!id}
+                  replace={!!id}
+                  asChild
+                  onPress={() => splitRef.current?.show('secondary')}>
+                  <Pressable
+                    style={StyleSheet.flatten([
+                      styles.message,
+                      m.id === id && { backgroundColor: PlatformColor('systemGray5') },
+                    ])}>
+                    <Text style={styles.sender}>{m.sender}</Text>
+                    <Text>{m.subject}</Text>
+                  </Pressable>
+                </Link>
               ))}
             </ScrollView>
           </SplitView.Column>
         )}
-        <SplitView.Content
-          header={
-            showHeaders
-              ? {
-                  title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
-                  ios: messageHeader,
-                }
-              : undefined
-          }
-        />
-        {showInspector && (
-          <SplitView.Inspector>
-            <View style={styles.inspector}>
-              <Text>Inspector</Text>
-            </View>
-          </SplitView.Inspector>
-        )}
+        <SplitView.Content stackIntegration />
+        <SplitView.Inspector>
+          <View style={styles.inspector}>
+            <Text>Inspector</Text>
+          </View>
+        </SplitView.Inspector>
       </SplitView>
     </ToolbarPressContext>
   );
