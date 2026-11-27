@@ -1,13 +1,8 @@
 import { useGlobalSearchParams, useRouter } from 'expo-router';
-import {
-  SplitView,
-  type SplitViewHeader,
-  type SplitViewToolbarItem,
-} from 'expo-router/unstable-split-view';
+import { SplitView, type SplitViewHeader } from 'expo-router/unstable-split-view';
 import { SymbolView } from 'expo-symbols';
-import { useRef, useState } from 'react';
+import { type ComponentRef, useRef, useState } from 'react';
 import { PlatformColor, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import type { SplitHostCommands } from 'react-native-screens/experimental';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { ToggleRow } from '@/components/ToggleRow';
@@ -23,17 +18,13 @@ const MAILBOXES: { name: string; icon: SFSymbol }[] = [
   { name: 'All Mail', icon: 'tray.2' },
 ];
 
-// Applied to every column after the first, whose back button shows when the split view is collapsed.
-const BACK_BUTTONS: { label: string; options: SplitViewHeader }[] = [
-  { label: 'Default', options: {} },
-  { label: 'Custom title', options: { backTitle: 'Back to list' } },
-  { label: 'Hidden', options: { backVisible: false } },
-];
+type HeaderItems = NonNullable<NonNullable<SplitViewHeader['ios']>['trailingItems']>;
+type HeaderButton = Extract<HeaderItems[number], { type: 'item'; title?: string }>;
 
 export default function Layout() {
   const router = useRouter();
   // Navigation does not reveal a column, so the selected column is shown with the split view commands.
-  const splitRef = useRef<SplitHostCommands>(null);
+  const splitRef = useRef<ComponentRef<typeof SplitView>>(null);
   const [collapsed, setCollapsed] = useState(false);
   const { id } = useGlobalSearchParams<{ id?: string }>();
   const message = MESSAGES.find((m) => m.id === id);
@@ -47,18 +38,44 @@ export default function Layout() {
   const [threeColumns, setThreeColumns] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
   const [press, setPress] = useState({ title: '', count: 0 });
-  const [search, setSearch] = useState('');
-  const [unreadOnly, setUnreadOnly] = useState(false);
   const [buttonStates, setButtonStates] = useState(false);
   const [styledButtons, setStyledButtons] = useState(false);
-  const [backButtonIndex, setBackButtonIndex] = useState(0);
-  const backButton = BACK_BUTTONS[backButtonIndex];
 
-  const button = (title: string, icon?: SFSymbol): SplitViewToolbarItem => ({
+  const button = (title: string, icon?: SFSymbol): HeaderButton => ({
+    type: 'item',
+    id: title,
     title,
-    icon: iconButtons ? icon : undefined,
+    icon: iconButtons && icon ? { type: 'sfSymbol', name: icon } : undefined,
     onPress: () => setPress((p) => ({ title, count: p.count + 1 })),
   });
+  const appearance = titleColors
+    ? { titleFontColor: 'red', largeTitleFontColor: 'blue' }
+    : undefined;
+  const mailboxesHeader = {
+    largeTitleEnabled: largeTitle,
+    standardAppearance: appearance,
+    scrollEdgeAppearance: appearance,
+    trailingItems: [button('Edit')],
+  };
+  const messageHeader = {
+    leadingItems: [button('Unread', 'envelope.badge')],
+    trailingItems: [
+      {
+        ...button('Search', 'magnifyingglass'),
+        tintColor: styledButtons ? 'orange' : undefined,
+      },
+      button('Move', 'folder'),
+      { ...button('Archive', 'archivebox'), disabled: buttonStates },
+      {
+        ...button('Forward', 'arrowshape.turn.up.right'),
+        hidesSharedBackground: styledButtons,
+      },
+      {
+        ...button('Reply All', 'arrowshape.turn.up.left.2'),
+        variant: styledButtons ? ('prominent' as const) : undefined,
+      },
+    ],
+  };
   const pressLabel = press.count ? `${press.title} (${press.count})` : 'None';
 
   return (
@@ -75,21 +92,12 @@ export default function Layout() {
               ? {
                   title: alternateTitles ? 'Folders' : 'Mailboxes',
                   subtitle: showSubtitle ? '3 unread' : undefined,
-                  largeTitle,
-                  titleStyle: titleColors ? { color: 'red' } : undefined,
-                  largeTitleStyle: titleColors ? { color: 'blue' } : undefined,
-                  rightToolbar: [button('Edit')],
-                  searchBar: {
-                    placeholder: 'Search mailboxes',
-                    onChangeText: (event) => setSearch(event.nativeEvent.text),
-                  },
+                  ios: mailboxesHeader,
                 }
               : undefined
           }>
           <ScrollView contentInsetAdjustmentBehavior="automatic">
-            {MAILBOXES.filter((mailbox) =>
-              mailbox.name.toLowerCase().includes(search.toLowerCase())
-            ).map((mailbox) => (
+            {MAILBOXES.map((mailbox) => (
               <Pressable
                 key={mailbox.name}
                 style={styles.row}
@@ -111,10 +119,7 @@ export default function Layout() {
                 label="Headers"
                 testID="split-view-mail-headers"
                 value={showHeaders}
-                onValueChange={(value) => {
-                  setShowHeaders(value);
-                  setSearch('');
-                }}
+                onValueChange={setShowHeaders}
               />
               <ToggleRow
                 label="Alternate titles"
@@ -147,7 +152,7 @@ export default function Layout() {
                 onValueChange={setIconButtons}
               />
               <ToggleRow
-                label="Selected Unread, disabled Archive"
+                label="Disable Archive button"
                 testID="split-view-mail-button-states"
                 value={buttonStates}
                 onValueChange={setButtonStates}
@@ -158,11 +163,6 @@ export default function Layout() {
                 value={styledButtons}
                 onValueChange={setStyledButtons}
               />
-              <Pressable
-                testID="split-view-mail-back-button"
-                onPress={() => setBackButtonIndex((index) => (index + 1) % BACK_BUTTONS.length)}>
-                <Text style={styles.link}>Back button: {backButton.label}</Text>
-              </Pressable>
               <ToggleRow
                 label="Three columns"
                 testID="split-view-mail-three-columns"
@@ -183,36 +183,46 @@ export default function Layout() {
             header={
               showHeaders
                 ? {
-                    ...backButton.options,
                     title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
-                    rightToolbar: [
-                      {
-                        title: 'Filter',
-                        icon: iconButtons ? 'line.3.horizontal.decrease.circle' : undefined,
-                        menu: {
-                          title: 'Filter by',
-                          items: [
-                            {
-                              title: 'Unread',
-                              icon: 'envelope.badge',
-                              isOn: unreadOnly,
-                              onPress: () => {
-                                setUnreadOnly((value) => !value);
-                                setPress((p) => ({ title: 'Unread', count: p.count + 1 }));
+                    ios: {
+                      trailingItems: [
+                        {
+                          type: 'item',
+                          id: 'filter',
+                          title: 'Filter',
+                          icon: iconButtons
+                            ? { type: 'sfSymbol', name: 'line.3.horizontal.decrease.circle' }
+                            : undefined,
+                          menu: {
+                            type: 'menu',
+                            id: 'filter-menu',
+                            title: 'Filter by',
+                            children: [
+                              {
+                                type: 'menuItem',
+                                id: 'Unread',
+                                title: 'Unread',
+                                icon: { type: 'sfSymbol', name: 'envelope.badge' },
+                                itemType: 'toggle',
                               },
+                              {
+                                type: 'menuItem',
+                                id: 'Flagged',
+                                title: 'Flagged',
+                                icon: { type: 'sfSymbol', name: 'flag' },
+                                itemType: 'toggle',
+                              },
+                            ],
+                            onSelectionChange: (selectedIds) => {
+                              setPress((p) => ({
+                                title: selectedIds.length ? selectedIds.join(', ') : 'Clear filter',
+                                count: p.count + 1,
+                              }));
                             },
-                            { title: 'Flagged', icon: 'flag', disabled: true },
-                            {
-                              title: 'Delete All',
-                              icon: 'trash',
-                              destructive: true,
-                              onPress: () =>
-                                setPress((p) => ({ title: 'Delete All', count: p.count + 1 })),
-                            },
-                          ],
+                          },
                         },
-                      },
-                    ],
+                      ],
+                    },
                   }
                 : undefined
             }>
@@ -239,52 +249,14 @@ export default function Layout() {
           header={
             showHeaders
               ? {
-                  ...backButton.options,
                   title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
-                  leftToolbar: [
-                    {
-                      ...button('Unread', 'envelope.badge'),
-                      selected: buttonStates,
-                      badge: styledButtons ? { value: 3 } : undefined,
-                    },
-                  ],
-                  rightToolbar: [
-                    {
-                      ...button('Search', 'magnifyingglass'),
-                      tintColor: styledButtons ? 'orange' : undefined,
-                      separateBackground: styledButtons,
-                      accessibilityLabel: styledButtons ? 'Search messages' : undefined,
-                    },
-                    {
-                      ...button('Move', 'folder'),
-                      badge: styledButtons ? { style: { backgroundColor: 'green' } } : undefined,
-                    },
-                    { ...button('Archive', 'archivebox'), disabled: buttonStates },
-                    {
-                      ...button('Forward', 'arrowshape.turn.up.right'),
-                      hidesSharedBackground: styledButtons,
-                    },
-                    {
-                      ...button('Reply All', 'arrowshape.turn.up.left.2'),
-                      variant: styledButtons ? 'prominent' : undefined,
-                    },
-                  ],
+                  ios: messageHeader,
                 }
               : undefined
           }
         />
         {showInspector && (
-          <SplitView.Inspector
-            header={
-              showHeaders
-                ? {
-                    title: 'Info',
-                    rightToolbar: [
-                      { title: 'Close', icon: 'xmark', onPress: () => setShowInspector(false) },
-                    ],
-                  }
-                : undefined
-            }>
+          <SplitView.Inspector>
             <View style={styles.inspector}>
               <Text>Inspector</Text>
             </View>

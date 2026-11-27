@@ -14,6 +14,8 @@ jest.mock('../../optional-libraries/react-native-screens', () => {
 
   return {
     ...actual,
+    isScreens5: true,
+    StackV5: { ...actual.StackV5, Host: View, Screen: View, HeaderConfig: () => null },
     Split: {
       ...actual.Split,
       Host: ({ children }: { children?: ReactNode }) => <View>{children}</View>,
