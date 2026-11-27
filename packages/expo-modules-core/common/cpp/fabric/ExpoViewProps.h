@@ -47,8 +47,9 @@ namespace facebook::react {
 
 /**
  `ConcreteComponentDescriptor` prepares a `RawPropsParser` for each descriptor. It collects the keys of all base
- view props, which is O(n^2) in the number of keys and costs more than the rest of registering a view. Every view of
- Expo Modules v1 has the same props type, so the parser is prepared once and each descriptor gets a copy.
+ view props, which is O(n^2) in the number of keys and costs more than the rest of registering a view. On iOS, every
+ view of Expo Modules v1 has the same props type, so the parser is prepared once and each descriptor gets a copy.
+ Android descriptors use `AndroidExpoViewProps`, so they don't use this specialization.
  */
 template <>
 inline void RawPropsParser::prepare<expo::ExpoViewProps>() noexcept
