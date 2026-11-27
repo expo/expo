@@ -51,6 +51,7 @@ const DIRECT_MANIFESTS = [
   ['expo-linking', 'ExpoLinking', CORE_ONLY],
   ['expo-live-photo', 'ExpoLivePhoto', CORE_ONLY],
   ['expo-local-authentication', 'ExpoLocalAuthentication', CORE_ONLY],
+  ['expo-location', 'ExpoLocation', CORE_ONLY],
   ['expo-mail-composer', 'ExpoMailComposer', CORE_ONLY],
   ['expo-mesh-gradient', 'ExpoMeshGradient', CORE_ONLY],
   ['expo-network', 'ExpoNetwork', CORE_ONLY],

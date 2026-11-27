@@ -1,6 +1,9 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if canImport(ExpoLocationObjC)
+import ExpoLocationObjC
+#endif
 
 /**
  Converts iOS heading accuracy to Android system.

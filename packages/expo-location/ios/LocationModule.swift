@@ -5,6 +5,9 @@ import CoreLocation
 import CoreMotion
 #endif
 import ExpoModulesCore
+#if canImport(ExpoLocationObjC)
+import ExpoLocationObjC
+#endif
 
 private let EVENT_LOCATION_CHANGED = "Expo.locationChanged"
 private let EVENT_HEADING_CHANGED = "Expo.headingChanged"

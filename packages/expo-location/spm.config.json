@@ -11,29 +11,24 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "objc",
-          "name": "ExpoLocation_ios_objc",
+          "name": "ExpoLocationObjC",
           "moduleName": "ExpoLocation",
-          "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
           "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "includeDirectories": ["."]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         },
         {
           "type": "swift",
           "name": "ExpoLocation",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
-            "ExpoLocation_ios_objc"
+            "ExpoLocationObjC"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }
