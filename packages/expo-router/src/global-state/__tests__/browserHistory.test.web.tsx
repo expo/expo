@@ -261,7 +261,7 @@ describe('restore', () => {
       reduce
     );
 
-    expect(restored.history).toBe(current);
+    expect(restored.history).toEqual({ ...current, preventedRestoreEntryId: 'p:0' });
     expect(restored.events).toEqual([{ type: 'browser-history', op: 'go', delta: 1 }]);
   });
 
