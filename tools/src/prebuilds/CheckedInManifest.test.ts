@@ -14,7 +14,7 @@ import {
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync } from './Frameworks';
+import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync, Frameworks } from './Frameworks';
 import type {
   SPMConfig,
   SPMPackageDependencyConfig,
@@ -50,6 +50,7 @@ function fixture(
   options: {
     dependencies?: string;
     members?: string;
+    products?: string;
     imports?: string;
     packageName?: string;
     packageJson?: Record<string, unknown>;
@@ -65,7 +66,7 @@ ${options.imports ?? ''}
 let package = Package(
   name: "${options.packageName ?? 'fixture'}",
   platforms: [.macOS(.v13)],
-  products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])],
+  products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])${options.products ? `, ${options.products}` : ''}],
   dependencies: [${options.dependencies ?? ''}],
   targets: [${targets}]
 )
@@ -1352,6 +1353,517 @@ for (const {
   });
 }
 
+it('links the binary of a sibling product for a manifest dependency on its product-named target', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  const sibling: SPMProduct = {
+    name: 'Sibling',
+    podName: 'Sibling',
+    platforms: ['macOS(.v11)'],
+    targets: [{ type: 'swift', name: 'Sibling' }],
+  };
+  // spm.config.json does not list the Main -> Sibling edge; only the manifest declares it.
+  input.pkg.getSwiftPMConfiguration = () => ({ products: [sibling, input.product] });
+  fs.mkdirSync(Frameworks.getFrameworkPath(input.pkg.buildPath, 'Sibling', 'Debug'), {
+    recursive: true,
+  });
+
+  const output = path.join(input.pkg.buildPath, 'generated/Fixture/Package.swift');
+  await SPMPackage.writePackageSwiftAsync(
+    input.pkg,
+    input.product,
+    'Debug',
+    output,
+    path.dirname(output)
+  );
+  const manifest = fs.readFileSync(output, 'utf8');
+  assert.match(manifest, /\.binaryTarget\(\n\s+name: "Sibling",/);
+  assert.doesNotMatch(manifest, /\.target\(\n\s+name: "Sibling",/);
+  assert.match(manifest, /name: "Main",[\s\S]*?dependencies: \["Sibling"/);
+});
+
+it('rejects a manifest dependency on a sibling product target that is not named after the product', async () => {
+  const input = fixture(
+    `.target(name: "SiblingCore", path: "sibling"),
+     .target(name: "Main", dependencies: ["SiblingCore"], path: "ios")`,
+    {
+      'ios/Main.swift': 'import SiblingCore\npublic let value = sibling',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only one product builds target "SiblingCore"\. /,
+      'SiblingCore'
+    );
+    return true;
+  });
+});
+
+it('rejects a manifest dependency on a target that a sibling product builds in transitively', async () => {
+  const input = fixture(
+    `.target(name: "Detail", path: "detail"),
+     .target(name: "Sibling", dependencies: ["Detail"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling", "Detail"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'detail/Detail.swift': 'public let detail = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only one product builds target "Detail"\. /,
+      'Detail'
+    );
+    return true;
+  });
+});
+
+it('does not advise a rename for a target that a sibling product reaches only transitively', async () => {
+  const input = fixture(
+    `.target(name: "Detail", path: "detail"),
+     .target(name: "SiblingCore", dependencies: ["Detail"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Detail"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'detail/Detail.swift': 'public let detail = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only one product builds target "Detail"\. /,
+      'Detail'
+    );
+    return true;
+  });
+});
+
+it('keeps a by-name external dependency that a sibling product shares', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", dependencies: ["React"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling", "React"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  input.product.externalDependencies = ['React'];
+  const [main] = await resolve(input.root, input.product, new Set(['Sibling']));
+  assert.deepEqual(main.dependencies, ['Sibling', 'React']);
+});
+
+it('rejects a manifest dependency on a target that has the name of a sibling product that does not list it', async () => {
+  const input = fixture(
+    `.target(name: "SiblingCore", path: "sibling"),
+     .target(name: "Sibling", path: "local"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/SiblingCore.swift': 'public let core = 1',
+      'local/Sibling.swift': 'public let local = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: it has the name of product "Sibling", but \.library\(name: "Sibling"\) does not list it, and et prebuild gives that name to the prebuilt binary of "Sibling", which it links for every dependency on "Sibling"\. Update Package\.swift so that target "Sibling" is listed by \.library\(name: "Sibling"\) and built by no other product, or so that no target has the name "Sibling"\. /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+it('rejects a target that the product and a sibling product both build', async () => {
+  const input = fixture(
+    `.target(name: "Shared", path: "shared"),
+     .target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'shared/Shared.swift': 'public let shared = 1',
+    },
+    {
+      members: '"Main", "Shared"',
+      products: '.library(name: "Sibling", targets: ["Sibling", "Shared"])',
+    }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only one product builds target "Shared"\. /,
+      'Shared'
+    );
+    return true;
+  });
+});
+
+it('rejects a listed target that a sibling product builds only through a dependency', async () => {
+  const input = fixture(
+    `.target(name: "Core", path: "core"),
+     .target(name: "Sibling", dependencies: ["Core"], path: "sibling"),
+     .target(name: "Main", path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'core/Core.swift': 'public let core = 1',
+    },
+    {
+      members: '"Main", "Core"',
+      products: '.library(name: "Sibling", targets: ["Sibling"])',
+    }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only one product builds target "Core"\. /,
+      'Core'
+    );
+    return true;
+  });
+});
+
+it("rejects a product that lists a sibling product's product-named target", async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { members: '"Main", "Sibling"', products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*duplicate symbols\. Update Package\.swift so that only product "Sibling" builds target "Sibling"\. /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+it("rejects a dependency on a sibling product whose binary links another sibling product's binary", async () => {
+  const input = fixture(
+    `.target(name: "Leaf", path: "leaf"),
+     .target(name: "Sibling", dependencies: ["Leaf"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'leaf/Leaf.swift': 'public let leaf = 1',
+    },
+    {
+      products:
+        '.library(name: "Sibling", targets: ["Sibling"]), .library(name: "Leaf", targets: ["Leaf"])',
+    }
+  );
+  await assert.rejects(
+    resolve(input.root, input.product, new Set(['Sibling', 'Leaf'])),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /: it depends on "Leaf", so the prebuilt binary of product "Sibling" links the binary of product "Leaf", while product "Fixture" links the binary of "Sibling" through target "Main"\. et prebuild supports only one level of such links, .*\. Update Package\.swift so that product "Sibling" uses no other product, or so that no other product uses "Sibling"\. /,
+        'Sibling'
+      );
+      return true;
+    }
+  );
+});
+
+it('advises listing the target named after a sibling product when that target exists', async () => {
+  const input = fixture(
+    `.target(name: "SiblingCore", path: "sibling"),
+     .target(name: "Sibling", dependencies: ["SiblingCore"], path: "sibling-api"),
+     .target(name: "Main", dependencies: ["SiblingCore"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/SiblingCore.swift': 'public let core = 1',
+      'sibling-api/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: it has the name of product "Sibling", but \.library\(name: "Sibling"\) does not list it, .*\. Update Package\.swift so that target "Sibling" is listed by \.library\(name: "Sibling"\) and built by no other product, or so that no target has the name "Sibling"\. /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+/** spm.config.json lists `names` as sibling products, before the fixture's product. */
+function withSiblingProducts(input: ReturnType<typeof fixture>, ...names: string[]) {
+  const siblings = names.map(
+    (name): SPMProduct => ({
+      name,
+      podName: name,
+      platforms: ['macOS(.v11)'],
+      targets: [{ type: 'swift', name }],
+    })
+  );
+  input.pkg.getSwiftPMConfiguration = () => ({ products: [...siblings, input.product] });
+}
+
+async function generateManifest(input: ReturnType<typeof fixture>) {
+  const output = path.join(input.pkg.buildPath, 'generated/Fixture/Package.swift');
+  await SPMPackage.writePackageSwiftAsync(
+    input.pkg,
+    input.product,
+    'Debug',
+    output,
+    path.dirname(output)
+  );
+  return fs.readFileSync(output, 'utf8');
+}
+
+const PRODUCT_DEPENDENCY =
+  /\. A product can use another product of this package only through a dependency on the target named after that product, which that product lists, and et prebuild links the prebuilt binary of that product for it\.$/;
+
+it('rejects a sibling product that has the name of a remote product the package uses', async () => {
+  const input = fixture(
+    `.target(name: "B", path: "b"),
+     .target(name: "Main", dependencies: [.product(name: "B", package: "remote")], path: "ios")`,
+    { 'ios/Main.swift': 'public let value = 1', 'b/B.swift': 'public let b = 1' },
+    { dependencies: REMOTE_PACKAGE, products: '.library(name: "B", targets: ["B"])' }
+  );
+  input.product.spmPackages = [remote(undefined, undefined, 'B')];
+  withSiblingProducts(input, 'B');
+  await assert.rejects(generateManifest(input), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: product "Fixture" uses external dependency "B", which has the name of sibling product "B", so et prebuild cannot tell that dependency from the prebuilt binary of "B", and an app that uses both would get two modules named "B"\. Update Package\.swift and spm\.config\.json so that no product of this package has the name of an external dependency that one of its products uses\.$/,
+      'Main'
+    );
+    return true;
+  });
+});
+
+it('rejects a sibling product that spm.config.json also lists as an external dependency', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    { 'ios/Main.swift': 'public let value = 1', 'sibling/Sibling.swift': 'public let sibling = 1' },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  input.product.externalDependencies = ['Sibling'];
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: product "Fixture" uses external dependency "Sibling", which has the name of sibling product "Sibling", /,
+      'Main'
+    );
+    return true;
+  });
+});
+
+for (const { builds, members, siblingMembers, shared } of [
+  {
+    builds: 'the product whose target another product lists',
+    members: '"Fixture"',
+    siblingMembers: '"Sibling", "Fixture"',
+    shared: 'Fixture',
+  },
+  {
+    builds: 'the product that lists the target of another product',
+    members: '"Fixture", "Sibling"',
+    siblingMembers: '"Sibling"',
+    shared: 'Sibling',
+  },
+]) {
+  it(`rejects a product-named target that two products list, when et prebuild builds ${builds}`, async () => {
+    const input = fixture(
+      '.target(name: "Fixture", path: "ios"), .target(name: "Sibling", path: "sibling")',
+      {
+        'ios/Fixture.swift': 'public let value = 1',
+        'sibling/Sibling.swift': 'public let sibling = 1',
+      },
+      { members, products: `.library(name: "Sibling", targets: [${siblingMembers}])` }
+    );
+    input.product.targets = [{ type: 'swift', name: 'Fixture' }];
+    await assert.rejects(
+      resolve(input.root, input.product, new Set(['Sibling'])),
+      (error: Error) => {
+        assertManifestDiagnostic(
+          error,
+          new RegExp(
+            `: products "Fixture" and "Sibling" both build it, through the targets they list and the dependencies of those targets, so an app that uses both prebuilt binaries would get duplicate symbols\\. Update Package\\.swift so that only product "${shared}" builds target "${shared}"\\. `
+          ),
+          shared
+        );
+        return true;
+      }
+    );
+  });
+}
+
+it('rejects a chain of sibling binaries whatever the order of products and targets', async () => {
+  const targets = [
+    '.target(name: "Main", dependencies: ["B"], path: "ios")',
+    '.target(name: "B", dependencies: ["Helper"], path: "b")',
+    '.target(name: "Helper", dependencies: ["D"], path: "helper")',
+    '.target(name: "C", dependencies: ["Helper"], path: "c")',
+    '.target(name: "D", path: "d")',
+  ];
+  const products = ['B', 'C', 'D'].map((name) => `.library(name: "${name}", targets: ["${name}"])`);
+  const messages = new Set<string>();
+  for (const reorderProducts of [false, true]) {
+    for (const reorderTargets of [false, true]) {
+      const input = fixture(
+        (reorderTargets ? [...targets].reverse() : targets).join(', '),
+        {
+          'ios/Main.swift': 'public let value = 1',
+          'b/B.swift': 'public let b = 1',
+          'helper/Helper.swift': 'public let helper = 1',
+          'c/C.swift': 'public let c = 1',
+          'd/D.swift': 'public let d = 1',
+        },
+        { products: (reorderProducts ? [...products].reverse() : products).join(', ') }
+      );
+      await assert.rejects(
+        resolve(input.root, input.product, new Set(['B', 'C', 'D'])),
+        (error: Error) => {
+          messages.add(error.message);
+          return true;
+        }
+      );
+    }
+  }
+  assert.equal(messages.size, 1, [...messages].join('\n'));
+  assertManifestDiagnostic(
+    new Error([...messages][0]),
+    /: it depends on "D", so the prebuilt binary of product "B" links the binary of product "D", while product "Fixture" links the binary of "B" through target "Main"\. et prebuild supports only one level of such links, so a product whose binary another product links cannot link a binary itself\. Update Package\.swift so that product "B" uses no other product, or so that no other product uses "B"\. /,
+    'Helper'
+  );
+});
+
+it('rejects two sibling products whose binaries link each other', async () => {
+  const input = fixture(
+    `.target(name: "Fixture", dependencies: ["Sibling"], path: "ios"),
+     .target(name: "Sibling", dependencies: ["Fixture"], path: "sibling")`,
+    {
+      'ios/Fixture.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { members: '"Fixture"', products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  input.product.targets = [{ type: 'swift', name: 'Fixture' }];
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: it depends on "Fixture", so the prebuilt binary of product "Sibling" links the binary of product "Fixture", while product "Fixture" links the binary of "Sibling" through target "Fixture"\. .*\. Update Package\.swift so that product "Sibling" uses no other product, or so that no other product uses "Sibling"\. /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+it('rejects a product of another type that has the name of a sibling product before it links a binary', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    { 'ios/Main.swift': 'public let value = 1', 'sibling/Sibling.swift': 'public let sibling = 1' },
+    { products: '.executable(name: "Sibling", targets: ["Sibling"])' }
+  );
+  withSiblingProducts(input, 'Sibling');
+  fs.mkdirSync(Frameworks.getFrameworkPath(input.pkg.buildPath, 'Sibling', 'Debug'), {
+    recursive: true,
+  });
+  await assert.rejects(generateManifest(input), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: the manifest declares \.executable\(name: "Sibling"\), but spm\.config\.json lists "Sibling" as a product of this package, and et prebuild builds every such product as a library binary\. Update Package\.swift so that "Sibling" is a \.library product\.$/,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+it('never advises a target name that a test target already has', async () => {
+  const input = fixture(
+    `.target(name: "SiblingCore", path: "sibling"),
+     .testTarget(name: "Sibling", dependencies: ["SiblingCore"], path: "tests"),
+     .target(name: "Main", dependencies: ["SiblingCore"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/SiblingCore.swift': 'public let core = 1',
+      'tests/SiblingTests.swift': 'import XCTest',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: products "Fixture" and "Sibling" both build it, .*\. Update Package\.swift so that only one product builds target "SiblingCore"\. /,
+      'SiblingCore'
+    );
+    assert.doesNotMatch(error.message, /to "Sibling"/);
+    return true;
+  });
+});
+
+for (const { layout, targets, members, siblingMembers, target, nextStep } of [
+  {
+    layout: 'a listed target that a dependency also reaches',
+    targets: `.target(name: "Shared", path: "shared"),
+     .target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Shared"], path: "ios")`,
+    members: '"Main", "Shared"',
+    siblingMembers: '"Sibling", "Shared"',
+    target: 'Shared',
+    nextStep: /\. Update Package\.swift so that only one product builds target "Shared"\. /,
+  },
+  {
+    layout: 'a listed target that has the name of a sibling product',
+    targets: `.target(name: "SiblingCore", path: "shared"),
+     .target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    members: '"Main", "Sibling"',
+    siblingMembers: '"SiblingCore"',
+    target: 'Sibling',
+    nextStep:
+      /\. Update Package\.swift so that target "Sibling" is listed by \.library\(name: "Sibling"\) and built by no other product, or so that no target has the name "Sibling"\. /,
+  },
+]) {
+  it(`advises the layout rule rather than a repair that keeps the conflict, for ${layout}`, async () => {
+    const input = fixture(
+      targets,
+      {
+        'ios/Main.swift': 'public let value = 1',
+        'shared/Shared.swift': 'public let shared = 1',
+        'sibling/Sibling.swift': 'public let sibling = 1',
+      },
+      { members, products: `.library(name: "Sibling", targets: [${siblingMembers}])` }
+    );
+    await assert.rejects(
+      resolve(input.root, input.product, new Set(['Sibling'])),
+      (error: Error) => {
+        assertManifestDiagnostic(error, nextStep, target);
+        assert.match(error.message, PRODUCT_DEPENDENCY);
+        return true;
+      }
+    );
+  });
+}
+
 it('uses manifest resources even when config resources no longer exist', async () => {
   const input = fixture('.target(name: "Main", path: "ios", resources: [.copy("asset.txt")])', {
     'ios/Thing.swift': 'public let value = 1',
@@ -2382,7 +2894,11 @@ it('pilot resolves the real expo-haptics manifest against its real sources', asy
 
 /** Resolves `productName` from the checked-in manifest of the repository package `packageName`,
  * with its real sources and its real spm.config.json. */
-async function resolveRealPackage(packageName: string, productName: string) {
+async function resolveRealPackage(
+  packageName: string,
+  productName: string,
+  siblingProductNames?: Set<string>
+) {
   const packagePath = path.join(getExpoRepositoryRootDir(), 'packages', packageName);
   const config: SPMConfig = JSON.parse(
     fs.readFileSync(path.join(packagePath, 'spm.config.json'), 'utf8')
@@ -2401,8 +2917,33 @@ async function resolveRealPackage(packageName: string, productName: string) {
     fs.realpathSync.native(packagePath),
     `${packageName} must opt into Mode B by carrying a checked-in Package.swift`
   );
-  return { packagePath, targets: await resolve(packagePath, product) };
+  return { packagePath, targets: await resolve(packagePath, product, siblingProductNames) };
 }
+
+it('expo-location links the ExpoLocation binary into ExpoLocationMotionActivity and builds each product from its own targets', async () => {
+  const location = await resolveRealPackage(
+    'expo-location',
+    'ExpoLocation',
+    new Set(['ExpoLocationMotionActivity'])
+  );
+  assert.deepEqual(location.targets.map((target) => target.name).sort(), [
+    'ExpoLocation',
+    'ExpoLocationObjC',
+  ]);
+  const motion = await resolveRealPackage(
+    'expo-location',
+    'ExpoLocationMotionActivity',
+    new Set(['ExpoLocation'])
+  );
+  assert.deepEqual(motion.targets.map((target) => target.name).sort(), [
+    'ExpoLocationMotionActivity',
+    'ExpoLocationMotionActivityObjC',
+  ]);
+  assert.deepEqual(
+    motion.targets.find((target) => target.name === 'ExpoLocationMotionActivity')?.siblingProducts,
+    ['ExpoLocation']
+  );
+});
 
 type DumpedTargetDependency = { product?: [string, ...unknown[]]; byName?: [string, unknown] };
 

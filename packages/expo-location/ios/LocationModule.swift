@@ -1,9 +1,6 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import CoreLocation
-#if !EXPO_LOCATION_DISABLE_MOTION
-import CoreMotion
-#endif
 import ExpoModulesCore
 #if canImport(ExpoLocationObjC)
 import ExpoLocationObjC
@@ -16,9 +13,7 @@ private let EVENT_MOTION_ACTIVITY_CHANGED = "Expo.motionActivityChanged"
 
 public final class LocationModule: Module {
   private lazy var locationStreamers = [Int: BaseStreamer]()
-  #if !EXPO_LOCATION_DISABLE_MOTION
-  private lazy var motionActivityStreamers = [Int: MotionActivityStreamer]()
-  #endif
+  private lazy var motionActivityWatches = [Int: MotionActivityWatch]()
 
   private var taskManager: EXTaskManagerInterface {
     get throws {
@@ -36,15 +31,14 @@ public final class LocationModule: Module {
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
-      var requesters: [EXPermissionsRequester] = [
+      let requesters: [EXPermissionsRequester] = [
         EXLocationPermissionRequester(),
         EXForegroundPermissionRequester(),
-        EXBackgroundLocationPermissionRequester()
+        EXBackgroundLocationPermissionRequester(),
+        MotionActivityPermissionRequester()
       ]
-      #if !EXPO_LOCATION_DISABLE_MOTION
-      requesters.append(MotionActivityPermissionRequester())
-      #endif
       EXPermissionsMethodsDelegate.register(requesters, withPermissionsManager: permissionsManager)
+      MotionActivityRegistry.warnOnceIfCompanionIsMissing()
     }
 
     AsyncFunction("getProviderStatusAsync") {
@@ -125,36 +119,7 @@ public final class LocationModule: Module {
     }
 
     AsyncFunction("watchMotionActivityImplAsync") { (watchId: Int) in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      throw Exceptions.MotionActivityDisabled()
-      #else
-      guard CMMotionActivityManager.isActivityAvailable() else {
-        throw Exceptions.MotionActivityUnavailable()
-      }
-      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
-      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
-        throw Exceptions.MotionActivityUnauthorized()
-      }
-
-      let streamer = MotionActivityStreamer()
-      motionActivityStreamers[watchId] = streamer
-
-      // Start streaming in a detached task so the returned promise resolves immediately.
-      Task {
-        do {
-          for try await activity in try streamer.streamMotionActivity() {
-            sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, [
-              "watchId": watchId,
-              "activity": activity.toMotionActivityDict()
-            ])
-          }
-        } catch let exception as Exception {
-          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": exception.reason])
-        } catch {
-          sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": error.localizedDescription])
-        }
-      }
-      #endif
+      try watchMotionActivity(watchId: watchId)
     }
 
     AsyncFunction("removeWatchAsync") { (watchId: Int) in
@@ -163,12 +128,7 @@ public final class LocationModule: Module {
       }
       locationStreamers[watchId] = nil
 
-      #if !EXPO_LOCATION_DISABLE_MOTION
-      if let streamer = motionActivityStreamers[watchId] {
-        streamer.stopStreaming()
-      }
-      motionActivityStreamers[watchId] = nil
-      #endif
+      motionActivityWatches.removeValue(forKey: watchId)?.stop()
     }
 
     AsyncFunction("geocodeAsync") { (address: String) in
@@ -180,29 +140,11 @@ public final class LocationModule: Module {
     }
 
     AsyncFunction("getMotionActivityPermissionsAsync") { (promise: Promise) in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      promise.resolve([
-        "status": "denied",
-        "expires": "never",
-        "granted": false,
-        "canAskAgain": false
-      ])
-      #else
       try getPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
-      #endif
     }
 
     AsyncFunction("requestMotionActivityPermissionsAsync") { (promise: Promise) in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      promise.resolve([
-        "status": "denied",
-        "expires": "never",
-        "granted": false,
-        "canAskAgain": false
-      ])
-      #else
       try askForPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
-      #endif
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
@@ -293,39 +235,34 @@ public final class LocationModule: Module {
     // Background motion activity
 
     AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, _: [String: Any]) in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      throw Exceptions.MotionActivityDisabled()
-      #else
-      guard CMMotionActivityManager.isActivityAvailable() else {
-        throw Exceptions.MotionActivityUnavailable()
-      }
-      let authorizationStatus = CMMotionActivityManager.authorizationStatus()
-      guard authorizationStatus != .denied && authorizationStatus != .restricted else {
-        throw Exceptions.MotionActivityUnauthorized()
-      }
-
+      _ = try MotionActivityRegistry.authorizedProvider()
       try taskManager.registerTask(withName: taskName, consumer: MotionActivityTaskConsumer.self, options: [:])
-      #endif
     }
 
+    // Stopping and checking need no companion, so an app can stop a task it saved before the
+    // companion was removed.
     AsyncFunction("stopMotionActivityUpdatesAsync") { (taskName: String) in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      throw Exceptions.MotionActivityDisabled()
-      #else
       let taskManager = try taskManager
 
       try EXUtilities.catchException {
         taskManager.unregisterTask(withName: taskName, consumerClass: MotionActivityTaskConsumer.self)
       }
-      #endif
     }
 
     AsyncFunction("hasStartedMotionActivityUpdatesAsync") { (taskName: String) -> Bool in
-      #if EXPO_LOCATION_DISABLE_MOTION
-      throw Exceptions.MotionActivityDisabled()
-      #else
       return try taskManager.task(withName: taskName, hasConsumerOf: MotionActivityTaskConsumer.self)
-      #endif
     }
+  }
+
+  private func watchMotionActivity(watchId: Int) throws {
+    let provider = try MotionActivityRegistry.authorizedProvider()
+    motionActivityWatches[watchId] = provider.watchActivity(
+      onActivity: { [weak self] activity in
+        self?.sendEvent(EVENT_MOTION_ACTIVITY_CHANGED, ["watchId": watchId, "activity": activity])
+      },
+      onUnauthorized: { [weak self] in
+        self?.sendEvent(EVENT_LOCATION_ERROR, ["watchId": watchId, "reason": Exceptions.MotionActivityUnauthorized().reason])
+      }
+    )
   }
 }

@@ -33,6 +33,39 @@
           "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
+    },
+    {
+      "name": "ExpoLocationMotionActivity",
+      "podName": "ExpoLocationMotionActivity",
+      "platforms": ["iOS(\"16.4\")"],
+      "autolinkWhen": {
+        "podfileProperty": "expo.location.motionActivityEnabled",
+        "disabledValue": "false"
+      },
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "swiftLanguageVersions": ["5"],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoLocationMotionActivity",
+          "path": "ios/motion-activity/ExpoLocationMotionActivity",
+          "dependencies": ["ExpoLocation"],
+          "linkedFrameworks": ["Foundation", "CoreMotion"]
+        },
+        {
+          "type": "objc",
+          "name": "ExpoLocationMotionActivityObjC",
+          "moduleName": "ExpoLocationMotionActivity",
+          "path": "ios/motion-activity/ExpoLocationMotionActivityObjC",
+          "dependencies": ["ExpoLocationMotionActivity"],
+          "linkedFrameworks": ["Foundation"]
+        }
+      ]
     }
   ]
 }

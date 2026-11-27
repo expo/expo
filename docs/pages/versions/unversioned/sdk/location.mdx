@@ -77,7 +77,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       name: 'motionUsagePermission',
       platform: 'ios',
       description:
-        'A string to set the `NSMotionUsageDescription` permission message shown when `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.',
+        'A string to set the `NSMotionUsageDescription` permission message shown when `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time. Set to `false` to remove motion activity support. The app then does not include the `ExpoLocationMotionActivity` pod or SwiftPM product, so `expo-location` does not link CoreMotion. Other packages, such as `expo-sensors`, can still link it. Motion permission methods resolve with a denied response, and the motion activity methods throw an error. `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync` still work, so you can stop a saved background task. Run `npx expo prebuild` after you change this option.',
       default: '"Allow $(PRODUCT_NAME) to detect your current motion activity"',
     },
     {

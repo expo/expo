@@ -51,7 +51,7 @@ const DIRECT_MANIFESTS = [
   ['expo-linking', 'ExpoLinking', CORE_ONLY],
   ['expo-live-photo', 'ExpoLivePhoto', CORE_ONLY],
   ['expo-local-authentication', 'ExpoLocalAuthentication', CORE_ONLY],
-  ['expo-location', 'ExpoLocation', CORE_ONLY],
+  ['expo-location', ['ExpoLocation', 'ExpoLocationMotionActivity'], CORE_ONLY],
   ['expo-mail-composer', 'ExpoMailComposer', CORE_ONLY],
   ['expo-mesh-gradient', 'ExpoMeshGradient', CORE_ONLY],
   ['expo-network', 'ExpoNetwork', CORE_ONLY],
@@ -114,7 +114,9 @@ it.each(DIRECT_MANIFESTS)(
       : packageName;
     const link = path.join(outDir, 'direct', packageName);
     expect(ok.packageDep).toEqual({ name: swiftPackageName, path: link });
-    expect(ok.productDeps).toEqual([{ name: productName, package: swiftPackageName }]);
+    expect(ok.productDeps).toEqual(
+      [productName].flat().map((name) => ({ name, package: swiftPackageName }))
+    );
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
   },
   60_000
@@ -132,3 +134,65 @@ it.each(CHECKED_IN_MANIFESTS)(
   },
   60_000
 );
+
+/** The targets a product of a dumped manifest builds, with every target they depend on. */
+function targetsBuiltBy(manifest, productName) {
+  const targets = new Map(manifest.targets.map((target) => [target.name, target]));
+  const built = new Map();
+  const visit = (name) => {
+    if (built.has(name) || !targets.has(name)) return;
+    built.set(name, targets.get(name));
+    for (const dependency of targets.get(name).dependencies ?? []) {
+      visit((dependency.byName ?? dependency.target)?.[0]);
+    }
+  };
+  manifest.products.find((product) => product.name === productName)?.targets.forEach(visit);
+  return [...built.values()];
+}
+
+/** Whether a dumped target compiles `file`, a path relative to the package root. */
+function compiles(target, file) {
+  const inTarget = path.relative(target.path ?? path.join('Sources', target.name), file);
+  if (inTarget.startsWith('..')) return false;
+  const under = (entry) => inTarget === entry || inTarget.startsWith(`${entry}/`);
+  return !(target.exclude ?? []).some(under) && (target.sources?.some(under) ?? true);
+}
+
+describe('the motion-activity companion of the real expo-location', () => {
+  const MOTION_PRODUCT = 'ExpoLocationMotionActivity';
+
+  it('is gated by the Podfile property the location config plugin writes', () => {
+    const config = JSON.parse(
+      fs.readFileSync(path.join(REPO_ROOT, 'packages', 'expo-location', 'spm.config.json'), 'utf8')
+    );
+    const product = config.products.find(({ name }) => name === MOTION_PRODUCT);
+    expect(product?.autolinkWhen).toEqual({
+      podfileProperty: 'expo.location.motionActivityEnabled',
+      disabledValue: 'false',
+    });
+  });
+
+  // The plugin withholds a gated product by not depending on it, so ExpoLocation links
+  // CoreMotion unless every source that imports it builds only in the companion.
+  it('builds every source importing CoreMotion, and ExpoLocation builds none', () => {
+    const moduleRoot = installLikeNpm('expo-location', makeTempDir('spm-real-manifest-'));
+    const { manifest } = dumpModuleManifest(moduleRoot, 'expo-location');
+    const coreMotionSources = fs
+      .readdirSync(moduleRoot, { recursive: true })
+      .filter((file) => file.startsWith('ios/') && /\.(swift|h|m|mm)$/.test(file))
+      .filter((file) =>
+        /^\s*((@\w+\s+)*import\s+((typealias|struct|class|enum|protocol|let|var|func)\s+)?CoreMotion\b|@import\s+CoreMotion\b|#(import|include)\s+[<"]CoreMotion\/)/m.test(
+          fs.readFileSync(path.join(moduleRoot, file), 'utf8')
+        )
+      );
+    expect(coreMotionSources).not.toEqual([]);
+
+    const builders = (file) =>
+      ['ExpoLocation', MOTION_PRODUCT].filter((product) =>
+        targetsBuiltBy(manifest, product).some((target) => compiles(target, file))
+      );
+    expect(Object.fromEntries(coreMotionSources.map((file) => [file, builders(file)]))).toEqual(
+      Object.fromEntries(coreMotionSources.map((file) => [file, [MOTION_PRODUCT]]))
+    );
+  }, 60_000);
+});
