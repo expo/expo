@@ -415,7 +415,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     itNative('should send a FormData body with a file part, copied at construction', async () => {
       // A unique name, so overlapping runs of the suite don't delete each other's file.
       const file = new File(Paths.document, `request-form-data-${Date.now()}.txt`);
-      file.write('file content');
+      await file.write('file content');
       const formData = new FormData();
       formData.append('foo', 'foo');
       formData.append('file', file as unknown as Blob, 'file.txt');
