@@ -6,3 +6,4 @@ export * from './BackgroundSession.types';
 export * from './LocationUpdates.types';
 export * from './Geocoding.types';
 export * from './Heading.types';
+export * from './Geofencing.types';

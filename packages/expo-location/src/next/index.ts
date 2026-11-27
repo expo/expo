@@ -10,6 +10,8 @@ export {
   LocationProvider,
   LocationUpdatesHandle,
   defineLocationTask,
+  GeofencingHandle,
+  defineGeofencingTask,
 } from './js';
 
 export {
@@ -40,4 +42,8 @@ export {
   type Address,
   type GeocodeOptions,
   type ReverseGeocodeOptions,
+  GeofencingEventState,
+  type GeofencingRegion,
+  type GeofencingEvent,
+  type GeofencingTaskOptions,
 } from './types';
