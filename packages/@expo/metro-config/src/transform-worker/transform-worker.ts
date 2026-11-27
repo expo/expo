@@ -8,7 +8,7 @@
 
 import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import countLines from '@expo/metro/metro/lib/countLines';
-import { relative, dirname } from 'node:path';
+import { relative, dirname, resolve } from 'node:path';
 
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { toPosixPath } from '../utils/filePath';
@@ -203,7 +203,8 @@ async function transformImpl(
       // Variables should be inlined in production. We only use this JS object to ensure HMR in development.
       options.dev
     ) {
-      const relativePath = relative(dirname(filename), projectRoot);
+      // Metro passes project-relative filenames; resolve before computing a module-relative context.
+      const relativePath = relative(dirname(resolve(projectRoot, filename)), projectRoot);
       const posixPath = toPosixPath(relativePath);
 
       // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.

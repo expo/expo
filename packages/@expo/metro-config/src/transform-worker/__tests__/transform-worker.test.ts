@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import * as upstreamTransformer from '../metro-transform-worker';
 import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
@@ -75,6 +77,25 @@ it(`performs a sanity check by transforming a JS file as expected`, async () => 
     })
   ).toMatchInlineSnapshot(`"export default {}"`);
 });
+
+it.each(['node_modules/expo/virtual/env.js', '../../packages/expo/virtual/env.js'])(
+  'roots the dotenv context at the project when the worker filename is %s',
+  async (filename) => {
+    const projectRoot = path.join(process.cwd(), 'apps/mobile');
+    await transform({} as any, projectRoot, filename, Buffer.from(''), {
+      dev: true,
+      minify: false,
+      platform: 'web',
+      type: 'module',
+      inlinePlatform: false,
+      inlineRequires: false,
+      unstable_transformProfile: 'default',
+    });
+
+    const contextPath = JSON.parse(getWrappedBody().match(/require\.context\(("[^"]*")/)![1]!);
+    expect(path.resolve(projectRoot, path.dirname(filename), contextPath)).toBe(projectRoot);
+  }
+);
 
 it('marks prewarm transforms to skip the persistent cache', async () => {
   jest.mocked(upstreamTransformer.transform).mockResolvedValueOnce({
