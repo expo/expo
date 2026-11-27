@@ -301,7 +301,6 @@
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
-    "expo-status-bar": "workspace:^",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.12",
     "react-native-screens": "^4.30.1 || ^5.0.0-beta.2",

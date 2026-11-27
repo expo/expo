@@ -1,5 +1,6 @@
-import type { VerticalBarEdgeIOS } from 'expo-status-bar';
 import type { EdgeInsets } from 'react-native-safe-area-context';
+
+import type { VerticalBarEdgeIOS } from '../../../utils/useVerticalBarEdgeIOS';
 
 // With the status bar in iPhone Duo's vertical bar, the top inset is 0, while UIKit still places
 // navigation bars this far below the top edge. No native API reports this offset.
