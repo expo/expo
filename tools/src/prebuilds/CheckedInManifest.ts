@@ -299,6 +299,8 @@ type DumpedKeyRule =
       /** What SwiftPM dumps when the manifest leaves the key out. A rule without a default
        * rejects the key whenever it is present. */
       default?: unknown;
+      /** Other values that build the same as et prebuild does. */
+      accepts?: unknown[];
       what: (value: unknown, owner: DumpedOwner, key: string) => string;
       how: string;
     };
@@ -335,8 +337,11 @@ const PACKAGE_KEYS: DumpedKeyRules = {
   },
   cxxLanguageStandard: {
     default: null,
-    what: declares('but et prebuild does not apply it and always compiles C++ as C++20.'),
-    how: 'Remove cxxLanguageStandard from the Package(...) call in Package.swift.',
+    accepts: ['c++20'],
+    what: declares(
+      'but et prebuild always compiles C++ as C++20 without GNU extensions (.cxx20) and would ignore it.'
+    ),
+    how: 'Set cxxLanguageStandard to .cxx20 in the Package(...) call in Package.swift, or remove it.',
   },
   pkgConfig: {
     default: null,
@@ -459,7 +464,11 @@ function checkDumpedKeys(
       );
     }
     const rule = rules[key];
-    if (rule === 'supported' || ('default' in rule && isDeepStrictEqual(value, rule.default))) {
+    if (
+      rule === 'supported' ||
+      ('default' in rule && isDeepStrictEqual(value, rule.default)) ||
+      rule.accepts?.some((accepted) => isDeepStrictEqual(value, accepted))
+    ) {
       continue;
     }
     throw fail(rule.what(value, owner, key), rule.how);
