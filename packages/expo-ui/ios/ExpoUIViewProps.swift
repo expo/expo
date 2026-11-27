@@ -58,9 +58,17 @@ public struct ModifierList: JavaScriptDecodable {
           modifiers.append(.eventDispatchingModifier(modifier))
         }
       case .factory:
-        if let params = try? foundationValue(of: element) as? [String: Any] {
-          modifiers.append(.params(params))
+        // `decodeAny` throws for a function, such as the `eventListener` of a modifier with an event.
+        // For `null` it gives `nil` boxed in `Any`, which a `@Field` of a v1 record fails to cast.
+        let object = element.getObject()
+        var params: [String: Any] = [:]
+        for name in object.getPropertyNames() {
+          let property = object.getProperty(name)
+          if !property.isUndefined() && !property.isNull() && !property.isFunction() {
+            params[name] = try? JavaScriptValue.decodeAny(property, in: runtime)
+          }
         }
+        modifiers.append(.params(params))
       case nil:
         continue
       }
@@ -76,48 +84,6 @@ internal enum DecodedModifier {
   case eventDispatchingModifier(any EventDispatchingViewModifier)
   /// The params of a modifier registered with the deprecated factory, which creates the modifier when the view applies it.
   case params([String: Any])
-}
-
-/**
- Converts a JavaScript value to the value that React Native gives the props of v1 views (`jsi::dynamicFromValue`):
- `NSNumber` for numbers and booleans, `NSNull` for `null` and functions, and no key for an `undefined` property.
- The deprecated modifier factories depend on it. For example, the cast of a shared object id to `Int` fails for a `Double`.
- */
-@JavaScriptActor
-private func foundationValue(of value: borrowing JavaScriptValue) throws -> Any {
-  if value.isNumber() {
-    return NSNumber(value: value.getDouble())
-  }
-  if value.isBool() {
-    return NSNumber(value: value.getBool())
-  }
-  if value.isString() {
-    return value.getString()
-  }
-  guard value.isObject() else {
-    return NSNull()
-  }
-  let object = value.getObject()
-  if object.isArray() {
-    let array = object.getArray()
-    var elements: [Any] = []
-    elements.reserveCapacity(array.length)
-    for index in 0..<array.length {
-      elements.append(try foundationValue(of: array.getValue(at: index)))
-    }
-    return elements
-  }
-  if object.isFunction() {
-    return NSNull()
-  }
-  var dictionary: [String: Any] = [:]
-  for name in object.getPropertyNames() {
-    let property = object.getProperty(name)
-    if !property.isUndefined() {
-      dictionary[name] = try foundationValue(of: property)
-    }
-  }
-  return dictionary
 }
 
 /**
