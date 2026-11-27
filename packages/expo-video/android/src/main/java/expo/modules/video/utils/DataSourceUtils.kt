@@ -15,6 +15,7 @@ import expo.modules.video.cache.CachePolicy
 import expo.modules.video.cache.CacheVariantIndex
 import expo.modules.video.cache.ExpoVideoCacheKeyFactory
 import expo.modules.video.records.VideoSource
+import expo.modules.video.transport.VideoDataSourceRegistry
 import expo.modules.video.managers.VideoManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -191,6 +192,11 @@ fun buildExpoVideoMediaSource(
   context: Context,
   videoSource: VideoSource
 ): MediaSource {
+  // A source a registered provider handles loads through its factory, without the disk cache.
+  VideoDataSourceRegistry.resolveDataSourceFactory(videoSource)?.let { providerFactory ->
+    return buildMediaSourceFactory(context, providerFactory)
+      .createMediaSource(videoSource.toMediaItem(context))
+  }
   val dataSourceFactory = if (videoSource.useCaching) {
     buildCacheDataSourceFactory(context, videoSource)
   } else {
