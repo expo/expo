@@ -22,8 +22,37 @@
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <ExpoModulesCore/EXReactSchedulerDispatch.h>
 
+@interface RCTReactNativeFactory (ThirdPartyFabricComponents) <RCTComponentViewFactoryComponentProvider>
+@end
+
 @implementation EXReactNativeFactory {
   EXAppContext *_appContext;
+  __weak id<RCTComponentViewFactoryComponentProvider> _previousComponentsProvider;
+}
+
+- (instancetype)initWithDelegate:(id<RCTReactNativeFactoryDelegate>)delegate releaseLevel:(RCTReleaseLevel)releaseLevel
+{
+  // The component view factory is global and keeps only the provider of the last factory.
+  // Keep the earlier provider, so that the components of an earlier factory stay registered.
+  id<RCTComponentViewFactoryComponentProvider> previousProvider =
+      [RCTComponentViewFactory currentComponentViewFactory].thirdPartyFabricComponentsProvider;
+  if (self = [super initWithDelegate:delegate releaseLevel:releaseLevel]) {
+    _previousComponentsProvider = previousProvider;
+  }
+  return self;
+}
+
+- (NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *)thirdPartyFabricComponents
+{
+  NSDictionary<NSString *, Class<RCTComponentViewProtocol>> *components = [super thirdPartyFabricComponents];
+  id<RCTComponentViewFactoryComponentProvider> previousProvider = _previousComponentsProvider;
+  if (!previousProvider) {
+    return components;
+  }
+  NSMutableDictionary<NSString *, Class<RCTComponentViewProtocol>> *merged =
+      [NSMutableDictionary dictionaryWithDictionary:previousProvider.thirdPartyFabricComponents];
+  [merged addEntriesFromDictionary:components];
+  return merged;
 }
 
 #pragma mark - RCTHostDelegate
@@ -72,7 +101,7 @@
                 dispatch:schedulerHandle ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
   [appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
-  [appContext registerNativeModules];
+  [appContext registerNativeModulesWithProvider:[EXAppContext modulesProviderWithName:@"ExpoModulesProvider" inImageOf:[EXReactNativeFactory class]]];
 }
 
 @end

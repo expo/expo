@@ -1116,6 +1116,33 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return ModulesProvider()
   }
 
+  /**
+   Returns an instance of the generated Expo modules provider from the binary that contains the given class.
+   Each brownfield framework has a provider with the same class name, so the name finds only one of them.
+   */
+  @objc
+  public static func modulesProvider(withName providerName: String = "ExpoModulesProvider", inImageOf anchor: AnyClass) -> ModulesProvider {
+    // The class list is large, so read it only when the class is not in the main executable.
+    if let image = class_getImageName(anchor), String(cString: image) != Bundle.main.executablePath {
+      var count: UInt32 = 0
+      if let classes = objc_copyClassList(&count) {
+        defer { free(UnsafeMutableRawPointer(classes)) }
+        // The list contains classes that cannot receive messages. A Swift cast sends a message,
+        // and the subscript of `classes` casts, so read the pointers and compare them without a cast.
+        let pointers = UnsafeRawPointer(classes).assumingMemoryBound(to: UnsafeRawPointer.self)
+        for index in 0..<Int(count) {
+          let candidate: AnyClass = unsafeBitCast(pointers[index], to: AnyClass.self)
+          if strcmp(class_getName(candidate), providerName) == 0,
+            let candidateImage = class_getImageName(candidate), strcmp(candidateImage, image) == 0,
+            class_getSuperclass(candidate) == ModulesProvider.self {
+            return unsafeBitCast(candidate, to: ModulesProvider.Type.self).init()
+          }
+        }
+      }
+    }
+    return modulesProvider(withName: providerName)
+  }
+
   internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
     var seen = Set<String>()
     return bundleNames.flatMap { [$0, c99ExtendedIdentifier($0)] }.compactMap { bundleName in
