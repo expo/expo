@@ -44,6 +44,7 @@ const FILE_NAME_PATTERN = new RegExp(
 
 const lookupCache = new Map();
 const packageCache = new Map();
+const modulePackageCache = new Map();
 const directoryCache = new Map();
 const resultCache = new Map();
 
@@ -56,6 +57,7 @@ function clearExpiredCaches() {
   if (now >= cacheExpiryTime) {
     lookupCache.clear();
     packageCache.clear();
+    modulePackageCache.clear();
     directoryCache.clear();
     resultCache.clear();
     cacheExpiryTime = now + CACHE_LIFETIME_MS;
@@ -65,17 +67,15 @@ function clearExpiredCaches() {
 function fileSystemLookup(filePath) {
   let result = lookupCache.get(filePath);
   if (!result) {
+    result = { exists: false };
     try {
-      const realPath = fs.realpathSync(filePath);
-      const stats = fs.statSync(realPath);
-      result = stats.isDirectory()
-        ? { exists: true, type: 'd', realPath }
-        : stats.isFile()
-          ? { exists: true, type: 'f', realPath }
-          : { exists: false };
-    } catch {
-      result = { exists: false };
-    }
+      // Most lookups are for paths that do not exist. `statSync` rejects them with one system call.
+      const stats = fs.statSync(filePath, { throwIfNoEntry: false });
+      const type = stats?.isDirectory() ? 'd' : stats?.isFile() ? 'f' : null;
+      if (type) {
+        result = { exists: true, type, realPath: fs.realpathSync.native(filePath) };
+      }
+    } catch {}
     lookupCache.set(filePath, result);
   }
   return result;
@@ -100,6 +100,15 @@ function getPackage(packageJsonPath) {
 }
 
 function getPackageForModule(absoluteModulePath) {
+  let result = modulePackageCache.get(absoluteModulePath);
+  if (result === undefined) {
+    result = findPackageForModule(absoluteModulePath);
+    modulePackageCache.set(absoluteModulePath, result);
+  }
+  return result;
+}
+
+function findPackageForModule(absoluteModulePath) {
   let directory = absoluteModulePath;
   while (path.basename(directory) !== 'node_modules') {
     const packageJsonPath = path.join(directory, 'package.json');
