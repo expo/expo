@@ -189,12 +189,15 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
     -> [String: Value]
   {
     // Borrows the object directly from the unowned value and iterates its properties using the
-    // engine's own key strings, skipping `undefined`-valued properties before converting their keys.
+    // engine's own key strings.
     var result: [String: Value] = [:]
-    try value.forEachDefinedObjectProperty(
+    try value.forEachProperty(
       in: runtime,
       reserveCapacity: { result.reserveCapacity($0) },
       body: { key, property in
+        if property.isUndefined() {
+          return
+        }
         result[key] = try Value.decode(property, in: runtime)
       }
     )
@@ -305,10 +308,13 @@ extension JavaScriptValue {
     value decodeValue: ElementDecoder<Value>
   ) throws -> [String: Value] {
     var result: [String: Value] = [:]
-    try value.forEachDefinedObjectProperty(
+    try value.forEachProperty(
       in: runtime,
       reserveCapacity: { result.reserveCapacity($0) },
       body: { key, property in
+        if property.isUndefined() {
+          return
+        }
         result[key] = try decodeValue(property, runtime)
       }
     )

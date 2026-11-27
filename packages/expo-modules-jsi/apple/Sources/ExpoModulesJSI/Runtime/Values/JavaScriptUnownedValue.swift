@@ -288,11 +288,11 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
   }
 
-  /// Iterates over each enumerable property of this object whose value is not `undefined`, borrowing
-  /// the underlying `jsi::Object` without cloning its handle or retaining `JavaScriptRuntimeHandle`.
+  /// Iterates over each enumerable property of this object, borrowing the underlying `jsi::Object`
+  /// without cloning its handle or retaining `JavaScriptRuntimeHandle`.
   /// Throws `JavaScriptValue.TypeError` when this value is not an object.
   @usableFromInline
-  internal func forEachDefinedObjectProperty(
+  internal func forEachProperty(
     in runtime: borrowing JavaScriptRuntime,
     reserveCapacity: (Int) -> Void,
     body: (String, borrowing JavaScriptUnownedValue) throws -> Void
@@ -302,7 +302,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
     }
     assert(
       belongs(to: runtime),
-      "`forEachDefinedObjectProperty` must be passed the runtime that owns the borrowed value"
+      "`forEachProperty` must be passed the runtime that owns the borrowed value"
     )
     let jsiRuntime = self.runtime
     let propertyNames = expo.getPropertyNamesOfObjectValue(jsiRuntime, pointer.pointee)
@@ -312,9 +312,6 @@ public struct JavaScriptUnownedValue: ~Copyable {
     for i in 0..<count {
       let name = expo.stringAtIndex(jsiRuntime, propertyNames, i)
       let property = expo.getPropertyOfObjectValue(jsiRuntime, pointer.pointee, name)
-      if property.isUndefined() {
-        continue
-      }
       let swiftName = String(jsiString: name, in: jsiRuntime)
       try withUnowned(property, in: jsiRuntime) { value in
         try body(swiftName, value)
