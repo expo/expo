@@ -21,8 +21,17 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 
 import type { UniversalTextStyle } from './Text/types';
-import { omitUserOverridden } from './modifierUtils';
+import {
+  createUniversalLayoutModifier,
+  omitUserOverridden,
+  omitUserOverriddenDimensions,
+  serializeUniversalDimensions,
+} from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
+
+// A user frame owns only the axes it sets. Keep a derived frame that still
+// owns the other axis, and keep the layout value the parent stack reads.
+const preservedSizingTypes = new Set(['frame', 'universalLayout']);
 
 const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
   '100': 'ultraLight',
@@ -44,9 +53,11 @@ const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
  *
  * SwiftUI modifiers apply inside-out (each modifier wraps the previous).
  * To match React Native's box model (background fills the full box):
- *   padding → sizing → background → clip → border → opacity
+ *   padding → fixed frame → universal layout → background → border → clip → opacity
  *   → events → lifecycle → behavior → user escape-hatch
  *
+ * Fixed sizes become a `frame`.
+ * Percentages stay on `universalLayout` so the parent stack can resolve them.
  * Style-derived modifiers yield to user-supplied modifiers of the same
  * `$type`, so the escape hatch can override anything derived from props.
  */
@@ -58,6 +69,8 @@ export function transformToModifiers(
   >,
   extraModifiers?: ModifierConfig[],
   options?: {
+    /** Component name included in invalid-dimension development warnings. */
+    componentName?: string;
     /** Alignment for the frame modifier (used by Column/Row). */
     frameAlignment?: Parameters<typeof frame>[0]['alignment'];
     /** Text-styling props for text-rendering components. */
@@ -65,6 +78,13 @@ export function transformToModifiers(
   }
 ): ModifierConfig[] {
   let mods: ModifierConfig[] = [];
+  const dimensions = omitUserOverriddenDimensions(
+    serializeUniversalDimensions(style, options?.componentName),
+    extraModifiers,
+    'ios'
+  );
+  const fixedWidth = dimensions.widthPoints;
+  const fixedHeight = dimensions.heightPoints;
 
   // Text styling (innermost — applies to text content before container modifiers)
   const textStyle = options?.textStyle;
@@ -119,18 +139,24 @@ export function transformToModifiers(
         })
       );
     }
+  }
 
-    // Sizing (before background so background fills the frame)
-    if (style.width != null || style.height != null) {
-      mods.push(
-        frame({
-          width: style.width as number | undefined,
-          height: style.height as number | undefined,
-          alignment: options?.frameAlignment,
-        })
-      );
-    }
+  // Fixed sizing is applied directly. Percentages remain as layout values for
+  // the owning universal layout to resolve against its content box.
+  if (fixedWidth != null || fixedHeight != null) {
+    mods.push(
+      frame({
+        width: fixedWidth,
+        height: fixedHeight,
+        alignment: options?.frameAlignment,
+      })
+    );
+  }
 
+  const universalLayoutModifier = createUniversalLayoutModifier(dimensions);
+  if (universalLayoutModifier) mods.push(universalLayoutModifier);
+
+  if (style) {
     // Background (fills the frame area including padding)
     if (style.backgroundColor) {
       mods.push(background(style.backgroundColor));
@@ -154,7 +180,9 @@ export function transformToModifiers(
 
   // A user-supplied modifier replaces any style-derived modifier of the same
   // type. The event, lifecycle, and behavior modifiers below are never dropped.
-  mods = omitUserOverridden(mods, extraModifiers);
+  // Axis-aware sizing precedence has already removed only the dimensions set
+  // by a user frame. Preserve any derived frame that still owns the other axis.
+  mods = omitUserOverridden(mods, extraModifiers, preservedSizingTypes);
 
   // Events. SwiftUI only hit-tests drawn content, so the `contentShape` lets
   // taps on empty space (for example a `Spacer` in a `Row`) reach `onPress`.

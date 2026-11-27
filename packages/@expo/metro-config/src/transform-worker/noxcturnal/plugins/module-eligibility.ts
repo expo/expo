@@ -7,11 +7,19 @@ export function createEligibilityVisitors(nox: Noxcturnal, isHermesV1: boolean) 
     nox.defineVisitor('Decorator', {}, (path) => {
       path.unsupported('decorator-lowering');
     }),
-    nox.defineVisitor('Function', { fields: ['async', 'generator'] }, (fn) => {
-      if (fn.node.async === true && !isHermesV1) {
-        fn.unsupported(fn.node.generator === true ? 'async-generator-lowering' : 'async-lowering');
-      }
-    }),
+    ...(isHermesV1
+      ? []
+      : [
+          nox.defineVisitor(
+            'Function',
+            { fields: ['generator'], where: { async: { equals: true } } },
+            (fn) => {
+              fn.unsupported(
+                fn.node.generator === true ? 'async-generator-lowering' : 'async-lowering'
+              );
+            }
+          ),
+        ]),
   ];
 }
 

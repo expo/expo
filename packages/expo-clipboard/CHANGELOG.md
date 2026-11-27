@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Add `ios.expiresAt` and `ios.localOnly` options to `setStringAsync`. They map to the pasteboard's expiration date and local-only options. ([#51911](https://github.com/expo/expo/pull/51911) by [@kirillzyusko](https://github.com/kirillzyusko))
+
 ## 58.0.3
 
 ### Patch Changes

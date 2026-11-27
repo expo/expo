@@ -3,13 +3,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { getRouterE2ERoot, getPageHtml, findProjectFiles } from '../utils';
+import { getServerTesterRoot, getPageHtml, findProjectFiles } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('exports with single-page', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-spa';
   const outputDir = path.join(projectRoot, outputName);
 
@@ -17,8 +17,7 @@ describe('exports with single-page', () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'single',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'single',
         E2E_ROUTER_ASYNC: 'development',
       },
     });
@@ -30,7 +29,7 @@ describe('exports with single-page', () => {
     // The wrapper should not be included as a route.
     expect(files).not.toContain('+html.html');
     expect(files).not.toContain('_layout.html');
-    expect(files).not.toContain('about.html');
+    expect(files).not.toContain('rendering/about.html');
 
     // Single page
     expect(files).toContain('index.html');
@@ -152,13 +151,13 @@ describe('exports with single-page', () => {
     if (testPreload) {
       expect(
         fs.readFileSync(path.join(outputDir, testPreload.attributes.href ?? ''), 'utf-8')
-      ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
+      ).toMatchInlineSnapshot(`".Ecx2Wa_text{color:#1e90ff}"`);
     }
   });
 
   it('does not statically render the head', async () => {
     const indexHtml = await getPageHtml(outputDir, 'index.html');
-    expect(indexHtml.querySelector('html > head > title')?.innerText).toBe('Router E2E');
+    expect(indexHtml.querySelector('html > head > title')?.innerText).toBe('Server Tester');
 
     expect(indexHtml.querySelector('html > head > meta[name="description"]')).toBeNull();
     expect(

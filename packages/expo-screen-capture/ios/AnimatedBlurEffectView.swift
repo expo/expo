@@ -1,3 +1,5 @@
+import UIKit
+
 class AnimatedBlurEffectView: UIVisualEffectView {
   private let blurIntensity: CGFloat
   private let blurStyle: UIBlurEffect.Style

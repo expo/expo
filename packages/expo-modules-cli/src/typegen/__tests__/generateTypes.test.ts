@@ -49,6 +49,7 @@ const sampleScan = {
         properties: [],
       },
     ],
+    classes: [],
     modules: [
       {
         name: 'MyModule',
@@ -75,7 +76,7 @@ const sampleScan = {
 
 const emptyScan = {
   schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
-  exports: { records: [], sharedObjects: [], modules: [], enums: [], unions: [] },
+  exports: { records: [], sharedObjects: [], classes: [], modules: [], enums: [], unions: [] },
   stats: { durationMs: 0.5, filesParsed: 0, filesScanned: 0 },
 };
 
@@ -135,6 +136,7 @@ describe(generateTypes, () => {
     expect(result.counts).toEqual({
       modules: 1,
       sharedObjects: 1,
+      classes: 0,
       records: 1,
       enums: 0,
       unions: 0,
@@ -228,6 +230,62 @@ describe(generateTypes, () => {
     expect(fs.readFileSync(outputPath, 'utf8')).not.toContain('Old');
   });
 
+  it('keeps the doc comments written in the file it generated before', async () => {
+    const scannerPath = writeFakeScanner({ stdout: JSON.stringify(sampleScan) });
+    const outputPath = path.join(tmpDir, 'native.types.ts');
+    await generateTypes({ packageDir: tmpDir, outputPath, scannerPath });
+    const documented = fs
+      .readFileSync(outputPath, 'utf8')
+      .replace('export declare class Player', '/** Plays a video. */\nexport declare class Player')
+      .replace('  readonly status', '  /**\n   * The current status.\n   */\n  readonly status');
+    fs.writeFileSync(outputPath, documented);
+
+    const checked = await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath,
+      check: true,
+    });
+    const result = await generateTypes({ packageDir: tmpDir, outputPath, scannerPath });
+
+    expect(checked.outcome).toEqual({ kind: 'unchanged', outputPath });
+    expect(result.outcome).toEqual({ kind: 'unchanged', outputPath });
+    expect(fs.readFileSync(outputPath, 'utf8')).toBe(documented);
+  });
+
+  it('warns about the doc comments of declarations it no longer generates', async () => {
+    const outputPath = path.join(tmpDir, 'native.types.ts');
+    await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath: writeFakeScanner({ stdout: JSON.stringify(sampleScan) }),
+    });
+    fs.writeFileSync(
+      outputPath,
+      fs
+        .readFileSync(outputPath, 'utf8')
+        .replace('  readonly status', '  /** The current status. */\n  readonly status')
+    );
+    const scan = {
+      ...sampleScan,
+      exports: {
+        ...sampleScan.exports,
+        modules: [{ ...sampleScan.exports.modules[0], properties: [] }],
+      },
+    };
+
+    const result = await generateTypes({
+      packageDir: tmpDir,
+      outputPath,
+      scannerPath: writeFakeScanner({ stdout: JSON.stringify(scan) }),
+    });
+
+    expect(result.warnings).toEqual([
+      expect.objectContaining({ kind: 'dropped', file: outputPath, location: 'MyModule.status' }),
+    ]);
+    expect(fs.readFileSync(outputPath, 'utf8')).not.toContain('The current status.');
+  });
+
   it('refuses to overwrite a file it did not generate', async () => {
     const scannerPath = writeFakeScanner({ stdout: JSON.stringify(sampleScan) });
     const outputPath = path.join(tmpDir, 'native.types.ts');
@@ -272,6 +330,7 @@ describe(generateTypes, () => {
     expect(result.counts).toEqual({
       modules: 0,
       sharedObjects: 0,
+      classes: 0,
       records: 0,
       enums: 0,
       unions: 0,

@@ -8,7 +8,7 @@ export type CssAsset =
 /**
  * Asset manifest for client hydration bundles.
  *
- * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ * {@link import('@expo/router-server/src/server/renderStreamingContent').GetStreamingContentOptions}
  */
 export interface AssetInfo {
   /**
@@ -121,6 +121,8 @@ export interface PageHeaderInfo<TRegex = RegExp | string> {
 }
 
 export interface RoutesManifest<TRegex = RegExp | string> {
+  /** Public server origin configured in the Expo Router config plugin. */
+  origin?: string;
   /**
    * Middleware function that runs before any route matching.
    * Only allowed at the root level and requires web.output: "server".
@@ -174,17 +176,31 @@ export type RawManifest = RoutesManifest<string>;
 export type Manifest = RoutesManifest<RegExp>;
 export type Route = RouteInfo<RegExp>;
 
+/** The route the server matched for a request. */
+export interface MatchedRoute {
+  file: string;
+  page: string;
+  /** True for generated routes, such as the sitemap. */
+  generated?: boolean;
+}
+
 /**
- * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ * Options of the legacy `getStaticContent()` renderer.
+ *
+ * @deprecated Use {@link GetStreamingContentOptions}.
  */
 export interface GetStaticContentOptions {
   loader?: { data?: unknown; key: string };
   request?: Request;
+  /** The route the server matched for the location. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   assets?: AssetInfo;
 }
 
 /**
- * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ * @type {import('@expo/router-server/src/server/renderStreamingContent').GetStreamingContentOptions}
  */
 export interface GetStreamingContentOptions {
   loader?: { data?: unknown; key: string };
@@ -192,6 +208,10 @@ export interface GetStreamingContentOptions {
     headNodes: ReactNode[];
   } | null;
   request?: Request;
+  /** The route the server matched for the location. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   assets?: AssetInfo;
   output?: 'static' | 'server';
   hydrate?: boolean;

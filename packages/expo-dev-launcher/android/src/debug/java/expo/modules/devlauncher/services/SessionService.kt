@@ -46,6 +46,13 @@ class SessionService(
 
       val me = graphQLService.fetchMe()
       val data = me.data
+      // The server answers a rejected session with a null `meUserActor` and no errors. Remove the
+      // session without the signed-out flag, so a launch URL can sign in again.
+      if (!me.hasErrors() && data?.meUserActor == null && _session.compareAndSet(newSession, null)) {
+        null.saveToPreferences(sessionStore)
+        httpClientService.setSession(null)
+        return@onEach
+      }
       if (me.hasErrors() || data == null) {
         // TODO(@lukmccall): Handle errors properly
         _user.update { UserState.LoggedOut }
@@ -67,6 +74,8 @@ class SessionService(
 
   fun setSession(newSession: Session?) {
     newSession.saveToPreferences(sessionStore)
+    // A null session is always an explicit sign out.
+    sessionStore.edit(commit = true) { putBoolean(SIGNED_OUT_KEY, newSession == null) }
     httpClientService.setSession(newSession?.sessionSecret)
     _session.update { newSession }
   }

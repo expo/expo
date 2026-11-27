@@ -15,6 +15,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   accessibilityLabel,
   separateBackground,
   hidesSharedBackground,
+  axisBehavior,
   palette,
   inline,
   hidden,
@@ -22,6 +23,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
   title,
   label,
   destructive,
+  disabled,
   children,
   icon,
   source,
@@ -46,6 +48,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
     <NativeLinkPreviewAction
       sharesBackground={!separateBackground}
       hidesSharedBackground={hidesSharedBackground}
+      axisBehavior={axisBehavior}
       hidden={hidden}
       icon={icon}
       xcassetName={xcassetName}
@@ -53,6 +56,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
       image={image}
       imageRenderingMode={renderingMode}
       destructive={destructive}
+      disabled={disabled}
       subtitle={subtitle}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}

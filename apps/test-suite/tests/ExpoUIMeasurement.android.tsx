@@ -1,6 +1,16 @@
+import { Column as UniversalColumn, Row as UniversalRow } from '@expo/ui';
 import PagerView from '@expo/ui/community/pager-view';
 import { Box, Column, Host, ModalBottomSheet, RNHostView, Row } from '@expo/ui/jetpack-compose';
-import { padding, paddingAll, size } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  height,
+  IntrinsicSize,
+  onSizeChanged,
+  padding,
+  paddingAll,
+  size,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 
@@ -22,6 +32,49 @@ const SCROLL_LEAD = 80;
 const SCROLL_TAIL = 2000;
 const SCROLL_BY = 60;
 const PAGER_HEIGHT = 300;
+const ROW_WIDTH = 300;
+const GAP = 20;
+const NEARLY_FULL = 290;
+const NARROW_CELL = 30;
+const WIDE_CELL = 80;
+const FIXED = 200;
+
+type Size = { width: number; height: number };
+
+/** Keeps the latest size that Compose reports through `onSizeChanged`, in dp. */
+function sizeProbe() {
+  const probe: { size: Size | null; modifier: ReturnType<typeof onSizeChanged> } = {
+    size: null,
+    modifier: onSizeChanged((reported) => {
+      probe.size = reported;
+    }),
+  };
+  return probe;
+}
+
+/** Returns the sizes once every probe has reported and no size changed between two reads. */
+async function sizesWhenSettled<T extends Record<string, { size: Size | null }>>(
+  probes: T,
+  timeoutMs = 5000
+): Promise<Record<keyof T, Size>> {
+  const names = Object.keys(probes) as (keyof T)[];
+  const started = Date.now();
+  let previous: string | null = null;
+
+  while (Date.now() - started < timeoutMs) {
+    if (names.every((probeName) => probes[probeName].size != null)) {
+      const current = JSON.stringify(names.map((probeName) => probes[probeName].size));
+      if (current === previous) {
+        return Object.fromEntries(
+          names.map((probeName) => [probeName, probes[probeName].size])
+        ) as Record<keyof T, Size>;
+      }
+      previous = current;
+    }
+    await delay(100);
+  }
+  throw new Error(`Timed out waiting for ${names.join(', ')} to report a size`);
+}
 
 type Measurement = {
   x: number;
@@ -514,6 +567,96 @@ export async function test(
       expect(hosted.pageY).toBe(0);
       expect(hosted.width).toBeCloseTo(BOX, 0);
       expect(hosted.height).toBeCloseTo(BOX, 0);
+    });
+
+    // Each case below renders the same children in a Compose `Row` and in a universal `Row`.
+    // With no percentage, the universal `Row` must size its children the same way.
+    it('gives a child before the last the same width in a universal Row with spacing', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // A Compose `Row` subtracts only the spacing it has used so far, so the first child can use
+      // the whole row width.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Row horizontalArrangement={{ spacedBy: GAP }} modifiers={[width(ROW_WIDTH)]}>
+              <Box modifiers={[width(NEARLY_FULL), height(BOX), compose.modifier]} />
+              <Box modifiers={[size(GAP, BOX)]} />
+            </Row>
+            <UniversalRow spacing={GAP} modifiers={[width(ROW_WIDTH)]}>
+              <Box modifiers={[width(NEARLY_FULL), height(BOX), universal.modifier]} />
+              <Box modifiers={[size(GAP, BOX)]} />
+            </UniversalRow>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(NEARLY_FULL, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
+    });
+
+    it('gives a universal Row with weighted children the same intrinsic width', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // A Compose `Row` reports `max(child width / weight) * total weight` as its intrinsic width,
+      // so two equal weights each get the width of the wider child.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Column modifiers={[width(IntrinsicSize.Max)]}>
+              <Row modifiers={[compose.modifier]}>
+                <Box modifiers={[weight(1), width(NARROW_CELL), height(BOX)]} />
+                <Box modifiers={[weight(1), width(WIDE_CELL), height(BOX)]} />
+              </Row>
+            </Column>
+            <Column modifiers={[width(IntrinsicSize.Max)]}>
+              <UniversalRow modifiers={[universal.modifier]}>
+                <Box modifiers={[weight(1), width(NARROW_CELL), height(BOX)]} />
+                <Box modifiers={[weight(1), width(WIDE_CELL), height(BOX)]} />
+              </UniversalRow>
+            </Column>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(WIDE_CELL * 2, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
+    });
+
+    it('shrinks a fixed-width child that does not fit in a universal Row', async () => {
+      const compose = sizeProbe();
+      const universal = sizeProbe();
+
+      // The two widths add up to more than the row. A Compose `Row` gives the second child only the
+      // space that is left, and `width()` fits that space.
+      setPortalChild(
+        <Host matchContents>
+          <Column>
+            <Row modifiers={[width(ROW_WIDTH)]}>
+              <UniversalColumn style={{ width: FIXED, height: BOX }} />
+              <UniversalColumn
+                style={{ width: FIXED, height: BOX }}
+                modifiers={[compose.modifier]}
+              />
+            </Row>
+            <UniversalRow modifiers={[width(ROW_WIDTH)]}>
+              <UniversalColumn style={{ width: FIXED, height: BOX }} />
+              <UniversalColumn
+                style={{ width: FIXED, height: BOX }}
+                modifiers={[universal.modifier]}
+              />
+            </UniversalRow>
+          </Column>
+        </Host>
+      );
+
+      const sizes = await sizesWhenSettled({ compose, universal });
+      expect(sizes.compose.width).toBeCloseTo(ROW_WIDTH - FIXED, 0);
+      expect(sizes.universal.width).toBeCloseTo(sizes.compose.width, 0);
     });
   });
 }

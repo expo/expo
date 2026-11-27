@@ -9,7 +9,7 @@ import {
 } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import createElement from 'react-native-web/dist/exports/createElement';
+import { unstable_createElement as createElement } from 'react-native-web';
 
 import type {
   CameraNativeProps,

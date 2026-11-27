@@ -1,6 +1,8 @@
 import type { ComponentType, ReactNode, Ref } from 'react';
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
+import type { ModifierConfig } from '../../types';
+
 // #region BottomSheetMethods
 
 /**
@@ -110,6 +112,16 @@ export interface BottomSheetFooterProps {
 // #endregion
 
 // #region BottomSheetProps
+
+/**
+ * Insets in dp for the sides of the bottom sheet content. Missing sides are `0`.
+ */
+export interface BottomSheetContentWindowInsets {
+  start?: number;
+  top?: number;
+  end?: number;
+  bottom?: number;
+}
 
 /**
  * Props for the `BottomSheet` component.
@@ -342,6 +354,31 @@ export interface BottomSheetProps {
    * @remarks This prop is accepted for API compatibility but has no effect on native platforms.
    */
   containerStyle?: StyleProp<ViewStyle>;
+
+  // --- Platform ---
+
+  /**
+   * Platform-specific modifier escape hatch. Pass an array of modifier configs from
+   * `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
+   *
+   * @remarks On iOS, the modifiers are applied to the sheet's content after the ones the
+   * component sets, so a sheet can for example ignore a horizontal safe-area inset that the
+   * window has, as on a folded iPhone Duo, with `ignoreSafeArea({ edges: 'horizontal' })`.
+   * On Android, they are applied to the `ModalBottomSheet`. Not applied on web.
+   */
+  modifiers?: ModifierConfig[];
+
+  /**
+   * Insets in dp that the native sheet adds around its content. Missing sides are `0`.
+   * By default, the sheet pads the top and bottom of the content clear of the system bars,
+   * display cutouts, and the keyboard, so scrolling content stops above the navigation bar.
+   * Pass `{ top: insets.top }`, with `insets` from `react-native-safe-area-context`, to let
+   * the content run under the navigation bar and pad its own end instead. The sheet then
+   * adds no padding for the keyboard.
+   *
+   * @platform android
+   */
+  contentWindowInsets?: BottomSheetContentWindowInsets;
 
   /**
    * The content to render inside the bottom sheet.

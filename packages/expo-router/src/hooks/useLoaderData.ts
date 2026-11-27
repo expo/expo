@@ -12,7 +12,11 @@ import { fetchLoader } from '../loaders/utils';
 import { useCurrentRouteInfo } from './useCurrentRouteInfo';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
-  T extends LoaderFunction<infer R> ? R : unknown;
+  T extends LoaderFunction<infer R>
+    ? R extends Response
+      ? Awaited<ReturnType<R['json']>>
+      : R
+    : unknown;
 
 /**
  * Returns the result of the `loader` function for the calling route.

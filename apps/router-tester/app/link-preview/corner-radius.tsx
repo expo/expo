@@ -11,38 +11,40 @@ export default function CornerRadius() {
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      contentContainerStyle={{
-        padding: 24,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-        justifyContent: 'center',
-      }}
       contentInsetAdjustmentBehavior="automatic">
-      {colors.map((color) => (
-        <Link key={color} href="/link-preview/one" asChild>
-          <Link.Trigger>
-            {variant === 'label' ? (
-              <Pressable style={{ width: 100, borderRadius: 16 }}>
-                <View style={{ height: 100, borderRadius: 16, backgroundColor: color }} />
-                <Text style={{ textAlign: 'center' }}>Label</Text>
-              </Pressable>
-            ) : (
-              <Pressable
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: variant === 'radius' ? 16 : 0,
-                  backgroundColor: color,
-                }}
-              />
-            )}
-          </Link.Trigger>
-          <Link.Menu>
-            <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
-          </Link.Menu>
-        </Link>
-      ))}
+      <View
+        style={{
+          padding: 24,
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: 8,
+          justifyContent: 'center',
+        }}>
+        {colors.map((color) => (
+          <Link key={color} href="/link-preview/one" asChild>
+            <Link.Trigger>
+              {variant === 'label' ? (
+                <Pressable style={{ width: 100, borderRadius: 16 }}>
+                  <View style={{ height: 100, borderRadius: 16, backgroundColor: color }} />
+                  <Text style={{ textAlign: 'center' }}>Label</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: variant === 'radius' ? 16 : 0,
+                    backgroundColor: color,
+                  }}
+                />
+              )}
+            </Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction title="Share" icon="square.and.arrow.up" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ))}
+      </View>
     </ScrollView>
   );
 }

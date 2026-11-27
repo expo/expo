@@ -2,15 +2,13 @@ import { Asset as ExpoAsset } from 'expo-asset';
 import {
   Asset,
   Album,
-  requestPermissionsAsync,
+  MediaLibrary,
   Query,
   MediaType,
   AssetField,
   AlbumType,
   AssetUriVersion,
   MediaSubtype,
-  addListener,
-  removeAllListeners,
 } from 'expo-media-library';
 import { Platform } from 'react-native';
 
@@ -35,7 +33,7 @@ export async function test(t: any) {
   let screenshotPngLocalUri: string;
 
   t.beforeAll(async () => {
-    const permissionResponse = await requestPermissionsAsync();
+    const permissionResponse = await MediaLibrary.requestPermissions();
     if (!permissionResponse.granted) {
       throw new Error('Permission to access media library is required for testing');
     }
@@ -1200,7 +1198,7 @@ export async function test(t: any) {
 
     t.it('addListener is called when asset is created', async () => {
       const spy = t.jasmine.createSpy('addAsset spy', () => {});
-      const subscription = addListener(spy);
+      const subscription = MediaLibrary.addListener(spy);
       const asset = await Asset.create(pngFileLocalUri);
 
       t.expect(asset).not.toBeNull();
@@ -1212,7 +1210,7 @@ export async function test(t: any) {
 
     t.it('removed listener is not called', async () => {
       const spy = t.jasmine.createSpy('remove spy', () => {});
-      const subscription = addListener(spy);
+      const subscription = MediaLibrary.addListener(spy);
       subscription.remove();
       const asset = await Asset.create(pngFileLocalUri);
 
@@ -1225,7 +1223,7 @@ export async function test(t: any) {
     t.it('addListener is called when asset is deleted', async () => {
       const spy = t.jasmine.createSpy('deleteAsset spy', () => {});
       const asset = await Asset.create(pngFileLocalUri);
-      const subscription = addListener(spy);
+      const subscription = MediaLibrary.addListener(spy);
 
       t.expect(asset).not.toBeNull();
       await Asset.delete([asset]);
@@ -1235,8 +1233,8 @@ export async function test(t: any) {
 
     t.it('removeAllListeners stops all listeners', async () => {
       const spy = t.jasmine.createSpy('removeAll spy', () => {});
-      addListener(spy);
-      removeAllListeners();
+      MediaLibrary.addListener(spy);
+      MediaLibrary.removeAllListeners();
 
       const asset = await Asset.create(pngFileLocalUri);
       t.expect(asset).not.toBeNull();

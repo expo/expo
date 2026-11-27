@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 import ExpoModulesJSI
@@ -26,6 +27,30 @@ struct AppContextTests {
     // A bare runtime that was never prepared by an app context has no `global.expo`.
     let bareRuntime = JavaScriptRuntime()
     #expect(AppContext.from(runtime: bareRuntime) == nil)
+  }
+
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
+  @Test
+  func `the native state pins an app context that does not own its runtime`() {
+    weak var weakAppContext: AppContext?
+    let runtime = JavaScriptRuntime()
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      let coreObject = runtime.createObject()
+      coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: false))
+      runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    }
+    #expect(weakAppContext != nil)
   }
 
   // MARK: - moduleProviderClassNames
@@ -314,5 +339,190 @@ struct AppContextTests {
         _ = try appContext.runtime
       }
     }
+  }
+
+  @Suite("Attached runtimes")
+  @JavaScriptActor
+  struct AttachedRuntimeTests {
+    let appContext = AppContext.create()
+
+    func attachRuntime() throws -> JavaScriptRuntime {
+      let runtime = JavaScriptRuntime()
+      try appContext.attach(runtime: runtime)
+      return runtime
+    }
+
+    @Test
+    func `attaches several runtimes to one app context`() throws {
+      let firstRuntime = try attachRuntime()
+      let secondRuntime = try attachRuntime()
+      #expect(AppContext.from(runtime: firstRuntime) === appContext)
+      #expect(AppContext.from(runtime: secondRuntime) === appContext)
+      #expect(AppContext.from(runtime: try appContext.runtime) === appContext)
+    }
+
+    @Test
+    func `an attached runtime does not own the app context lifecycle`() throws {
+      let attachedRuntime = try attachRuntime()
+      let coreObject = try attachedRuntime.global().getPropertyAsObject("expo")
+      #expect(coreObject.getNativeState(as: AppContext.NativeState.self)?.ownsLifecycle == false)
+    }
+
+    @Test
+    func `attaching a runtime again does nothing`() throws {
+      let attachedRuntime = try attachRuntime()
+      try attachedRuntime.eval("expo.marker = 1")
+      try appContext.attach(runtime: attachedRuntime)
+      #expect(try attachedRuntime.eval("expo.marker").asInt() == 1)
+      #expect(AppContext.from(runtime: attachedRuntime) === appContext)
+    }
+
+    @Test
+    func `rejects a runtime of another app context`() throws {
+      let otherAppContext = AppContext.create()
+      let attachedRuntime = JavaScriptRuntime()
+      try otherAppContext.attach(runtime: attachedRuntime)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: try otherAppContext.runtime)
+      }
+      #expect(AppContext.from(runtime: attachedRuntime) === otherAppContext)
+    }
+
+    @Test
+    func `rejects a runtime of a released app context`() throws {
+      let attachedRuntime = JavaScriptRuntime()
+      weak var weakOtherAppContext: AppContext?
+      do {
+        let otherAppContext = AppContext.create()
+        weakOtherAppContext = otherAppContext
+        try otherAppContext.attach(runtime: attachedRuntime)
+      }
+      #expect(weakOtherAppContext == nil)
+      #expect(AppContext.from(runtime: attachedRuntime) == nil)
+      #expect(throws: RuntimeAttachedToAnotherAppContextException.self) {
+        try appContext.attach(runtime: attachedRuntime)
+      }
+    }
+
+    @Test
+    func `installs the base classes in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.EventEmitter").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedObject").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.SharedRef").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.NativeModule").asString() == "function")
+      #expect(try attachedRuntime.eval("typeof expo.modules").asString() == "object")
+    }
+
+    @Test
+    func `gives an empty module object for a module without macro members in an attached runtime`() throws {
+      appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
+        Name("DefinitionOnly")
+        Function("ping") { "pong" }
+      })
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly").asString() == "object")
+      #expect(try attachedRuntime.eval("typeof expo.modules.DefinitionOnly.ping").asString() == "undefined")
+    }
+
+    @Test
+    func `binds the macro members of the core module in an attached runtime`() throws {
+      let attachedRuntime = try attachRuntime()
+      #expect(try attachedRuntime.eval("typeof expo.installOnUIRuntime").asString() == "function")
+    }
+  }
+
+  @Suite("Added runtimes")
+  @JavaScriptActor
+  struct AddedRuntimeTests {
+    let appContext = TestAppContext()
+
+    @Test
+    func `an added runtime runs scheduled work on its own thread`() throws {
+      let addedRuntime = try appContext.addRuntime()
+      let mainThreadID = try appContext.runtime.execute { currentThreadID() }
+      let addedThreadID = try addedRuntime.execute { currentThreadID() }
+      #expect(mainThreadID != addedThreadID)
+      #expect(addedThreadID != currentThreadID())
+    }
+
+    @Test
+    func `an added runtime settles promises`() async throws {
+      let addedRuntime = try appContext.addRuntime()
+      let result = try await addedRuntime.evalAsync("Promise.resolve('settled')")
+      #expect(try result.asString() == "settled")
+    }
+  }
+}
+
+private func currentThreadID() -> UInt64 {
+  var threadID: UInt64 = 0
+  pthread_threadid_np(nil, &threadID)
+  return threadID
+}
+
+@Suite("AppContext services")
+struct AppContextServicesTests {
+  @Test
+  func `creates the file system once when many threads read it first`() {
+    for _ in 0..<50 {
+      let appContext = AppContext()
+      let fileSystems = ObjectIdentifiers()
+
+      runTogether(threads: 16) {
+        fileSystems.insert(appContext.fileSystem)
+      }
+
+      #expect(fileSystems.count == 1)
+    }
+  }
+}
+
+/// Starts the threads, waits until all of them run, and then calls `body` on all of them at the same moment.
+private func runTogether(threads count: Int, _ body: @escaping @Sendable () -> Void) {
+  let startLine = StartLine(count: count)
+  let group = DispatchGroup()
+  for _ in 0..<count {
+    group.enter()
+    Thread {
+      startLine.arriveAndWait()
+      body()
+      group.leave()
+    }.start()
+  }
+  group.wait()
+}
+
+private final class StartLine: @unchecked Sendable {
+  private let lock = NSLock()
+  private let count: Int
+  private var arrived = 0
+
+  init(count: Int) {
+    self.count = count
+  }
+
+  func arriveAndWait() {
+    lock.withLock { arrived += 1 }
+    while lock.withLock({ arrived < count }) {
+      sched_yield()
+    }
+  }
+}
+
+private final class ObjectIdentifiers: @unchecked Sendable {
+  private let lock = NSLock()
+  private var identifiers = Set<ObjectIdentifier?>()
+
+  var count: Int {
+    lock.withLock { identifiers.count }
+  }
+
+  func insert(_ object: AnyObject?) {
+    let identifier = object.map(ObjectIdentifier.init)
+    lock.withLock { _ = identifiers.insert(identifier) }
   }
 }

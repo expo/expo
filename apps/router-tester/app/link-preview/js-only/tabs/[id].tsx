@@ -7,23 +7,22 @@ export default function ParamScreen() {
   const { param } = useLocalSearchParams();
 
   return (
-    <ScrollView
-      style={{ backgroundColor: '#84DCC6' }}
-      contentContainerStyle={{ padding: 16, gap: 16 }}
-      contentInsetAdjustmentBehavior="automatic">
-      <View>
-        <Text>Misc</Text>
-        <Text>Current Path: {pathname}</Text>
-        <Text>Param: {param}</Text>
+    <ScrollView style={{ backgroundColor: '#84DCC6' }} contentInsetAdjustmentBehavior="automatic">
+      <View style={{ padding: 16, gap: 16 }}>
+        <View>
+          <Text>Misc</Text>
+          <Text>Current Path: {pathname}</Text>
+          <Text>Param: {param}</Text>
+        </View>
+        <Link href="/link-preview/js-only/tabs/another-param">
+          <Link.Trigger>Link.Preview: /js-only/tabs/another-param</Link.Trigger>
+          <Link.Preview />
+        </Link>
+        <Link href="/link-preview/js-only/tabs/one-more-param">
+          <Link.Trigger>Link.Preview: /js-only/tabs/one-more-param</Link.Trigger>
+          <Link.Preview />
+        </Link>
       </View>
-      <Link href="/link-preview/js-only/tabs/another-param">
-        <Link.Trigger>Link.Preview: /js-only/tabs/another-param</Link.Trigger>
-        <Link.Preview />
-      </Link>
-      <Link href="/link-preview/js-only/tabs/one-more-param">
-        <Link.Trigger>Link.Preview: /js-only/tabs/one-more-param</Link.Trigger>
-        <Link.Preview />
-      </Link>
     </ScrollView>
   );
 }

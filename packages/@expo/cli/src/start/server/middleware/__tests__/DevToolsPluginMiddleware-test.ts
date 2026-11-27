@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import { Writable } from 'stream';
 
-import DevToolsPluginManager from '../../DevToolsPluginManager';
+import DevToolsPluginManager from '../../devtools/DevToolsPluginManager';
 import { DevToolsPluginMiddleware } from '../DevToolsPluginMiddleware';
 import type { ServerRequest, ServerResponse } from '../server.types';
 

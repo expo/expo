@@ -176,7 +176,7 @@ exports[`built-in plugins compiles mods 1`] = `
         "UIInterfaceOrientationLandscapeRight",
       ],
       "UIUserInterfaceStyle": "Automatic",
-      "UIViewControllerBasedStatusBarAppearance": false,
+      "UIViewControllerBasedStatusBarAppearance": true,
       "bar": {
         "val": [
           "foo",
@@ -827,6 +827,7 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "expo_runtime_version",
+                  "translatable": "false",
                 },
                 "_": "1.0",
               },
@@ -969,7 +970,7 @@ exports[`built-in plugins introspects mods 1`] = `
             "UIInterfaceOrientationLandscapeRight",
           ],
           "UIUserInterfaceStyle": "Automatic",
-          "UIViewControllerBasedStatusBarAppearance": false,
+          "UIViewControllerBasedStatusBarAppearance": true,
           "bar": {
             "val": [
               "foo",
@@ -1158,7 +1159,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "UIInterfaceOrientationLandscapeRight",
       ],
       "UIUserInterfaceStyle": "Automatic",
-      "UIViewControllerBasedStatusBarAppearance": false,
+      "UIViewControllerBasedStatusBarAppearance": true,
       "bar": {
         "val": [
           "foo",
@@ -1496,6 +1497,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "expo_runtime_version",
+                  "translatable": "false",
                 },
                 "_": "1.0",
               },

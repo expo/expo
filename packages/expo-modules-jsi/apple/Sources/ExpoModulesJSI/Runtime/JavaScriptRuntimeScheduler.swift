@@ -14,11 +14,21 @@ extension JavaScriptRuntime {
   /// dropped and `execute` throws ``JavaScriptCallback/RuntimeLostError``. `execute` also throws it
   /// when the host drops the task without running it.
   ///
+  /// Keep it instead of the runtime to run work on the JavaScript thread later, from any thread. It
+  /// doesn't keep the runtime alive. It's a helper for `expo-modules-core`, so it isn't part of the
+  /// public API.
+  ///
   /// Without a host scheduler (``supportsAsyncScheduling`` is `false`), work runs on the calling
   /// thread, so the caller must not race the runtime's `deinit`.
-  internal final class Scheduler: @unchecked Sendable {
+  @_spi(Internal)
+  public final class Scheduler: @unchecked Sendable {
     private let pointee: expo.RuntimeScheduler
     private let handle: JavaScriptRuntimeHandle
+
+    /// Releases that `scheduleRelease` collected on the JavaScript thread and that no task runs yet.
+    private let pendingReleases = OSAllocatedUnfairLock<[@JavaScriptActor (JavaScriptRuntime) -> Void]>(
+      uncheckedState: []
+    )
 
     /// Captured at construction time, which runs on the JavaScript thread.
     private let jsThreadID: UInt64 = {
@@ -33,8 +43,9 @@ extension JavaScriptRuntime {
     }
 
     /// Whether the runtime may still be alive. Safe from any thread: `false` is final, `true` may be stale.
+    @_spi(Internal)
     @inline(__always)
-    internal var mayBeAlive: Bool {
+    public var mayBeAlive: Bool {
       return pointee.isRuntimeAlive()
     }
 
@@ -200,7 +211,10 @@ extension JavaScriptRuntime {
       }
       if isOnJavaScriptThread() {
         try JavaScriptActor.assumeIsolated { try checkAlive() }
-        return try await Task.immediate_polyfill(priority: .high, operation: closure).value
+        // A caller isolated to `JavaScriptActor` awaits the closure on its own executor, with no new
+        // task. A task started here would run its first job inside the caller's job, which aborts on
+        // iOS 17 with "freed pointer was not the last allocation".
+        return try await closure()
       }
       return try await withUnsafeThrowingContinuation { continuation in
         pointee.scheduleTask(.ImmediatePriority) { [completion = ContinuationCompletion(continuation)] in
@@ -221,8 +235,47 @@ extension JavaScriptRuntime {
     // For code that runs off the JavaScript thread without holding the runtime, like promises and
     // callbacks. The runtime is read on the JavaScript thread and passed to the closure.
 
+    /// The queue that `scheduleRelease` schedules from when it runs on the JavaScript thread. It is
+    /// serial, so at most one thread waits for React Native's scheduler mutex.
+    private static let releaseQueue = DispatchQueue(label: "expo.modules.jsi.release", qos: .utility)
+
+    /// Schedules the release of a value's state from its `deinit`. On the JavaScript thread, it must not
+    /// schedule directly: React Native's scheduler destroys its queued tasks while it holds the mutex
+    /// that scheduling takes, when a JavaScript error clears the queues, so a value dropped with a task
+    /// would deadlock the JavaScript thread. So it adds the release to a batch, and the release queue
+    /// schedules one task for the batch. The batch is taken before its task is scheduled, so each
+    /// release runs after a resolve or call that was queued before its value was dropped.
+    internal func scheduleRelease(_ body: @escaping @JavaScriptActor (JavaScriptRuntime) -> Void) {
+      guard supportsAsyncScheduling && isOnJavaScriptThread() else {
+        schedule(body)
+        return
+      }
+      // `withLockUnchecked`, because the closures are not `Sendable`.
+      let startsBatch = pendingReleases.withLockUnchecked { pendingReleases in
+        pendingReleases.append(body)
+        return pendingReleases.count == 1
+      }
+      guard startsBatch else {
+        return
+      }
+      Self.releaseQueue.async {
+        let batch = self.pendingReleases.withLockUnchecked { pendingReleases in
+          defer { pendingReleases.removeAll() }
+          return pendingReleases
+        }
+        self.schedule { runtime in
+          for release in batch {
+            release(runtime)
+          }
+        }
+      }
+    }
+
+    /// Schedules `body` to run on the JavaScript thread with the runtime. The work is dropped when the
+    /// runtime is gone.
+    @_spi(Internal)
     @inline(__always)
-    internal func schedule(
+    public func schedule(
       priority: JavaScriptRuntime.SchedulerPriority = .normal,
       _ body: @escaping @JavaScriptActor (JavaScriptRuntime) -> Void
     ) {
@@ -295,6 +348,20 @@ extension JavaScriptRuntime {
           completion.finish(Result { try JavaScriptActor.assumeIsolated { try body(try self.liveRuntime()) } })
         }
       }
+    }
+
+    /// The runtime, not retained, when called on the JavaScript thread, or `nil` on any other thread.
+    /// Throws ``JavaScriptCallback/RuntimeLostError`` on the JavaScript thread once the runtime is
+    /// gone. The runtime stays alive while the JavaScript thread runs the caller.
+    @inline(__always)
+    internal func unretainedLiveRuntimeIfOnJavaScriptThread() throws -> Unmanaged<JavaScriptRuntime>? {
+      guard isOnJavaScriptThread() else {
+        return nil
+      }
+      guard let runtime = handle.unretainedRuntime else {
+        throw JavaScriptCallback.RuntimeLostError()
+      }
+      return runtime
     }
 
     // MARK: - Liveness on the JavaScript thread

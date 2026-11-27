@@ -3,7 +3,7 @@ import Observe from './module';
 /**
  * @deprecated Use `Observe` instead. `AppMetrics` is the legacy name of this API from SDK 55.
  */
-export { default as AppMetrics } from 'expo-app-metrics';
+export { default as AppMetrics } from './app-metrics';
 export type {
   AppMetricsErrorBoundaryFallbackProps,
   AppMetricsErrorBoundaryProps,
@@ -13,7 +13,13 @@ export type {
   LogEventOptions,
   LogSeverity,
   MetricAttributes,
-} from 'expo-app-metrics';
+  RecordSpanOptions,
+  Span,
+  SpanEndOptions,
+  SpanEventOptions,
+  SpanStatus,
+  StartSpanOptions,
+} from './app-metrics';
 export { ObserveErrorBoundary } from './ObserveErrorBoundary';
 export type {
   ObserveErrorBoundaryProps,
@@ -37,10 +43,15 @@ export type {
   ObserveAttribute,
   ObserveAttributes,
   ObserveConfig,
+  ObserveConsent,
+  ObserveEventName,
+  ObserveFeedback,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
+  ObserveMetricName,
   ObserveNavigationIntegrationConfig,
   ObserveNetworkTracesConfig,
+  ObserveReanimatedIntegrationConfig,
 } from './types';
 export { useObserve } from './useObserve';

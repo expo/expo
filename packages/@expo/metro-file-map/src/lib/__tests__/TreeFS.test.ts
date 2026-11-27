@@ -9,17 +9,18 @@ import H from '../../constants';
 import type { CanonicalPath, FileData, FileMetadata, FileSystemListener } from '../../types';
 import type TreeFSType from '../TreeFS';
 
+const emptyObservations = () => ({
+  content: new Set<CanonicalPath>(),
+  existence: new Set<CanonicalPath>(),
+});
+
 let mockPathModule: typeof import('path');
 jest.mock('path', () => mockPathModule);
 
-const mockLstat = jest.fn();
 const mockReadlinkSync = jest.fn();
 jest.mock('fs', () => ({
   ...jest.requireActual<any>('fs'),
   readlinkSync: mockReadlinkSync,
-  promises: {
-    lstat: mockLstat,
-  },
 }));
 
 describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
@@ -30,6 +31,14 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
 
   let tfs: TreeFSType;
   let TreeFS: typeof TreeFSType;
+
+  // Observations are recorded as canonical (root-relative) paths. Test tables
+  // below are written as absolute paths for readability, and converted here.
+  const canonicalTo =
+    (rootDir: string) =>
+    (absolutePath: string): CanonicalPath =>
+      mockPathModule.relative(rootDir, absolutePath);
+  const canonical = (absolutePath: string) => canonicalTo(p('/project'))(absolutePath);
 
   beforeEach(() => {
     jest.resetModules();
@@ -54,7 +63,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         [p('node_modules/pkg/a.js'), [123, 0, 0, null, 0, 'a']],
         [p('node_modules/pkg/package.json'), [123, 0, 0, null, 0, 'pkg']],
       ]),
-      processFile: async () => {
+      processFile: () => {
         throw new Error('Not implemented');
       },
     });
@@ -86,6 +95,29 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     expect(tfs.exists(p('/project/foo'))).toBe(false);
     expect(tfs.exists(p('/project/link-to-foo'))).toBe(false);
     expect(tfs.exists(p('/project/link-to-nowhere'))).toBe(false);
+  });
+
+  test('traverses a snapshot deserialized in another realm', () => {
+    // Under Jest, `node:v8` is a host module, so `deserialize` returns `Map`s
+    // whose prototype is not the sandbox's `Map.prototype`.
+    const { deserialize, serialize } = require('node:v8');
+    const deserialized = TreeFS.fromDeserializedSnapshot({
+      rootDir: p('/project'),
+      fileSystemData: deserialize(serialize(tfs.getSerializableSnapshot())),
+      processFile: () => {
+        throw new Error('Not implemented');
+      },
+    });
+    expect(deserialized.exists(p('/project/foo/another.js'))).toBe(true);
+  });
+
+  test('getSerializableSnapshot returns a copy, getSerializableState does not', () => {
+    const snapshot = tfs.getSerializableSnapshot();
+    const state = tfs.getSerializableState();
+    expect(snapshot).toEqual(state);
+    tfs.addOrModify(p('/project/foo/new.js'), [0, 1, 0, null, 0, null]);
+    expect(snapshot).not.toEqual(tfs.getSerializableSnapshot());
+    expect(state).toEqual(tfs.getSerializableSnapshot());
   });
 
   describe('linkStats edge cases (followLeaf=false)', () => {
@@ -151,15 +183,20 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       [p('/project/root/outside/external.js'), p('/outside/external.js'), [p('/project/root')]],
       [p('/outside/../project/bar.js'), p('/project/bar.js'), []],
       [p('root/project/bar.js'), p('/project/bar.js'), [p('/project/root')]],
-    ])('%s -> %s through expected symlinks', (givenPath, expectedRealPath, expectedSymlinks) =>
-      expect(tfs.lookup(givenPath)).toEqual({
+    ])('%s -> %s through expected symlinks', (givenPath, expectedRealPath, expectedSymlinks) => {
+      const observations = emptyObservations();
+      expect(tfs.lookup(givenPath, observations)).toEqual({
         exists: true,
-        links: new Set(expectedSymlinks),
+        canonicalPath: canonical(expectedRealPath),
         realPath: expectedRealPath,
         type: 'f',
         metadata: expect.any(Array),
-      })
-    );
+      });
+      expect(observations).toEqual({
+        content: new Set(expectedSymlinks.map(canonical)),
+        existence: new Set([canonical(expectedRealPath)]),
+      });
+    });
 
     test.each([
       [p('/project/bar.js/bad-parent'), [], p('/project/bar.js')],
@@ -172,25 +209,66 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       [p('/project/foo/../../project/missing'), [], p('/project/missing')],
     ])(
       'non-existence for bad paths, missing files or broken links %s',
-      (givenPath, expectedSymlinks, missingPath) =>
-        expect(tfs.lookup(givenPath)).toEqual({
-          exists: false,
-          links: new Set(expectedSymlinks),
-          missing: missingPath,
-        })
+      (givenPath, expectedSymlinks, missingPath) => {
+        const observations = emptyObservations();
+        expect(tfs.lookup(givenPath, observations)).toEqual({ exists: false });
+        expect(observations).toEqual({
+          content: new Set(expectedSymlinks.map(canonical)),
+          existence: new Set([canonical(missingPath)]),
+        });
+      }
     );
 
     test.each([
-      [p('/project/foo'), p('/project/foo')],
-      [p('/project/foo/'), p('/project/foo')],
-      [p('/project/root/outside'), p('/outside')],
-    ])('returns type: d for %s', (givenPath, expectedRealPath) =>
-      expect(tfs.lookup(givenPath)).toMatchObject({
+      [p('/project/foo'), p('/project/foo'), []],
+      [p('/project/foo/'), p('/project/foo'), []],
+      [p('/project/root/outside'), p('/outside'), [p('/project/root')]],
+    ])('returns type: d for %s', (givenPath, expectedRealPath, expectedSymlinks) => {
+      const observations = emptyObservations();
+      expect(tfs.lookup(givenPath, observations)).toEqual({
         exists: true,
         type: 'd',
+        canonicalPath: canonical(expectedRealPath),
         realPath: expectedRealPath,
-      })
-    );
+      });
+      expect(observations).toEqual({
+        content: new Set(expectedSymlinks.map(canonical)),
+        existence: new Set([canonical(expectedRealPath)]),
+      });
+    });
+
+    test('symlink into itself is missing, rather than following it forever', () => {
+      const tfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('a'), [123, 0, 0, null, 'a/b', null]]]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+      expect(tfs.lookup(p('/project/a/file.js'))).toEqual({ exists: false });
+    });
+
+    test.each([
+      [40, true],
+      [41, false],
+    ])('a chain of %i symlinks: exists %s', (length, exists) => {
+      const links: [CanonicalPath, FileMetadata][] = [];
+      for (let i = 0; i < length; i++) {
+        const target = i === length - 1 ? 'file.js' : 'link' + (i + 1);
+        links.push([p('link' + i), [123, 0, 0, null, target, null]]);
+      }
+      const tfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('file.js'), [123, 0, 0, null, 0, null]],
+          ...links,
+        ]),
+        processFile: () => {
+          throw new Error('Not implemented');
+        },
+      });
+      expect(tfs.lookup(p('/project/link0'))).toMatchObject({ exists });
+    });
 
     test('traversing the same symlink multiple times does not imply a cycle', () => {
       expect(tfs.lookup(p('/project/foo/owndir/owndir/another.js'))).toMatchObject({
@@ -201,41 +279,26 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     });
 
     test('ancestors of the root are not reported as missing', () => {
-      const innerTfs = new TreeFS({
+      const tfs = new TreeFS({
         rootDir: p('/deep/project/root'),
         files: new Map<CanonicalPath, FileMetadata>([
           [p('foo/index.js'), [123, 0, 0, null, 0, null]],
           [p('link-up'), [123, 0, 0, null, '..', null]],
         ]),
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
-      expect(innerTfs.lookup(p('/deep/missing/bar.js'))).toMatchObject({
-        exists: false,
-        missing: p('/deep/missing'),
-      });
-      expect(innerTfs.lookup(p('link-up/bar.js'))).toMatchObject({
-        exists: false,
-        missing: p('/deep/project/bar.js'),
-      });
-      expect(innerTfs.lookup(p('../../baz.js'))).toMatchObject({
-        exists: false,
-        missing: p('/deep/baz.js'),
-      });
-      expect(innerTfs.lookup(p('../../project/root/baz.js'))).toMatchObject({
-        exists: false,
-        missing: p('/deep/project/root/baz.js'),
-      });
-    });
-
-    test('symlink to itself returns missing (cycle detection)', () => {
-      expect(tfs.lookup(p('/project/link-to-self'))).toMatchObject({ exists: false });
-    });
-
-    test('two-node symlink cycle returns missing from either entry point', () => {
-      expect(tfs.lookup(p('/project/link-cycle-1'))).toMatchObject({ exists: false });
-      expect(tfs.lookup(p('/project/link-cycle-2'))).toMatchObject({ exists: false });
+      const toCanonical = canonicalTo(p('/deep/project/root'));
+      const expectMissing = (givenPath: string, missingPath: string) => {
+        const observations = emptyObservations();
+        expect(tfs.lookup(givenPath, observations)).toEqual({ exists: false });
+        expect(observations.existence).toEqual(new Set([toCanonical(missingPath)]));
+      };
+      expectMissing(p('/deep/missing/bar.js'), p('/deep/missing'));
+      expectMissing(p('link-up/bar.js'), p('/deep/project/bar.js'));
+      expectMissing(p('../../baz.js'), p('/deep/baz.js'));
+      expectMissing(p('../../project/root/baz.js'), p('/deep/project/root/baz.js'));
     });
   });
 
@@ -259,12 +322,36 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     ])(
       'lookup can find files that go back towards the project root (%s)',
       (mixedPath, expectedRealPath, expectedSymlinks) => {
-        expect(tfs.lookup(mixedPath)).toEqual({
+        const observations = emptyObservations();
+        expect(tfs.lookup(mixedPath, observations)).toEqual({
           exists: true,
+          canonicalPath: canonical(expectedRealPath),
           realPath: expectedRealPath,
-          links: new Set(expectedSymlinks),
           type: 'f',
           metadata: expect.any(Array),
+        });
+        expect(observations.content).toEqual(new Set(expectedSymlinks.map(canonical)));
+      }
+    );
+
+    // The project root is one level below the filesystem root here, so a
+    // symlink to the filesystem root must resolve to '..', not to ''. That
+    // includes relative targets with more '..' segments than there are
+    // directories above the symlink: '..' at the filesystem root is the
+    // filesystem root itself.
+    test.each([[p('/')], ['../..'], ['../../../../..']])(
+      'a link to the filesystem root (%s) behaves like a link to ..',
+      (readlinkResult) => {
+        const { RootPathUtils } = require('../RootPathUtils');
+        const stored = new RootPathUtils(p('/project')).resolveSymlinkToNormal(
+          p('foo/link-to-fs-root'),
+          readlinkResult
+        );
+        expect(stored).toEqual('..');
+        tfs.addOrModify(p('foo/link-to-fs-root'), [0, 0, 0, null, stored, null]);
+        expect(tfs.lookup(p('foo/link-to-fs-root/project/bar.js'))).toMatchObject({
+          exists: true,
+          realPath: p('/project/bar.js'),
         });
       }
     );
@@ -285,198 +372,17 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     });
   });
 
-  describe('lazy symlink resolution', () => {
-    let lazyTfs: TreeFSType;
-
-    beforeEach(() => {
-      mockReadlinkSync.mockReset();
-      lazyTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('target.js'), [123, 10, 0, null, 0, null]],
-          [p('unresolved-link'), [0, 0, 0, null, 1, null]],
-          [p('dir/nested.js'), [123, 10, 0, null, 0, null]],
-          [p('unresolved-dir-link'), [0, 0, 0, null, 1, null]],
-          [p('sub/deep.js'), [123, 10, 0, null, 0, null]],
-          [p('link-to-nested-file'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
+  test('throws on traversing a symlink whose target was never read', () => {
+    tfs = new TreeFS({
+      rootDir: p('/project'),
+      files: new Map<CanonicalPath, FileMetadata>([[p('unread-link'), [0, 0, 0, null, 1, null]]]),
+      processFile: () => {
+        throw new Error('Not implemented');
+      },
     });
-
-    test('resolves unresolved symlink via readlinkSync on lookup', () => {
-      mockReadlinkSync.mockReturnValue(p('./target.js'));
-
-      expect(lazyTfs.lookup(p('/project/unresolved-link'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/target.js'),
-        type: 'f',
-      });
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      expect(mockReadlinkSync).toHaveBeenCalledWith(p('/project/unresolved-link'));
-    });
-
-    test('resolves unresolved symlink to a directory', () => {
-      mockReadlinkSync.mockReturnValue(p('./dir'));
-
-      expect(lazyTfs.lookup(p('/project/unresolved-dir-link/nested.js'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/dir/nested.js'),
-        type: 'f',
-      });
-    });
-
-    test('updates metadata after lazy resolution', () => {
-      mockReadlinkSync.mockReturnValue(p('./target.js'));
-
-      lazyTfs.lookup(p('/project/unresolved-link'));
-
-      const metadata = [
-        ...lazyTfs.metadataIterator({
-          includeSymlinks: true,
-          includeNodeModules: true,
-        }),
-      ].find((entry) => entry.canonicalPath === p('unresolved-link'));
-
-      expect(metadata?.metadata[H.SYMLINK]).toBe('target.js');
-      expect(metadata?.metadata[H.VISITED]).toBe(1);
-    });
-
-    test('stores resolved symlink target with posix separators', () => {
-      // Use a target with a directory separator to exercise the
-      // normalizePathSeparatorsToPosix storage (matters on win32).
-      mockReadlinkSync.mockReturnValue(p('./sub/deep.js'));
-
-      lazyTfs.lookup(p('/project/link-to-nested-file'));
-
-      const metadata = [
-        ...lazyTfs.metadataIterator({
-          includeSymlinks: true,
-          includeNodeModules: true,
-        }),
-      ].find((entry) => entry.canonicalPath === p('link-to-nested-file'));
-
-      // Stored value must always use posix separators, even on win32
-      expect(metadata?.metadata[H.SYMLINK]).toBe('sub/deep.js');
-      expect(metadata?.metadata[H.VISITED]).toBe(1);
-    });
-
-    test('second lookup of lazily-resolved symlink with nested target works', () => {
-      // Resolves to a target containing a directory separator
-      mockReadlinkSync.mockReturnValue(p('./sub/deep.js'));
-
-      // First lookup: lazy resolution, populates H.SYMLINK
-      expect(lazyTfs.lookup(p('/project/link-to-nested-file'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/sub/deep.js'),
-        type: 'f',
-      });
-
-      // Second lookup: uses cached H.SYMLINK (the else branch)
-      expect(lazyTfs.lookup(p('/project/link-to-nested-file'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/sub/deep.js'),
-        type: 'f',
-      });
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-    });
-
-    test('caches resolved symlink and does not re-read', () => {
-      mockReadlinkSync.mockReturnValue(p('./target.js'));
-
-      lazyTfs.lookup(p('/project/unresolved-link'));
-      lazyTfs.lookup(p('/project/unresolved-link'));
-
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-    });
-
-    test('returns exists:false for broken unresolved symlink', () => {
-      mockReadlinkSync.mockImplementation(() => {
-        throw new Error('ENOENT');
-      });
-
-      expect(lazyTfs.lookup(p('/project/unresolved-link'))).toMatchObject({
-        exists: false,
-      });
-    });
-
-    test('does not call readlinkSync for already-resolved symlinks', () => {
-      expect(tfs.lookup(p('/project/foo/link-to-bar.js'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/bar.js'),
-      });
-      expect(mockReadlinkSync).not.toHaveBeenCalled();
-    });
-
-    test('lazily resolves symlink pointing above root', () => {
-      const aboveTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('../outside/external.js'), [123, 10, 0, null, 0, null]],
-          [p('link-out'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
-      mockReadlinkSync.mockReturnValue(p('../outside'));
-
-      expect(aboveTfs.lookup(p('/project/link-out/external.js'))).toMatchObject({
-        exists: true,
-        realPath: p('/outside/external.js'),
-        type: 'f',
-      });
-    });
-
-    test('lazily resolves a chain of symlinks', () => {
-      const chainTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('real.js'), [123, 10, 0, null, 0, null]],
-          [p('link-a'), [0, 0, 0, null, 'link-b', null]],
-          [p('link-b'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
-      mockReadlinkSync.mockReturnValue(p('./real.js'));
-
-      expect(chainTfs.lookup(p('/project/link-a'))).toMatchObject({
-        exists: true,
-        realPath: p('/project/real.js'),
-        type: 'f',
-      });
-      // Only link-b needed readlinkSync; link-a was already resolved
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      expect(mockReadlinkSync).toHaveBeenCalledWith(p('/project/link-b'));
-    });
-
-    test('getAllFiles resolves lazy symlinks that point to files', () => {
-      mockReadlinkSync.mockReturnValue(p('./target.js'));
-
-      // getAllFiles iterates all paths including through symlinks;
-      // a lazy file-symlink should resolve and be included
-      const files = lazyTfs.getAllFiles().sort();
-      expect(files).toContain(p('/project/target.js'));
-      expect(files).toContain(p('/project/dir/nested.js'));
-      expect(files).toContain(p('/project/sub/deep.js'));
-    });
-
-    test('matchFiles with follow resolves lazy dir symlinks', () => {
-      mockReadlinkSync.mockReturnValue(p('./dir'));
-
-      const matches = [
-        ...lazyTfs.matchFiles({
-          rootDir: p('/project'),
-          follow: true,
-          recursive: true,
-        }),
-      ];
-      expect(matches).toContain(p('/project/unresolved-dir-link/nested.js'));
-    });
+    expect(() => tfs.lookup(p('/project/unread-link/file.js'))).toThrow(
+      'Expected symlink target to be populated.'
+    );
   });
 
   describe('getDifference', () => {
@@ -509,14 +415,19 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           p('abs-link-out'),
           p('root'),
         ]),
+        filesToStat: new Map(),
       });
     });
 
     test('with subpath only considers files under that path', () => {
+      // Create a FileData that only includes files under 'foo'
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('foo/another.js'), [124, 0, 0, null, 0, null]],
+        [p('foo/another.js'), [124, 0, 0, null, 0, null]], // changed mtime
+        // foo/link-to-bar.js and others under foo are missing -> should be in removedFiles
       ]);
 
+      // Without subpath, all files not in newFiles would be removed
+      // But with subpath='foo', only files under foo are considered
       expect(tfs.getDifference(newFiles, { subpath: p('foo') })).toEqual({
         changedFiles: new Map<CanonicalPath, FileMetadata>([
           [p('foo/another.js'), [124, 0, 0, null, 0, null]],
@@ -526,21 +437,31 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           p('foo/link-to-bar.js'),
           p('foo/link-to-another.js'),
         ]),
+        filesToStat: new Map(),
       });
     });
 
     test('with subpath detects new files under that path', () => {
+      // Verify that new files are detected and existing files (under the
+      // subdirectory) that are not in newFiles appear in removedFiles
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('foo/another.js'), [123, 2, 0, null, 0, 'another']],
-        [p('foo/new-file.js'), [456, 0, 0, null, 0, null]],
+        [p('foo/another.js'), [123, 2, 0, null, 0, 'another']], // unchanged
+        [p('foo/new-file.js'), [456, 0, 0, null, 0, null]], // new file
       ]);
 
-      const result = tfs.getDifference(newFiles, { subpath: p('foo') });
+      const result = tfs.getDifference(newFiles, {
+        subpath: p('foo'),
+      });
 
+      // New file should be in changedFiles
       expect(result.changedFiles.has(p('foo/new-file.js'))).toBe(true);
+
+      // Files not in newFiles should be in removedFiles
       expect(result.removedFiles).toEqual(
         new Set([p('foo/owndir'), p('foo/link-to-bar.js'), p('foo/link-to-another.js')])
       );
+
+      // Files outside the subdirectory should NOT be affected
       expect(result.removedFiles.has(p('bar.js'))).toBe(false);
       expect(result.removedFiles.has(p('../outside/external.js'))).toBe(false);
     });
@@ -550,77 +471,119 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         [p('nonexistent/file.js'), [123, 0, 0, null, 0, null]],
       ]);
 
+      // Directory doesn't exist, so nothing to compare - all files are new
       expect(tfs.getDifference(newFiles, { subpath: p('nonexistent') })).toEqual({
         changedFiles: new Map<CanonicalPath, FileMetadata>([
           [p('nonexistent/file.js'), [123, 0, 0, null, 0, null]],
         ]),
         removedFiles: new Set(),
+        filesToStat: new Map(),
       });
     });
 
-    test('with empty subpath behaves like no subdirectory specified', () => {
+    test.each([
+      ['regular file', p('bar.js'), p('bar.js/file.js')],
+      ['symlink', p('link-to-foo'), p('link-to-foo/file.js')],
+    ])(
+      'with subpath of a %s replaced by a directory removes it, and returns all as new',
+      (_, subpath, filePath) => {
+        const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+          [filePath, [123, 0, 0, null, 0, null]],
+        ]);
+
+        expect(tfs.getDifference(newFiles, { subpath })).toEqual({
+          changedFiles: newFiles,
+          removedFiles: new Set([subpath]),
+          filesToStat: new Map(),
+        });
+      }
+    );
+
+    test('returns regular files given without an mtime that had one, with that mtime', () => {
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('foo/another.js'), [123, 0, 0, null, 0, null]],
+        // Stat'd before, not now
+        [p('foo/another.js'), [null, null, 0, null, 0, null]],
+        // Stat'd before with an mtime of 0, outside rootDir, not now
+        [p('../outside/external.js'), [null, null, 0, null, 0, null]],
+        // Stat'd before and now, with the same mtime
+        [p('bar.js'), [234, 3, 0, null, 0, null]],
+        // A symlink before, not stat'd now
+        [p('link-to-self'), [null, null, 0, null, 0, null]],
+        // New, not stat'd
+        [p('new-file.js'), [null, null, 0, null, 0, null]],
       ]);
 
-      const withEmpty = tfs.getDifference(newFiles, { subpath: '' });
-      const withUndefined = tfs.getDifference(newFiles);
+      const { changedFiles, filesToStat } = tfs.getDifference(newFiles);
 
-      expect(withEmpty).toEqual(withUndefined);
+      expect(filesToStat).toEqual(
+        new Map([
+          [p('foo/another.js'), 123],
+          [p('../outside/external.js'), 0],
+        ])
+      );
+      expect([...changedFiles.keys()].sort()).toEqual(
+        [
+          p('foo/another.js'),
+          p('../outside/external.js'),
+          p('link-to-self'),
+          p('new-file.js'),
+        ].sort()
+      );
+    });
+
+    test('with empty subpath only considers files under the root', () => {
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('foo/another.js'), [123, 2, 0, null, 0, 'another']],
+        [p('foo/owndir'), [0, 0, 0, null, 'foo', null]],
+        [p('foo/link-to-bar.js'), [0, 0, 0, null, 'bar.js', null]],
+        [p('foo/link-to-another.js'), [0, 0, 0, null, 'foo/another.js', null]],
+        [p('link-to-foo'), [456, 0, 0, null, 'foo', null]],
+        [p('abs-link-out'), [456, 0, 0, null, '../outside', null]],
+        [p('root'), [0, 0, 0, null, '..', null]],
+        [p('link-to-nowhere'), [123, 0, 0, null, 'nowhere', null]],
+        [p('link-to-self'), [123, 0, 0, null, 'link-to-self', null]],
+        [p('link-cycle-1'), [123, 0, 0, null, 'link-cycle-2', null]],
+        [p('link-cycle-2'), [123, 0, 0, null, 'link-cycle-1', null]],
+        [p('node_modules/pkg/a.js'), [123, 0, 0, null, 0, 'a']],
+        [p('node_modules/pkg/package.json'), [123, 0, 0, null, 0, 'pkg']],
+      ]);
+
+      // Files outside the root (under '..') are not in a crawl of the root
+      expect(tfs.getDifference(newFiles, { subpath: '' }).removedFiles).toEqual(
+        new Set([p('bar.js')])
+      );
+
+      // Without a subpath, the whole tree is compared
+      expect(tfs.getDifference(newFiles).removedFiles).toEqual(
+        new Set([p('../outside/external.js'), p('bar.js')])
+      );
     });
 
     test('treats files as unchanged when both old and new mtime are null', () => {
       const nullMtimeTfs = new TreeFS({
         rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: async () => {
+        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, null, 0, null, 0, null]]]),
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
 
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('a.js'), [null, 0, 0, null, 0, null]],
+        [p('a.js'), [null, null, 0, null, 0, null]],
       ]);
 
       expect(nullMtimeTfs.getDifference(newFiles)).toEqual({
         changedFiles: new Map(),
         removedFiles: new Set(),
+        filesToStat: new Map(),
       });
-    });
-
-    test('treats files as unchanged when both old and new mtime are 0', () => {
-      const zeroMtimeTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [0, 0, 0, null, 0, null]]]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
-
-      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('a.js'), [0, 0, 0, null, 0, null]],
-      ]);
-
-      expect(zeroMtimeTfs.getDifference(newFiles)).toEqual({
-        changedFiles: new Map(),
-        removedFiles: new Set(),
-      });
-    });
-
-    test('treats file as changed when old has mtime but new does not', () => {
-      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('bar.js'), [null, 0, 0, null, 0, null]],
-      ]);
-
-      const result = tfs.getDifference(newFiles);
-      expect(result.changedFiles.has(p('bar.js'))).toBe(true);
     });
 
     test('treats file as changed when new has mtime but old does not', () => {
       const nullMtimeTfs = new TreeFS({
         rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: async () => {
+        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, null, 0, null, 0, null]]]),
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
@@ -634,6 +597,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           [p('a.js'), [500, 10, 0, null, 0, null]],
         ]),
         removedFiles: new Set(),
+        filesToStat: new Map(),
       });
     });
 
@@ -641,122 +605,119 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const symlinkTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([
-          [p('a.js'), [null, 0, 0, null, 'b.js', null]],
+          [p('a.js'), [null, null, 0, null, 'b.js', null]],
         ]),
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
 
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('a.js'), [null, 0, 0, null, 0, null]],
+        [p('a.js'), [null, null, 0, null, 0, null]],
       ]);
 
       const result = symlinkTfs.getDifference(newFiles);
       expect(result.changedFiles.has(p('a.js'))).toBe(true);
     });
-
-    test('treats unresolved symlink (1) as unchanged vs resolved symlink with null mtime', () => {
-      // Simulates re-crawl: old state has a resolved symlink target, new crawl
-      // produces an unresolved lazy marker (1) with null mtime
-      const resolvedTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('my-link'), [0, 0, 0, null, 'target.js', null]],
-        ]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
-
-      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        // Re-crawl produces unresolved symlink with null mtime
-        [p('my-link'), [null, 0, 0, null, 1, null]],
-      ]);
-
-      const result = resolvedTfs.getDifference(newFiles);
-      // Both are symlinks (not regular files), both have null/0 mtime → unchanged
-      expect(result.changedFiles.has(p('my-link'))).toBe(false);
-      expect(result.removedFiles.size).toBe(0);
-    });
-
-    test('treats re-crawled file with null mtime as unchanged when old mtime was also null', () => {
-      // Simulates warm re-crawl where a file was previously lazy and is still lazy
-      const lazyTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('file.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: async () => {
-          throw new Error('Not implemented');
-        },
-      });
-
-      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
-        [p('file.js'), [null, 0, 0, null, 0, null]],
-      ]);
-
-      expect(lazyTfs.getDifference(newFiles)).toEqual({
-        changedFiles: new Map(),
-        removedFiles: new Set(),
-      });
-    });
   });
 
-  describe('getMtimeByNormalPath', () => {
-    test('returns mtime for an existing file', () => {
-      expect(tfs.getMtimeByNormalPath(p('bar.js'))).toBe(234);
-    });
-
-    test('returns null for a non-existent file', () => {
-      expect(tfs.getMtimeByNormalPath(p('nonexistent.js'))).toBeNull();
-    });
-
-    test('returns null for a directory', () => {
-      expect(tfs.getMtimeByNormalPath(p('foo'))).toBeNull();
-    });
-
-    test('returns null for a file with null mtime', () => {
-      const nullMtimeTfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: async () => {
+  describe('pathsOutsideRoots', () => {
+    const build = (rootDir: string, files: readonly string[]) =>
+      new TreeFS({
+        rootDir: p(rootDir),
+        files: new Map<CanonicalPath, FileMetadata>(
+          files.map((file) => [p(file), [123, 0, 0, null, 0]])
+        ),
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
-      expect(nullMtimeTfs.getMtimeByNormalPath(p('a.js'))).toBeNull();
+
+    test.each([
+      [['/root/project'], ['../outside/a.js', '../../far/b.js']],
+      [['/root/project/src'], ['index.js', '../outside/a.js', '../../far/b.js']],
+      [
+        ['/root/project/src', '/root/outside'],
+        ['index.js', '../../far/b.js'],
+      ],
+      [['/root/project/src/deep'], ['index.js', 'src/a.js', '../outside/a.js', '../../far/b.js']],
+      [['/root'], ['../../far/b.js']],
+      [['/root', '/far'], []],
+      [['/'], []],
+      [['/root/project', '/root/outside/a.js'], ['../../far/b.js']],
+      [[], ['index.js', 'src/a.js', 'src/deep/b.js', '../outside/a.js', '../../far/b.js']],
+    ])('with roots %j', (roots, expected) => {
+      const fs = build('/root/project', [
+        'index.js',
+        'src/a.js',
+        'src/deep/b.js',
+        '../outside/a.js',
+        '../../far/b.js',
+      ]);
+      expect([...fs.pathsOutsideRoots(roots.map(p))].sort()).toEqual(expected.map(p).sort());
     });
 
-    test('skipFallback: does not invoke the fallback filesystem', () => {
-      // getMtimeByNormalPath passes skipFallback: true. Even when a fallback FS
-      // is configured, missing paths must return null without consulting it.
+    test('includes symlinks and node_modules', () => {
+      expect([...tfs.pathsOutsideRoots([p('/project/foo')])].sort()).toEqual(
+        [
+          '../outside/external.js',
+          'abs-link-out',
+          'bar.js',
+          'link-cycle-1',
+          'link-cycle-2',
+          'link-to-foo',
+          'link-to-nowhere',
+          'link-to-self',
+          'node_modules/pkg/a.js',
+          'node_modules/pkg/package.json',
+          'root',
+        ]
+          .map(p)
+          .sort()
+      );
+    });
+
+    test('skips paths the fallback filesystem has found missing', () => {
       const mockFallback = {
         lookup: jest.fn().mockReturnValue(null),
         readdir: jest.fn().mockReturnValue(null),
       };
-      const fbTfs = new TreeFS({
+      const fallbackTfs = new TreeFS({
         rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('existing.js'), [555, 5, 0, null, 0, null]],
-        ]),
+        files: new Map<CanonicalPath, FileMetadata>([[p('src/a.js'), [123, 0, 0, null, 0, null]]]),
         fallbackFilesystem: mockFallback,
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
-      // In-tree path: returns mtime, no fallback call.
-      expect(fbTfs.getMtimeByNormalPath(p('existing.js'))).toBe(555);
-      // Missing path: returns null, fallback not consulted.
-      expect(fbTfs.getMtimeByNormalPath(p('missing.js'))).toBeNull();
-      expect(fbTfs.getMtimeByNormalPath(p('missing/dir/file.js'))).toBeNull();
-      expect(mockFallback.lookup).not.toHaveBeenCalled();
-      expect(mockFallback.readdir).not.toHaveBeenCalled();
+      expect(fallbackTfs.lookup(p('/project/missing.js')).exists).toBe(false);
+      expect(mockFallback.lookup).toHaveBeenCalled();
+      expect([...fallbackTfs.pathsOutsideRoots([p('/project/src')])]).toEqual([]);
+    });
+  });
+
+  describe('resolveSymlinks', () => {
+    test.each([
+      ['/project/foo', '/project/foo'],
+      ['/project/link-to-foo', '/project/foo'],
+      ['/project/link-to-foo/missing/dir', '/project/foo/missing/dir'],
+      ['/project/abs-link-out/lib', '/outside/lib'],
+      ['/project/link-to-nowhere/dir', '/project/nowhere/dir'],
+      ['/project/root/project/link-to-foo', '/project/foo'],
+      ['/project/missing/link-to-foo', '/project/missing/link-to-foo'],
+      ['/project/bar.js/dir', '/project/bar.js/dir'],
+      ['/project/link-to-self', '/project/link-to-self'],
+      ['/elsewhere/dir', '/elsewhere/dir'],
+    ])('%s -> %s', (mixedPath, expected) => {
+      expect(tfs.resolveSymlinks(p(mixedPath))).toEqual(p(expected));
     });
   });
 
   describe('hierarchicalLookup', () => {
-    let hlTfs: TreeFSType;
+    let tfs: TreeFSType;
 
     beforeEach(() => {
-      hlTfs = new TreeFS({
+      tfs = new TreeFS({
         rootDir: p('/A/B/C'),
         files: new Map<CanonicalPath, FileMetadata>(
           (
@@ -766,11 +727,13 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
               [p('a/b/c/d/link-to-C'), [0, 0, 0, null, '', null]],
               [p('a/b/c/d/link-to-B'), [0, 0, 0, null, '..', null]],
               [p('a/b/c/d/link-to-A'), [0, 0, 0, null, '../..', null]],
+              [p('link-to-B'), [0, 0, 0, null, '..', null]],
               [p('n_m/workspace/link-to-pkg'), [0, 0, 0, null, '../workspace-pkg', null]],
             ] as [CanonicalPath, FileMetadata][]
           ).concat(
             [
               'a/package.json',
+              // A directory named package.json should never match
               'a/b/package.json/index.js',
               'a/b/c/package.json',
               'a/b/c/d/foo.js',
@@ -785,208 +748,224 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
               '../../package.json',
               '../../../a/b/package.json',
               '../workspace-pkg/package.json',
-            ].map(
-              (posixPath) =>
-                [p(posixPath), [0, 0, 0, null, 0, null]] as [CanonicalPath, FileMetadata]
-            )
+            ].map((posixPath) => [p(posixPath), [0, 0, 0, null, 0, null]])
           )
         ),
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
     });
 
+    test('finds the closest directory with a single-segment subpath', () => {
+      const observations = emptyObservations();
+      expect(
+        tfs.hierarchicalLookup(
+          p('/A/B/C/a/n_m/pkg/subpath/deep'),
+          'n_m',
+          { breakOnSegment: null, subpathType: 'd' },
+          observations
+        )
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/n_m/pkg/n_m'),
+        containerRelativePath: p('subpath/deep'),
+      });
+      expect(observations).toEqual({
+        content: new Set(),
+        existence: new Set([
+          p('a/n_m/pkg/subpath/deep/n_m'),
+          p('a/n_m/pkg/subpath/n_m'),
+          p('a/n_m/pkg/n_m'),
+        ]),
+      });
+    });
+
+    test('finds the closest match for a deep subpath', () => {
+      const observations = emptyObservations();
+      expect(
+        tfs.hierarchicalLookup(
+          p('/A/B/C/a/b/c'),
+          p('n_m/pkg'),
+          { breakOnSegment: null, subpathType: 'd' },
+          observations
+        )
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/n_m/pkg'),
+        containerRelativePath: p('b/c'),
+      });
+      expect(observations).toEqual({
+        content: new Set(),
+        existence: new Set([p('a/b/c/n_m'), p('a/b/n_m'), p('a/n_m/pkg')]),
+      });
+    });
+
+    test('finds a subpath re-entering the root from an ancestor of the root', () => {
+      const observations = emptyObservations();
+      expect(
+        tfs.hierarchicalLookup(
+          p('/A/foo'),
+          p('B/C/a/package.json'),
+          { breakOnSegment: null, subpathType: 'f' },
+          observations
+        )
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/package.json'),
+        containerRelativePath: 'foo',
+      });
+      expect(observations).toEqual({
+        content: new Set(),
+        existence: new Set([p('../../foo'), p('a/package.json')]),
+      });
+    });
+
+    // The fourth column is paths, besides the match itself, whose addition or
+    // removal changes the result, the fifth those whose modification does too -
+    // the symlinks traversed.
     test.each([
-      ['/A/B/C/a', '/A/B/C/a/package.json', '', []],
-      ['/A/B/C/a/b', '/A/B/C/a/package.json', 'b', ['/A/B/C/a/b/package.json']],
-      ['/A/B/C/a/package.json', '/A/B/C/a/package.json', 'package.json', ['/A/B/C/a/package.json']],
+      ['/A/B/C/a', '/A/B/C/a/package.json', '', [], []],
+      ['/A/B/C/a/b', '/A/B/C/a/package.json', 'b', ['/A/B/C/a/b/package.json'], []],
+      [
+        '/A/B/C/a/package.json',
+        '/A/B/C/a/package.json',
+        'package.json',
+        ['/A/B/C/a/package.json'],
+        [],
+      ],
       [
         '/A/B/C/a/b/notexists',
         '/A/B/C/a/package.json',
         'b/notexists',
         ['/A/B/C/a/b/notexists', '/A/B/C/a/b/package.json'],
+        [],
       ],
-      ['/A/B/C/a/b/c', '/A/B/C/a/b/c/package.json', '', []],
+      ['/A/B/C/a/b/c', '/A/B/C/a/b/c/package.json', '', [], []],
       [
         '/A/B/C/other',
         '/A/package.json',
         'B/C/other',
         ['/A/B/C/other', '/A/B/C/package.json', '/A/B/package.json'],
+        [],
       ],
-      ['/A/B/C', '/A/package.json', 'B/C', ['/A/B/C/package.json', '/A/B/package.json']],
-      ['/A/B', '/A/package.json', 'B', ['/A/B/package.json']],
-      ['/A/B/foo', '/A/package.json', 'B/foo', ['/A/B/foo', '/A/B/package.json']],
-      ['/A/foo', '/A/package.json', 'foo', ['/A/foo']],
-      ['/foo', null, null, ['/foo', '/package.json']],
+      ['/A/B/C', '/A/package.json', 'B/C', ['/A/B/C/package.json', '/A/B/package.json'], []],
+      ['/A/B', '/A/package.json', 'B', ['/A/B/package.json'], []],
+      ['/A/B/foo', '/A/package.json', 'B/foo', ['/A/B/foo', '/A/B/package.json'], []],
+      ['/A/foo', '/A/package.json', 'foo', ['/A/foo'], []],
+      ['/foo', null, null, ['/foo', '/package.json'], []],
       [
         '/A/B/C/a/b/c/d/link-to-C/foo.js',
         '/A/B/C/a/b/c/package.json',
         'd/link-to-C/foo.js',
-        [
-          '/A/B/C/a/b/c/d/link-to-C',
-          '/A/B/C/a/b/c/d/package.json',
-          '/A/B/C/foo.js',
-          '/A/B/C/package.json',
-        ],
+        ['/A/B/C/a/b/c/d/package.json', '/A/B/C/foo.js', '/A/B/C/package.json'],
+        ['/A/B/C/a/b/c/d/link-to-C'],
       ],
       [
         '/A/B/C/a/b/c/d/link-to-B/C/foo.js',
         '/A/B/C/a/b/c/package.json',
         'd/link-to-B/C/foo.js',
         [
-          '/A/B/C/a/b/c/d/link-to-B',
           '/A/B/C/a/b/c/d/package.json',
           '/A/B/C/foo.js',
           '/A/B/C/package.json',
           '/A/B/package.json',
         ],
+        ['/A/B/C/a/b/c/d/link-to-B'],
       ],
       [
         '/A/B/C/a/b/c/d/link-to-A/B/C/foo.js',
         '/A/package.json',
         'B/C/foo.js',
-        ['/A/B/C/a/b/c/d/link-to-A', '/A/B/C/foo.js', '/A/B/C/package.json', '/A/B/package.json'],
+        ['/A/B/C/foo.js', '/A/B/C/package.json', '/A/B/package.json'],
+        ['/A/B/C/a/b/c/d/link-to-A'],
+      ],
+      // A symlink in the root to an ancestor of the root
+      [
+        '/A/B/C/link-to-B/foo.js',
+        '/A/package.json',
+        'B/foo.js',
+        ['/A/B/foo.js', '/A/B/package.json'],
+        ['/A/B/C/link-to-B'],
       ],
       [
         '/A/B/C/a/1/foo.js',
         '/A/B/C/a/1/real-package.json',
         'foo.js',
-        ['/A/B/C/a/1/foo.js', '/A/B/C/a/1/package.json'],
+        ['/A/B/C/a/1/foo.js'],
+        ['/A/B/C/a/1/package.json'],
       ],
       [
         '/A/B/C/a/2/foo.js',
         '/A/B/C/a/package.json',
         '2/foo.js',
-        ['/A/B/C/a/2/foo.js', '/A/B/C/a/2/notexist-package.json', '/A/B/C/a/2/package.json'],
+        ['/A/B/C/a/2/foo.js', '/A/B/C/a/2/notexist-package.json'],
+        ['/A/B/C/a/2/package.json'],
       ],
       [
         '/A/B/C/a/n_m/pkg/notexist.js',
         '/A/B/C/a/n_m/pkg/package.json',
         'notexist.js',
         ['/A/B/C/a/n_m/pkg/notexist.js'],
+        [],
       ],
       [
         '/A/B/C/a/n_m/pkg/subpath/notexist.js',
         '/A/B/C/a/n_m/pkg/subpath/package.json',
         'notexist.js',
         ['/A/B/C/a/n_m/pkg/subpath/notexist.js'],
+        [],
       ],
       [
         '/A/B/C/a/n_m/pkg/otherpath/notexist.js',
         '/A/B/C/a/n_m/pkg/package.json',
         'otherpath/notexist.js',
         ['/A/B/C/a/n_m/pkg/otherpath'],
+        [],
       ],
-      ['/A/B/C/a/n_m/pkg3/foo.js', null, null, ['/A/B/C/a/n_m/pkg3']],
-      ['/A/B/C/a/b/n_m/pkg/foo', null, null, ['/A/B/C/a/b/n_m']],
+      // pkg3 does not exist, doesn't look beyond the containing n_m
+      ['/A/B/C/a/n_m/pkg3/foo.js', null, null, ['/A/B/C/a/n_m/pkg3'], []],
+      // Does not look beyond n_m, if n_m does not exist
+      ['/A/B/C/a/b/n_m/pkg/foo', null, null, ['/A/B/C/a/b/n_m'], []],
       [
         '/A/B/C/n_m/workspace/link-to-pkg/subpath',
         '/A/B/workspace-pkg/package.json',
         'subpath',
-        ['/A/B/C/n_m/workspace/link-to-pkg', '/A/B/workspace-pkg/subpath'],
+        ['/A/B/workspace-pkg/subpath'],
+        ['/A/B/C/n_m/workspace/link-to-pkg'],
       ],
     ])(
-      '%s => %s (relative %s, invalidatedBy %s)',
-      (startPath, expectedPath, expectedRelativeSubpath, expectedInvalidatedBy) => {
+      '%s => %s (relative %s, existence %s, content %s)',
+      (startPath, expectedPath, expectedRelativeSubpath, expectedExistence, expectedContent) => {
         const pathMap = (normalPosixPath: string) =>
           mockPathModule.resolve(p('/A/B/C'), p(normalPosixPath));
-        const invalidatedBy = new Set<string>();
+        const toCanonical = (posixPath: string) => canonicalTo(p('/A/B/C'))(pathMap(posixPath));
+        const observations = emptyObservations();
         expect(
-          hlTfs.hierarchicalLookup(p(startPath), 'package.json', {
-            breakOnSegment: 'n_m',
-            invalidatedBy,
-            subpathType: 'f',
-          })
+          tfs.hierarchicalLookup(
+            p(startPath),
+            'package.json',
+            {
+              breakOnSegment: 'n_m',
+              subpathType: 'f',
+            },
+            observations
+          )
         ).toEqual(
           expectedPath == null
             ? null
             : {
                 absolutePath: pathMap(expectedPath),
-                containerRelativePath: p(expectedRelativeSubpath!),
+                containerRelativePath: p(expectedRelativeSubpath),
               }
         );
-        expect(invalidatedBy).toEqual(new Set(expectedInvalidatedBy.map(p)));
+        expect(observations).toEqual({
+          content: new Set(expectedContent.map(toCanonical)),
+          existence: new Set(
+            (expectedPath == null ? expectedExistence : [...expectedExistence, expectedPath]).map(
+              toCanonical
+            )
+          ),
+        });
       }
     );
-
-    test('subpathType "d": matches directory child', () => {
-      const invalidatedBy = new Set<string>();
-      expect(
-        hlTfs.hierarchicalLookup(p('/A/B/C/a'), 'b', {
-          breakOnSegment: 'n_m',
-          invalidatedBy,
-          subpathType: 'd',
-        })
-      ).toEqual({ absolutePath: p('/A/B/C/a/b'), containerRelativePath: '' });
-      expect(invalidatedBy).toEqual(new Set());
-    });
-
-    test('subpathType "d": skips file ancestor, matches directory ancestor', () => {
-      const invalidatedBy = new Set<string>();
-      expect(
-        hlTfs.hierarchicalLookup(p('/A/B/C/a/b/c/d/foo.js'), 'package.json', {
-          breakOnSegment: 'n_m',
-          invalidatedBy,
-          subpathType: 'd',
-        })
-      ).toEqual({
-        absolutePath: p('/A/B/C/a/b/package.json'),
-        containerRelativePath: p('c/d/foo.js'),
-      });
-      expect(invalidatedBy).toEqual(
-        new Set([
-          p('/A/B/C/a/b/c/d/foo.js'),
-          p('/A/B/C/a/b/c/d/package.json'),
-          p('/A/B/C/a/b/c/package.json'),
-        ])
-      );
-    });
-
-    test('multi-segment subpath resolves against Phase 1 candidate', () => {
-      const invalidatedBy = new Set<string>();
-      expect(
-        hlTfs.hierarchicalLookup(p('/A/B/C/a/n_m/pkg/foo.js'), p('subpath/package.json'), {
-          breakOnSegment: 'n_m',
-          invalidatedBy,
-          subpathType: 'f',
-        })
-      ).toEqual({
-        absolutePath: p('/A/B/C/a/n_m/pkg/subpath/package.json'),
-        containerRelativePath: 'foo.js',
-      });
-    });
-
-    test('multi-segment subpath resolves against Phase 2 candidate above root', () => {
-      // Phase 2 candidate ends in `..`, so `start` is not forwarded to the
-      // slow path — joinNormalToRelative would otherwise collapse the suffix.
-      const invalidatedBy = new Set<string>();
-      expect(
-        hlTfs.hierarchicalLookup(p('/A/B/foo'), p('C/a/package.json'), {
-          breakOnSegment: 'n_m',
-          invalidatedBy,
-          subpathType: 'f',
-        })
-      ).toEqual({
-        absolutePath: p('/A/B/C/a/package.json'),
-        containerRelativePath: 'foo',
-      });
-      expect(invalidatedBy).toEqual(new Set([p('/A/B/foo')]));
-    });
-
-    test('symlink at subpath resolves via slow path', () => {
-      const invalidatedBy = new Set<string>();
-      expect(
-        hlTfs.hierarchicalLookup(p('/A/B/C/a/1/foo.js'), 'package.json', {
-          breakOnSegment: 'n_m',
-          invalidatedBy,
-          subpathType: 'f',
-        })
-      ).toEqual({
-        absolutePath: p('/A/B/C/a/1/real-package.json'),
-        containerRelativePath: 'foo.js',
-      });
-    });
   });
 
   describe('matchFiles', () => {
@@ -1206,6 +1185,21 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
+    test('adds a file through a symlink to the root at its canonical path', () => {
+      tfs.addOrModify(p('link-to-root'), [0, 0, 0, null, '', null]);
+      const fileAdded = jest.fn();
+      tfs.addOrModify(p('link-to-root/new.js'), [1, 1, 0, null, 0, null], {
+        directoryAdded: jest.fn(),
+        directoryRemoved: jest.fn(),
+        fileAdded,
+        fileModified: jest.fn(),
+        fileRemoved: jest.fn(),
+      });
+      expect(fileAdded).toHaveBeenCalledWith(p('new.js'), [1, 1, 0, null, 0, null]);
+      expect(tfs.getAllFiles()).toContain(p('/project/new.js'));
+      expect(tfs.getAllFiles()).not.toContain(p('/new.js'));
+    });
+
     describe('bulkAddOrModify', () => {
       test('adds new files and modifies existing, new symlinks work', () => {
         tfs.bulkAddOrModify(
@@ -1373,7 +1367,6 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         return;
       });
       mockProcessFile.mockClear();
-      mockLstat.mockClear();
     });
 
     test('returns the precomputed SHA-1 of a file if set', async () => {
@@ -1436,153 +1429,6 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       expect(await tfs.getOrComputeSha1(p('bar.js'))).toEqual({ sha1: 'abc123' });
       expect(mockProcessFile).toHaveBeenCalledTimes(2);
     });
-
-    test('lazily resolves unresolved symlink and computes SHA1', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('target.js'), [123, 10, 0, null, 0, null]],
-          [p('lazy-link'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: mockProcessFile,
-      });
-
-      mockReadlinkSync.mockReturnValue(p('./target.js'));
-
-      expect(await tfs.getOrComputeSha1(p('lazy-link'))).toEqual({
-        sha1: 'abc123',
-      });
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      expect(mockProcessFile).toHaveBeenCalledWith(p('target.js'), expect.any(Array), {
-        computeSha1: true,
-      });
-    });
-
-    test('lazily resolves symlink to nested path and computes SHA1 on second call', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('sub/target.js'), [123, 10, 0, null, 0, null]],
-          [p('lazy-nested-link'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: mockProcessFile,
-      });
-
-      mockReadlinkSync.mockReturnValue(p('./sub/target.js'));
-
-      // First call: resolves the symlink lazily, stores posix path
-      expect(await tfs.getOrComputeSha1(p('lazy-nested-link'))).toEqual({
-        sha1: 'abc123',
-      });
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      expect(mockProcessFile).toHaveBeenCalledWith(p('sub/target.js'), expect.any(Array), {
-        computeSha1: true,
-      });
-
-      // Second call: uses cached H.SYMLINK (posix), should still resolve
-      mockProcessFile.mockClear();
-      expect(await tfs.getOrComputeSha1(p('lazy-nested-link'))).toEqual({
-        sha1: 'abc123',
-      });
-      // No re-read needed
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      // SHA1 was cached on target, no reprocessing
-      expect(mockProcessFile).not.toHaveBeenCalled();
-    });
-
-    test('lazily resolves symlink and stats target with null mtime', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          // Target file has null mtime (also lazily crawled)
-          [p('sub/target.js'), [null, 0, 0, null, 0, null]],
-          [p('lazy-link'), [0, 0, 0, null, 1, null]],
-        ]),
-        processFile: mockProcessFile,
-      });
-
-      mockReadlinkSync.mockReturnValue(p('./sub/target.js'));
-      mockLstat.mockResolvedValueOnce({
-        mtime: { getTime: () => 555 },
-        size: 42,
-      });
-
-      expect(await tfs.getOrComputeSha1(p('lazy-link'))).toEqual({
-        sha1: 'abc123',
-      });
-      // Symlink was resolved
-      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
-      // Target was stat'd because its mtime was null
-      expect(mockLstat).toHaveBeenCalledTimes(1);
-      expect(mockLstat).toHaveBeenCalledWith(p('/project/sub/target.js'));
-      // Target was processed for SHA1
-      expect(mockProcessFile).toHaveBeenCalledTimes(1);
-      // Target's mtime is now populated
-      expect(tfs.getMtimeByNormalPath(p('sub/target.js'))).toBe(555);
-    });
-
-    test('lazily stats file and clears SHA1 when mtime is null', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('unstated.js'), [null, 0, 0, 'stale', 0, null]],
-        ]),
-        processFile: mockProcessFile,
-      });
-
-      mockLstat.mockResolvedValueOnce({
-        mtime: { getTime: () => 999 },
-        size: 50,
-      });
-
-      await tfs.getOrComputeSha1(p('unstated.js'));
-
-      expect(mockLstat).toHaveBeenCalledTimes(1);
-      expect(mockProcessFile).toHaveBeenCalledTimes(1);
-      expect(tfs.getMtimeByNormalPath(p('unstated.js'))).toBe(999);
-    });
-
-    test('lazily stats file when mtime is 0', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([[p('zero.js'), [0, 0, 0, null, 0, null]]]),
-        processFile: mockProcessFile,
-      });
-
-      mockLstat.mockResolvedValueOnce({
-        mtime: { getTime: () => 888 },
-        size: 30,
-      });
-
-      await tfs.getOrComputeSha1(p('zero.js'));
-
-      expect(mockLstat).toHaveBeenCalledTimes(1);
-      expect(mockProcessFile).toHaveBeenCalledTimes(1);
-      expect(tfs.getMtimeByNormalPath(p('zero.js'))).toBe(888);
-    });
-
-    test('does not stat file when mtime is already populated', async () => {
-      mockLstat.mockClear();
-      await tfs.getOrComputeSha1(p('bar.js'));
-
-      expect(mockLstat).not.toHaveBeenCalled();
-    });
-
-    test('handles lstat failure gracefully when mtime is null', async () => {
-      tfs = new TreeFS({
-        rootDir: p('/project'),
-        files: new Map<CanonicalPath, FileMetadata>([
-          [p('missing.js'), [null, 0, 0, null, 0, null]],
-        ]),
-        processFile: mockProcessFile,
-      });
-
-      mockLstat.mockRejectedValueOnce(new Error('ENOENT'));
-
-      const result = await tfs.getOrComputeSha1(p('missing.js'));
-      expect(result).toEqual({ sha1: 'abc123' });
-      expect(mockProcessFile).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('change listener', () => {
@@ -1605,7 +1451,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           [p('dir/nested.js'), [456, 0, 0, '', 0]],
           [p('mylink'), [0, 0, 0, '', 'dir']],
         ]),
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
       });
@@ -1749,7 +1595,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       return new TreeFS({
         rootDir: p('/project'),
         files: opts.files ?? new Map(),
-        processFile: async () => {
+        processFile: () => {
           throw new Error('Not implemented');
         },
         fallbackFilesystem: mockFallback,
@@ -1785,9 +1631,36 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(mockFallback.readdir).not.toHaveBeenCalled();
       });
 
-      test('does not call fallback when skipFallback is true (getMtimeByNormalPath)', () => {
-        const fbTfs = makeFallbackTfs();
-        fbTfs.getMtimeByNormalPath(p('outside/file.js'));
+      test('hierarchicalLookup finds a package.json the tree has not seen yet', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('src/index.js'), [100, 5, 0, null, 0, null]]]),
+        });
+        mockFallback.lookup.mockImplementation((canonicalPath: string) =>
+          canonicalPath === 'package.json' ? [100, 5, 0, null, 0, null] : null
+        );
+        expect(
+          fbTfs.hierarchicalLookup(p('/project/src/index.js'), 'package.json', {
+            breakOnSegment: 'node_modules',
+            subpathType: 'f',
+          })
+        ).toEqual({
+          absolutePath: p('/project/package.json'),
+          containerRelativePath: p('src/index.js'),
+        });
+      });
+
+      test('hierarchicalLookup trusts a cached missing entry without asking the fallback', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('src/index.js'), [100, 5, 0, null, 0, null]]]),
+        });
+        fbTfs.lookup(p('/project/package.json'));
+        mockFallback.lookup.mockClear();
+        expect(
+          fbTfs.hierarchicalLookup(p('/project/src/index.js'), 'package.json', {
+            breakOnSegment: 'node_modules',
+            subpathType: 'f',
+          })
+        ).toBeNull();
         expect(mockFallback.lookup).not.toHaveBeenCalled();
       });
 
@@ -2149,7 +2022,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         const found = fbTfs.hierarchicalLookup(
           p('/project/node_modules/react/index.js'),
           'package.json',
-          { breakOnSegment: null, invalidatedBy: null, subpathType: 'f' }
+          { breakOnSegment: null, subpathType: 'f' }
         );
         expect(found).not.toBeNull();
         expect(found?.absolutePath).toBe(
@@ -2248,8 +2121,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('getSerializableSnapshot excludes fallback data', () => {
-      test('does not include fallback-populated directories in snapshot', () => {
+    describe('getSerializableState excludes fallback data', () => {
+      test('does not include fallback-populated directories in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/real.js'), [100, 5, 0, null, 0, null]],
         ]);
@@ -2261,29 +2134,31 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         mockFallback.lookup.mockReturnValue(outsideDir);
         fbTfs.lookup(p('/project/outside/external.js'));
 
-        // Snapshot should only contain data within watched roots
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        // 'src' should be in the snapshot
-        expect(snapshot.has('src')).toBe(true);
-        // 'outside' should NOT be in the snapshot (directory outside roots)
-        expect(snapshot.has('outside')).toBe(false);
+        // The state should only contain data within watched roots
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        // 'src' should be in the state
+        expect(state.has('src')).toBe(true);
+        // 'outside' should NOT be in the state (directory outside roots)
+        expect(state.has('outside')).toBe(false);
+        // The snapshot is a copy of the same data
+        expect(fbTfs.getSerializableSnapshot()).toEqual(state);
       });
 
-      test('includes all watched root data in snapshot', () => {
+      test('includes all watched root data in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/a.js'), [100, 5, 0, null, 0, null]],
           [p('src/b.js'), [200, 3, 0, null, 0, null]],
         ]);
         const fbTfs = makeFallbackTfs({ files, roots: [p('/project/src')] });
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        const srcDir = snapshot.get('src') as Map<string, any>;
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        const srcDir = state.get('src') as Map<string, any>;
         expect(srcDir).toBeInstanceOf(Map);
         expect(srcDir.has('a.js')).toBe(true);
         expect(srcDir.has('b.js')).toBe(true);
       });
 
-      test('includes roots above rootDir in snapshot', () => {
+      test('includes roots above rootDir in the state', () => {
         const files = new Map<CanonicalPath, FileMetadata>([
           [p('src/app.js'), [100, 5, 0, null, 0, null]],
           [p('../packages/expo/index.js'), [200, 3, 0, null, 0, null]],
@@ -2293,9 +2168,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           roots: [p('/project/src'), p('/packages/expo')],
         });
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        expect(snapshot.has('src')).toBe(true);
-        const dotdot = snapshot.get('..') as Map<string, any>;
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        expect(state.has('src')).toBe(true);
+        const dotdot = state.get('..') as Map<string, any>;
         expect(dotdot).toBeInstanceOf(Map);
         const pkgs = dotdot.get('packages') as Map<string, any>;
         expect(pkgs).toBeInstanceOf(Map);
@@ -2303,6 +2178,14 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(expo).toBeInstanceOf(Map);
         expect(expo.has('index.js')).toBe(true);
       });
+    });
+
+    test('getSerializableSnapshot copies entries for paths the fallback found missing', () => {
+      const fbTfs = makeFallbackTfs({ roots: [] });
+      expect(fbTfs.lookup(p('/project/missing.js')).exists).toBe(false);
+      const state = fbTfs.getSerializableState() as Map<string, any>;
+      expect(state.get('missing.js')).toBeNull();
+      expect(fbTfs.getSerializableSnapshot()).toEqual(state);
     });
 
     describe('rootPattern consistency with trailing separator', () => {
@@ -2325,9 +2208,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('interaction with lazy stat and symlink resolution', () => {
-      test('fallback-discovered file with null mtime is stat-ed by getOrComputeSha1', async () => {
-        const mockProcessFile = jest.fn(async (_path: string, metadata: FileMetadata) => {
+    describe('interaction with symlink resolution', () => {
+      test('fallback-discovered file with null mtime is processed by getOrComputeSha1', async () => {
+        const mockProcessFile = jest.fn((_path: string, metadata: FileMetadata) => {
           metadata[H.SHA1] = 'computed';
           return null;
         });
@@ -2344,41 +2227,16 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         });
 
         // Fallback returns a directory with a file that has null mtime (lazy)
-        const outsideDir = new Map([['lazy.js', [null, 0, 0, null, 0, null] as any]]);
+        const outsideDir = new Map([['lazy.js', [null, null, 0, null, 0, null] as any]]);
         mockFallback.lookup.mockReturnValue(outsideDir);
 
         // First verify file is discoverable
         const lookupResult = fbTfs.lookup(p('/project/outside/lazy.js'));
         expect(lookupResult).toMatchObject({ exists: true, type: 'f' });
 
-        // Now getOrComputeSha1 should trigger lstat (null mtime path)
-        mockLstat.mockResolvedValueOnce({
-          mtime: { getTime: () => 777 },
-          size: 20,
-        });
         const sha1Result = await fbTfs.getOrComputeSha1(p('outside/lazy.js'));
         expect(sha1Result).toEqual({ sha1: 'computed' });
-        expect(mockLstat).toHaveBeenCalledWith(p('/project/outside/lazy.js'));
         expect(mockProcessFile).toHaveBeenCalledTimes(1);
-      });
-
-      test('fallback-discovered symlink (readdir marker) resolves lazily on traversal', () => {
-        const fbTfs = makeFallbackTfs({
-          files: new Map([[p('target.js'), [100, 5, 0, null, 0, null]]]),
-        });
-
-        // Fallback returns a directory with an unresolved symlink marker
-        const outsideDir = new Map<string, any>([
-          ['link.js', [null, 0, 0, null, 1, null]], // SYMLINK = 1 = unresolved
-        ]);
-        mockFallback.lookup.mockReturnValue(outsideDir);
-
-        // readlinkSync will be called when the symlink is traversed
-        mockReadlinkSync.mockReturnValue(p('../target.js'));
-
-        const result = fbTfs.lookup(p('/project/outside/link.js'));
-        expect(result).toMatchObject({ exists: true, type: 'f' });
-        expect(mockReadlinkSync).toHaveBeenCalledWith(p('/project/outside/link.js'));
       });
 
       test('fallback lookup eagerly-resolved symlink does not call readlinkSync again', () => {
@@ -2408,7 +2266,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         fbTfs.addOrModify(p('outside/file.js'), [200, 8, 0, null, 0, null]);
 
         // Verify updated metadata is reflected
-        expect(fbTfs.getMtimeByNormalPath(p('outside/file.js'))).toBe(200);
+        expect(fbTfs.linkStats(p('outside/file.js'))?.modifiedTime).toBe(200);
       });
 
       test('remove deletes a path that was originally discovered via fallback', () => {
@@ -2455,12 +2313,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         });
 
         // Fallback discovers a directory containing a symlink to 'real-dir'
-        const outsideDir = new Map<string, any>([
-          ['dir-link', [50, 0, 0, null, 1, null]], // unresolved symlink marker
-        ]);
+        const outsideDir = new Map<string, any>([['dir-link', [50, 0, 0, null, 'real-dir', null]]]);
         mockFallback.lookup.mockReturnValue(outsideDir);
-        // When the symlink is resolved, it points to real-dir
-        mockReadlinkSync.mockReturnValue(p('../real-dir'));
 
         // First discover 'outside' directory via fallback
         fbTfs.lookup(p('/project/outside'));
@@ -2477,8 +2331,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('#cloneTree excludes ".." when rootDir is a watched root', () => {
-      test('fallback-discovered ".." directories are excluded from snapshot', () => {
+    describe('getSerializableState excludes ".." when rootDir is a watched root', () => {
+      test('fallback-discovered ".." directories are excluded from the state', () => {
         const fbTfs = makeFallbackTfs({ roots: [p('/project')] });
 
         // Trigger fallback to create a '..' directory entry via lookup above root
@@ -2493,9 +2347,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         );
         fbTfs.lookup(p('/project/../something/file.js'));
 
-        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
-        // '..' should NOT be in the snapshot (negative-lookahead pattern excludes it)
-        expect(snapshot.has('..')).toBe(false);
+        const state = fbTfs.getSerializableState() as Map<string, any>;
+        // '..' should NOT be in the state (negative-lookahead pattern excludes it)
+        expect(state.has('..')).toBe(false);
       });
     });
 
@@ -2514,7 +2368,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         const fbTfs = TreeFS.fromDeserializedSnapshot({
           rootDir: p('/project'),
           fileSystemData,
-          processFile: async () => {
+          processFile: () => {
             throw new Error('Not implemented');
           },
           fallbackFilesystem: mockFallback,
@@ -2652,7 +2506,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
             // Canonical form of 'D:\\external\\file.js' for rootDepth=1.
             ['..\\..\\D:\\external\\file.js', externalMeta],
           ]),
-          processFile: async () => {
+          processFile: () => {
             throw new Error('Not implemented');
           },
         });
@@ -2704,4 +2558,74 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
   }
+});
+
+describe('snapshot portability between operating systems', () => {
+  const rootFor = (platform: string) => (platform === 'win32' ? 'C:\\project' : '/project');
+
+  function loadTreeFS(platform: string): typeof TreeFSType {
+    jest.resetModules();
+    const nodePath = jest.requireActual<{
+      posix: typeof import('path');
+      win32: typeof import('path');
+    }>('path');
+    mockPathModule = platform === 'win32' ? nodePath.win32 : nodePath.posix;
+    return require('../TreeFS').default;
+  }
+
+  test.each([
+    ['posix', 'win32'],
+    ['win32', 'posix'],
+  ])('a snapshot built on %s follows symlinks on %s', (from, to) => {
+    const TreeFSFrom = loadTreeFS(from);
+    const sep = mockPathModule.sep;
+    const { RootPathUtils } = require('../RootPathUtils');
+    const normalizePathSeparatorsToPosix = require('../normalizePathSeparatorsToPosix').default;
+    const linkPath = ['node_modules', 'pkg'].join(sep);
+    // Stored as FileMap stores a readlink result.
+    const storedTarget = normalizePathSeparatorsToPosix(
+      new RootPathUtils(rootFor(from)).resolveSymlinkToNormal(
+        linkPath,
+        ['.pnpm', 'pkg@1', 'node_modules', 'pkg'].join(sep)
+      )
+    );
+    const snapshot = new TreeFSFrom({
+      rootDir: rootFor(from),
+      files: new Map<CanonicalPath, FileMetadata>([
+        [
+          ['node_modules', '.pnpm', 'pkg@1', 'node_modules', 'pkg', 'a.js'].join(sep),
+          [0, 0, 0, null, 0, null],
+        ],
+        [linkPath, [0, 0, 0, null, storedTarget, null]],
+      ]),
+      processFile: () => {
+        throw new Error('Not implemented');
+      },
+    }).getSerializableSnapshot();
+
+    const TreeFSTo = loadTreeFS(to);
+    const loaded = TreeFSTo.fromDeserializedSnapshot({
+      rootDir: rootFor(to),
+      // Snapshots are typed opaquely for the cache; this one came from
+      // getSerializableSnapshot, so it is a DirectoryNode.
+      // @ts-expect-error -- Snapshots are typed opaquely for the cache.
+      fileSystemData: snapshot,
+      processFile: () => {
+        throw new Error('Not implemented');
+      },
+    });
+    const toPath = (...segments: string[]) => segments.join(mockPathModule.sep);
+    expect(loaded.lookup(toPath('node_modules', 'pkg', 'a.js'))).toMatchObject({
+      exists: true,
+      realPath: toPath(
+        rootFor(to),
+        'node_modules',
+        '.pnpm',
+        'pkg@1',
+        'node_modules',
+        'pkg',
+        'a.js'
+      ),
+    });
+  });
 });

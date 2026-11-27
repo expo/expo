@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.86. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
+The following instructions apply to React Native 0.88. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -50,9 +50,15 @@ Once installation is complete, apply the changes from the following diffs to con
 
 ### Configuration for iOS
 
+`ExpoAppSceneDelegate` creates the window and starts React Native. The app delegate creates the React Native factory.
+
 <DiffBlock source="/static/diffs/expo-ios.diff" />
 
-Optionally, you can also add additional delegate methods to your **AppDelegate.swift**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.swift](https://github.com/expo/expo/blob/sdk-57/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift#L34-L51).
+If your React Native factory delegate has custom bundle selection in `sourceURL(for:)`, move that logic to `bundleURL()` before removing `sourceURL(for:)`.
+
+Keep **SceneDelegate.swift** in your app target. In **Info.plist**, set `UISceneDelegateClassName` to `$(PRODUCT_MODULE_NAME).SceneDelegate` for the application scene in `UIApplicationSceneManifest`.
+
+See the [AppDelegate.swift](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift) and [SceneDelegate.swift](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift) templates for reference.
 
 Save all of your changes and update your iOS Deployment Target in Xcode to <code>iOS 16.4</code>:
 

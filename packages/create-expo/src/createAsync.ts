@@ -18,7 +18,6 @@ import { SwiftPMUnsupportedError } from './error';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
-import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
@@ -26,6 +25,7 @@ import {
   resolvePackageManager,
 } from './resolvePackageManager';
 import { assertFolderEmpty, assertValidName, resolveProjectRootAsync } from './resolveProjectRoot';
+import { resolveTemplate } from './resolveTemplate';
 import {
   AnalyticsEventPhases,
   AnalyticsEventTypes,
@@ -157,14 +157,10 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
 
-  resolvedTemplate = await applySdkVersionToTemplateAsync(
-    resolvedTemplate ?? 'expo-template-default',
-    {
-      yes: props.yes,
-      showAlternatives: !props.template,
-      projectName: path.basename(projectRoot),
-    }
-  );
+  resolvedTemplate = await resolveTemplate({
+    template: resolvedTemplate ?? 'default',
+    projectName: path.basename(projectRoot),
+  });
 
   await fs.promises.mkdir(projectRoot, { recursive: true });
 

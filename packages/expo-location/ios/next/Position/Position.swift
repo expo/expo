@@ -18,9 +18,19 @@ struct Position {
 
 extension Position {
   func toEventPayload() -> [String: Any] {
-    var payload = toDictionary()
-    payload["coordinates"] = coordinates.toDictionary()
-    return payload
+    return [
+      "coordinates": coordinates.toDictionary(),
+      "horizontalAccuracy": horizontalAccuracy ?? NSNull(),
+      "timestamp": timestamp,
+      "altitude": altitude ?? NSNull(),
+      "mslAltitude": mslAltitude ?? NSNull(),
+      "verticalAccuracy": verticalAccuracy ?? NSNull(),
+      "mocked": mocked,
+      "heading": heading ?? NSNull(),
+      "headingAccuracy": headingAccuracy ?? NSNull(),
+      "speed": speed ?? NSNull(),
+      "speedAccuracy": speedAccuracy ?? NSNull()
+    ]
   }
 }
 

@@ -12,7 +12,10 @@ extension JavaScriptRuntime {
     ///
     /// Each key gets a fixed index from a process-wide counter when it is created, so a lookup reads one
     /// array slot instead of hashing a string. Every runtime keeps its own values for the same keys.
+    @frozen
     public struct Key<Value: AnyObject>: Sendable {
+      // `Key` is `@frozen` so that another module passes the key in a register, without its metadata and value
+      // witnesses. A new stored property changes the ABI.
       internal let index: Int
 
       public init() {
@@ -34,6 +37,14 @@ extension JavaScriptRuntime {
       }
       // The key's type guarantees the type of the value stored under it.
       return unsafeDowncast(value, to: Value.self)
+    }
+
+    internal func unretainedValue<Value>(for key: Key<Value>) -> Unmanaged<Value>? {
+      guard key.index < storage.count, let value = storage[key.index] else {
+        return nil
+      }
+      // The key's type guarantees the type of the value stored under it.
+      return Unmanaged.passUnretained(unsafeDowncast(value, to: Value.self))
     }
 
     internal mutating func store<Value>(_ value: Value, for key: Key<Value>) {
@@ -65,6 +76,14 @@ extension JavaScriptRuntime {
     let value = try make()
     cache.store(value, for: key)
     return value
+  }
+
+  /// Returns the value cached under `key` without retaining it, or `nil` when there is none. The cache keeps the value
+  /// until the runtime is destroyed, and it never replaces a value.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func unretainedCachedValue<Value>(for key: Cache.Key<Value>) -> Unmanaged<Value>? {
+    return cache.unretainedValue(for: key)
   }
 
   /// Like ``cached(_:_:)`` for a non-copyable value such as a `JavaScriptFunction`, which can't be a

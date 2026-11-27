@@ -1,6 +1,6 @@
 package expo.modules.audio
 
-import androidx.core.net.toUri
+import android.net.Uri
 import androidx.media3.datasource.ByteArrayDataSource
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DataSpec
@@ -21,8 +21,12 @@ object AudioPreloadManager {
     }
   }
 
-  suspend fun preload(uri: String, factory: DataSource.Factory) = withContext(Dispatchers.IO) {
-    val dataSpec = DataSpec.Builder().setUri(uri.toUri()).build()
+  /**
+   * Reads [sourceUri] into memory and stores the bytes under [uri], the source URI
+   * as passed from JS, so a player created from the same source finds them.
+   */
+  suspend fun preload(uri: String, sourceUri: Uri, factory: DataSource.Factory) = withContext(Dispatchers.IO) {
+    val dataSpec = DataSpec.Builder().setUri(sourceUri).build()
 
     factory.createDataSource().use { dataSource ->
       ByteArrayOutputStream().use { outputStream ->

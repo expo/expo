@@ -49,6 +49,21 @@ struct JavaScriptCodableSharedObjectTests {
     #expect(appContext.sharedObjectRegistry.size == registrySizeAfterFirst)
   }
 
+  @Test
+  func `encoding a released object pairs it with a new JS object`() throws {
+    let runtime = try runtime
+    let native = CodableSharedObject()
+
+    let first = try CodableSharedObject.encode(native, in: runtime)
+    appContext.sharedObjectRegistry.delete(native.sharedObjectId)
+    let second = try CodableSharedObject.encode(native, in: runtime)
+
+    // The first JS object keeps the released native state, so encoding must not return it again.
+    #expect(first.isEqual(to: second) == false)
+    let decoded = try CodableSharedObject.decode(second, in: runtime)
+    #expect(decoded === native)
+  }
+
   // MARK: - decode
 
   @Test

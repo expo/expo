@@ -9,6 +9,9 @@ import ExpoModulesJSI
 public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   private let storage: ArrayBufferStorage
 
+  /// Whether a live JavaScript array buffer reports this buffer's memory to the garbage collector.
+  private let isMemoryReported = Mutex(false)
+
   private var rawPointer: UnsafeMutableRawPointer {
     return storage.rawPointer
   }
@@ -86,14 +89,34 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// The native buffer is retained for the lifetime of the `JavaScriptArrayBuffer`.
   @usableFromInline
   func asJavaScriptArrayBuffer(runtime: JavaScriptRuntime) -> JavaScriptArrayBuffer {
-    return runtime.createArrayBuffer(
+    // The garbage collector does not see native memory, so one live JavaScript array buffer reports it.
+    // Reporting it for every wrapper would add the full size each time the same buffer is returned.
+    // Borrowed memory belongs to another JavaScript array buffer, which accounts for it.
+    let reportsMemory =
+      storage.ownsMemory && byteLength > 0
+      && isMemoryReported.withLock { isReported in
+        if isReported {
+          return false
+        }
+        isReported = true
+        return true
+      }
+    let jsArrayBuffer = runtime.createArrayBuffer(
       data: rawPointer.assumingMemoryBound(to: UInt8.self),
       size: byteLength
     ) { [self] in
       // Retain `self` until the JS engine releases the ArrayBuffer. When this
       // closure is dropped, the buffer deinits and deallocates its memory.
-      _ = self
+      if reportsMemory {
+        isMemoryReported.withLock { isReported in
+          isReported = false
+        }
+      }
     }
+    if reportsMemory {
+      jsArrayBuffer.asValue().getObject().setExternalMemoryPressure(byteLength)
+    }
+    return jsArrayBuffer
   }
 
   // MARK: - Copy
@@ -147,10 +170,16 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// - Warning: This bypasses Data's copy-on-write capabilities, effectively allowing
   ///   mutation of the Data from JavaScript code.
   public static func wrap(dataWithoutCopy data: Data) -> ArrayBuffer {
-    let retained = Unmanaged.passRetained(data as NSData)
-    let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
-    return ArrayBuffer(owning: pointer, count: data.count) {
-      retained.release()
+    // `NSData.bytes` returns an inner pointer, so the call retains and autoreleases the `NSData`, which
+    // owns the bytes. Without this pool, the bytes stay alive until the caller's pool drains, which never
+    // happens while a caller such as a JavaScript loop does not return to its run loop. `retained` keeps
+    // the `NSData` alive after this pool drains.
+    return autoreleasepool {
+      let retained = Unmanaged.passRetained(data as NSData)
+      let pointer = UnsafeMutableRawPointer(mutating: retained.takeUnretainedValue().bytes)
+      return ArrayBuffer(owning: pointer, count: data.count) {
+        retained.release()
+      }
     }
   }
 
@@ -302,6 +331,15 @@ private enum ArrayBufferStorage: Sendable {
     switch self {
     case .ownedNative, .nativeBacked:
       return true
+    }
+  }
+
+  var ownsMemory: Bool {
+    switch self {
+    case .ownedNative:
+      return true
+    case .nativeBacked:
+      return false
     }
   }
 

@@ -48,13 +48,12 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "prepack": "expo-module prepack",
-    "generate-types": "expo-modules generate-types"
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {},
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
-    "expo": "workspace:*",
-    "expo-modules-cli": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

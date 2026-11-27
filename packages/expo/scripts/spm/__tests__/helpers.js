@@ -4,6 +4,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
+const { spmUpdateCommand } = require('../commands');
+
 /** A podspec with the given body lines. */
 const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
 
@@ -13,6 +15,9 @@ const metadataEntry = (packageRoot, productName, fields = {}) => ({
   productName,
   ...fields,
 });
+
+/** How an error asks the user to update the app's packages; Expo apps have no `react-native` CLI. */
+const rerunSpmUpdate = `Then run \`${spmUpdateCommand()}\` from your app directory again.`;
 
 const tempDirs = [];
 
@@ -62,6 +67,9 @@ function runPlugin(tmp, context = {}) {
     outputDir: path.join(tmp, 'out'),
     appRoot: path.join(tmp, 'app', 'ios'),
     projectRoot: path.join(tmp, 'app'),
+    // Fixtures that link real packages would otherwise resolve the repository's react-native, and
+    // the update command in every error would name that path.
+    reactNativeRoot: path.join(tmp, 'app', 'node_modules', 'react-native'),
     ...context,
   });
 }
@@ -82,6 +90,7 @@ module.exports = {
   metadataEntry,
   printed,
   removeTempDirs,
+  rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,

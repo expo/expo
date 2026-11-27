@@ -1,5 +1,9 @@
 import type { ExpoConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
+import {
+  finalizeDomComponentArtifacts,
+  finalizeNativeDomReferences,
+} from '@expo/metro-config/build/serializer/domArtifacts';
 import assert from 'assert';
 import crypto from 'crypto';
 import path from 'path';
@@ -63,7 +67,7 @@ export async function exportDomComponentAsync({
     mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
     mode: dev ? 'development' : 'production',
     engine: isHermes ? 'hermes' : undefined,
-    serializerIncludeMaps: includeSourceMaps,
+    includeSourceMaps,
     bytecode: false,
     reactCompiler: !!exp.experiments?.reactCompiler,
     baseUrl: './',
@@ -72,12 +76,7 @@ export async function exportDomComponentAsync({
     minify: true,
   });
 
-  if (useMd5Filename) {
-    for (const artifact of bundle.artifacts) {
-      const md5 = crypto.createHash('md5').update(artifact.source).digest('hex');
-      artifact.filename = `${md5}.${artifact.type}`;
-    }
-  }
+  if (useMd5Filename) finalizeDomComponentArtifacts(bundle.artifacts);
 
   const html = await serializeHtmlWithAssets({
     isExporting: true,
@@ -169,29 +168,7 @@ export function transformNativeBundleForMd5Filename({
   const htmlContent = files.get(htmlOutputName);
   assert(htmlContent);
   const htmlMd5 = crypto.createHash('md5').update(htmlContent.contents.toString()).digest('hex');
-  const hash = crypto.createHash('md5').update(domComponentReference).digest('hex');
-  for (const artifact of nativeBundle.artifacts) {
-    if (artifact.type !== 'js') {
-      continue;
-    }
-    const assetEntity = files.get(artifact.filename);
-    assert(assetEntity);
-    if (Buffer.isBuffer(assetEntity.contents)) {
-      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
-      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
-      assert(searchBuffer.length === replaceBuffer.length);
-      let index = assetEntity.contents.indexOf(searchBuffer, 0);
-      while (index !== -1) {
-        replaceBuffer.copy(assetEntity.contents, index);
-        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
-      }
-    } else {
-      const search = `${hash}.html`;
-      const replace = `${htmlMd5}.html`;
-      assert(search.length === replace.length);
-      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
-    }
-  }
+  finalizeNativeDomReferences(nativeBundle.artifacts, domComponentReference, htmlMd5 + '.html');
 }
 
 //#endregion `npx export` for updates

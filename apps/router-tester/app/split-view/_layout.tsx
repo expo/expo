@@ -109,10 +109,7 @@ function PasswordElement({ title }: { title: string }) {
           backgroundColor: isActive ? PlatformColor('systemBlue') : undefined,
           padding: 12,
         }}>
-        {/* <SafeAreaView edges={{ left: true }}> */}
-        <SafeAreaView edges={['left']}>
-          <Text style={{ color: isActive ? 'white' : 'black', fontSize: 16 }}>{title}</Text>
-        </SafeAreaView>
+        <Text style={{ color: isActive ? 'white' : 'black', fontSize: 16 }}>{title}</Text>
       </Pressable>
     </Link>
   );

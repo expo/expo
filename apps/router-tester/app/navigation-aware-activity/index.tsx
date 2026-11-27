@@ -14,49 +14,51 @@ export default function ActivityHome() {
   }, []);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Text style={styles.title} testID="e2e-screen">
-        Navigation Aware Activity
-      </Text>
-      <Text testID="e2e-pathname">{pathname}</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>State</Text>
-        <Text testID="e2e-counter">Counter: {count}</Text>
-        <Pressable
-          testID="e2e-increment"
-          style={styles.button}
-          onPress={() => setCount((value) => value + 1)}>
-          <Text style={styles.buttonText}>Increment</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Effects</Text>
-        <Text testID="e2e-effect-runs">Effect runs: {effectRuns}</Text>
-        <Text testID="e2e-cleanup-runs">Cleanup runs: {cleanupRuns}</Text>
-      </View>
-
-      <Link testID="e2e-goto-a" href="/navigation-aware-activity/a" asChild>
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Go to Screen A</Text>
-        </Pressable>
-      </Link>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Instructions</Text>
-        <Text style={styles.instruction}>1. Increment the counter a few times.</Text>
-        <Text style={styles.instruction}>
-          2. Push Screen A, then Screen B. This screen now has two screens above it, so the activity
-          hides and the effect cleanup runs.
+    <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
+      <View style={styles.contentContainer}>
+        <Text style={styles.title} testID="e2e-screen">
+          Navigation Aware Activity
         </Text>
-        <Text style={styles.instruction}>
-          3. Go back twice. The counter keeps its value, cleanup runs is 1, and effect runs is 2.
-        </Text>
-        <Text style={styles.instruction}>
-          4. Push only Screen A and go back. One screen above is below the default threshold of 2,
-          so both counts stay unchanged.
-        </Text>
+        <Text testID="e2e-pathname">{pathname}</Text>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>State</Text>
+          <Text testID="e2e-counter">Counter: {count}</Text>
+          <Pressable
+            testID="e2e-increment"
+            style={styles.button}
+            onPress={() => setCount((value) => value + 1)}>
+            <Text style={styles.buttonText}>Increment</Text>
+          </Pressable>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Effects</Text>
+          <Text testID="e2e-effect-runs">Effect runs: {effectRuns}</Text>
+          <Text testID="e2e-cleanup-runs">Cleanup runs: {cleanupRuns}</Text>
+        </View>
+
+        <Link testID="e2e-goto-a" href="/navigation-aware-activity/a" asChild>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>Go to Screen A</Text>
+          </Pressable>
+        </Link>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Instructions</Text>
+          <Text style={styles.instruction}>1. Increment the counter a few times.</Text>
+          <Text style={styles.instruction}>
+            2. Push Screen A, then Screen B. This screen now has two screens above it, so the
+            activity hides and the effect cleanup runs.
+          </Text>
+          <Text style={styles.instruction}>
+            3. Go back twice. The counter keeps its value, cleanup runs is 1, and effect runs is 2.
+          </Text>
+          <Text style={styles.instruction}>
+            4. Push only Screen A and go back. One screen above is below the default threshold of 2,
+            so both counts stay unchanged.
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );

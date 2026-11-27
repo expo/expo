@@ -171,6 +171,32 @@ export function AppLayout() {
 }
 ```
 
+When protected screens are nested, the outermost guard that fails decides the redirect. If that guard has no `redirectTo`, the router uses the [default redirect](#use-the-default-redirect), even if an inner guard has a `redirectTo`.
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+const isLoggedIn = false;
+const isSubscribed = false;
+
+export default function AppLayout() {
+  return (
+    <Stack>
+      <Stack.Protected guard={isLoggedIn} redirectTo="/login">
+        <Stack.Protected guard={isSubscribed} redirectTo="/upgrade">
+          <Stack.Screen name="premium" />
+        </Stack.Protected>
+      </Stack.Protected>
+
+      <Stack.Screen name="login" />
+      <Stack.Screen name="upgrade" />
+    </Stack>
+  );
+}
+```
+
+In this example, both guards fail, so the router redirects **premium** to **login**. If you set `isLoggedIn` to `true`, only the inner guard fails, so the router redirects to **upgrade**. If you remove `redirectTo` from the outer `Stack.Protected` and both guards fail, the router uses the default redirect and ignores `/upgrade`.
+
 ## Tabs and Drawer
 
 Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.

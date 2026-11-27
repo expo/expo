@@ -1,9 +1,4 @@
-import {
-  PermissionStatus,
-  type PermissionResponse,
-  type EventSubscription,
-  UnavailabilityError,
-} from 'expo';
+import { PermissionStatus, type EventSubscription, UnavailabilityError } from 'expo';
 
 import type {
   AlbumMetadata,
@@ -16,6 +11,7 @@ import type {
   GranularPermission,
   MediaTypeFilter,
   MediaLibraryAssetsChangeEvent,
+  PermissionResponse,
   SortDescriptor,
   SortableAssetField,
 } from '../types';

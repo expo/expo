@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Accept a callback ref in the `BlurTargetView` `ref` prop. ([#51659](https://github.com/expo/expo/pull/51659) by [@behenate](https://github.com/behenate))
+
 ## 58.0.4
 
 ### Patch Changes

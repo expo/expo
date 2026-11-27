@@ -30,6 +30,16 @@ struct JavaScriptArrayBufferTests {
   }
 
   @Test
+  func `create array buffer reports its memory to the garbage collector`() throws {
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let buffer = runtime.createArrayBuffer(size: 1 << 20)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(buffer.size == 1 << 20)
+    #expect(bytesAfter - bytesBefore >= Double(1 << 20))
+  }
+
+  @Test
   func `create array buffer wrapping native data`() {
     nonisolated(unsafe) let data = UnsafeMutablePointer<UInt8>.allocate(capacity: 4)
     data[0] = 10
@@ -188,5 +198,55 @@ struct JavaScriptArrayBufferTests {
     flag.deallocate()
 
     #expect(cleanupCalled)
+  }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    try runtime.eval("globalThis.buffer = new Uint8Array([1, 2, 3]).buffer")
+    let value = try runtime.eval("globalThis.buffer")
+    let buffer = try JavaScriptArrayBuffer.decode(value, in: runtime)
+    #expect(buffer.size == 3)
+    #expect(buffer.data()[2] == 3)
+    let encoded = try JavaScriptArrayBuffer.encode(buffer, in: runtime)
+    let isSame = try runtime.eval("(value) => value === globalThis.buffer").getFunction()
+    #expect(try isSame.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(
+      in: runtime,
+      with: try runtime.eval("new ArrayBuffer(8)").ref(),
+      try runtime.eval("new Uint8Array(8)").ref()
+    )
+    let arrayBuffer = try JavaScriptArrayBuffer.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(arrayBuffer.size == 8)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArrayBuffer.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not an array buffer`() throws {
+    for source in ["new Uint8Array(4)", "({})", "42"] {
+      let value = try runtime.eval(source)
+      #expect(throws: JavaScriptValue.TypeError.self) {
+        _ = try JavaScriptArrayBuffer.decode(value, in: runtime)
+      }
+    }
+  }
+
+  @Test
+  func `decodable kinds are objects`() {
+    #expect(JavaScriptArrayBuffer.decodableKinds == .object)
+  }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArrayBuffer.decode(JavaScriptValue.number(42), in: runtime)
+    }
   }
 }

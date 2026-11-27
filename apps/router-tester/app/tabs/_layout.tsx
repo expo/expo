@@ -1,4 +1,4 @@
-import { NativeTabs } from 'expo-router/native-tabs';
+import { NativeTabs, type NativeTabsProps } from 'expo-router/native-tabs';
 import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router/react-navigation';
 import { useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
@@ -13,12 +13,28 @@ if (process.env.EXPO_OS !== 'web') {
 export default function Layout() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [disableHiddenAnimation, setDisableHiddenAnimation] = useState(false);
+  const [preferredPlacement, setPreferredPlacement] =
+    useState<NativeTabsProps['preferredPlacement']>();
+  const [prominent, setProminent] = useState(false);
   const scheme = useColorScheme();
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <TabBarHiddenContext.Provider value={{ hidden, setHidden }}>
+      <TabBarHiddenContext.Provider
+        value={{
+          hidden,
+          setHidden,
+          disableHiddenAnimation,
+          setDisableHiddenAnimation,
+          preferredPlacement,
+          setPreferredPlacement,
+          prominent,
+          setProminent,
+        }}>
         <NativeTabs
           hidden={hidden}
+          disableHiddenAnimation={disableHiddenAnimation}
+          preferredPlacement={preferredPlacement}
           minimizeBehavior="onScrollDown"
           rippleColor="#a6c1ee"
           labelVisibilityMode="labeled"
@@ -54,7 +70,7 @@ export default function Layout() {
             <NativeTabs.Trigger.Label hidden />
             <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
           </NativeTabs.Trigger>
-          <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled">
+          <NativeTabs.Trigger name="dynamic" labelVisibilityMode="unlabeled" prominent={prominent}>
             <NativeTabs.Trigger.Icon sf="figure.disc.sports" drawable="ic_menu" />
             <NativeTabs.Trigger.Badge>9</NativeTabs.Trigger.Badge>
             <NativeTabs.Trigger.Label>Dynamic</NativeTabs.Trigger.Label>

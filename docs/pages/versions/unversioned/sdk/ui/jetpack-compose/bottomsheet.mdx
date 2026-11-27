@@ -279,6 +279,8 @@ export default function CustomColorsExample() {
 
 </ComponentExample>
 
+> **info** On Android with 3-button navigation, the system draws a translucent contrast scrim over the navigation bar. As a result, the navigation bar does not take the sheet's `containerColor`. The sheet uses the navigation bar contrast setting of your app. To remove the scrim, set [`enforceContrast`](../../navigation-bar/#configuration-in-app-config) to `false` in the `expo-navigation-bar` config plugin. This setting applies to the whole app.
+
 ### Custom drag handle
 
 Use `ModalBottomSheet.DragHandle` slot to provide a custom drag handle, or set `showDragHandle={false}` to hide it entirely.
@@ -523,6 +525,8 @@ export default function FlexRNContentExample() {
 ### Scrollable React Native content
 
 Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Set `nestedScrollEnabled` on the scrollable so it scrolls its own content first. Once it reaches the top edge, the remaining drag moves the sheet. Without `nestedScrollEnabled` the list consumes the gesture and the sheet stays put.
+
+By default, the sheet pads the top and bottom of its content through `BottomSheetDefaults.modalWindowInsets`, which covers the system bars, display cutouts, and the keyboard. As a result, the list stops above the navigation bar. To let it scroll under the navigation bar, pass `contentWindowInsets` with only the top inset, such as `{ top: insets.top }` from `react-native-safe-area-context`. Then pad the end of the list by the bottom inset. With that value, the sheet adds no padding for the keyboard.
 
 <ComponentExample
   title="ScrollableContentBottomSheetExample.tsx"

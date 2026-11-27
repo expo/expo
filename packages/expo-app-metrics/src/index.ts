@@ -1,18 +1,5 @@
-import { installErrorHandler } from './installErrorHandler';
-
-export { default } from './module';
-export { setErrorHandlerEnabled } from './installErrorHandler';
-export { AppMetricsRoot } from './AppMetricsRoot';
-export type { AppMetricsRootProps } from './AppMetricsRoot';
-export { AppMetricsErrorBoundary } from './AppMetricsErrorBoundary';
-export type {
-  AppMetricsErrorBoundaryProps,
-  AppMetricsErrorBoundaryFallbackProps,
-} from './AppMetricsErrorBoundary';
-export type { Session } from './Session';
-export * from './types';
-export * from './useNetworkRequestObserver';
-
-// Install the unhandled-JS-error handler as soon as `expo-app-metrics` is imported, so capture is
-// live as early as the app pulls the module in. Idempotent.
-installErrorHandler();
+throw new Error(
+  'Cannot import `expo-app-metrics`, because its code moved to `expo-observe`. ' +
+    'Import the API from `expo-observe` and the debug-only APIs from `expo-observe/debug`. ' +
+    'Then remove `expo-app-metrics` from your dependencies.'
+);

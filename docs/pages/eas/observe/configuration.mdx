@@ -1,12 +1,13 @@
 ---
-title: Configure EAS Observe
+title: Configure Expo Observe
 sidebar_title: Configuration
-description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
+description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
+Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, ignoring selected metrics and events, using a custom endpoint, separating data by environment, asking for user consent, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -29,9 +30,40 @@ A few details worth knowing:
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
 - Sampling depends on [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
 
+### Sample errors separately
+
+To keep more errors than other events, set `errorSampleRate`. Errors include unhandled JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+// Dispatch metrics from ~3% of installations, and errors from all installations.
+Observe.configure({
+  sampleRate: 0.03,
+  errorSampleRate: 1,
+});
+```
+
+`errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as `1`.
+
+## Ignore metrics and events
+
+If you don't use some metrics or events, skip them with `ignoredMetrics` and `ignoredEvents` to send less data:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  ignoredMetrics: ['expo.app_startup.tti'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
+});
+```
+
+`ignoredMetrics` matches metric names such as `expo.app_startup.tti`. `ignoredEvents` matches event names, including custom names passed to [`Observe.logEvent`](/eas/observe/events/). Ignored data is still recorded on the device but never sent.
+
 ## Enable metrics in development
 
-By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
 ```tsx
 import { Observe } from 'expo-observe';
@@ -43,13 +75,13 @@ Observe.configure({
 
 A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
 
-`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false`, nothing dispatches regardless of `dispatchInDebug`. `sampleRate` and `errorSampleRate` also apply in debug builds.
 
-> **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
+> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
-EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+Expo Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your Expo Services project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
 
 To change the endpoint, set the `endpointUrl` value in your **app config**:
 
@@ -105,17 +137,83 @@ Because the value persists, removing the option takes effect the next time `conf
 
 URLs are redacted before they are stored. A username and password in the URL are replaced with `REDACTED`, as are the query parameters `AWSAccessKeyId`, `Signature`, `sig`, `X-Amz-Signature`, `X-Amz-Credential`, `X-Amz-Security-Token`, and `X-Goog-Signature`. A secret in any other query parameter is stored as-is.
 
+## Ask for user consent
+
+> **info** User consent requires `expo-observe` 58.1.0 and later.
+
+By default, Expo Observe collects data from the first launch. If your app must ask the user before it collects data, keep Expo Observe inactive until the user grants consent.
+
+Set the `consent` option of the `expo-observe` config plugin to `'not-granted'` in your [**app config**](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-observe", { "consent": "not-granted" }]]
+  }
+}
+```
+
+The option is `'granted'` or `'not-granted'`, and the default is `'granted'`. Any other value makes the config plugin throw an error when the app config is evaluated. Prebuild writes the value to the native projects, so a change needs a new build. An update from Expo Update does not change it.
+
+When the user makes a choice, call `Observe.setConsent()` on Android or iOS:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+await Observe.setConsent(userAccepted ? 'granted' : 'not-granted');
+```
+
+A call with `'granted'` is a grant. A call with `'not-granted'` is a revoke. The device saves the value. On later launches, the saved value overrides the config plugin value. On Android, the promise rejects when the device cannot save the value. A grant then changes nothing. A revoke still stops collection in the current launch.
+
+### While consent is not granted
+
+- Expo Observe does not write data or settings to the device and does not send data. It saves only the consent value from `setConsent()` and the client ID.
+- A launch without consent deletes the Expo Observe data and settings that an earlier launch stored.
+- `Observe.clientId` returns the [client ID](/eas/observe/reference/client-id/). The device saves the ID, but Expo Observe does not use it.
+- Startup metrics of the current launch stay in memory. A grant in the same launch saves them.
+- Expo Observe starts collection at most one time in each launch. After a revoke, a grant in the same launch only saves the value. Collection starts at the next launch.
+
+### Consent and `dispatchingEnabled`
+
+`configure({ dispatchingEnabled: false })` stops only the upload. Expo Observe still collects data and stores it on the device. A `not-granted` value also stops collection and storage, and a revoke deletes the stored data. Use consent when the user must agree before Expo Observe collects data.
+
+<Collapsible summary="Manual setup">
+
+If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild), add the value to the native projects yourself. Like the config plugin value, it applies only until `setConsent()` saves a value. Without a native value or a saved value, Expo Observe collects data.
+
+On Android, add a `meta-data` element to the main `application` element:
+
+```xml android/app/src/main/AndroidManifest.xml
+<application>
+  <meta-data android:name="expo.modules.observe.CONSENT" android:value="not-granted"/>
+</application>
+```
+
+On iOS, add an `ExpoObserve` dictionary with a `consent` key to **Info.plist**:
+
+```xml ios/YourApp/Info.plist
+<key>ExpoObserve</key>
+<dict>
+  <key>consent</key>
+  <string>not-granted</string>
+</dict>
+```
+
+The native value is `granted` or `not-granted`. Any other value keeps Expo Observe inactive and logs a warning. On iOS, an `ExpoObserve` value that is not a dictionary has the same result.
+
+</Collapsible>
+
 ## Turn off data ingestion
 
-The options above control what your app sends. You can also stop EAS Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the EAS dashboard:
+The options above control what your app sends. You can also stop Expo Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the Expo dashboard:
 
 - **Account level**: open [Account settings](https://expo.dev/accounts/[account]/settings) and turn off **Observe data ingestion**. This pauses ingestion for all projects in the account.
 - **Project level**: open [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) and turn off **Observe data ingestion**. This pauses ingestion for that project only.
 
 <ContentSpotlight
-  alt="The Observe data ingestion toggle in the EAS dashboard account settings."
+  alt="The Observe data ingestion toggle in the Expo dashboard account settings."
   src="/static/images/expo-observe/observe-data-ingestion-light.webp"
   darkSrc="/static/images/expo-observe/observe-data-ingestion-dark.webp"
 />
 
-While ingestion is paused, EAS Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.
+While ingestion is paused, Expo Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.

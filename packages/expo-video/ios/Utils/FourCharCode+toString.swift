@@ -1,3 +1,5 @@
+import Foundation
+
 extension FourCharCode {
   func toCorrectedString() -> String {
     switch toString() {

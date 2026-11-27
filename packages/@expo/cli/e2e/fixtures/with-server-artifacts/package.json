@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "main": "expo-router/entry",
+  "dependencies": {
+    "expo": "*",
+    "expo-router": "*",
+    "react": "*",
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-web": "*"
+  }
+}

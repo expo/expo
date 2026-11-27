@@ -18,6 +18,7 @@ export default function Layout() {
       <Stack.Screen name="zoom-dest" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="zoom-dest-contain" options={{ presentation: 'fullScreenModal' }} />
       <Stack.Screen name="zoom-dest-list" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="reanimated-zoom-dest" options={{ presentation: 'fullScreenModal' }} />
     </Stack>
   );
 }

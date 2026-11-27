@@ -25,7 +25,7 @@ internal class ExpoWidgetsPeekWidget(
     val layout = WidgetsLayoutRegistry.layout(appContext, widgetName)
       ?: return createErrorRoot("No layout found for $widgetName")
     val props = WidgetsLayoutRegistry.props(appContext, widgetName)
-    val environment = getWidgetEnvironment(appContext)
+    val environment = getWidgetEnvironment(appContext, size)
     val node = evaluateLayout(appContext, layout, props, environment)
 
     return node.toPeekRoot(appContext, InteractionSource.Widget(widgetName), size)

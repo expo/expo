@@ -21,6 +21,8 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { reportProgramResult } from '../utils/programStatus';
+import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -194,7 +196,7 @@ export async function exportAppAsync(
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                includeSourceMaps: sourceMaps || inlineSourceMaps,
                 inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
@@ -210,6 +212,10 @@ export async function exportAppAsync(
               Log.error('Failed to bundle the app');
               Log.log(error as any);
             }
+            reportProgramResult({
+              state: 'error',
+              msg: error instanceof Error ? error.message : 'Failed to bundle the app',
+            });
             process.exit(1);
           }
 
@@ -219,12 +225,6 @@ export async function exportAppAsync(
             platform,
             assets: bundle.assets.length,
             ms: Date.now() - bundleStartedAt,
-          });
-
-          getFilesFromSerialAssets(bundle.artifacts, {
-            includeSourceMaps: sourceMaps,
-            files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
           });
 
           const expoDomComponentReferences = [
@@ -276,6 +276,16 @@ export async function exportAppAsync(
               ];
             })
           );
+
+          if (bytecode && isHermes && !dev) {
+            await compileHermesArtifactsAsync(projectRoot, bundle.artifacts);
+          }
+
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          });
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {

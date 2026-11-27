@@ -102,10 +102,10 @@ describe('navigator props helpers', () => {
   });
 
   it('creates native stack props that remove routes', () => {
-    const dispatch = jest.fn();
+    const dispatchSync = jest.fn();
     const props = createNativeStackProps({
-      dispatch,
-      dispatchSync: jest.fn(),
+      dispatch: jest.fn(),
+      dispatchSync,
       isPreloaded,
       isRemovalPrevented: jest.fn(),
       navigation: {} as NavigationHelpers<ParamListBase>,
@@ -114,7 +114,7 @@ describe('navigator props helpers', () => {
 
     props.removeRoutes(['settings']);
 
-    expect(dispatch).toHaveBeenCalledWith({
+    expect(dispatchSync).toHaveBeenCalledWith({
       type: 'REMOVE_ROUTES',
       payload: { routeNames: ['settings'] },
     });

@@ -14,7 +14,10 @@ export function Collapsible({
   children,
 }: CollapsibleProps) {
   const labelTextModifiers = labelStyle
-    ? transformToModifiers(undefined, {}, undefined, { textStyle: labelStyle })
+    ? transformToModifiers(undefined, {}, undefined, {
+        componentName: 'Collapsible',
+        textStyle: labelStyle,
+      })
     : undefined;
 
   return (

@@ -132,7 +132,9 @@ class LinkZoomTransitionsAlignmentViewRepository {
   }
 }
 
-class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProtocol {
+class LinkZoomTransitionSource: DisplayContentsView, LinkZoomRepositoryAccess,
+  LinkPreviewIndirectTriggerProtocol
+{
   var child: UIView?
 
   var indirectTrigger: UIView? {
@@ -222,7 +224,7 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
   }
 }
 
-class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
+class LinkZoomTransitionAlignmentRectDetector: DisplayContentsView, LinkZoomRepositoryAccess {
   private var child: UIView?
 
   var identifier: String = "" {
@@ -275,7 +277,7 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   }
 }
 
-class LinkZoomTransitionEnabler: LinkZoomExpoView {
+class LinkZoomTransitionEnabler: RouterViewWithLogger, LinkZoomRepositoryAccess {
   var zoomTransitionSourceIdentifier: String = ""
   var dismissalBoundsRect: DismissalBoundsRect? {
     didSet {
@@ -429,7 +431,9 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
   }
 }
 
-class LinkZoomExpoView: RouterViewWithLogger {
+protocol LinkZoomRepositoryAccess: RouterViewWithLogger {}
+
+extension LinkZoomRepositoryAccess {
   var module: LinkPreviewNativeModule? {
     return appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
       as? LinkPreviewNativeModule

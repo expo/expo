@@ -18,6 +18,7 @@ const xcode = require(
   require.resolve('xcode', { paths: [path.dirname(require.resolve('@expo/config-plugins'))] })
 );
 
+const { spmUpdateCommand } = require('./commands');
 const { pluginError } = require('./diagnostics');
 
 /** Written by RN's SwiftPM injector into the .xcodeproj it modified. */
@@ -116,7 +117,7 @@ function findTarget(appRoot, projectPath, targetName) {
         ? `${WARNING} the Xcode project under ${appRoot} has no target "${targetName}", which is the ` +
             `target its SwiftPM injection marker names, so the Expo module registry will report no app ` +
             `groups. The target was most likely renamed after the last sync — re-run ` +
-            '`npx react-native spm update` to re-inject it.'
+            `\`${spmUpdateCommand()}\` to re-inject it.`
         : `${WARNING} the Xcode project under ${appRoot} has no application target, so the Expo module ` +
             'registry will report no app groups. Regenerate the project with `npx expo prebuild`.'
     );
@@ -178,7 +179,7 @@ function findEntitlementsFile(appRoot, projectPath, targetName) {
       `${WARNING} target "${name}" declares an entitlements file that is not on disk ` +
         `(${declared.join(', ')}), so the Expo module registry will report no app groups. Point ` +
         'CODE_SIGN_ENTITLEMENTS at the file the target really uses, then re-run ' +
-        '`npx react-native spm update`.'
+        `\`${spmUpdateCommand()}\`.`
     );
   } else if (declared.length > 1) {
     console.warn(
@@ -242,7 +243,7 @@ function unusablePropertiesError(propertiesPath, reason, options) {
     {
       what: `${propertiesPath} could not be read as Podfile properties (${reason}), so the plugin cannot tell which products this app links.`,
       why: "Carrying on would read every property as unset and leave each gated product to its own default instead of the app's configuration, which only shows up at runtime, so the sync stops here.",
-      how: 'Restore the file to a JSON object of properties, then re-run `npx react-native spm update`.',
+      how: `Restore the file to a JSON object of properties, then re-run \`${spmUpdateCommand()}\`.`,
     },
     options
   );

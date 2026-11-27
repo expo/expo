@@ -342,23 +342,6 @@ void [
 ];
 
 it.each([
-  ['async ({ value }) => value', 'hasAsyncArrowNonSimpleParamsCandidate'],
-  ['async (value = 1) => value', 'hasAsyncArrowNonSimpleParamsCandidate'],
-  ['async (...values) => values', 'hasAsyncArrowNonSimpleParamsCandidate'],
-  ['try {} finally { class Value {} }', 'hasClassInFinallyCandidate'],
-  ['({ get value() { return (() => super.value)() } })', 'hasSuperInObjectAccessorCandidate'],
-] as const)('classifies the focused workaround shape in %s', (source, fact) => {
-  expect(createNoxcturnalSourceFacts(source)[fact]).toBe(true);
-});
-
-it.each([
-  ['async (a, b) => a + b', 'hasAsyncArrowNonSimpleParamsCandidate'],
-  ['class Value {}; try {} finally {}', 'hasClassInFinallyCandidate'],
-] as const)('excludes a broad false-positive workaround shape in %s', (source, fact) => {
-  expect(createNoxcturnalSourceFacts(source)[fact]).toBe(false);
-});
-
-it.each([
   ['ordinary descendant', '/app/routes', '/app/routes/index.tsx', true],
   ['root itself', '/app/routes', '/app/routes', false],
   ['parent', '/app/routes', '/app', false],

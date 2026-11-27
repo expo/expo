@@ -325,6 +325,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   // The dev menu params apply to every launcher command, with or without a `__expo_url`.
   [[DevMenuManager shared] applyLaunchParamsFromURL:url];
   [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
+  [EXDevLauncherDeviceLogin handle:url];
 
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
     NSURL *externalDeepLink = [EXDevLauncherURLHelper externalDeepLinkFromLauncherURL:url];
@@ -571,6 +572,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
+    // Release the old interceptor first: its deinit clears the shared delegate that the new one sets.
+    self.networkInterceptor = nil;
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 

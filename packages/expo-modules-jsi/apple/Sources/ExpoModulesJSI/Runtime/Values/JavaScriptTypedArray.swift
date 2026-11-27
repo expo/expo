@@ -10,7 +10,8 @@ internal import jsi
 public struct JavaScriptTypedArray: ~Copyable {
   /// Handle to the runtime the typed array belongs to.
   internal let runtimeHandle: JavaScriptRuntimeHandle
-  internal let pointee: facebook.jsi.Object
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed typed array.
+  internal var pointee: facebook.jsi.Object
 
   /// The underlying `ArrayBuffer` backing this typed array. Stored alongside `pointee`
   /// so that holding the Swift value keeps the backing store alive on the JS side —
@@ -30,11 +31,17 @@ public struct JavaScriptTypedArray: ~Copyable {
     return runtimeHandle.pointee
   }
 
+  /// Whether the typed array belongs to the given runtime, the runtime that created it. Use it only with the runtime it
+  /// belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   /// Creates a typed array from an existing JSI object, which belongs to `runtime`.
   @JavaScriptActor
   init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     let jsiRuntime = runtime.pointee
-    let propNames = runtime.cached(PropNames.key) { PropNames(jsiRuntime) }
+    let propNames = runtime.cached(JavaScriptRuntime.CacheKeys.typedArrayPropNames) { PropNames(jsiRuntime) }
     self.runtimeHandle = runtime.handle
     self.kind = Kind(
       rawValue: Int(expo.getTypedArrayKind(jsiRuntime, object, propNames.constructor, propNames.name).rawValue)
@@ -49,8 +56,6 @@ public struct JavaScriptTypedArray: ~Copyable {
   /// The property names the initializer reads. Creating a property name costs about as much as
   /// reading the property, so they are created once per runtime and kept in its cache.
   internal final class PropNames {
-    static let key = JavaScriptRuntime.Cache.Key<PropNames>()
-
     let constructor: facebook.jsi.PropNameID
     let name: facebook.jsi.PropNameID
     let byteLength: facebook.jsi.PropNameID
@@ -160,6 +165,11 @@ public struct JavaScriptTypedArray: ~Copyable {
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
+  /// Moves the typed array into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
+  }
+
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {
@@ -167,5 +177,42 @@ public struct JavaScriptTypedArray: ~Copyable {
       FatalError.runtimeLost()
     }
     return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name))
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptTypedArray` argument receives the JS typed array of any kind unconverted, so native code
+// reads and writes its bytes in place. Decoding anything else, including an `ArrayBuffer`, throws a
+// `TypeError`. A typed array is an object to `JavaScriptValueKinds`, so the kind check alone can't skip
+// the other objects.
+extension JavaScriptTypedArray: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptTypedArray
+  {
+    return try value.asTypedArray()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptTypedArray
+  {
+    return try value.asTypedArray(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptTypedArray, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }

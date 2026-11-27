@@ -116,6 +116,48 @@ class FileDownloaderAssetDiffTest {
   }
 
   @Test
+  fun downloadAssetAndVerifyHashAndWriteToPath_failedFallbackKeepsHttpStatusAndTruncatesBody() = runTest {
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(226)
+        .setHeader("Content-Type", "application/javascript")
+        .setHeader("im", "bsdiff")
+        .setBody("diff")
+    )
+    server.enqueue(MockResponse().setResponseCode(500).setBody("x".repeat(2000)))
+
+    val asset = AssetEntity("bundle", "hbc").apply {
+      url = Uri.parse(server.url("/bundle.hbc").toString())
+      isLaunchAsset = true
+    }
+    val downloader = FileDownloader(filesDirectory, "test-eas-client", configuration, logger, defaultDatabase, OkHttpClient())
+    val request = downloader.createRequestForAsset(asset, JSONObject(), configuration)
+
+    val error = try {
+      downloader.downloadAssetAndVerifyHashAndWriteToPath(
+        asset = asset,
+        extraHeaders = JSONObject(),
+        request = request,
+        expectedBase64URLEncodedSHA256Hash = null,
+        destination = File(updatesDirectory, "downloaded.hbc"),
+        updatesDirectory = updatesDirectory,
+        progressListener = null,
+        allowPatch = true
+      )
+      null
+    } catch (e: IOException) {
+      e
+    }
+
+    val httpError = generateSequence<Throwable>(error) { it.cause }
+      .filterIsInstance<FileDownloader.AssetHttpResponseException>()
+      .firstOrNull()
+    assertNotNull("Expected an AssetHttpResponseException in: $error", httpError)
+    assertEquals(500, httpError!!.statusCode)
+    assertTrue(httpError.message, httpError.message!!.contains("truncated, 2000 characters total"))
+  }
+
+  @Test
   fun downloadAssetAndVerifyHashAndWriteToPath_fallsBackWhenPatchFails() = runTest {
     val fallback = loadFixture("new.hbc")
     val expected = temporaryFolder.newFile("fallback.hbc").apply {

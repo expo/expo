@@ -35,10 +35,11 @@ env:
 jobs:
   check-packages:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
-    runs-on: ubuntu-24.04
+    # Turbo checks packages in parallel across 90% of the cores.
+    runs-on: blacksmith-8vcpu-ubuntu-2404
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
@@ -98,7 +99,8 @@ jobs:
 
   check-packages-windows:
     runs-on: windows-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'schedule' && github.repository == 'expo/expo') }}
+    # Manual only: every scheduled run hits the 6-hour job limit in "Check all packages".
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

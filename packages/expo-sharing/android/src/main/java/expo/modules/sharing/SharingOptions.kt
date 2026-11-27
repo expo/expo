@@ -1,12 +1,10 @@
 package expo.modules.sharing
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
+@Record
 data class SharingOptions(
-  @Field val mimeType: String?,
-  @Field val UTI: String?,
-  @Field val dialogTitle: String?
-) : Record
+  val mimeType: String? = null,
+  val UTI: String? = null,
+  val dialogTitle: String? = null
+)

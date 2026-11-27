@@ -3,6 +3,7 @@ import type { JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { originalPositionFor, TraceMap } from '@jridgewell/trace-mapping';
 import { createRequire } from 'node:module';
 import path from 'node:path';
+import { stripVTControlCharacters } from 'node:util';
 import {
   defineNativePipeline,
   NativeTransformError,
@@ -383,16 +384,21 @@ it("keeps Babel's .ts JSX rejection instead of widening TypeScript syntax", asyn
   const source = 'module.exports = <View />;';
   expect(() => transformWithBabelPreset(source, typedFilename)).toThrow();
 
-  const native = await transformNodeModuleWithNoxcturnal({
+  const native = transformNodeModuleWithNoxcturnal({
     filename: typedFilename,
     projectRoot: '/app',
     source,
     options: options(),
     isDefaultExpoTransformer: true,
   });
-  expect(native.status).toBe('fallback');
-  if (native.status !== 'fallback') return;
-  expect(native.reason).toContain('parse-error');
+  const error = await native.catch((error: unknown) => error);
+  expect(error).toBeInstanceOf(TransformSyntaxError);
+  expect(error).toMatchObject({
+    code: 'TRANSFORM_SYNTAX_ERROR',
+    filename: typedFilename,
+    loc: { line: 1, column: expect.any(Number) },
+  });
+  expect(stripVTControlCharacters((error as TransformSyntaxError).codeFrame)).toContain(source);
 });
 
 it('matches Babel preset Expo runtime behavior and source positions for TypeScript', async () => {
@@ -1271,47 +1277,18 @@ it('preserves await and yield through captured-loop helpers', async () => {
 });
 
 it.each([
-  [
-    'object destructure',
-    'module.exports = async ({ b }) => 42',
-    /async\s+\(_p\)\s*=>\s*\{\s*var\s+\{\s*b\s*\}\s*=\s*_p;\s*return 42;/,
-  ],
-  [
-    'renamed destructure with default',
-    'module.exports = async ({ a: x = 7 }) => x',
-    /var\s+\{\s*a:\s*x\s*=\s*7\s*\}\s*=\s*_p;/,
-  ],
-  [
-    'array destructure',
-    'module.exports = async ([a, ...rest]) => rest',
-    /var\s+\[a,\s*\.\.\.rest\]\s*=\s*_p;/,
-  ],
-  [
-    'default value',
-    'module.exports = async (x = compute()) => x',
-    /var x = _p === undefined \? compute\(\) : _p;/,
-  ],
+  ['object destructure', 'module.exports = async ({ b }) => 42'],
+  ['renamed destructure with default', 'module.exports = async ({ a: x = 7 }) => x'],
+  ['array destructure', 'module.exports = async ([a, ...rest]) => rest'],
+  ['default value', 'module.exports = async (x = compute()) => x'],
   [
     'commented nested default',
     'module.exports = async (value /* left */ = /* right */ choose(inner = 2)) => value',
-    /var value = _p === undefined \? choose\(inner = 2\) : _p;/,
   ],
-  [
-    'Unicode binding default',
-    'module.exports = async (π = compute()) => π',
-    /var π = _p === undefined \? compute\(\) : _p;/,
-  ],
-  [
-    'rest parameter',
-    'module.exports = async (...rest) => rest.length',
-    /\(\.\.\.rest\)\s*=>\s*\(async\s*\(\)\s*=>\s*\{\s*return rest\.length;/,
-  ],
-  [
-    'rest parameter with block body',
-    'module.exports = async (...rest) => { return rest.length; }',
-    /\(\.\.\.rest\)\s*=>\s*\(async\s*\(\)\s*=>\s*\{\s*return rest\.length;/,
-  ],
-])('applies the maintained async-arrow workaround for %s', async (_name, source, expected) => {
+  ['Unicode binding default', 'module.exports = async (π = compute()) => π'],
+  ['rest parameter', 'module.exports = async (...rest) => rest.length'],
+  ['rest parameter with block body', 'module.exports = async (...rest) => { return rest.length; }'],
+])('preserves Hermes V1 async arrows with %s', async (_name, source) => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -1320,29 +1297,10 @@ it.each([
     isDefaultExpoTransformer: true,
   });
   if (result.status === 'fallback') throw new Error(result.reason);
-  expect(result.result.code).toMatch(expected);
+  expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
 });
 
-it.each([
-  'module.exports = async (a, b) => a + b',
-  'module.exports = async () => 42',
-  'module.exports = ({ b }) => b',
-  'module.exports = async function ({ b }) { return b }',
-  'class C { async method({ b }) { return b } }',
-  'module.exports = { async method({ b }) { return b } }',
-])('does not over-apply the maintained async-arrow workaround to %s', async (source) => {
-  const result = await transformNodeModuleWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source,
-    options: options(),
-    isDefaultExpoTransformer: true,
-  });
-  if (result.status === 'fallback') throw new Error(result.reason);
-  expect(result.result.code).not.toMatch(/\bvar _?\w+ = _p/);
-});
-
-it('preserves runtime behavior across maintained async-arrow rewrites', async () => {
+it('preserves runtime behavior of async arrows with non-simple parameters', async () => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -1364,8 +1322,11 @@ it('preserves runtime behavior across maintained async-arrow rewrites', async ()
   await expect((module.exports as () => Promise<unknown>)()).resolves.toEqual([1, 7, 'a:b', 1]);
 });
 
-it('preserves source mappings for a composite rest-parameter async-arrow rewrite', async () => {
-  const source = `module.exports = async (...rest) => rest.length;`;
+it.each([
+  ['declaration', 'try {} finally { class C { static value = 42 } use(C) }'],
+  ['expression', 'try {} finally { use(class { method() {} }) }'],
+  ['nested block', 'try {} finally { if (ok) { class C {} use(C) } }'],
+])('preserves a Hermes V1 class %s in finally', async (_name, source) => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -1374,65 +1335,10 @@ it('preserves source mappings for a composite rest-parameter async-arrow rewrite
     isDefaultExpoTransformer: true,
   });
   if (result.status === 'fallback') throw new Error(result.reason);
-  const original = originalPositionFor(
-    new TraceMap({ version: 3, sources: [filename], ...result.result.map } as any),
-    generatedPositionOf(result.result.code, 'rest.length')
-  );
-
-  expect(original).toMatchObject({ line: 1, column: source.indexOf('rest.length') });
+  expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
 });
 
-it.each([
-  [
-    'declaration',
-    'try {} finally { class C { static value = 42 } use(C) }',
-    /var C = \(\(\) => \{\s*class C[\s\S]*return C;\s*\}\)\(\);/,
-  ],
-  [
-    'expression',
-    'try {} finally { use(class { method() {} }) }',
-    /use\(\(\(\) => class \{ method\(\) \{\} \}\)\(\)\)/,
-  ],
-  [
-    'nested block',
-    'try {} finally { if (ok) { class C {} use(C) } }',
-    /if \(ok\) \{\s*var C = \(\(\) => \{/,
-  ],
-])(
-  'applies the maintained class-in-finally workaround for a %s',
-  async (_name, source, expected) => {
-    const result = await transformNodeModuleWithNoxcturnal({
-      filename,
-      projectRoot: '/app',
-      source,
-      options: options(),
-      isDefaultExpoTransformer: true,
-    });
-    if (result.status === 'fallback') throw new Error(result.reason);
-    expect(result.result.code).toMatch(expected);
-  }
-);
-
-it.each([
-  'class C {}',
-  'try { class C {} } catch (error) {}',
-  'try {} catch (error) { class C {} }',
-  'try {} finally { (() => { class C {} return C })() }',
-  'try {} finally { class Outer { method() { class Inner {} return Inner } } }',
-])('does not over-apply the maintained class-in-finally workaround to %s', async (source) => {
-  const result = await transformNodeModuleWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source,
-    options: options(),
-    isDefaultExpoTransformer: true,
-  });
-  if (result.status === 'fallback') throw new Error(result.reason);
-  const wrappers = result.result.code.match(/var \w+ = \(\(\) =>/g) ?? [];
-  expect(wrappers).toHaveLength(source.includes('class Outer') ? 1 : 0);
-});
-
-it('preserves class identity and heritage through the maintained finally rewrite', async () => {
+it('preserves class identity and heritage in finally', async () => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -1451,19 +1357,12 @@ it('preserves class identity and heritage through the maintained finally rewrite
 });
 
 it.each([
-  ['getter', 'module.exports = { get value() { return super.value } }', 'get ["value"]()'],
-  ['setter', 'module.exports = { set value(v) { super.value = v } }', 'set ["value"](v)'],
-  [
-    'string key',
-    'module.exports = { get "weird key"() { return super.value } }',
-    'get ["weird key"]()',
-  ],
-  [
-    'nested arrow',
-    'module.exports = { get value() { return (() => super.value)() } }',
-    'get ["value"]()',
-  ],
-])('applies the maintained Hermes super workaround for a %s', async (_name, source, expected) => {
+  ['getter', 'module.exports = { get value() { return super.value } }'],
+  ['setter', 'module.exports = { set value(v) { super.value = v } }'],
+  ['string key', 'module.exports = { get "weird key"() { return super.value } }'],
+  ['nested arrow', 'module.exports = { get value() { return (() => super.value)() } }'],
+  ['computed key', 'module.exports = { get ["value"]() { return super.value } }'],
+])('preserves Hermes V1 super access in an object accessor with %s', async (_name, source) => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
     projectRoot: '/app',
@@ -1472,38 +1371,7 @@ it.each([
     isDefaultExpoTransformer: true,
   });
   if (result.status === 'fallback') throw new Error(result.reason);
-  expect(result.result.code).toContain(expected);
-});
-
-it.each([
-  'module.exports = { get value() { return 1 } }',
-  'module.exports = { value() { return super.value } }',
-  'class Value extends Base { get value() { return super.value } }',
-  'module.exports = { get value() { class C extends B { static { super.value } } return C } }',
-  'module.exports = { get value() { class C extends B { field = super.value } return C } }',
-])('does not over-apply the maintained Hermes super workaround to %s', async (source) => {
-  const result = await transformNodeModuleWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source,
-    options: options(),
-    isDefaultExpoTransformer: true,
-  });
-  if (result.status === 'fallback') throw new Error(result.reason);
-  expect(result.result.code).not.toMatch(/\b(?:get|set)\s+\[/);
-});
-
-it('preserves an already-computed object accessor in the maintained Hermes workaround', async () => {
-  const source = 'module.exports = { get ["value"]() { return super.value } }';
-  const result = await transformNodeModuleWithNoxcturnal({
-    filename,
-    projectRoot: '/app',
-    source,
-    options: options(),
-    isDefaultExpoTransformer: true,
-  });
-  if (result.status === 'fallback') throw new Error(result.reason);
-  expect(result.result.code).toContain('get ["value"]()');
+  expect(canonicalModuleBody(result.result.code)).toBe(canonicalModuleBody(source));
 });
 
 it('passes Expo’s exact babelRuntimeVersion to native helper selection', async () => {

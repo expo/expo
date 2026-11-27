@@ -1,17 +1,17 @@
 ---
 title: Using Git submodules
 sidebar_title: Git submodules
-description: Learn how to configure EAS Build to use git submodules.
+description: Learn how to configure Expo Build to use git submodules.
 hideTOC: true
 ---
 
 import { Step } from '~/ui/components/Step';
 
-When using the default Version Control Systems (VCS) workflow, the content of your working directory is uploaded to EAS Build as it is, including the content of Git submodules. However, if you are building on CI or have `cli.requireCommit` set to `true` in **eas.json** or have a submodule in a private repository, you will need to initialize it to avoid uploading empty directories.
+When using the default Version Control Systems (VCS) workflow, the content of your working directory is uploaded to Expo Build as it is, including the content of Git submodules. However, if you are building on CI or have `cli.requireCommit` set to `true` in **eas.json** or have a submodule in a private repository, you will need to initialize it to avoid uploading empty directories.
 
 ## Submodules initialization
 
-To initialize a submodule on EAS Build builder:
+To initialize a submodule on Expo Build builder:
 
 <Step label="1">
 

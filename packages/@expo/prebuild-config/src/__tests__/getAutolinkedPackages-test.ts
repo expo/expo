@@ -1,4 +1,21 @@
-import { resolvePackagesList, shouldSkipAutoPlugin } from '../getAutolinkedPackages';
+import {
+  getAutolinkedPackagesAsync,
+  resolvePackagesList,
+  shouldSkipAutoPlugin,
+} from '../getAutolinkedPackages';
+
+jest.mock('expo/internal/unstable-autolinking-exports', () => ({
+  makeCachedDependenciesLinker: jest.fn(() => ({})),
+  scanExpoModuleResolutionsForPlatform: jest.fn(async () => ({ 'expo-camera': {} })),
+}));
+
+describe(getAutolinkedPackagesAsync, () => {
+  it(`falls back to the expo package resolved from prebuild-config`, async () => {
+    await expect(getAutolinkedPackagesAsync('/path/to/project-without-expo')).resolves.toEqual([
+      'expo-camera',
+    ]);
+  });
+});
 
 describe(resolvePackagesList, () => {
   it(`resolves a list of plugins`, () => {

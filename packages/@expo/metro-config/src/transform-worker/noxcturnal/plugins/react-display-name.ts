@@ -35,6 +35,7 @@ export function createReactDisplayNamePlugin(nox: Noxcturnal): DefinedNativePlug
 
   return nox.defineNativePlugin({
     name: 'expo-transform-react-display-name',
+    contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
       nox.defineVisitor(
         'CallExpression',

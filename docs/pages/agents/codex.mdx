@@ -4,13 +4,15 @@ sidebar_title: Codex
 description: Use Codex to build, upgrade, debug, and deploy your Expo and React Native projects.
 ---
 
+import { Button } from '@expo/styleguide';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Codex is OpenAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Codex reads directly. It can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+Codex is OpenAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Codex reads directly. It can also check Expo Services and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your Expo Services deployment workflow, and more.
 
 ## Quick start
 
@@ -32,10 +34,10 @@ Create a project with the following command or ensure your existing project has 
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-58'],
-    yarn: ['$ yarn create expo-app --template default@sdk-58'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-58'],
-    bun: ['$ bun create expo --template default@sdk-58'],
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
   }}
 />
 
@@ -45,13 +47,11 @@ Create a project with the following command or ensure your existing project has 
 
 ### Install the Expo plugin
 
-Install the official Expo plugin so Codex knows Expo conventions and can work with your EAS projects. One command installs Expo Skills and registers the Expo MCP Server:
+Install the official Expo plugin so Codex knows Expo conventions and can work with your Expo Services projects. The plugin installs Expo Skills and connects Codex to the Expo MCP Server:
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+<Terminal cmd={['$ codex plugin add expo2@openai-curated-remote']} />
 
-Then sign in to your Expo account:
-
-<Terminal cmd={['$ codex mcp login expo']} />
+Then sign in to your Expo account. Type `/apps` in a Codex session, search for **Expo2**, and select **Install on ChatGPT**. In the browser window that opens, connect the app and sign in to your Expo account. Then return to Codex and confirm that the install is complete.
 
 The guides below cover the available skills and everything else the MCP Server can do:
 
@@ -64,7 +64,7 @@ The guides below cover the available skills and everything else the MCP Server c
 
 <BoxLink
   title="Expo MCP Server"
-  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and Expo Services."
   href="/mcp/#installation-and-setup"
   Icon={Star06Icon}
 />
@@ -101,6 +101,21 @@ When you start Codex in your project, it reads the scaffolded **AGENTS.md** file
 
 **AGENTS.md** is committed to your project, so a developer's Codex session starts from the same context.
 
+## Use Expo in ChatGPT
+
+ChatGPT and Codex use the same plugin directory, so the official Expo plugin is also available in ChatGPT. Click the following button to open the Expo plugin in the ChatGPT plugin directory:
+
+<Button
+  theme="secondary"
+  href="https://chatgpt.com/plugins/plugin_asdk_app_6aec576a7d8c8191ab1092de040af13a"
+  openInNewTab
+  className="mb-4"
+  leftSlot={<OpenAILogoIcon className="icon-md text-button-secondary-icon" />}>
+  {'Add Expo plugin to ChatGPT'}
+</Button>
+
+Install the plugin. Under **Apps** on the plugin page, select **Connect** next to **Expo2**, then sign in to your Expo account. After that, start a new chat and describe your Expo task. Codex uses the same Expo2 app from ChatGPT.
+
 ## Example prompts
 
 After setup, describe Expo tasks in plain language. For example:
@@ -109,8 +124,8 @@ After setup, describe Expo tasks in plain language. For example:
 | ----------------- | --------------------------------------------------------------------------------- |
 | Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
 | Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
-| Automate builds   | Create an EAS Workflow that builds the app on every pull request.                 |
-| Debug a build     | My latest iOS build failed. Read the EAS Build logs and tell me what went wrong.  |
+| Automate builds   | Create a workflow with Expo Workflows that builds the app on every pull request.  |
+| Debug a build     | My latest iOS build failed. Read the Expo Build logs and tell me what went wrong. |
 | Add notifications | Configure expo-notifications and show a local notification when the app launches. |
 | Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
 | Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |

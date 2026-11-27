@@ -186,6 +186,13 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Location/BackgroundMotionActivityScreen'));
+    },
+    name: 'BackgroundMotionActivity',
+    options: { title: 'Background motion activity' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/BackgroundFetchScreen'));
     },
     name: 'BackgroundFetch',
@@ -349,6 +356,12 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/MailComposerScreen'));
     },
     name: 'MailComposer',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/MediaSessionScreen'));
+    },
+    name: 'MediaSession',
   },
   {
     getComponent() {
@@ -549,12 +562,6 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/VideoThumbnailsScreen'));
-    },
-    name: 'Video Thumbnails',
   },
   {
     getComponent() {

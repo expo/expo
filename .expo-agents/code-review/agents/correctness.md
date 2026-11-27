@@ -100,7 +100,7 @@ Flag the changed expression when an identical shape still exists at a sibling pa
 - Web implementations diverging from native where the TypeScript type already
   narrows by platform.
 - Anything the toolchain enforces. See the shared prompt.
-- A missing `CHANGELOG.md` entry. Already checked by
+- A missing changeset. Already checked by
   `tools/src/code-review/reviewers/`.
 - Pre-existing divergence the diff merely moved or reformatted.
 - Divergence in `apps/` demo and test-app code.
@@ -108,3 +108,13 @@ Flag the changed expression when an identical shape still exists at a sibling pa
 Read both sides before you report. A cross-platform finding that names only one
 file is not yet a finding — name the sibling and quote what it does instead.
 Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/Info.plist -->
+<!-- @ref glob:**/android/src/main/AndroidManifest.xml -->
+<!-- @ref glob:packages/expo-router/src/react-navigation/** -->
+<!-- @ref packages/expo-router/src/fork/ -->
+<!-- @ref tools/src/code-review/reviewers/ -->
+<!-- @ref-ignore apps/ -->

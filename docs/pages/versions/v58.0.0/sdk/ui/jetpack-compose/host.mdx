@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 > **info** For cross-platform usage, see the universal [`Host`](../universal/host) — it renders the appropriate native component per platform.
 
@@ -23,19 +24,27 @@ The `Host` component is the bridge between React Native and Jetpack Compose. Eve
 
 Use the `matchContents` prop to make the `Host` size itself to fit the content. You can pass a boolean or an object to control vertical and horizontal sizing independently.
 
-```tsx MatchContents.tsx
-import { Host, Button } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="MatchContents.tsx"
+  src="/static/images/expo-ui/examples/host-match-contents-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/host-match-contents-android-dark.webp"
+  alt="A filled button labeled Sized to content, sized to its label">
+
+```tsx
+import { Host, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function MatchContents() {
   return (
     <Host matchContents>
       <Button onClick={() => console.log('Pressed')}>
-        Sized to content
+        <Text>Sized to content</Text>
       </Button>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 > **Note:** Do not use `matchContents` on the same axis as a scrollable child (`LazyRow`, `LazyColumn`, `Carousel`, or anything using `Modifier.horizontalScroll`/`verticalScroll`). Scrollables require a finite max constraint on their scroll axis and `matchContents` propagates an unbounded one.
 
@@ -47,7 +56,7 @@ import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
 export default function MatchContentsCrash() {
   return (
     <Host matchContents>
-      <LazyRow>
+      <LazyRow horizontalArrangement={{ spacedBy: 8 }}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Text key={i}>Item {i}</Text>
         ))}
@@ -59,7 +68,13 @@ export default function MatchContentsCrash() {
 
 Either drop `matchContents` on the scroll axis or give the `Host` a finite size on that axis via `style`:
 
-```tsx MatchContentsFix.tsx
+<ComponentExample
+  title="MatchContentsFix.tsx"
+  src="/static/images/expo-ui/examples/host-match-contents-fix-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/host-match-contents-fix-android-dark.webp"
+  alt="Five text items, Item 0 to Item 4, in a single horizontal row">
+
+```tsx
 import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
 
 export default function MatchContentsFix() {
@@ -67,7 +82,7 @@ export default function MatchContentsFix() {
     <Host
       matchContents={{ vertical: true }}
       style={{ width: '100%' }}>
-      <LazyRow>
+      <LazyRow horizontalArrangement={{ spacedBy: 8 }}>
         {Array.from({ length: 5 }).map((_, i) => (
           <Text key={i}>Item {i}</Text>
         ))}
@@ -77,12 +92,14 @@ export default function MatchContentsFix() {
 }
 ```
 
+</ComponentExample>
+
 ### With style
 
 Apply standard React Native styles to the `Host` wrapper.
 
 ```tsx HostWithStyle.tsx
-import { Host, Button } from '@expo/ui/jetpack-compose';
+import { Host, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function HostWithStyle() {
   return (
@@ -93,7 +110,7 @@ export default function HostWithStyle() {
         borderRadius: 8,
       }}>
       <Button onClick={() => console.log('Pressed')}>
-        Styled host
+        <Text>Styled host</Text>
       </Button>
     </Host>
   );

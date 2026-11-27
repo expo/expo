@@ -79,7 +79,6 @@ function getExpoDependencyChunks({
             'expo-system-ui',
             'expo-ui',
             'expo-video',
-            'expo-video-thumbnails',
           ],
         ]
       : []),
@@ -91,7 +90,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
 }
 
 const expoResolutions: { [key: string]: string } = {};
-const reactNativeTvosVersion = '0.86.0-1';
+const reactNativeTvosVersion = '0.88.0-0';
 
 function linkExpoDependency(repoRoot: string, projectRoot: string, dependencyName: string) {
   // Pack up the named Expo package into the destination folder

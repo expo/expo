@@ -1,6 +1,6 @@
 import Ionicons from '@react-native-vector-icons/ionicons';
 import { Image } from 'expo-image';
-import * as VideoThumbnails from 'expo-video-thumbnails';
+import { createVideoPlayer, type VideoThumbnail } from 'expo-video';
 import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -8,6 +8,7 @@ const pictureSize = 150;
 
 type State = {
   uri?: string;
+  thumbnail?: VideoThumbnail;
   selected: boolean;
   isVideo: boolean;
 };
@@ -28,7 +29,9 @@ export default function Photo({ uri, onSelectionToggle }: Props) {
     if (uri.endsWith('jpg') || uri.endsWith('png')) {
       setState((state) => ({ ...state, uri }));
     } else {
-      getVideoThumbnail(uri).then((uri) => setState((state) => ({ ...state, uri, isVideo: true })));
+      getVideoThumbnail(uri).then((thumbnail) =>
+        setState((state) => ({ ...state, thumbnail, isVideo: true }))
+      );
     }
   }, []);
 
@@ -41,18 +44,21 @@ export default function Photo({ uri, onSelectionToggle }: Props) {
   };
 
   const getVideoThumbnail = async (videoUri: string) => {
+    const player = createVideoPlayer(videoUri);
     try {
-      const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, { time: 250 });
-      return uri;
+      const [thumbnail] = await player.generateThumbnailsAsync(0.25);
+      return thumbnail;
     } catch (error) {
       console.warn(error);
       return undefined;
+    } finally {
+      player.release();
     }
   };
 
   return (
     <TouchableOpacity style={styles.pictureWrapper} onPress={toggleSelection} activeOpacity={1}>
-      {uri && <Image style={styles.picture} source={{ uri: state.uri }} />}
+      {uri && <Image style={styles.picture} source={state.thumbnail ?? { uri: state.uri }} />}
       {state.isVideo && (
         <Ionicons name="videocam" size={24} color="#ffffffbb" style={styles.videoIcon} />
       )}

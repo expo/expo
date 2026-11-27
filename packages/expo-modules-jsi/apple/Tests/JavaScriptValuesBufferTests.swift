@@ -50,6 +50,17 @@ struct JavaScriptValuesBufferTests {
   }
 
   @Test
+  func `slice passes the values of a range without taking them`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: "first", 2, 3, "last")
+    let sum = try runtime.eval("(function (a, b) { return a + b; })").getFunction()
+
+    #expect(try sum.call(arguments: buffer.slice(1..<3)).asInt() == 5)
+    #expect(buffer.slice(1...).count == 3)
+    #expect(buffer.slice(4...).count == 0)
+    #expect(try buffer[1].asInt() == 2)
+  }
+
+  @Test
   func `map enumerates values in order`() {
     let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: 1, 2, 3)
     let values = buffer.map { value, _ in (try? value.asInt()) ?? 0 }
@@ -76,5 +87,77 @@ struct JavaScriptValuesBufferTests {
 
     let stillAlive = weak.lock() != nil
     #expect(stillAlive == false)
+  }
+
+  @Test
+  func `emplace releases the value it replaces`() throws {
+    let object = runtime.createObject()
+    let weak = object.createWeak()
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+    try buffer.emplace(object, at: 0, in: runtime)
+    try buffer.emplace(42, at: 0, in: runtime)
+    runtime.collectGarbage { weak.lock() == nil }
+    let stillAlive = weak.lock() != nil
+    #expect(stillAlive == false)
+    #expect(try buffer[0].asInt() == 42)
+  }
+
+  @Test
+  func `emplace encodes primitives into the slot`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 6)
+    try buffer.emplace(true, at: 0, in: runtime)
+    try buffer.emplace(42, at: 1, in: runtime)
+    try buffer.emplace(1.5, at: 2, in: runtime)
+    try buffer.emplace("café", at: 3, in: runtime)
+    try buffer.emplace("", at: 4, in: runtime)
+    try buffer.emplace(UInt8(7), at: 5, in: runtime)
+    #expect(try buffer[0].asBool() == true)
+    #expect(try buffer[1].asInt() == 42)
+    #expect(try buffer[2].asDouble() == 1.5)
+    #expect(try buffer[3].asString() == "café")
+    #expect(try buffer[4].asString() == "")
+    #expect(try buffer[5].asInt() == 7)
+  }
+
+  @Test
+  func `emplace encodes optionals into the slot`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 2)
+    try buffer.emplace(Optional("a"), at: 0, in: runtime)
+    try buffer.emplace(Int?.none, at: 1, in: runtime)
+    #expect(try buffer[0].asString() == "a")
+    let isNull = buffer[1].isNull()
+    #expect(isNull)
+  }
+
+  @Test
+  func `emplace encodes a type without a slot override`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+    try buffer.emplace(DefaultEncodedString(string: "default"), at: 0, in: runtime)
+    #expect(try buffer[0].asString() == "default")
+  }
+
+  @Test
+  func `emplace leaves undefined when the encode throws`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+    try buffer.emplace("replaced", at: 0, in: runtime)
+    #expect(throws: UnsafeIntegerException.self) {
+      try buffer.emplace(Int.max, at: 0, in: runtime)
+    }
+    let isUndefined = buffer[0].isUndefined()
+    #expect(isUndefined)
+    // The slot is still valid to write into after the throw.
+    try buffer.emplace(1, at: 0, in: runtime)
+    #expect(try buffer[0].asInt() == 1)
+  }
+}
+
+/// Encodes as a string through the default `encode(_:into:in:)`.
+private struct DefaultEncodedString: JavaScriptEncodable {
+  let string: String
+
+  static func encode(_ value: DefaultEncodedString, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return JavaScriptValue(runtime, value.string)
   }
 }

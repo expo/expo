@@ -162,6 +162,8 @@ export class SQLiteDatabase {
    *
    * > **Note:** This function is not supported on web.
    *
+   * > **Note:** This method runs on a new database connection, so connection settings made on the original database, such as `PRAGMA foreign_keys = ON`, do not apply inside the transaction.
+   *
    * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
    * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
    *
@@ -618,6 +620,9 @@ export async function openDatabaseAsync(
  * Open a database.
  *
  * > **Note:** Running heavy tasks with this function can block the JavaScript thread and affect performance.
+ * > On web, this package starts the SQLite worker on the next turn.
+ * > While the worker is loading, this call throws immediately and does not block the main thread.
+ * > A later call works only after the worker has finished loading.
  *
  * @param databaseName The name of the database file to open.
  * @param options Open options.

@@ -456,3 +456,51 @@ it('collapses a nested history down to a sibling when the target was never visit
     type: 'stack',
   });
 });
+
+it('should go back to a previous route in a nested stack when a screen above that stack is focused', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    '(group)/_layout': () => <Stack />,
+    '(group)/index': () => null,
+    '(group)/details': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/details'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/'));
+
+  expect(screen).toHavePathname('/');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['(group)']);
+  const groupStack = rootStack.routes[0]!.state!;
+  expect(groupStack.routes.map((route) => route.name)).toEqual(['index']);
+  expect(groupStack.index).toBe(0);
+});
+
+it('pushes a dynamic route with different params in a nested stack when a screen above that stack is focused', async () => {
+  const result = await renderRouter({
+    _layout: () => <Stack />,
+    '(group)/_layout': () => <Stack />,
+    '(group)/index': () => null,
+    '(group)/[id]': () => null,
+    modal: () => null,
+  });
+
+  await act(() => router.push('/1'));
+  await act(() => router.push('/modal'));
+  expect(screen).toHavePathname('/modal');
+
+  await act(() => router.dismissTo('/2'));
+
+  expect(screen).toHavePathname('/2');
+  const rootStack = result.getRouterState()!.routes[0]!.state!;
+  expect(rootStack.routes.map((route) => route.name)).toEqual(['(group)']);
+  const groupStack = rootStack.routes[0]!.state!;
+  expect(groupStack.routes.map((route) => route.name)).toEqual(['index', '[id]', '[id]']);
+  expect(groupStack.routes[1]!.params).toEqual({ id: '1' });
+  expect(groupStack.routes[2]!.params).toEqual({ id: '2' });
+  expect(groupStack.index).toBe(2);
+});

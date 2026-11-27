@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Fix bundled images not loading when the app compiles them into React Native's asset catalog with the `RCTUseAssetCatalog` Info.plist key. ([#50723](https://github.com/expo/expo/pull/50723) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.16
+
+### Patch Changes
+
+- Fix `useImage` releasing the previous image while it was still rendered. In development builds, this made React throw `ERR_NATIVE_SHARED_OBJECT_NOT_FOUND` and stop rendering after the source changed. ([#51742](https://github.com/expo/expo/pull/51742) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.15
 
 ### Patch Changes

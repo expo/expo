@@ -1,6 +1,6 @@
 ---
 title: Channel surfing
-description: Learn how to switch EAS Update channels at runtime.
+description: Learn how to switch Expo Update channels at runtime.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -10,9 +10,9 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-**Channel surfing** lets an installed release build request updates from a different EAS Update channel at runtime.
+**Channel surfing** lets an installed release build request updates from a different Expo Update channel at runtime.
 
-In the default EAS Update flow, the updates URL and updates channel are fixed at build time. When building on EAS, this channel is set in your **eas.json** build profile. It is sent as the `expo-channel-name` request header to the updates URL and determines which channel your app receives updates from. Channel surfing allows you to override that request header in your JavaScript code so that your app can request updates from a different channel.
+In the default Expo Update flow, the updates URL and updates channel are fixed at build time. When building with Expo Build, this channel is set in your **eas.json** build profile. It is sent as the `expo-channel-name` request header to the updates URL and determines which channel your app receives updates from. Channel surfing allows you to override that request header in your JavaScript code so that your app can request updates from a different channel.
 
 Channel surfing does not change native code or bypass update compatibility rules. The update on the selected channel must still match the installed app's platform and [runtime version](/eas-update/runtime-versions/).
 
@@ -29,8 +29,8 @@ You can use channel surfing to:
 For developer-focused testing and to preview compatible updates, use a [development build with `expo-dev-client`](/eas-update/expo-dev-client/) library installed. This does not use `Updates.setUpdateRequestHeadersOverride()`, which is not supported in development builds.
 
 <Prerequisites>
-  <Requirement title="EAS Update configured">
-    See [Get started with EAS Update](/eas-update/getting-started/).
+  <Requirement title="Expo Update configured">
+    See [Get started with Expo Update](/eas-update/getting-started/).
   </Requirement>
   <Requirement title="A release build installed">
     Use a release build, or a debug build with
@@ -41,8 +41,8 @@ For developer-focused testing and to preview compatible updates, use a [developm
   <Requirement title="A channel configured at build time">
     `Updates.setUpdateRequestHeadersOverride()` can only override request header keys that were
     embedded in the build. For channel surfing, this means the build must include
-    `expo-channel-name`. [EAS Build](/build/introduction/) adds the channel from **eas.json** to
-    your native project at build time. If you do not use EAS Build, configure the channel with
+    `expo-channel-name`. [Expo Build](/build/introduction/) adds the channel from **eas.json** to
+    your native project at build time. If you do not use Expo Build, configure the channel with
     [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) or
     in your native project.
   </Requirement>
@@ -101,7 +101,7 @@ export async function clearUpdateChannelOverrideAsync() {
 
 <Step label="1">
 
-Install a release build that points to the channel you want to start from. If you use [EAS Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an Android [APK build](/build-reference/apk/) or an [iOS Simulator build](/build-reference/simulators/).
+Install a release build that points to the channel you want to start from. If you use [Expo Build](/build/introduction/), create the build with a profile that includes the starting `channel`. For local testing, you can use an Android [APK build](/build-reference/apk/) or an [iOS Simulator build](/build-reference/simulators/).
 
 </Step>
 
@@ -129,7 +129,7 @@ For example, if a beta update applies a database migration, the production versi
 
 <BoxLink
   title="Channel surfing for Expo Updates"
-  description="Read the Expo blog post about channel surfing in EAS Update."
+  description="Read the Expo blog post about channel surfing in Expo Update."
   href="https://expo.dev/blog/channel-surfing-for-expo-updates-how-to-switch-update-channels-at-runtime"
   Icon={BookOpen02Icon}
 />

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#51670](https://github.com/expo/expo/pull/51670), [#51669](https://github.com/expo/expo/pull/51669))
+  - expo-dev-launcher@58.0.15
+
 ## 58.0.14
 
 ### Patch Changes

@@ -13,6 +13,7 @@ NS_SWIFT_NAME(ExpoReactRootViewFactory)
 @interface EXReactRootViewFactory : RCTRootViewFactory
 
 @property (nonatomic, weak, nullable) EXReactDelegate *reactDelegate;
+@property (nonatomic, copy) RCTBundleURLBlock fallbackBundleURLBlock;
 
 /**
  Initializer for ExpoReactNativeFactory integration

@@ -96,7 +96,8 @@ export function Text({
   const universalModifiers = transformToModifiers(
     style,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Text' }
   );
 
   // A user-supplied modifier replaces any text-derived modifier of the same type.

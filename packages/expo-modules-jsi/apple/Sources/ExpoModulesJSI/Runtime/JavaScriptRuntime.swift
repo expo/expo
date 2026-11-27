@@ -15,8 +15,16 @@ internal import jsi
 ///
 /// ## Lifecycle
 ///
-/// The runtime maintains a weak reference pattern for values, objects, and arrays to prevent
-/// retain cycles. Ensure the runtime remains alive while any derived JavaScript objects are in use.
+/// Values, objects and arrays hold the runtime's ``handle``, which doesn't retain the runtime. Ensure the
+/// runtime remains alive while any derived JavaScript objects are in use.
+///
+/// ## Referencing the runtime
+///
+/// Don't hold a `weak` reference to a runtime. It gives the runtime a side table, and from then on every
+/// retain and release of the runtime, which happen on almost every operation, takes a slower path. Hold its
+/// ``handle`` instead when the reference must not keep the runtime alive, for example in a host object or a
+/// host function that the runtime owns, and read ``JavaScriptRuntimeHandle/runtime`` when you need the
+/// runtime. Hold the runtime itself when it should stay alive.
 open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// The underlying JSI runtime this `JavaScriptRuntime` points to, exposed as
   /// `IRuntime` — the abstract base interface that virtually all JSI value/object/
@@ -39,9 +47,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   /// Strong handle that values hold instead of a `weak` reference to the runtime. See
   /// ``JavaScriptRuntimeHandle`` for why.
-  internal let handle: JavaScriptRuntimeHandle
+  public let handle: JavaScriptRuntimeHandle
 
-  internal let scheduler: Scheduler
+  /// Runs work on the JavaScript thread of this runtime. Keep it instead of the runtime to schedule
+  /// work from another thread later. It's a helper for `expo-modules-core`, so it isn't part of the
+  /// public API.
+  @_spi(Internal)
+  public let scheduler: Scheduler
 
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
@@ -62,11 +74,17 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
   /// Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
   /// no React scheduler is wired up.
+  ///
+  /// The runtime has the config of React Native's bridgeless runtime, so promise reactions go to the
+  /// microtask queue. Without React Native's event loop, call ``drainMicrotasks()`` after each task.
+  /// Nothing else drains the queue: on a runtime without a host that does, ``evalAsync(label:_:)`` and
+  /// ``JavaScriptPromise/await()`` never complete.
   public init() {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
@@ -75,6 +93,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = true
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -89,6 +108,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -123,11 +143,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
     scheduler.markRuntimeGone()
+    JavaScriptRuntimeRegistry.remove(handle)
     handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
@@ -154,6 +176,31 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
   }
 
+  /// The address of the underlying `facebook.jsi.Runtime`, as ``withUnsafePointee(_:)`` gives it.
+  private var runtimeAddress: UnsafeRawPointer {
+    return UnsafeRawPointer(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
+  }
+
+  /// Provides scoped access to raw pointers to the underlying `facebook.jsi.Runtime`, the
+  /// `facebook.jsi.Object` of `object` and the `facebook.jsi.Value` of `value`, for C++ code that takes
+  /// all three. The pointers are valid only for the duration of the closure and must not be stored or
+  /// escaped. Unlike nesting the generic `withUnsafePointee(_:)` of each, this function isn't generic,
+  /// so a caller in another module doesn't run unspecialized generic code. It's a helper for
+  /// `expo-modules-core`, so it isn't part of the public API.
+  @_spi(Internal)
+  public final func withUnsafePointees(
+    object: borrowing JavaScriptObject,
+    value: borrowing JavaScriptValue,
+    _ body: (_ runtime: UnsafeMutableRawPointer, _ object: UnsafeRawPointer, _ value: UnsafeRawPointer) throws -> Void
+  ) rethrows {
+    let runtimePointer = Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque()
+    try object.withUnsafePointee { objectPointer in
+      try value.withUnsafePointee { valuePointer in
+        try body(runtimePointer, objectPointer, valuePointer)
+      }
+    }
+  }
+
   /// Returns the runtime `global` object.
   public func global() -> JavaScriptObject {
     return JavaScriptObject(self, pointee.global())
@@ -167,13 +214,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Creates a new JavaScript object, using the provided object as the prototype.
-  /// Calls `Object.create(prototype)` under the hood.
+  /// Same as `Object.create(prototype)` in JS.
   public func createObject(prototype: borrowing JavaScriptObject) -> JavaScriptObject {
-    return try! global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("create")
-      .call(argument: prototype.asValue())
-      .getObject()
+    return JavaScriptObject(self, expo.createObjectWithPrototype(pointee, prototype.pointee))
   }
 
   /// Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
@@ -184,11 +227,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
   /// then throws an `Error` whose message names the property and explains how to make it
   /// writable. `getPropertyNames` and `dealloc` default to no-ops.
+  ///
+  /// `dealloc` runs when the engine collects the host object. It can run on any thread, also while
+  /// JavaScript runs, so it must not use the runtime.
   public func createHostObject(
     get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
     set: (@JavaScriptActor (_ propertyName: String, _ value: borrowing JavaScriptValue) throws -> Void)? = nil,
     getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
-    dealloc: @escaping @JavaScriptActor () -> Void = {}
+    dealloc: @escaping @Sendable () -> Void = {}
   ) -> JavaScriptObject {
     func getter(
       context: UnsafeMutableRawPointer,
@@ -258,9 +304,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     func deallocate(context: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
-      JavaScriptActor.assumeIsolated {
-        context.dealloc()
-      }
+      context.dealloc()
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc))
@@ -278,10 +322,22 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
   // MARK: - Creating array buffers
 
-  /// Creates a new array buffer of the given size with zero-initialized memory.
-  public func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
-    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size)
+  /// Creates a new array buffer of the given size and reports its memory to the garbage collector. By
+  /// default, its memory is zero-initialized.
+  ///
+  /// When `initializeToZero` is `false`, the memory is left uninitialized, so write every byte before the
+  /// buffer is visible to JavaScript. Otherwise JavaScript can read bytes that earlier allocations left in
+  /// that memory, which can hold data from elsewhere in the app.
+  public func createArrayBuffer(size: Int, initializeToZero: Bool = true) -> JavaScriptArrayBuffer {
+    let jsiArrayBuffer = expo.createArrayBuffer(pointee, size, initializeToZero, true)
     return JavaScriptArrayBuffer(self, jsiArrayBuffer)
+  }
+
+  /// Keeps the ABI symbol of `createArrayBuffer(size:)`, which prebuilt binaries that inlined `Data.encode`
+  /// still call.
+  @usableFromInline
+  internal func createArrayBuffer(size: Int) -> JavaScriptArrayBuffer {
+    return createArrayBuffer(size: size, initializeToZero: true)
   }
 
   /// Creates a new array buffer that wraps the given native data pointer.
@@ -301,6 +357,83 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Creates a new Array instance.
   public func createArray(length: Int = 0) -> JavaScriptArray {
     return JavaScriptArray(self, facebook.jsi.Array(pointee, length))
+  }
+
+  /// Creates an array of `count` values, where `element` encodes the value at each index into the given
+  /// slot. The values are pushed to the array in chunks, with one engine call per chunk on React Native 0.86
+  /// and later. `element` must write exactly one value into the slot unless it throws (see
+  /// `JavaScriptValue.Slot`).
+  @usableFromInline
+  internal final func createArray(
+    count: Int,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws -> JavaScriptValue {
+    var array = try createJSIArray(count: count, element)
+    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+  }
+
+  /// Same as ``createArray(count:_:)``, but moves the array into `slot` instead of returning it, with no
+  /// `JavaScriptValue` in between.
+  @usableFromInline
+  internal final func createArray(
+    count: Int,
+    into slot: borrowing JavaScriptValue.Slot,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws {
+    var array = try createJSIArray(count: count, element)
+    expo.emplaceMovedArray(slot.pointer, &array)
+  }
+
+  /// The array that the `createArray(count:…)` variants return or move into a slot.
+  private final func createJSIArray(
+    count: Int,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws -> facebook.jsi.Array {
+    guard count > 0 else {
+      return facebook.jsi.Array(pointee, 0)
+    }
+    let array = expo.createArrayForPushing(pointee, count)
+    // `withUnsafeTemporaryAllocation` keeps a buffer of up to 1 KiB on the stack and allocates a larger
+    // one on the heap.
+    let chunkCapacity = 1024 / MemoryLayout<facebook.jsi.Value>.stride
+    try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: min(count, chunkCapacity)) { chunk in
+      let start = chunk.baseAddress!
+      var pushed = 0
+      var pending = 0
+      do {
+        for index in 0..<count {
+          // The element is encoded straight into the chunk, so a number or a string never becomes a
+          // `JavaScriptValue`, whose moves and destroys call into the engine.
+          try element(index, JavaScriptValue.Slot(start + pending))
+          pending += 1
+          if pending == chunk.count {
+            expo.pushValues(pointee, array, pushed, start, pending)
+            pushed += pending
+            pending = 0
+          }
+        }
+      } catch {
+        // The values in the buffer were never pushed to the array. The slot of the element that threw
+        // holds no value.
+        expo.destroyValues(start, pending)
+        throw error
+      }
+      if pending > 0 {
+        expo.pushValues(pointee, array, pushed, start, pending)
+      }
+    }
+    return array
+  }
+
+  /// Keeps the ABI symbol of `createArray(count:_:)` with a closure that returns each value, which prebuilt
+  /// binaries that inlined `Array.encode` still call.
+  @usableFromInline
+  internal final func createArray(count: Int, _ element: (_ index: Int) throws -> JavaScriptValue) throws
+    -> JavaScriptValue
+  {
+    return try createArray(count: count) { (index: Int, slot: borrowing JavaScriptValue.Slot) in
+      try slot.emplace(encoding: { try element(index) })
+    }
   }
 
   // MARK: - Creating functions
@@ -343,7 +476,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         """
       ).getFunction()
     }
-    let klassValue = try withCached(classFactoryKey, makeFactory) { (factory: borrowing JavaScriptFunction) in
+    let klassValue = try withCached(CacheKeys.classFactory, makeFactory) { (factory: borrowing JavaScriptFunction) in
       return try factory.call(arguments: name)
     }
     let klassObject = klassValue.getObject()
@@ -374,10 +507,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// - Returns: A JavaScript function represented as a `JavaScriptFunction`.
   @JavaScriptActor
   public func createFunction(_ name: String, _ function: sending @escaping SyncFunctionClosure) -> JavaScriptFunction {
-    let closure = createFunctionClosure(runtime: self, name: name, function)
-    let hostFunction = expo.createHostFunction(pointee, name, closure)
-
-    return JavaScriptFunction(self, hostFunction)
+    return createHostFunction(name, adaptingSyncFunction(function))
   }
 
   /// Creates a synchronous anonymous host function that runs the given closure when it's called.
@@ -385,18 +515,31 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// - Returns: A JavaScript function represented as a `JavaScriptFunction`.
   @JavaScriptActor
   public func createFunction(_ function: sending @escaping SyncFunctionClosure) -> JavaScriptFunction {
-    let closure = createFunctionClosure(runtime: self, name: nil, function)
-    let hostFunction = expo.createHostFunction(pointee, JavaScriptPropNameID.cached(self, "").pointee, closure)
+    return createHostFunction(nil, adaptingSyncFunction(function))
+  }
 
-    return JavaScriptFunction(self, hostFunction)
+  /// Wraps a ``SyncFunctionClosure`` in a ``HostFunctionClosure``. `this` is moved out of the engine's
+  /// slot into the owning value that the closure receives, without a clone, and the returned value is
+  /// moved into the result slot.
+  @JavaScriptActor
+  private func adaptingSyncFunction(_ function: sending @escaping SyncFunctionClosure) -> HostFunctionClosure {
+    return {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      result.emplace(try function(this.takeValue(in: runtime), arguments))
+    }
   }
 
   /// Variant of ``SyncFunctionClosure`` that receives `this` as a borrowed ``JavaScriptUnownedValue``
   /// rather than an owning ``JavaScriptValue``. The borrowed value carries the raw `facebook.jsi.IRuntime`
   /// and points straight at the `this` slot the C++ caller owns, so the trampoline neither allocates an
   /// owning value nor forms the `weak` runtime reference that profiling showed on every host call. Use it
-  /// when the callee usually ignores `this` (e.g. module-level `@JS` functions); the closure can still
-  /// promote it with ``JavaScriptUnownedValue/copied(in:)`` on the paths that need an owning value.
+  /// when the callee usually ignores `this`; the closure can still promote it with
+  /// ``JavaScriptUnownedValue/copied(in:)`` on the paths that need an owning value.
   public typealias UnownedThisSyncFunctionClosure =
     @JavaScriptActor (
       _ this: borrowing JavaScriptUnownedValue,
@@ -408,9 +551,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///
   /// `@_disfavoredOverload` so a closure that leaves `this` untyped (the common `_,` or `this,` form)
   /// still resolves to the owning-``JavaScriptValue`` overload; only a closure that *explicitly* types
-  /// its first parameter as `borrowing JavaScriptUnownedValue` (as the `@JS` macro emits) selects this
-  /// one, since an exact type match outranks the disfavored status. Without it, an untyped closure
-  /// matches both overloads and the call is ambiguous.
+  /// its first parameter as `borrowing JavaScriptUnownedValue` selects this one, since an exact type
+  /// match outranks the disfavored status. Without it, an untyped closure matches both overloads and
+  /// the call is ambiguous.
   /// - Returns: A JavaScript function represented as a `JavaScriptFunction`.
   @_disfavoredOverload
   @JavaScriptActor
@@ -418,10 +561,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     _ name: String,
     _ function: sending @escaping UnownedThisSyncFunctionClosure
   ) -> JavaScriptFunction {
-    let closure = createFunctionClosure(runtime: self, name: name, function)
-    let hostFunction = expo.createHostFunction(pointee, name, closure)
-
-    return JavaScriptFunction(self, hostFunction)
+    return createHostFunction(name) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      result.emplace(try function(this, arguments))
+    }
   }
 
   /// Variant of ``UnownedThisSyncFunctionClosure`` for host functions that return `undefined` to JS.
@@ -439,9 +587,49 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @_disfavoredOverload
   @JavaScriptActor
   public func createFunction(_ name: String, _ function: sending @escaping VoidFunctionClosure) -> JavaScriptFunction {
-    let closure = createFunctionClosure(runtime: self, name: name, function)
-    let hostFunction = expo.createHostFunction(pointee, name, closure)
+    return createHostFunction(name) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      try function(this, arguments)
+    }
+  }
 
+  /// The lowest-level host function closure. It writes its result into the engine's result slot, for
+  /// example with ``JavaScriptEncodable/encode(_:into:in:)``, instead of returning a ``JavaScriptValue``.
+  /// The slot takes at most one write (see ``JavaScriptValue/Slot``), and without a write the function
+  /// returns `undefined`.
+  public typealias HostFunctionClosure =
+    @JavaScriptActor (
+      _ this: borrowing JavaScriptUnownedValue,
+      _ arguments: consuming JavaScriptValuesBuffer,
+      _ result: borrowing JavaScriptValue.Slot,
+      _ runtime: borrowing JavaScriptRuntime
+    ) throws -> Void
+
+  /// Creates a synchronous host function from a ``HostFunctionClosure``.
+  @_disfavoredOverload
+  @JavaScriptActor
+  public func createFunction(_ name: String, _ function: sending @escaping HostFunctionClosure) -> JavaScriptFunction {
+    return createHostFunction(name, function)
+  }
+
+  /// Creates a host function from a ``HostFunctionClosure``, which every other closure type is adapted
+  /// to. A function without a name gets an empty one.
+  @JavaScriptActor
+  internal func createHostFunction(_ name: String?, _ function: sending @escaping HostFunctionClosure)
+    -> JavaScriptFunction
+  {
+    let closure = createFunctionClosure(runtime: self, function)
+    let hostFunction =
+      if let name {
+        expo.createHostFunction(pointee, name, closure)
+      } else {
+        expo.createHostFunction(pointee, JavaScriptPropNameID.cached(self, "").pointee, closure)
+      }
     return JavaScriptFunction(self, hostFunction)
   }
 
@@ -650,6 +838,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   }
 
   /// Evaluates given JavaScript source code in an async context. If the evaluated source returns a Promise, it awaits until the promise is resolved/rejected.
+  ///
+  /// Awaiting a promise needs a host that drains the microtask queue, like React Native. On a runtime
+  /// created with ``init()`` that nothing drains, a returned promise never settles and this never returns.
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
@@ -660,6 +851,39 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       let value = try self.eval(label: label, source)
       return value.is("Promise") ? try await value.getPromise().await() : value
     }
+  }
+
+  // MARK: - Microtasks
+
+  /// Runs the queued microtasks, such as promise reactions, until the queue is empty.
+  ///
+  /// Call this only for a runtime created with ``init()``. Its host must call this after each top-level
+  /// task, or promise reactions never run. React Native does this itself after each task it runs on the
+  /// JavaScript thread; calling it on a runtime that React Native hosts would bypass React Native's
+  /// error handling. Like React Native's checkpoint, a call from a microtask does nothing, so the
+  /// remaining microtasks run after the current one.
+  ///
+  /// - Throws: A ``JavaScriptError`` with the first value thrown by a microtask, after the rest of the
+  ///   queue ran.
+  @JavaScriptActor
+  public func drainMicrotasks() throws {
+    do {
+      _ = try capturingCppErrors {
+        expo.drainMicrotasks(pointee)
+      }
+    } catch let error as expo.CppError {
+      throw JavaScriptError(self, error.jsError)
+    } catch {
+      throw JavaScriptError(self, message: String(describing: error))
+    }
+  }
+
+  /// Queues a function in the microtask queue, for tests of ``drainMicrotasks()``: the standalone
+  /// runtime has no `queueMicrotask` global.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func queueMicrotask(_ callback: borrowing JavaScriptFunction) {
+    expo.queueMicrotask(pointee, callback.pointee)
   }
 
   // MARK: - Garbage collection
@@ -767,8 +991,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   // MARK: - Long-lived objects
 
   /// Registry of JSI objects (such as in-flight promises) that must outlive the native call that
-  /// created them. Cleared when the runtime is torn down so their JSI state is released on the
-  /// JavaScript thread while the runtime is still valid.
+  /// created them. Cleared when the runtime is torn down so their JSI state is released while the
+  /// runtime is still valid.
   @JavaScriptActor
   public let longLivedObjects = LongLivedObjectCollection()
 
@@ -776,8 +1000,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// when the runtime is torn down. The object is pinned by storing it as a property on `global`, so
   /// it stays reachable within the JavaScript heap for the runtime's whole life (no Swift-side strong
   /// reference) and its native state drops only when the runtime's object graph is destroyed. That
-  /// fires the deallocator on the JavaScript thread while the runtime is still valid, the point at
-  /// which any surviving long-lived objects can safely release their JSI state.
+  /// fires the deallocator while the runtime is destroyed and its values are still valid, the point
+  /// at which any surviving long-lived objects can safely release their JSI state.
   private func installLongLivedObjectsTeardown() {
     // Runtime initializers run on the JavaScript thread but aren't actor-isolated, so reach the
     // isolated object/native-state/`clear()` APIs through the actor.
@@ -788,10 +1012,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       let longLivedObjects = self.longLivedObjects
       let nativeState = JavaScriptNativeState()
       nativeState.setDeallocator { [handle] nativeState in
-        // Fires as the teardown object is released on the JavaScript thread with the runtime still
-        // valid, so releasing JSI state here is safe. Mirrors the caveat on `AppContext.NativeState`:
-        // a future cross-runtime path that could drop this state from another thread would have to
-        // hop back to the JavaScript thread first.
+        // Hermes runs this on its finalizer thread while the JavaScript thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and releasing JSI state here is safe. Release
+        // it here and not in work sent to another thread, which would run after Hermes frees its
+        // values. A path that could drop this state while the runtime still runs JavaScript would
+        // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
@@ -818,10 +1043,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
 private func createFunctionClosure(
   runtime: JavaScriptRuntime,
-  name: String? = nil,
-  _ closure: @escaping JavaScriptRuntime.SyncFunctionClosure
+  _ closure: @escaping JavaScriptRuntime.HostFunctionClosure
 ) -> expo.HostFunctionClosure {
-  let context = Unmanaged.passRetained(HostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
+  let context = Unmanaged.passRetained(HostFunctionContext(runtime: runtime, closure)).toOpaque()
 
   func call(
     context: UnsafeMutableRawPointer,
@@ -831,27 +1055,25 @@ private func createFunctionClosure(
     resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
   ) -> Bool {
     // `assumeIsolated` runs `operation` synchronously, in this very scope — it never escapes and never
-    // hops threads (see `JavaScriptActor.assumeIsolated`). So rather than materializing the move-only
-    // `JavaScriptValuesBuffer` out here and smuggling it across the closure boundary through a
-    // heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing/consuming a `~Copyable` value in the
-    // escaping closure that `withoutActuallyEscaping` synthesizes), the closure constructs the buffer
-    // locally from the raw pointer + count. Those are read-only call-scoped inputs that never outlive the
-    // synchronous call, so capturing them through `UncheckedSendable` is sound. This removes a per-call class
-    // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
-    // floor.
+    // hops threads (see `JavaScriptActor.assumeIsolated`). So the move-only `JavaScriptValuesBuffer` is
+    // built inside it from the raw pointer and count, rather than outside and smuggled across the
+    // closure boundary through a heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing a
+    // `~Copyable` value in the escaping closure that `withoutActuallyEscaping` synthesizes). Those are
+    // read-only call-scoped inputs, so capturing them through `UncheckedSendable` is sound. `this` is
+    // lent as a `JavaScriptUnownedValue` that points straight at the C++-owned slot.
+    //
+    // The result slot is the default-constructed `jsi::Value` of `createHostFunction`, which owns
+    // nothing, so a value can be constructed in it, and the C++ caller destroys it after the call.
     let thisPtr = UncheckedSendable(thisPtr)
     let argumentsPtr = UncheckedSendable(argumentsPtr)
     let resultPtr = UncheckedSendable(resultPtr)
 
-    // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
-    // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let this = UnsafeMutablePointer(mutating: thisPtr.value).move()
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
-          let thisValue = JavaScriptValue(runtime, this)
-          JavaScriptValue.write(try context.call(thisValue, consume arguments), to: resultPtr.value)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
+          try context.call(thisValue, consume arguments, JavaScriptValue.Slot(resultPtr.value), runtime)
         }
       }
     }
@@ -863,88 +1085,6 @@ private func createFunctionClosure(
 
   return expo.HostFunctionClosure(context, call, deallocate)
 }
-
-private func createFunctionClosure(
-  runtime: JavaScriptRuntime,
-  name: String? = nil,
-  _ closure: @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
-) -> expo.HostFunctionClosure {
-  let context = Unmanaged.passRetained(UnownedThisHostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
-
-  func call(
-    context: UnsafeMutableRawPointer,
-    thisPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsCount: Int,
-    resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
-  ) -> Bool {
-    // Same call-scoped reasoning as the owning-`this` overload above (see its comment) for why the
-    // buffer is built inside the synchronous `assumeIsolated` closure. Here `this` is additionally
-    // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
-    // it is not moved out and no owning `JavaScriptValue` is allocated, so the closure avoids the
-    // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
-    let thisPtr = UncheckedSendable(thisPtr)
-    let argumentsPtr = UncheckedSendable(argumentsPtr)
-    let resultPtr = UncheckedSendable(resultPtr)
-
-    // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
-    // why the result is written to the caller's slot instead of being returned.
-    return withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
-      return JavaScriptActor.assumeIsolated {
-        return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
-          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
-          JavaScriptValue.write(try context.call(thisValue, consume arguments), to: resultPtr.value)
-        }
-      }
-    }
-  }
-
-  func deallocate(context: UnsafeMutableRawPointer) {
-    Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context).release()
-  }
-
-  return expo.HostFunctionClosure(context, call, deallocate)
-}
-
-private func createFunctionClosure(
-  runtime: JavaScriptRuntime,
-  name: String? = nil,
-  _ closure: @escaping JavaScriptRuntime.VoidFunctionClosure
-) -> expo.HostFunctionClosure {
-  let context = Unmanaged.passRetained(VoidHostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
-
-  func call(
-    context: UnsafeMutableRawPointer,
-    thisPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsCount: Int,
-    resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
-  ) -> Bool {
-    // Like the overload above, but the result slot keeps the `undefined` it was created with.
-    let thisPtr = UncheckedSendable(thisPtr)
-    let argumentsPtr = UncheckedSendable(argumentsPtr)
-
-    return withGuaranteedContext(context) { (context: VoidHostFunctionContext, runtime) in
-      return JavaScriptActor.assumeIsolated {
-        return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
-          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
-          try context.call(thisValue, consume arguments)
-        }
-      }
-    }
-  }
-
-  func deallocate(context: UnsafeMutableRawPointer) {
-    Unmanaged<VoidHostFunctionContext>.fromOpaque(context).release()
-  }
-
-  return expo.HostFunctionClosure(context, call, deallocate)
-}
-
-/// Key of the class factory in each runtime's cache.
-private let classFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptFunction.Ref>()
 
 // MARK: - Errors
 

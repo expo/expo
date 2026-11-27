@@ -1,6 +1,7 @@
 // Side effect file to load shared object support in worklets
 
 import { installOnUIRuntime } from 'expo';
+import { Platform } from 'react-native';
 
 import { worklets } from './optionalWorklets';
 import {
@@ -63,7 +64,10 @@ function registerSharedObjectSerializer(): void {
 try {
   if (worklets) {
     installOnUIRuntime(worklets.getUIRuntimeHolder());
-    registerSharedObjectSerializer();
+    // On iOS, `expo-modules-core` registers a serializer for all shared objects.
+    if (Platform.OS !== 'ios') {
+      registerSharedObjectSerializer();
+    }
   }
 } catch {
   // Fail silently as worklet support is currently optional in Expo UI

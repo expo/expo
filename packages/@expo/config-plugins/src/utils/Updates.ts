@@ -2,12 +2,12 @@ import type { Android, ExpoConfig, IOS } from '@expo/config-types';
 import { resolveFrom } from '@expo/require-utils';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
-import { boolish } from 'getenv';
 import path from 'path';
 import semver from 'semver';
 
 import * as AndroidVersion from '../android/Version';
 import * as IOSVersion from '../ios/Version';
+import { env } from './env';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
@@ -77,7 +77,7 @@ export async function getRuntimeVersionNullableAsync(
   try {
     return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
-    if (boolish('EXPO_DEBUG', false)) {
+    if (env.EXPO_DEBUG) {
       console.log(e);
     }
     return null;

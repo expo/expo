@@ -32,17 +32,17 @@ Run the following command inside your project's root directory:
 
 The command workflow is interactive and walks you through the following prompts using the latest EAS CLI version:
 
-- **Initialize or detect a linked EAS project.** If you are running this command in a new project, the CLI will create a new EAS project using the slug from your app config file. If the CLI detects that the project is created on EAS already, it will continue to use the same slug.
+- **Initialize or detect a linked Expo Services project.** If you are running this command in a new project, the CLI will create a new Expo Services project using the slug from your app config file. If the CLI detects that the Expo Services project already exists, it will continue to use the same slug.
 - **Confirm the bundle identifier.** If you are running this command in a new project, you can enter a new identifier, or for subsequent command runs, accept the one the CLI detects. The wizard also asks whether your app uses standard or exempt encryption. When this command is run subsequently, the [`buildNumber`](/tutorial/eas/manage-app-versions/#understanding-developer-facing-and-user-facing-app-versions) automatically increments.
 - **Sign in to Apple Developer.** Provide your Apple ID, complete two-factor authentication, and allow the CLI to create new or reuse existing distribution certificates or provisioning profiles.
-- **Generate credentials.** If EAS does not already manage credentials for the bundle identifier, the CLI creates or updates the distribution certificate and provisioning profile for you.
-- **Create a production build**. It starts an iOS build using the default EAS [`production` profile](/build/eas-json/#production-builds) to create an iOS archive (**.ipa**) file.
+- **Generate credentials.** If Expo Services does not already manage credentials for the bundle identifier, the CLI creates or updates the distribution certificate and provisioning profile for you.
+- **Create a production build**. It starts an iOS build using the default Expo Build [`production` profile](/build/eas-json/#production-builds) to create an iOS archive (**.ipa**) file.
 - **Verify App Store Connect access.** The submit step checks for an [App Store Connect API key](https://expo.fyi/creating-asc-api-key) and creates one if needed.
 - **Submits the app to TestFlight.** Uploads the resulting **.ipa** file to App Store Connect and enables TestFlight distribution for your team's [internal testing group](/submit/testflight/#set-up-internal-testing).
 
 You will receive build and submission status updates throughout the process inside the terminal window. Within the App Store Connect dashboard, you can manage testers and distribution.
 
-> **Note**: Every prompt mirrors the EAS Build and EAS Submit flows, so you can answer the same way you would when running eas build or eas submit separately. This means, during the build and submission process, the EAS dashboard links will be generated and you can use them to view the process. After the submission process is successfully completed, you will get the link to the App Store Connect, which you can use to view your submission to TestFlight.
+> **Note**: Every prompt mirrors the Expo Build and Expo Submit flows, so you can answer the same way you would when running eas build or eas submit separately. This means, during the build and submission process, the Expo dashboard links will be generated and you can use them to view the process. After the submission process is successfully completed, you will get the link to the App Store Connect, which you can use to view your submission to TestFlight.
 
 ## Why use `npx testflight`
 
@@ -56,7 +56,7 @@ You will receive build and submission status updates throughout the process insi
 - Ship a TestFlight build quickly from your local machine
 - Trigger one or many builds to TestFlight without configuring a full CI workflow
 - Have internal test groups and want to make the latest changes in your app available as soon as possible
-- Let EAS handle certificates, provisioning profiles, and API keys automatically
+- Let Expo Services handle certificates, provisioning profiles, and API keys automatically
 
 ## Common question
 

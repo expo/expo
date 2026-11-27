@@ -1,7 +1,7 @@
 ---
-title: 'Create preview builds for pull requests with EAS Workflows'
+title: 'Create preview builds for pull requests with Expo Workflows'
 sidebar_title: Preview builds
-description: Learn how to create preview build workflows for Slack notifications and PR previews using EAS Workflows.
+description: Learn how to create preview build workflows for Slack notifications and PR previews using Expo Workflows.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -36,9 +36,9 @@ Install the [`expo-updates`](/versions/latest/sdk/updates/) library:
 
 </Requirement>
 
-<Requirement title="EAS Update configured">
+<Requirement title="Expo Update configured">
 
-To configure EAS Update, run:
+To configure Expo Update, run:
 
 <Terminal cmd={['$ eas update:configure']} />
 
@@ -48,7 +48,7 @@ The above command adds the update URL and runtime version to **app.json**, and a
 
 <Requirement title="Preview build created">
 
-To receive PR preview updates, reviewers need a preview build with `expo-updates` and the EAS Update channel installed on their device. To create one:
+To receive PR preview updates, reviewers need a preview build with `expo-updates` and the Expo Update channel installed on their device. To create one:
 
 <Terminal cmd={['$ eas build --profile preview --platform all']} />
 
@@ -132,10 +132,10 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for [development builds](/tutorial/cicd/development-builds/#skip-unnecessary-builds-with-fingerprints). Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow skips the build jobs since compatible builds already exist.
+In the Expo dashboard, notice that the workflow follows the same fingerprint pattern we implemented for [development builds](/tutorial/cicd/development-builds/#skip-unnecessary-builds-with-fingerprints). Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow skips the build jobs since compatible builds already exist.
 
 <ContentSpotlight
-  alt="EAS Workflows preview run where the fingerprint and get-build jobs skip the build jobs because compatible Android and iOS builds already exist."
+  alt="Expo Workflows preview run where the fingerprint and get-build jobs skip the build jobs because compatible Android and iOS builds already exist."
   src="/static/images/tutorial/cicd/eas-workflows-preview-fingerprint-skip.png"
   className="max-w-160"
 />
@@ -146,19 +146,19 @@ In the EAS dashboard, notice that the workflow follows the same fingerprint patt
 
 > **info** This section is optional. Not using Slack? Skip to the next section about PR previews.
 
-Many teams use Slack for build notifications so their team sees build status without checking the EAS dashboard. When a build completes (or skips), the [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job posts the status to a channel.
+Many teams use Slack for build notifications so their team sees build status without checking the Expo dashboard. When a build completes (or skips), the [`slack`](/eas/workflows/pre-packaged-jobs/#slack) pre-packaged job posts the status to a channel.
 
 <Step label="1">
 
 ### Create a Slack webhook URL
 
-To send messages from EAS Workflows to our Slack channel, we need a webhook URL from Slack's settings:
+To send messages from Expo Workflows to our Slack channel, we need a webhook URL from Slack's settings:
 
 1. Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new Slack app (or use an existing one).
 2. Under **Features**, select **Incoming Webhooks** and toggle it on.
 3. Click **Add New Webhook** and select the channel to publish notifications.
 4. Copy the webhook URL. It looks like: `https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX`
-5. Add the webhook URL as an EAS environment variable named `SLACK_WEBHOOK_URL`. Open our project's [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page on the EAS dashboard, create the variable for the `preview` environment, and set its [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables) to **secret** since only EAS servers need to read it. Alternatively, create it with [EAS CLI](/eas/environment-variables/manage/):
+5. Add the webhook URL as an Expo Services environment variable named `SLACK_WEBHOOK_URL`. Open our project's [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page on the Expo dashboard, create the variable for the `preview` environment, and set its [visibility](/eas/environment-variables/#visibility-settings-for-environment-variables) to **secret** since only Expo servers need to read it. Alternatively, create it with [EAS CLI](/eas/environment-variables/manage/):
 
 <Terminal
   cmd={[
@@ -207,10 +207,10 @@ Run the workflow manually using the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
 
-On the EAS dashboard, we can verify that the `Notify on Slack` job runs successfully.
+On the Expo dashboard, we can verify that the `Notify on Slack` job runs successfully.
 
 <ContentSpotlight
-  alt="EAS Workflows preview run showing the Notify on Slack job completing successfully after the Android and iOS build jobs."
+  alt="Expo Workflows preview run showing the Notify on Slack job completing successfully after the Android and iOS build jobs."
   src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notify-job.png"
   className="max-w-160"
 />
@@ -218,22 +218,22 @@ On the EAS dashboard, we can verify that the `Notify on Slack` job runs successf
 We can also verify this in the Slack channel integrated with the app.
 
 <ContentSpotlight
-  alt="A Slack message posted by EAS Workflows showing the completion status of Android and iOS preview builds for an Expo project."
+  alt="A Slack message posted by Expo Workflows showing the completion status of Android and iOS preview builds for an Expo project."
   src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notification.webp"
   className="max-w-90"
 />
 
 </Step>
 
-## PR previews using EAS Update
+## PR previews using Expo Update
 
 A PR reviewer can read the diff, but cannot see the changes visually or test them on a device.
 
 Web teams solve this with deploy previews. When someone opens a pull request, a CI/CD workflow generates a preview link. Reviewers open the link and test the changes without checking out the branch.
 
-For mobile, we can set up the equivalent using [EAS Update](/eas-update/introduction/). It delivers a JavaScript bundle to devices that already have a compatible build installed, skipping the native compilation step. For PR previews, an update is the right fit because reviewers can open and test quickly, then leave feedback on the PR.
+For mobile, we can set up the equivalent using [Expo Update](/eas-update/introduction/). It delivers a JavaScript bundle to devices that already have a compatible build installed, skipping the native compilation step. For PR previews, an update is the right fit because reviewers can open and test quickly, then leave feedback on the PR.
 
-EAS Workflows provides a [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) pre-packaged job for this. It posts a comment on the pull request after the update publishes, giving reviewers a link or QR code to open the update on their device.
+Expo Workflows provides a [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) pre-packaged job for this. It posts a comment on the pull request after the update publishes, giving reviewers a link or QR code to open the update on their device.
 
 <Step label="1">
 
@@ -260,7 +260,7 @@ jobs:
     type: github-comment
 ```
 
-> **important** Before testing the above workflow, commit **pr-preview.yml** and push it to the `main` branch of our GitHub repository. **EAS Workflows reads workflow files from the default branch.**
+> **important** Before testing the above workflow, commit **pr-preview.yml** and push it to the `main` branch of our GitHub repository. **Expo Workflows reads workflow files from the default branch.**
 
 </Step>
 
@@ -279,10 +279,10 @@ Now, let's make a visible change in the Expo project (for example, change a text
   cmdCopy="git add . && git commit -m 'Test PR preview' && git push origin test-preview"
 />
 
-Open a pull request from `test-preview` to `main` on GitHub. The workflow runs automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
+Open a pull request from `test-preview` to `main` on GitHub. The workflow runs automatically after we have created a pull request. On the Expo dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
 
 <ContentSpotlight
-  alt="EAS Workflows pull-request preview run showing the publish_preview job followed by the comment job that posts the update link to GitHub."
+  alt="Expo Workflows pull-request preview run showing the publish_preview job followed by the comment job that posts the update link to GitHub."
   src="/static/images/tutorial/cicd/eas-workflows-preview-pr-publish-comment.png"
   className="max-w-160"
 />
@@ -290,7 +290,7 @@ Open a pull request from `test-preview` to `main` on GitHub. The workflow runs a
 On the GitHub pull request, a comment should appear with a link or QR code to test the update on a device.
 
 <ContentSpotlight
-  alt="A GitHub pull request comment posted by EAS Workflows linking to an EAS Update preview for the proposed changes."
+  alt="A GitHub pull request comment posted by Expo Workflows linking to an Expo Update preview for the proposed changes."
   src="/static/images/tutorial/cicd/eas-workflows-preview-github-pr-comment.png"
   className="max-w-160"
 />

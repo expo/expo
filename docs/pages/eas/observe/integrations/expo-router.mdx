@@ -1,14 +1,14 @@
 ---
 title: Expo Router integration
 sidebar_title: Expo Router
-description: Track per-route render and interactive timings by enabling the Expo Router integration for EAS Observe.
+description: Track per-route render and interactive timings by enabling the Expo Router integration for Expo Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
+Expo Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/)
     The Expo Router integration is available on SDK 56 and later. On earlier SDKs, `expo-observe`
     still tracks app-wide metrics, but per-route navigation events are not emitted.
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -135,6 +135,37 @@ Emitted at most once per screen instance within a session.
 | `routeParams` | `object`  | Resolved route params.                                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
+### Per-route total blocking time (`tbt`)
+
+> **important** This metric is [experimental](/more/release-statuses/#experimental) and requires `expo-observe` 58.1.0 or later. The `experimental_totalBlockingTime` option may change or be removed in a patch release.
+
+**What it measures:** Total time that long tasks blocked the JavaScript thread in the 2 seconds after a navigation action is dispatched. A long task is one that occupies the thread for more than 50ms, and only the time past 50ms counts. The metric is reported in seconds when the window closes. See [Reading navigation metrics together](/eas/observe/reference/metrics/#reading-navigation-metrics-together) for how to interpret it alongside `cold_ttr` and `tti`.
+
+The metric is off by default. Enable it in the integration config:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-router': {
+      experimental_totalBlockingTime: true,
+    },
+  },
+});
+```
+
+The metric is recorded for user navigations after the first screen has focused, so app launch is not included. It is emitted once per screen instance, on the screen's first focus, and only when that focus happens inside the 2-second window.
+
+**Event params:**
+
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname for the navigation.                                     |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).              |
+
 ## View navigation metrics
 
 In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** page. It shows per-route navigation timings with cold and warm time to first render and time to interactive.
@@ -147,7 +178,7 @@ In the CLI, you can run the following commands:
     '$ eas observe:routes',
     '',
     '# Filter to specific metrics or routes',
-    '$ eas observe:routes --metric cold_ttr --route-name "/(tabs)/sessions/[sessionId]"',
+    '$ eas observe:routes --metric nav_cold_ttr --route-name "/(tabs)/sessions/[sessionId]"',
   ]}
 />
 
@@ -160,4 +191,4 @@ Run `eas observe:routes --help` for the full list of flags (time range, platform
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
 - The integration must be enabled before mount via `Observe.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
-- For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).
+- For general issues with Expo Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

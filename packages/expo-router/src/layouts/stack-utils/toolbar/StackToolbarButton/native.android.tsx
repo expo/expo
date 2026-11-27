@@ -5,6 +5,7 @@ import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
 import type { NativeToolbarButtonProps } from './types';
 
 /**
@@ -37,12 +38,18 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
 
   const button = (
-    <IconButton onClick={props.onPress} enabled={!props.disabled}>
+    <IconButton
+      onClick={props.onPress}
+      enabled={!props.disabled}
+      colors={getIconButtonContainerColors(toolbarColors.buttonContainerColor)}>
       <Icon
         source={props.source}
         tint={tintColor}
         size={24}
-        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+        contentDescription={getBadgeContentDescription(
+          props.accessibilityLabel ?? props.label,
+          props.badge
+        )}
       />
     </IconButton>
   );

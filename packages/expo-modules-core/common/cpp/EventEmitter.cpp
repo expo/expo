@@ -91,12 +91,7 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
 
 #pragma mark - NativeState
 
-NativeState::NativeState(void *context, void (*contextDeallocator)(void *))
-#if __has_include(<ExpoModulesJSI/NativeState.h>)
-  : NativeStateBase(context, contextDeallocator) {}
-#else
-  : NativeStateBase() {}
-#endif
+NativeState::NativeState() : jsi::NativeState() {}
 
 NativeState::~NativeState() {
   listeners.clear();

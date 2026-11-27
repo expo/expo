@@ -117,15 +117,16 @@ export function SuspenseScreen({ initial, consecutive }: { initial: number; cons
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
-      contentContainerStyle={{ padding: 16, gap: 12 }}
       contentInsetAdjustmentBehavior="automatic">
-      <Text>Current Path: {pathname}</Text>
-      <Text style={{ fontSize: 28, fontWeight: 'bold' }}>Initial: {formatDelay(initial)}</Text>
-      <Text style={{ fontSize: 28, fontWeight: 'bold' }}>
-        Consecutive: {formatDelay(consecutive)}
-      </Text>
-      <Text>Focus count: {record.focusCount}</Text>
-      <SuspenseLinks />
+      <View style={{ padding: 16, gap: 12 }}>
+        <Text>Current Path: {pathname}</Text>
+        <Text style={{ fontSize: 28, fontWeight: 'bold' }}>Initial: {formatDelay(initial)}</Text>
+        <Text style={{ fontSize: 28, fontWeight: 'bold' }}>
+          Consecutive: {formatDelay(consecutive)}
+        </Text>
+        <Text>Focus count: {record.focusCount}</Text>
+        <SuspenseLinks />
+      </View>
     </ScrollView>
   );
 }

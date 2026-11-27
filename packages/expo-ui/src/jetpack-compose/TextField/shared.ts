@@ -136,7 +136,7 @@ export type CommonTextFieldProperties = {
    */
   selection?: ObservableState<{ start: number; end: number }>;
 
-  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  /** Maximum number of UTF-16 code units allowed, as JavaScript counts string length. Truncates natively as the user types. */
   maxLength?: number;
 
   /** Called when the selection range changes. */

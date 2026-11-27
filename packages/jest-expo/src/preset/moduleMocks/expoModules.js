@@ -612,6 +612,17 @@ module.exports = {
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
           { name: 'getStepCountAsync', argumentsCount: 2, key: 'getStepCountAsync' },
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
+          {
+            name: 'isRecordingAvailableAsync',
+            argumentsCount: 0,
+            key: 'isRecordingAvailableAsync',
+          },
+          { name: 'subscribeRecordingAsync', argumentsCount: 0, key: 'subscribeRecordingAsync' },
+          {
+            name: 'unsubscribeRecordingAsync',
+            argumentsCount: 0,
+            key: 'unsubscribeRecordingAsync',
+          },
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
         ],
         ExpoNetwork: [
@@ -633,6 +644,11 @@ module.exports = {
             name: 'setNotificationCategoryAsync',
             argumentsCount: 3,
             key: 'setNotificationCategoryAsync',
+          },
+          {
+            name: 'setNotificationCategoriesAsync',
+            argumentsCount: 1,
+            key: 'setNotificationCategoriesAsync',
           },
         ],
         ExpoNotificationPermissionsModule: [
@@ -695,6 +711,7 @@ module.exports = {
           { name: 'dispatchEvents', argumentsCount: 0, key: 'dispatchEvents' },
           { name: 'getIntegrations', argumentsCount: 0, key: 'getIntegrations' },
           { name: 'setBundleDefaults', argumentsCount: 1, key: 'setBundleDefaults' },
+          { name: 'setConsent', argumentsCount: 1, key: 'setConsent' },
         ],
         ExpoPrint: [
           { name: 'print', argumentsCount: 1, key: 'print' },
@@ -746,6 +763,11 @@ module.exports = {
             name: 'canUseBiometricAuthentication',
             argumentsCount: 0,
             key: 'canUseBiometricAuthentication',
+          },
+          {
+            name: 'canUseDeviceCredentialsAuthentication',
+            argumentsCount: 0,
+            key: 'canUseDeviceCredentialsAuthentication',
           },
           { name: 'deleteValueWithKeyAsync', argumentsCount: 2, key: 'deleteValueWithKeyAsync' },
           { name: 'getValueWithKeyAsync', argumentsCount: 2, key: 'getValueWithKeyAsync' },
@@ -867,9 +889,9 @@ module.exports = {
           { name: 'dismissAuthSession', argumentsCount: 0, key: 'dismissAuthSession' },
           { name: 'dismissBrowser', argumentsCount: 0, key: 'dismissBrowser' },
           {
-            name: 'getCustomTabsSupportingBrowsers',
+            name: 'getCustomTabsSupportingBrowsersAsync',
             argumentsCount: 0,
-            key: 'getCustomTabsSupportingBrowsers',
+            key: 'getCustomTabsSupportingBrowsersAsync',
           },
           { name: 'mayInitWithUrlAsync', argumentsCount: 0, key: 'mayInitWithUrlAsync' },
           { name: 'openAuthSessionAsync', argumentsCount: 3, key: 'openAuthSessionAsync' },
@@ -1450,8 +1472,11 @@ module.exports = {
           getPermissionsAsync: { type: 'function' },
           getStepCountAsync: { type: 'function' },
           isAvailableAsync: { type: 'function' },
+          isRecordingAvailableAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           requestPermissionsAsync: { type: 'function' },
+          subscribeRecordingAsync: { type: 'function' },
+          unsubscribeRecordingAsync: { type: 'function' },
         },
         ExpoNetwork: {
           addListener: { type: 'function' },
@@ -1464,6 +1489,7 @@ module.exports = {
           deleteNotificationCategoryAsync: { type: 'function' },
           getNotificationCategoriesAsync: { type: 'function' },
           removeListeners: { type: 'function' },
+          setNotificationCategoriesAsync: { type: 'function' },
           setNotificationCategoryAsync: { type: 'function' },
         },
         ExpoNotificationPermissionsModule: {
@@ -1507,6 +1533,7 @@ module.exports = {
           getIntegrations: { type: 'function' },
           removeListeners: { type: 'function' },
           setBundleDefaults: { type: 'function' },
+          setConsent: { type: 'function' },
         },
         ExpoPrint: {
           addListener: { type: 'function' },
@@ -1555,6 +1582,7 @@ module.exports = {
           ALWAYS: { type: 'number', mock: 2 },
           ALWAYS_THIS_DEVICE_ONLY: { type: 'number', mock: 4 },
           canUseBiometricAuthentication: { type: 'function' },
+          canUseDeviceCredentialsAuthentication: { type: 'function' },
           deleteValueWithKeyAsync: { type: 'function' },
           getValueWithKeyAsync: { type: 'function' },
           getValueWithKeySync: { type: 'function' },
@@ -1693,7 +1721,7 @@ module.exports = {
           coolDownAsync: { type: 'function' },
           dismissAuthSession: { type: 'function' },
           dismissBrowser: { type: 'function' },
-          getCustomTabsSupportingBrowsers: { type: 'function' },
+          getCustomTabsSupportingBrowsersAsync: { type: 'function' },
           mayInitWithUrlAsync: { type: 'function' },
           openAuthSessionAsync: { type: 'function' },
           openBrowserAsync: { type: 'function' },

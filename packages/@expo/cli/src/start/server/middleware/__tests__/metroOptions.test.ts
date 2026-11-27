@@ -69,6 +69,24 @@ describe('chunking options', () => {
 });
 
 describe(getMetroDirectBundleOptions, () => {
+  it('uses the same output option for direct serialization and bundle URLs', () => {
+    const options = {
+      mainModuleName: '/index.js',
+      mode: 'production',
+      platform: 'web',
+      isExporting: true,
+      output: 'static',
+    } as const;
+    const result = getMetroDirectBundleOptions(options);
+    expect(result.serializerOptions.output).toBe('static');
+    expect(new URL(result.sourceUrl!).searchParams.get('serializer.output')).toBe('static');
+    expect(
+      new URL(createBundleUrlPath(options), 'http://localhost').searchParams.get(
+        'serializer.output'
+      )
+    ).toBe('static');
+  });
+
   it(`asserts unsupported options: using bytecode on web`, () => {
     expect(() =>
       getMetroDirectBundleOptions({
@@ -120,7 +138,7 @@ describe(getMetroDirectBundleOptions, () => {
         mainModuleName: '/index.js',
         mode: 'development',
         platform: 'ios',
-        serializerIncludeMaps: true,
+        includeSourceMaps: true,
         isExporting: false,
         bytecode: false,
         reactCompiler: false,
@@ -202,5 +220,23 @@ describe(createBundleUrlPath, () => {
         isExporting: true,
       })
     ).toEqual('/index.bundle?platform=ios&dev=true&hot=false&resolver.exporting=true');
+  });
+  it(`distinguishes a loader bundle from the full bundle of the same entry`, () => {
+    const options = {
+      mainModuleName: 'app/index',
+      mode: 'development',
+      platform: 'web',
+      environment: 'node',
+      isExporting: false,
+    } as const;
+    const loaderUrl = createBundleUrlPath({ ...options, isLoaderBundle: true });
+    expect(loaderUrl).not.toEqual(createBundleUrlPath(options));
+    // Metro reads `transform.*` params back into the custom transform options it bundles with.
+    expect(
+      new URL(loaderUrl, 'http://localhost').searchParams.get('transform.isLoaderBundle')
+    ).toBe(
+      getMetroDirectBundleOptions({ ...options, isLoaderBundle: true }).customTransformOptions
+        ?.isLoaderBundle
+    );
   });
 });

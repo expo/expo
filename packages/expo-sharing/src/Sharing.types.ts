@@ -114,6 +114,10 @@ export type BaseResolvedSharePayload = SharePayload & {
   /**
    * URI which can be used to access the shared content. When resolving contents of a URL with redirects, contains the redirect target URI.
    * Null when resolving a [`SharePayload`](#sharepayload) with a `text` [`ShareType`](#sharetype).
+   *
+   * > **Note:** On Android and iOS, the URI of a file shared into the app points to a file in a cache directory. On iOS, this is the app group's `Library/Caches` directory.
+   * > The system can delete this file when storage is low. `expo-sharing` deletes files older than 24 hours when it processes new shared files.
+   * > [`Sharing.clearSharedPayloads()`](#sharingclearsharedpayloads) deletes all shared files right away. Copy the file to keep it.
    */
   contentUri: string | null;
 
@@ -187,6 +191,7 @@ export type UseIncomingShareResult = {
   resolvedSharedPayloads: ResolvedSharePayload[];
   /**
    * Clears payloads shared with the app.
+   * On Android and iOS, it also deletes the copies of shared files that `expo-sharing` keeps in a cache directory. Copy the files you want to keep before you call it.
    */
   clearSharedPayloads: () => void;
   /**

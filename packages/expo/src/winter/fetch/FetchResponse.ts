@@ -316,14 +316,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
 
           pull: async (controller) => {
             if (body.streamingState === 'none') {
+              body.streamingState = 'started';
               const completedData = await this.startStreaming();
 
               if (completedData != null) {
                 this.enqueueBodyChunk(controller, completedData);
                 this.closeBodyStream(controller);
                 body.streamingState = 'completed';
-              } else {
-                body.streamingState = 'started';
               }
             } else if (body.streamingState === 'completed') {
               this.closeBodyStream(controller);
@@ -334,6 +333,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             // Flag first — the stream is already `closed` when this callback
             // runs, so the guard must not go stale if cancelStreaming throws.
             this.bodyStreamClosed = true;
+            body.consumed = true;
             this.cancelStreaming(String(reason));
           },
         },
@@ -415,6 +415,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return body.readAsBuffer();
     }
 
+    this.lockBodyStream();
     return super.arrayBuffer();
   }
 
@@ -428,6 +429,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return new TextDecoder().decode(await body.readAsBuffer());
     }
 
+    this.lockBodyStream();
     return super.text();
   }
 
@@ -490,6 +492,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     state.body.cloned = true;
 
     return clone;
+  }
+
+  // Native reads the body without a reader on the stream. Lock the stream as
+  // the Fetch spec does, so body.cancel() and body.getReader() cannot reach
+  // native while that read waits.
+  private lockBodyStream(): void {
+    this.body?.getReader();
   }
 
   private checkBodyUsedError(method: string): void {

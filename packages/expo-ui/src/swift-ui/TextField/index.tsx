@@ -44,7 +44,7 @@ export interface TextFieldProps extends CommonViewModifierProps {
    * @platform ios 18.0+ tvos 18.0+
    */
   selection?: ObservableState<TextFieldSelection>;
-  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  /** Maximum number of UTF-16 code units allowed, as JavaScript counts string length. Truncates natively as the user types. */
   maxLength?: number;
   /** If true, the text field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;

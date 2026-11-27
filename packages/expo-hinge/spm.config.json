@@ -9,19 +9,20 @@
         "ReactNativeDependencies",
         "React",
         "Hermes",
-        "expo-modules-core/ExpoModulesCore"
+        "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoHinge",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
-            "expo-modules-core/ExpoModulesCore"
+            "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }

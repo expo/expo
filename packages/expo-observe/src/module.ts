@@ -1,12 +1,23 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
+import AppMetrics, { recordSpan, setErrorHandlerEnabled, startSpan, withSpan } from './app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
+import {
+  disableReanimatedIntegration,
+  initReanimatedIntegration,
+} from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
-import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
+import { reportFeedback } from './reportFeedback';
+import type {
+  ObserveConfig,
+  ObserveConsent,
+  ObserveFeedback,
+  ObserveIntegrationsConfig,
+  ObserveModule,
+} from './types';
 
 /**
  * Normalizes the `networkTraces` sugar (`true` / `false` / `{ enabled, filter }`) into the config
@@ -35,7 +46,28 @@ function networkTracesConfigFromOption(networkTraces: ObserveConfig['networkTrac
   return option.filter != null ? { enabled, filter: option.filter } : { enabled };
 }
 
+function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveConfig) {
+  if (errorSampleRate == null) {
+    return;
+  }
+  // Native code clamps both rates and treats an unset `sampleRate` as 1.
+  const clamp = (rate: number) => Math.min(Math.max(rate, 0), 1);
+  const errorRate = clamp(errorSampleRate);
+  const overallRate = clamp(sampleRate ?? 1);
+  if (errorRate < overallRate) {
+    console.warn(
+      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}) and has no effect. ` +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  }
+}
+
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
+
+// Native code can apply two concurrent calls in either order, so each call starts after the
+// previous one settles. A rejected call does not stop the calls after it.
+let consentQueue: Promise<unknown> = Promise.resolve();
 
 const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
@@ -45,7 +77,7 @@ const Observe: ObserveModule = new Proxy(native, {
         // toggles whether it records anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
 
-        // Recording is gated in expo-app-metrics (the producer side), so the setting travels
+        // Recording is gated in the app-metrics module (the producer side), so the setting travels
         // there rather than into the native `configure` payload. Applies to future captures
         // only; spans persisted earlier in the launch still dispatch.
         AppMetrics.setNetworkTracesConfig(networkTracesConfigFromOption(config.networkTraces));
@@ -80,12 +112,43 @@ const Observe: ObserveModule = new Proxy(native, {
         } else if (shouldInitReactNavigationIntegration) {
           initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
+        const reanimatedConfig = config.integrations?.['react-native-reanimated'];
+        if (reanimatedConfig) {
+          initReanimatedIntegration(reanimatedConfig);
+        } else {
+          disableReanimatedIntegration();
+        }
+        warnIfErrorSampleRateIsLower(config);
         return target.configure(config);
+      };
+    }
+
+    if (prop === 'setConsent') {
+      return (consent: ObserveConsent) => {
+        const call = consentQueue.then(() => target.setConsent(consent));
+        consentQueue = call.catch(() => {});
+        return call;
       };
     }
 
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+    if (prop === 'reportFeedback') {
+      return (feedback: ObserveFeedback) => reportFeedback(feedback, target);
+    }
+
+    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
+    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
+    // reach the native members with the same names.
+    if (prop === 'startSpan') {
+      return startSpan;
+    }
+    if (prop === 'withSpan') {
+      return withSpan;
+    }
+    if (prop === 'recordSpan') {
+      return recordSpan;
     }
 
     if (prop === 'registerIntegration') {

@@ -18,11 +18,19 @@ public final class PedometerModule: Module {
     Events(EVENT_PEDOMETER_UPDATE)
 
     AsyncFunction("isAvailableAsync") {
-      #if EXPO_DISABLE_MOTION_PERMISSION
-      return false
-      #else
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
       return CMPedometer.isStepCountingAvailable()
-      #endif
+    }
+
+    AsyncFunction("isRecordingAvailableAsync") {
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
+      return CMPedometer.isStepCountingAvailable()
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in

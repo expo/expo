@@ -1,0 +1,151 @@
+// Copyright 2025-present 650 Industries. All rights reserved.
+
+/// Patterns that match attribute keys reserved by the SDK. Caller-provided
+/// attributes whose key matches any of these are dropped:
+///
+/// - The `expo.*` namespace, owned entirely by the SDK (e.g. `expo.app.name`,
+///   `expo.eas_client.id`).
+/// - Specific OTel Semantic Convention keys the SDK sets on every record
+///   (e.g. `session.id`, `event.name`). Letting callers set these would
+///   produce duplicate-attribute errors on the collector.
+///
+/// `Regex<Substring>` isn't Sendable, but the values are constructed once and
+/// never mutated, so sharing them across isolation domains is safe — hence
+/// `nonisolated(unsafe)`.
+nonisolated(unsafe) private let reservedAttributePatterns: [Regex<Substring>] = [
+  /^expo\..+/,
+  /^session\.id$/,
+  /^event\.name$/,
+]
+
+/// Attribute key under which the SDK stores a log event's display name. Reserved (it matches the
+/// `expo.*` pattern above), so callers can't set it themselves; the SDK injects it after
+/// sanitization via `withDisplayNameAttribute`.
+let displayNameAttributeKey = "expo.log.display_name"
+
+/// Maximum number of attributes accepted per log record. Mirrors the OTel SDK
+/// default — collectors and backends start to push back well before this limit,
+/// so we cap eagerly and surface the overflow via `droppedAttributesCount`.
+private let maxAttributeCount = 128
+
+/// Result of sanitizing caller-provided log-event attributes.
+///
+/// - `attributes`: the attributes that survived validation, or `nil` when the
+///   input was `nil` or every entry was dropped.
+/// - `droppedCount`: number of attributes that were dropped during validation.
+///   Surfaced on the OTel wire as `droppedAttributesCount` so backends know the
+///   record was filtered.
+struct SanitizedLogAttributes {
+  let attributes: [String: Any]?
+  let droppedCount: Int
+}
+
+/// Strips non-finite numbers (NaN, infinity) from an attribute value at any depth, returning
+/// `nil` when the value itself is one. Arrays and dictionaries are rebuilt without them.
+private func withoutNonFiniteNumbers(_ value: Any) -> Any? {
+  // JSON can't represent these numbers, and `JSONSerialization` raises an Objective-C exception
+  // for them rather than throwing, so a nested one would terminate the app at serialization time.
+  // A boolean `NSNumber` also casts to `Double`, so a finite value is returned as it came in.
+  if let number = value as? Double {
+    return number.isFinite ? value : nil
+  }
+  if let array = value as? [Any] {
+    return array.compactMap { withoutNonFiniteNumbers($0) }
+  }
+  if let dictionary = value as? [String: Any] {
+    return dictionary.compactMapValues { withoutNonFiniteNumbers($0) }
+  }
+  return value
+}
+
+/// Filters caller-provided log-event attributes. Drops:
+///
+/// - keys that are empty after trimming whitespace,
+/// - keys under the reserved `expo.*` namespace or matching SDK-set keys,
+/// - everything past the per-record attribute count cap.
+///
+/// Each rule warns with its own message so the developer can tell at a glance
+/// which rule fired.
+func sanitizeLogEventAttributes(
+  _ attributes: [String: Any]?,
+  source: String = "logEvent"
+) -> SanitizedLogAttributes {
+  guard let attributes else {
+    return SanitizedLogAttributes(attributes: nil, droppedCount: 0)
+  }
+  var sanitized: [String: Any] = [:]
+  var emptyKeyDrops = 0
+  var reservedKeyDrops: [String] = []
+  var nonFiniteDrops: [String] = []
+
+  for (key, value) in attributes {
+    let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
+    if trimmedKey.isEmpty {
+      emptyKeyDrops += 1
+      continue
+    }
+    if reservedAttributePatterns.contains(where: { trimmedKey.wholeMatch(of: $0) != nil }) {
+      reservedKeyDrops.append(key)
+      continue
+    }
+    guard let finiteValue = withoutNonFiniteNumbers(value) else {
+      nonFiniteDrops.append(key)
+      continue
+    }
+    sanitized[trimmedKey] = finiteValue
+  }
+
+  // Apply the per-record cap last so the count reflects every other rule first.
+  // Sort by key for a stable choice of which entries survive the cap; otherwise
+  // dictionary iteration order would make this nondeterministic. Note this
+  // biases retention toward alphabetically-earlier keys when the cap is hit —
+  // acceptable for accidental-overflow cases (loop bug, typo); a caller that
+  // genuinely needs >128 attributes should split them across multiple events.
+  var overflowDrops = 0
+  if sanitized.count > maxAttributeCount {
+    let kept = sanitized.keys.sorted().prefix(maxAttributeCount)
+    let keptSet = Set(kept)
+    overflowDrops = sanitized.count - maxAttributeCount
+    sanitized = sanitized.filter { keptSet.contains($0.key) }
+  }
+
+  if emptyKeyDrops > 0 {
+    logger.warn(
+      "[AppMetrics] \(source) dropped \(emptyKeyDrops) attribute(s) with empty or whitespace-only keys."
+    )
+  }
+  if !reservedKeyDrops.isEmpty {
+    let formattedKeys = reservedKeyDrops.sorted().map { "`\($0)`" }.joined(separator: ", ")
+    logger.warn(
+      "[AppMetrics] \(source) dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: \(formattedKeys)."
+    )
+  }
+  if !nonFiniteDrops.isEmpty {
+    let formattedKeys = nonFiniteDrops.sorted().map { "`\($0)`" }.joined(separator: ", ")
+    logger.warn(
+      "[AppMetrics] \(source) dropped attributes whose values are not finite numbers (NaN or infinity), which JSON cannot represent: \(formattedKeys)."
+    )
+  }
+  if overflowDrops > 0 {
+    logger.warn(
+      "[AppMetrics] \(source) dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
+    )
+  }
+
+  return SanitizedLogAttributes(
+    attributes: sanitized.isEmpty ? nil : sanitized,
+    droppedCount: emptyKeyDrops + reservedKeyDrops.count + nonFiniteDrops.count + overflowDrops
+  )
+}
+
+/// Returns `attributes` with the validated display name added under `displayNameAttributeKey`,
+/// or `attributes` unchanged when `displayName` is `nil`. Call this after
+/// `sanitizeLogEventAttributes` so the reserved key bypasses the `expo.*` drop.
+func withDisplayNameAttribute(_ attributes: [String: Any]?, displayName: String?) -> [String: Any]? {
+  guard let displayName else {
+    return attributes
+  }
+  var merged = attributes ?? [:]
+  merged[displayNameAttributeKey] = displayName
+  return merged
+}

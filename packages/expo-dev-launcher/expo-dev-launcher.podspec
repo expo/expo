@@ -49,7 +49,8 @@ Pod::Spec.new do |s|
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
     other_c_flags += ' -DUSE_HERMES'
   end
-  other_swift_flags = "$(inherited)"
+  base_swift_flags = "$(inherited) -enable-upcoming-feature ImportObjcForwardDeclarations"
+  other_swift_flags = base_swift_flags
   unless ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'false'
     other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
   end
@@ -85,6 +86,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS' => base_swift_flags,
     'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags,
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
@@ -117,11 +119,6 @@ Pod::Spec.new do |s|
     test_spec.dependency "OHHTTPStubs"
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    # The linked static libs contain C++ but the test bundle has no C++ sources,
-    # so the C++ runtime must be linked explicitly
-    test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
-    }
   end
 
 end

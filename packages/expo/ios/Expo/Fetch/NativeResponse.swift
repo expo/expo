@@ -37,7 +37,13 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     self.dispatchQueue = dispatchQueue
   }
 
-  func startStreaming() -> Data? {
+  func startStreaming() throws -> Data? {
+    // The request already failed before JS attached a reader, so `didFailWithError`
+    // was never emitted. Rethrow here instead of returning nil, which JS reads as
+    // "streaming started" and then waits on a stream nothing will ever settle.
+    if state == .errorReceived {
+      throw error ?? FetchUnknownException()
+    }
     if isInvalidState(.responseReceived, .bodyCompleted) {
       return nil
     }
@@ -53,8 +59,14 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
   }
 
   func cancelStreaming() {
-    if isInvalidState(.bodyStreamingStarted) {
+    if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
       return
+    }
+    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
+      return
+    }
+    if state == .responseReceived {
+      sink.discard()
     }
     state = .bodyStreamingCanceled
   }

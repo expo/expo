@@ -21,7 +21,8 @@ export function RNHostView({
   const modifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'RNHostView' }
   );
 
   return (

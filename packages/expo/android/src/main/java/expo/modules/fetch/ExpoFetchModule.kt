@@ -10,6 +10,7 @@ import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.devtools.ExpoNetworkReporter
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.NativeArrayBuffer
@@ -27,10 +28,13 @@ class ExpoFetchModule : Module() {
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
+      // After the file interceptor, so `file://` requests stay out of the Network panel, and before
+      // the compression one, so the reported body is the decoded one the caller reads.
+      .addInterceptor(ExpoNetworkReporter())
       .addInterceptor(TransparentCompressionInterceptor)
       .build()
   }
-  private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
+  private val cookieHandler by lazy { ForwardingCookieHandler() }
   private val cookieJarContainer by lazy { client.cookieJar as CookieJarContainer }
 
   private val reactContext: ReactContext
@@ -106,14 +110,26 @@ class ExpoFetchModule : Module() {
       }
 
       AsyncFunction("arrayBuffer") { response: NativeResponse, promise: Promise ->
-        response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
+        response.waitForStates(
+          listOf(ResponseState.BODY_COMPLETED, ResponseState.ERROR_RECEIVED)
+        ) { state ->
+          if (state == ResponseState.ERROR_RECEIVED) {
+            promise.reject(response.error?.toCodedException() ?: FetchUnknownException())
+            return@waitForStates
+          }
           val data = response.sink.finalize(directBuffer = true)
           promise.resolve(NativeArrayBuffer(data))
         }
       }
 
       AsyncFunction("text") { response: NativeResponse, promise: Promise ->
-        response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
+        response.waitForStates(
+          listOf(ResponseState.BODY_COMPLETED, ResponseState.ERROR_RECEIVED)
+        ) { state ->
+          if (state == ResponseState.ERROR_RECEIVED) {
+            promise.reject(response.error?.toCodedException() ?: FetchUnknownException())
+            return@waitForStates
+          }
           val data = response.sink.finalize(directBuffer = false).array()
           val text = data.toString(Charsets.UTF_8)
           promise.resolve(text)

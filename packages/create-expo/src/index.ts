@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+import { boolish } from '@expo/env';
 import Debug from 'debug';
-import { boolish } from 'getenv';
 
 import { PACKAGE_NAME } from './utils/update-check';
 

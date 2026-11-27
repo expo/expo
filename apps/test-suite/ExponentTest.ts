@@ -1,4 +1,3 @@
-import getenv from 'getenv';
 import { NativeModules } from 'react-native';
 
 type ExponentTestType = {
@@ -19,7 +18,7 @@ try {
 if (!ExponentTest) {
   ExponentTest = {
     get isInCI() {
-      return getenv.boolish('CI', false);
+      return ['true', '1'].includes((process.env.CI ?? '').toLowerCase());
     },
     log: console.log,
     completed() {},

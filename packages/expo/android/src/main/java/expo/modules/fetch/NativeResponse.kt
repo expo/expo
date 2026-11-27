@@ -5,6 +5,7 @@ package expo.modules.fetch
 import android.util.Log
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,9 +42,9 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
 
-  override fun deallocate() {
+  override fun sharedObjectDidRelease() {
     this.sink.finalize(directBuffer = false)
-    super.deallocate()
+    super.sharedObjectDidRelease()
   }
 
   fun onStarted() {
@@ -54,6 +55,12 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun startStreaming(): ByteArray? {
+    // The request already failed before JS attached a reader, so `didFailWithError`
+    // was never emitted. Rethrow here instead of returning null, which JS reads as
+    // "streaming started" and then waits on a stream nothing will ever settle.
+    if (state == ResponseState.ERROR_RECEIVED) {
+      throw error?.toCodedException() ?: FetchUnknownException()
+    }
     if (isInvalidState(ResponseState.RESPONSE_RECEIVED, ResponseState.BODY_COMPLETED)) {
       return null
     }
@@ -69,8 +76,21 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   }
 
   fun cancelStreaming() {
-    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
+    if (state == ResponseState.BODY_COMPLETED ||
+      state == ResponseState.BODY_STREAMING_CANCELED ||
+      state == ResponseState.ERROR_RECEIVED
+    ) {
       return
+    }
+    if (isInvalidState(
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED
+      )
+    ) {
+      return
+    }
+    if (state == ResponseState.RESPONSE_RECEIVED) {
+      sink.discard()
     }
     state = ResponseState.BODY_STREAMING_CANCELED
   }
@@ -150,6 +170,14 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
         withContext(NonCancellable + Dispatchers.IO) {
           response.close()
         }
+      }
+
+      if (this@NativeResponse.state == ResponseState.ERROR_RECEIVED) {
+        // `pumpResponseBodyStream` already recorded the failure. Overwriting it with
+        // BODY_COMPLETED would hand JS a truncated body as a complete one.
+        sink.discard()
+        emit("readyForJSFinalization")
+        return@launch
       }
 
       if (this@NativeResponse.state == ResponseState.BODY_STREAMING_STARTED) {

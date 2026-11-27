@@ -1,15 +1,16 @@
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import { after, afterEach, before, describe, it, mock } from 'node:test';
 import os from 'os';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import {
+  composeHeadersXCFrameworkAsync,
   getHeadersXCFrameworkPath,
   shouldWriteHeadersXCFramework,
   writeHeadersXCFrameworkAsync,
@@ -146,7 +147,7 @@ async function writeFixtureAsync(slices: FixtureSlice[], platforms?: ProductPlat
 }
 
 async function listFilesAsync(dir: string): Promise<string[]> {
-  return (await glob('**/*', { cwd: dir, nodir: true, dot: true })).sort();
+  return (await glob('**/*', { cwd: dir, onlyFiles: true, dot: true })).sort();
 }
 
 async function readPlistAsync(file: string) {
@@ -379,6 +380,31 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
       message: `${infoPlist} has no AvailableLibraries array; it is not a valid xcframework.`,
     });
     assert.equal(await fs.pathExists(path.dirname(destination)), false);
+  });
+});
+
+describe('composeHeadersXCFrameworkAsync', appleToolsOnly, () => {
+  it('stamps the output with the npm package name and version it was built from', async () => {
+    const root = await makeTempRootAsync();
+    const pkg: SPMPackageSource = {
+      path: path.join(root, 'package'),
+      buildPath: path.join(root, 'build'),
+      packageName: 'fixture-package',
+      packageVersion: '1.2.3',
+      getSwiftPMConfiguration: () => ({ products: [] }),
+    };
+    await createSourceXCFrameworkAsync(Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'), [
+      DEVICE,
+    ]);
+
+    await composeHeadersXCFrameworkAsync(pkg, product(), 'Debug');
+
+    assert.deepEqual(
+      await fs.readJson(
+        path.join(getHeadersXCFrameworkPath(pkg.buildPath, NAME), 'expo-package.json')
+      ),
+      { name: 'fixture-package', version: '1.2.3' }
+    );
   });
 });
 

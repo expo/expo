@@ -330,10 +330,20 @@ export const matchParentSize = () => createModifier('matchParentSize');
 /**
  * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
  * Only works when used inside `ExposedDropdownMenuBox`.
- * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param type - Anchor type, matching Compose's `ExposedDropdownMenuAnchorType`. Defaults to `'primaryNotEditable'`.
+ * - `'primaryNotEditable'`: a read-only text field — taps toggle the menu, and the menu popup is a
+ *   focusable window.
+ * - `'primaryEditable'`: an editable text field (autocomplete) — taps focus the field for typing, and
+ *   the menu popup is created non-focusable so the field keeps window focus (cursor rendering and IME
+ *   key events keep working) while the menu is open.
+ * - `'secondaryEditable'`: a secondary element of an editable text field, such as its trailing icon —
+ *   taps toggle the menu without moving focus away from the field.
  * @param enabled - Whether the anchor is enabled. Defaults to `true`.
  */
-export const menuAnchor = (type?: 'primaryNotEditable', enabled?: boolean) =>
+export const menuAnchor = (
+  type?: 'primaryNotEditable' | 'primaryEditable' | 'secondaryEditable',
+  enabled?: boolean
+) =>
   createModifier('menuAnchor', {
     ...(type && { type }),
     ...(typeof enabled === 'boolean' && { enabled }),
@@ -403,13 +413,21 @@ export const selectableGroup = () => createModifier('selectableGroup');
  * @param value - The current toggle state.
  * @param handler - Function to call when toggled.
  * @param options - Optional configuration.
- * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`, `'switch'`, or `'tab'`.
+ * @param options.role - The semantic role for accessibility: `'checkbox'`, `'radioButton'`,
+ * `'switch'`, or `'tab'`.
+ * @param options.enabled - Whether the view responds to input and is reported as enabled to
+ * accessibility services. Defaults to `true`.
  */
 export const toggleable = (
   value: boolean,
   handler: () => void,
-  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab' }
-) => createModifierWithEventListener('toggleable', handler, { value, role: options?.role });
+  options?: { role?: 'checkbox' | 'radioButton' | 'switch' | 'tab'; enabled?: boolean }
+) =>
+  createModifierWithEventListener('toggleable', handler, {
+    value,
+    role: options?.role,
+    enabled: options?.enabled,
+  });
 
 // =============================================================================
 // Lifecycle Modifiers
@@ -644,6 +662,19 @@ export const verticalScroll = () => createModifier('verticalScroll');
  * Use on a Row to create a non-lazy scrollable container.
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
+
+/**
+ * Hides the keyboard and clears focus when the user starts to drag the scrollable content.
+ *
+ * When used with `verticalScroll()` or `horizontalScroll()` modifier, it must be placed
+ * before them in the modifier list.
+ *
+ * @example
+ * ```tsx
+ * modifiers={[scrollDismissesKeyboard(), verticalScroll()]}
+ * ```
+ */
+export const scrollDismissesKeyboard = () => createModifier('scrollDismissesKeyboard');
 
 export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';

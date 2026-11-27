@@ -138,16 +138,18 @@ export interface DateTimePickerProps {
    */
   initialDate?: string | null;
   /**
-   * Callback function that is called when a date is selected.
+   * Called when the selection changes. The date is `null` when date input is incomplete or invalid.
    */
-  onDateSelected?: (date: Date) => void;
+  onDateSelected?: (date: Date | null) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * @default 'picker'
    */
   variant?: AndroidVariant;
   /**
-   * Show a button to toggle between variants on Android.
+   * Show a button to toggle between variants on Android. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`, because the Material 3 `TimePicker` and `TimeInput`
+   * have no toggle.
    * @default true
    */
   showVariantToggle?: boolean;
@@ -190,7 +192,7 @@ export interface DateTimePickerProps {
   elementColors?: DatePickerElementColors & TimePickerElementColors;
   /**
    * Determines what format the clock should be displayed in on Android.
-   * @default true
+   * Defaults to the device's 12-hour or 24-hour setting.
    */
   is24Hour?: boolean;
   /**
@@ -212,7 +214,7 @@ type NativeDatePickerProps = Omit<
   initialDate?: number | null;
   selectableDates?: { start?: number | null; end?: number | null } | null;
   elementColors?: DatePickerElementColors & TimePickerElementColors;
-} & ViewEvent<'onDateSelected', { date: Date }>;
+} & ViewEvent<'onDateSelected', { date: number | null }>;
 
 function convertSelectableDates(selectableDates?: {
   start?: Date;
@@ -243,7 +245,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
     initialDate: initialDateTimestamp,
     selectableDates: convertSelectableDates(selectableDates),
     onDateSelected: ({ nativeEvent: { date } }) => {
-      props.onDateSelected?.(new Date(date));
+      props.onDateSelected?.(convertTimestampToDate(date));
     },
     variant,
     ...(elementColors != null ? { elementColors } : undefined),
@@ -476,6 +478,12 @@ export function DateRangePickerDialog(props: DateRangePickerDialogProps) {
 
 export interface TimePickerDialogProps {
   initialDate?: string | null;
+  /**
+   * The variant of the picker. `'picker'` shows the clock dial and `'input'` shows text fields for
+   * the hour and the minute.
+   * @default 'picker'
+   */
+  variant?: AndroidVariant;
   is24Hour?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;

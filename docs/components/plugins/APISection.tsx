@@ -105,6 +105,10 @@ const PROP_EXCEPTIONS = new Set([
   'AppMetricsErrorBoundaryFallbackProps',
   'AppMetricsErrorBoundaryProps',
   'AppMetricsRootProps',
+  'BottomSheetBackdropProps',
+  'BottomSheetBackgroundProps',
+  'BottomSheetFooterProps',
+  'BottomSheetHandleProps',
   'StackHeaderItemSharedProps',
 ]);
 
@@ -425,9 +429,10 @@ const renderAPI = (
       : packageName
         ? [packageName]
         : [];
+    const typeNames = new Set(data.map(entry => entry.name));
 
     return (
-      <APISectionPackageContext.Provider value={packageNames}>
+      <APISectionPackageContext.Provider value={{ packageNames, typeNames }}>
         {hasCategorizedMethods &&
           (hasHeadersMapping
             ? Object.entries(headersMapping).map(([key, header], index) => (

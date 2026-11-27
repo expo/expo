@@ -13,6 +13,7 @@ Select every affected public package and choose its semantic bump:
 - `major` for breaking changes. Do not use `major` on an `sdk-*` release branch.
 
 Write the summary for package users. Multiple paragraphs and fenced code blocks are supported. Prefix internal work with `[Internal]`.
+If a change is reflected in multiple packages, prefer combining this into one changeset that references multiple packages.
 
 If a PR was merged without a changeset, a `See:` line can be added in a follow-up PR to override the automatically generated pull request link, to reference the original PR:
 
@@ -22,7 +23,7 @@ Fix asset URLs when the development server uses a custom origin.
 See: [#123](https://github.com/expo/expo/pull/123)
 ```
 
-Documentation, tests, apps, CI, and private tooling do not need a changeset. Do not add entries directly to package `CHANGELOG.md` files.
+Documentation, tests, CI, and private packages (`"private": true`, such as apps and internal tooling) do not need a changeset. Do not list them in one: `changeset version` fails when a changeset lists both private and published packages. Do not add entries directly to package `CHANGELOG.md` files.
 
 For pull requests targeting `main`, code review checks the release policy in [`expo.json`](./expo.json):
 

@@ -1,6 +1,7 @@
 package expo.modules.securestore
 
 import android.content.Context
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -43,13 +44,26 @@ class SecureStoreDeleteTest {
     legacyPrefs.edit().putString("unrelated", "value").commit()
 
     // Without write permission on the directory `SharedPreferencesImpl` cannot rename the file to
-    // its backup, so `commit` returns false and leaves the entry on the disk. It still removes the
-    // key from its in-memory map, which is what defeats a `contains` check on the retry.
+    // its backup, so `commit` returns false and leaves the entry on the disk.
     assertTrue(sharedPreferencesDir.setWritable(false))
     try {
       assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
       assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
       assertTrue(File(sharedPreferencesDir, "SecureStore.xml").readText().contains("ciphertext"))
+    } finally {
+      sharedPreferencesDir.setWritable(true)
+    }
+  }
+
+  @Test
+  fun `keeps the value readable when the delete is not written to disk`() {
+    prefs.edit().putString("keychain-key", "ciphertext").commit()
+    legacyPrefs.edit().putString("unrelated", "value").commit()
+
+    assertTrue(sharedPreferencesDir.setWritable(false))
+    try {
+      assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
+      assertEquals("ciphertext", prefs.getString("keychain-key", null))
     } finally {
       sharedPreferencesDir.setWritable(true)
     }

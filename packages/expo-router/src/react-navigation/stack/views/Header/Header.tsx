@@ -1,9 +1,11 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { getHeaderTitle, HeaderShownContext } from '../../../elements';
+import { getHeaderStatusBarHeight } from '../../../elements/Header/getHeaderStatusBarHeight';
 import { StackActions } from '../../../native';
 import type { StackHeaderProps } from '../../types';
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
@@ -20,6 +22,7 @@ export const Header = React.memo(function Header({
   styleInterpolator,
 }: StackHeaderProps) {
   const insets = useSafeAreaInsets();
+  const verticalBarEdge = useVerticalBarEdgeIOS();
 
   let previousTitle;
 
@@ -52,7 +55,7 @@ export const Header = React.memo(function Header({
       ? options.headerStatusBarHeight
       : isModal || isParentHeaderShown
         ? 0
-        : insets.top;
+        : getHeaderStatusBarHeight(insets, verticalBarEdge);
 
   return (
     <HeaderSegment

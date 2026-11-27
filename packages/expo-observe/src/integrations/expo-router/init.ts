@@ -1,7 +1,7 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
+import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import {
@@ -13,9 +13,9 @@ import {
 import { type RouterIntegrationStorage } from './storage';
 
 // TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
-// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// web bundle doesn't pull in the app-metrics native bridge calls. The web
 // version should be an explicit no-op (return a noop cleanup) rather than
-// relying on the web stubs in `expo-app-metrics/module.web.ts`.
+// relying on the web stubs in `app-metrics/module.web.ts`.
 
 const MAX_ENQUEUE_TIMES = 100;
 
@@ -36,6 +36,9 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
+  const blockingTime = createNavigationBlockingTime((metric) =>
+    AppMetrics.getMainSession().addMetric(metric)
+  );
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {
@@ -58,10 +61,10 @@ export function initListeners(
           // PRELOAD comes from router.prefetch() — a route warm-up, not a user
           // navigation — so it must not become a TTR start.
           if (entry.detail.actionType === 'PRELOAD') break;
-          storage.pendingActions.push({
-            actionType: entry.detail.actionType,
-            startTime: enqueueTime ?? entry.startTime,
-          });
+          const startTime = enqueueTime ?? entry.startTime;
+          storage.pendingActions.push({ actionType: entry.detail.actionType, startTime });
+          // Navigations before the first screen is focused are part of app launch.
+          if (storage.hasRecordedInitialTtr) blockingTime?.start(startTime);
           break;
         }
         case 'expo-router:page-preloaded':
@@ -86,9 +89,9 @@ export function initListeners(
     // sees the pre-focus state of this screen. A pending interactive means
     // `markInteractive` ran before this focus landed.
     const existingFocusedScreenTimes = storage.screenTimes[e.screenId];
+    const isFirstFocus = existingFocusedScreenTimes?.dispatchTime == null;
     const hasPendingInteractive =
-      existingFocusedScreenTimes?.lastInteractiveCall != null &&
-      existingFocusedScreenTimes?.dispatchTime == null;
+      isFirstFocus && existingFocusedScreenTimes?.lastInteractiveCall != null;
 
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
@@ -144,6 +147,18 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
+    if (!isAppLaunch && isFirstFocus) {
+      blockingTime?.setMetric(
+        {
+          timestamp,
+          category: 'navigation',
+          name: 'tbt',
+          routeName: routePattern,
+          params: navigationParams,
+        },
+        now
+      );
+    }
     if (hasPendingInteractive) {
       await emitTTI({
         session: mainSession,
@@ -158,5 +173,8 @@ export function initListeners(
     }
   }
 
-  return () => observer.disconnect();
+  return () => {
+    observer.disconnect();
+    blockingTime?.dispose();
+  };
 }

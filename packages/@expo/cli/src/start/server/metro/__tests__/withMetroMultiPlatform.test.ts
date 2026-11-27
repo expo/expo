@@ -327,6 +327,47 @@ describe(withExtendedResolver, () => {
     });
   });
 
+  describe('HMR client aliases', () => {
+    function resolveHMRClient(dev: boolean) {
+      mockMinFs();
+      jest
+        .mocked(getResolveFunc())
+        .mockReturnValueOnce({
+          type: 'sourceFile',
+          filePath: '/root/node_modules/react-native/Libraries/Utilities/HMRClient.js',
+        })
+        .mockImplementationOnce((_context, moduleName) => ({
+          type: 'sourceFile',
+          filePath: `/root/node_modules/${moduleName}`,
+        }));
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      return modified.resolver.resolveRequest!(
+        getResolverContext({
+          dev,
+          originModulePath: '/root/node_modules/react-native/src/unstable-internals-do-not-use.js',
+        }),
+        '../Libraries/Utilities/HMRClient',
+        'ios'
+      );
+    }
+
+    it('aliases the HMR client to the Expo HMR client in development', () => {
+      expect(resolveHMRClient(true)).toEqual({
+        type: 'sourceFile',
+        filePath: '/root/node_modules/expo/src/async-require/hmr.ts',
+      });
+    });
+
+    it('replaces the HMR client with a virtual no-op shim in production', () => {
+      expectVirtual(resolveHMRClient(false), '\0shim:HMRClientProdShim.js');
+    });
+  });
+
   it(`resolves to @expo/vector-icons on any platform`, async () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
@@ -678,7 +719,7 @@ describe(withExtendedResolver, () => {
   it(`aliases react-native-web modules to virtual shims on web`, async () => {
     vol.fromJSON(
       {
-        'node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js': '',
+        'node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js': '',
 
         'node_modules/@react-native/assets-registry/registry.js': '',
 
@@ -691,7 +732,7 @@ describe(withExtendedResolver, () => {
       .mocked(shouldCreateVirtualShim)
       .mockClear()
       .mockImplementationOnce((path: string) =>
-        path.includes('react-native-web/dist/cjs/exports') ? '/mock' : null
+        path.includes('react-native-web/dist/exports') ? '/mock' : null
       );
     // Emulate throwing when the module doesn't exist...
     jest
@@ -700,7 +741,7 @@ describe(withExtendedResolver, () => {
       .mockImplementationOnce(() => {
         return {
           type: 'sourceFile',
-          filePath: '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+          filePath: '/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js',
         };
       });
 
@@ -711,19 +752,19 @@ describe(withExtendedResolver, () => {
 
     const result = modified.resolver.resolveRequest!(
       getDefaultRequestContext(),
-      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      '/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js',
       'web'
     );
 
     expect(result).toEqual({
-      filePath: '\0shim:react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      filePath: '\0shim:react-native-web/dist/exports/AppRegistry/AppContainer.js',
       type: 'sourceFile',
     });
 
     expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     expect(getResolveFunc()).toHaveBeenCalledWith(
       expect.anything(),
-      '/node_modules/react-native-web/dist/cjs/exports/AppRegistry/AppContainer.js',
+      '/node_modules/react-native-web/dist/exports/AppRegistry/AppContainer.js',
       'web'
     );
   });

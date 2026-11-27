@@ -9,11 +9,13 @@ import type {
 import { Children, forwardRef, useMemo } from 'react';
 
 import { useContextKey, useRouteNode } from '../Route';
+import { resolveHref } from '../link/href';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
+import { shouldLinkExternally } from '../utils/url';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
@@ -61,7 +63,18 @@ export function useFilterScreenChildren<
       }
 
       if (isProtectedReactElement(child)) {
-        const guardFails = !child.props.guard;
+        const protectedRedirectTo = child.props.redirectTo;
+        if (
+          protectedRedirectTo !== undefined &&
+          shouldLinkExternally(resolveHref(protectedRedirectTo))
+        ) {
+          throw new Error(
+            `\`Protected\` in "app${contextKey}/_layout" requires an app route for \`redirectTo\`. ` +
+              'Open external URLs with `Linking.openURL`.'
+          );
+        }
+        // The outermost failing guard decides the redirect, so inner guards are not read.
+        const guardFails = !exclude && !child.props.guard;
         const excludeChildren = exclude || guardFails;
         const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {

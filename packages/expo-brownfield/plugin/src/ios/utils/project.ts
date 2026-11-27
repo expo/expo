@@ -150,6 +150,7 @@ const getCommonBuildSettings = (
     SWIFT_OPTIMIZATION_LEVEL = "-Onone"; */
     PRODUCT_NAME: `"$(TARGET_NAME)"`,
     SWIFT_VERSION: '5.0',
+    OTHER_SWIFT_FLAGS: '"$(inherited) -enable-upcoming-feature ImportObjcForwardDeclarations"',
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,

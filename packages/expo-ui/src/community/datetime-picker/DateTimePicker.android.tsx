@@ -48,6 +48,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
     testID,
     style,
     accentColor,
+    themeVariant,
     presentation = 'dialog',
     positiveButton,
     negativeButton,
@@ -78,7 +79,8 @@ export function DateTimePicker(props: DateTimePickerProps) {
     }
   };
 
-  const onDateSelected = (date: Date) => {
+  const onDateSelected = (date: Date | null) => {
+    if (date === null) return;
     const selected = usesDateComponents ? utcDayToLocalDate(date, value) : date;
     if (onValueChange) {
       onValueChange(buildChangeEvent(selected), selected);
@@ -102,13 +104,17 @@ export function DateTimePicker(props: DateTimePickerProps) {
   if (presentation === 'dialog') {
     if (mode === 'time') {
       return (
-        <Host style={style}>
-          <AndroidTimePickerDialog {...dialogProps} is24Hour={is24Hour} />
+        <Host colorScheme={themeVariant} style={style}>
+          <AndroidTimePickerDialog
+            {...dialogProps}
+            variant={displayToAndroidVariant(display)}
+            is24Hour={is24Hour}
+          />
         </Host>
       );
     }
     return (
-      <Host style={style}>
+      <Host colorScheme={themeVariant} style={style}>
         <AndroidDatePickerDialog
           {...dialogProps}
           variant={displayToAndroidVariant(display)}
@@ -119,7 +125,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
   }
 
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} colorScheme={themeVariant} style={style}>
       <AndroidPicker
         initialDate={initialDate}
         displayedComponents={modeToDisplayedComponents(mode)}
@@ -127,6 +133,8 @@ export function DateTimePicker(props: DateTimePickerProps) {
         selectableDates={selectableDates}
         is24Hour={is24Hour}
         color={accentColor}
+        // Match iOS, where the inline picker has no background of its own.
+        elementColors={{ containerColor: 'transparent' }}
         onDateSelected={onDateSelected}
         showVariantToggle={false}
         // Match iOS, where the inline picker has no label: hide Material 3's "Select date" title

@@ -14,6 +14,7 @@ Expo Router turns app files into routes for React Native and web. Judge features
 
 - Put native implementation and tests in `ios/` or `android/` as appropriate; put config plugin changes in `plugin/`. Keep shared JavaScript and TypeScript behavior in `src/`.
 - Use `.ios`, `.android`, `.native`, and `.web` file suffixes for platform-specific implementations and tests. Import implementation modules through their extensionless base path so the resolver selects the matching variant.
+- Keep navigator-specific logic in that navigator or its router, not in shared core such as `useNavigationBuilder`.
 
 ## Build and checks
 
@@ -24,9 +25,12 @@ Run focused package scripts from `packages/expo-router` as needed:
 
 ## Testing
 
-- Name tests for the behavior they check and keep them as minimal as possible. Write the specific tests strictly needed to prove a change.
+- Name tests for the behavior they check. Keep each test minimal: few behaviors per test, not few lines. Write the specific tests strictly needed to prove a change.
 - Prefer `renderRouter` from [`src/testing-library`](src/testing-library/index.tsx) for route behavior
-- The `renderHook` re-exported by `src/testing-library` is the plain React Native Testing Library helper. For hooks that need Router context, use the route-aware [`src/hooks/__tests__/renderHook.tsx`](src/hooks/__tests__/renderHook.tsx) helper.
+- The `renderHook` re-exported by `src/testing-library` is the plain React Native Testing Library helper. When a test only needs a hook value inside Router context, use the route-aware [`src/hooks/__tests__/renderHook.tsx`](src/hooks/__tests__/renderHook.tsx) helper instead of `renderRouter`.
+- Write each test out in full. Put the layout, the route map, and the render call inline in the test. Do not hide setup in local helper functions, config maps, or `describe.each`. A longer, explicit suite is better than a short, indirect one.
+- Do not compute expected values. Do not use `includes()`, ternaries, or `if` in a test body. Split the cases into separate tests and assert literal values, for example `toBe(true)` and `toBe(false)`.
+- Assert whole messages with `toHaveBeenCalledWith('<full message>')`, not `expect.stringContaining(...)`.
 - Restore spies and mocks after tests. Explain non-obvious mock call indices close to their assertions.
 - For Swift changes, tests in `ios/Tests/` use Swift Testing (`@Test`/`@Suite`, `#expect`/`#require`). Run `et native-unit-tests --packages expo-router -p ios` when relevant. See [native test tooling](../../tools/src/commands/IosNativeUnitTests.ts).
 
@@ -39,6 +43,13 @@ Run focused package scripts from `packages/expo-router` as needed:
 ## App verification
 
 Use the [router-tester app](../../apps/router-tester/README.md) for app behavior that needs a simulator. Internal agent runs follow its [EAS simulator instructions](../../apps/router-tester/AGENTS.md); external contributors use the README's local iOS or Android simulator setup. The README also documents its Maestro test.
+
+For internal runs, when you change native code in `ios/` or update a dependency with iOS native code, such as `react-native-screens`, build router-tester on EAS with both Xcode 27 and Xcode 26. Run from `apps/router-tester`; both builds must succeed:
+
+```sh
+pnpm eas:build -p ios --profile ios-simulator --non-interactive
+pnpm eas:build -p ios --profile ios-simulator-xcode-26 --non-interactive
+```
 
 For integration or end-to-end projects, inspect [`apps/router-e2e`](../../apps/router-e2e/package.json) and the relevant [`@expo/cli` test scripts](../@expo/cli/package.json). Select a project and platform that exercise the changed behavior; do not require a simulator for every edit.
 

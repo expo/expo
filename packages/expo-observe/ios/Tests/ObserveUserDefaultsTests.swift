@@ -1,4 +1,3 @@
-import ExpoAppMetrics
 import Testing
 
 @testable import ExpoObserve
@@ -62,6 +61,26 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.config?.sampleRate == 0.5)
     ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: nil))
     #expect(ObserveUserDefaults.config?.sampleRate == nil)
+  }
+
+  @Test
+  func `ignored names persist and omitted lists reset them`() {
+    ObserveUserDefaults.setConfig(
+      PersistedConfig(ignoredMetrics: ["expo.app_startup.tti"], ignoredEvents: ["custom.event"])
+    )
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == ["expo.app_startup.tti"])
+    #expect(ObserveUserDefaults.config?.ignoredEvents == ["custom.event"])
+    ObserveUserDefaults.setConfig(PersistedConfig())
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == nil)
+    #expect(ObserveUserDefaults.config?.ignoredEvents == nil)
+  }
+
+  @Test
+  func `old persisted JSON decodes with nil ignored lists`() throws {
+    let oldData = Data(#"{"dispatchingEnabled":true,"sampleRate":0.5}"#.utf8)
+    let config = try JSONDecoder().decode(PersistedConfig.self, from: oldData)
+    #expect(config.ignoredMetrics == nil)
+    #expect(config.ignoredEvents == nil)
   }
 
   @Test
@@ -135,6 +154,50 @@ struct ObserveUserDefaultsTests {
     ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: true))
     #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
     #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
+  }
+
+  // MARK: - Launch without consent
+
+  @Test
+  func `deleteStoredSettings removes every Observe setting`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
+    ObserveUserDefaults.setBundleDefaults(PersistedBundleDefaults(environment: "production", isJsDev: false))
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+    ObserveUserDefaults.lastDispatchedLogId = 7
+    ObserveUserDefaults.lastDispatchDate = Date()
+
+    ObserveUserDefaults.deleteStoredSettings()
+
+    #expect(UserDefaults.standard.persistentDomain(forName: "dev.expo.observe")?.isEmpty ?? true)
+    #expect(ObserveUserDefaults.config == nil)
+    #expect(ObserveUserDefaults.bundleDefaults == nil)
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
+    #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
+    #expect(ObserveUserDefaults.lastDispatchDate == nil)
+  }
+
+  // MARK: - Revoke
+
+  @Test
+  func `a revoke deletes every Observe setting`() {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+    ObserveUserDefaults.lastDispatchedLogId = 7
+    ObserveUserDefaults.lastDispatchDate = Date()
+
+    applyConsent(.notGranted) { _ in }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == -1)
+    #expect(ObserveUserDefaults.lastDispatchedLogId == -1)
+    #expect(ObserveUserDefaults.lastDispatchDate == nil)
+  }
+
+  @Test
+  func `a grant keeps the Observe settings`() {
+    ObserveUserDefaults.lastDispatchedMetricId = 5
+
+    applyConsent(.granted) { _ in }
+
+    #expect(ObserveUserDefaults.lastDispatchedMetricId == 5)
   }
 
   @Test

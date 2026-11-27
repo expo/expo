@@ -1,13 +1,22 @@
 import { NativeModule, registerWebModule } from 'expo';
-import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
+import AppMetrics, {
+  recordSpan,
+  startSpan,
+  withSpan,
+  type LogEventOptions,
+  type MetricAttributes,
+} from './app-metrics';
 import { reportCaughtError } from './reportCaughtError';
+import { reportFeedback } from './reportFeedback';
 import type {
   ObserveConfig,
+  ObserveConsent,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
   ObserveAttributes,
+  ObserveFeedback,
 } from './types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
@@ -15,7 +24,11 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
     // The EAS client id is stored in native preferences, which web has no equivalent of.
     return null;
   }
+  async setConsent(consent: ObserveConsent) {}
   async dispatchEvents() {}
+  startSpan = startSpan;
+  withSpan = withSpan;
+  recordSpan = recordSpan;
   configure(config: ObserveConfig): void {}
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
@@ -31,6 +44,9 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   }
   reportError(error: unknown): void {
     reportCaughtError(error);
+  }
+  reportFeedback(feedback: ObserveFeedback): void {
+    reportFeedback(feedback, this);
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();

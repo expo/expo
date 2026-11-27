@@ -139,19 +139,20 @@ struct ExceptionsTests {
 
   @Test
   func `async function throw exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
     let code = try await runtime.evalAsync(
       "expo.modules.TestModule.codedExceptionThrowAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
-    )
-    #expect(code.getString() == "E_TEST_CODE")
+    ).ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try code.take().asString() } == "E_TEST_CODE")
   }
 
   @Test
   func `async function reject exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
@@ -159,8 +160,8 @@ struct ExceptionsTests {
     // which gets wrapped in a `FunctionCallException`), so we only assert on the preserved `code`.
     let code = try await runtime.evalAsync(
       "expo.modules.TestModule.codedExceptionRejectAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
-    )
-    #expect(code.getString() == "E_TEST_CODE")
+    ).ref()
+    #expect(try await runtime.execute { try code.take().asString() } == "E_TEST_CODE")
   }
 
   @Test
@@ -173,8 +174,8 @@ struct ExceptionsTests {
     // (type name + native file:line), so JS code can rely on it as written by the module.
     let message = try await runtime.evalAsync(
       "expo.modules.TestModule.codedExceptionRejectAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
-    )
-    #expect(message.getString() == "This is a test Exception with a code")
+    ).ref()
+    #expect(try await runtime.execute { try message.take().asString() } == "This is a test Exception with a code")
   }
 
   @Test
@@ -185,8 +186,8 @@ struct ExceptionsTests {
 
     let message = try await runtime.evalAsync(
       "expo.modules.TestModule.customMessageRejectAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
-    )
-    #expect(message.getString() == "Custom JS message")
+    ).ref()
+    #expect(try await runtime.execute { try message.take().asString() } == "Custom JS message")
   }
 
   @Test
@@ -197,20 +198,20 @@ struct ExceptionsTests {
 
     let code = try await runtime.evalAsync(
       "expo.modules.TestModule.codedExceptionConcurrentAsync().then(() => 'NO_ERROR', (error) => error.code ?? 'NO_CODE')"
-    )
-    #expect(code.getString() == "E_TEST_CODE")
+    ).ref()
+    #expect(try await runtime.execute { try code.take().asString() } == "E_TEST_CODE")
   }
 
   @Test
   func `async function reject with a code and a description exposes the description to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
     let message = try await runtime.evalAsync(
       "expo.modules.TestModule.codedRejectWithDescriptionAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
-    )
-    #expect(message.getString().contains("This is the rejection description"))
+    ).ref()
+    #expect(try await runtime.execute { try message.take().asString() }.contains("This is the rejection description"))
   }
 
   private static func registerTestModule(on appContext: AppContext) {

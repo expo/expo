@@ -73,9 +73,17 @@ export default function ExposedDropdownMenuBoxScreen() {
   const [selected4, setSelected4] = React.useState('ts');
   const [expanded4, setExpanded4] = React.useState(false);
 
+  const [selected5, setSelected5] = React.useState('');
+  const [expanded5, setExpanded5] = React.useState(false);
+  const [query, setQuery] = React.useState('');
+  const autocompleteText = useNativeState('');
+
   const selectedLabel = LANGUAGES.find((l) => l.value === selected)?.label ?? '';
   const selectedLabel3 = LANGUAGES.find((l) => l.value === selected3)?.label ?? '';
   const selectedLabel4 = LANGUAGES.find((l) => l.value === selected4)?.label ?? '';
+  const filteredLanguages = LANGUAGES.filter((lang) =>
+    lang.label.toLowerCase().includes(query.trim().toLowerCase())
+  );
 
   return (
     <Page>
@@ -204,6 +212,46 @@ export default function ExposedDropdownMenuBoxScreen() {
           </ExposedDropdownMenuBox>
         </Host>
         <Text>Selected: {selected4}</Text>
+      </Section>
+
+      <Section title="Editable (autocomplete)">
+        <Host matchContents>
+          <ExposedDropdownMenuBox expanded={expanded5} onExpandedChange={setExpanded5}>
+            <TextField
+              value={autocompleteText}
+              onValueChange={(text) => {
+                setQuery(text);
+                setExpanded5(true);
+              }}
+              modifiers={[menuAnchor('primaryEditable')]}
+            />
+            <ExposedDropdownMenu expanded={expanded5} onDismissRequest={() => setExpanded5(false)}>
+              {filteredLanguages.length === 0 ? (
+                <DropdownMenuItem enabled={false}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>No matches</ComposeText>
+                  </DropdownMenuItem.Text>
+                </DropdownMenuItem>
+              ) : (
+                filteredLanguages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.value}
+                    onClick={() => {
+                      autocompleteText.value = lang.label;
+                      setQuery(lang.label);
+                      setSelected5(lang.value);
+                      setExpanded5(false);
+                    }}>
+                    <DropdownMenuItem.Text>
+                      <ComposeText>{lang.label}</ComposeText>
+                    </DropdownMenuItem.Text>
+                  </DropdownMenuItem>
+                ))
+              )}
+            </ExposedDropdownMenu>
+          </ExposedDropdownMenuBox>
+        </Host>
+        <Text>Selected: {selected5 || '(none)'}</Text>
       </Section>
     </Page>
   );

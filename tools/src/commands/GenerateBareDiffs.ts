@@ -115,8 +115,6 @@ async function executeDiffCommand(
   const toRef = `origin/${sdkToBranch(sdkTo)}`;
   const diffPath = path.join(diffDirPathRaw, `${sdkFrom}..${sdkTo}.diff`);
 
-  await Git.fetchAsync();
-
   const otherPathspecs = pathspecs.filter((pathspec) => pathspec !== TEMPLATE_PACKAGE_JSON_PATH);
   const diff = await spawnAsync('git', ['diff', `${fromRef}..${toRef}`, '--', ...otherPathspecs], {
     cwd: EXPO_DIR,
@@ -155,6 +153,8 @@ async function action({ check = false }: ActionOptions) {
 
     const sdkVersionsToDiff = allVersions(minSdk, maxSdk);
     sdkVersionsToDiff.push('unversioned');
+
+    await Git.fetchAsync();
 
     // clear all versions before regenerating
 

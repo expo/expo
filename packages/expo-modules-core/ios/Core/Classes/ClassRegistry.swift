@@ -3,33 +3,29 @@
 import ExpoModulesJSI
 
 internal final class ClassRegistry {
-  // Classes are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a
-  // Dictionary value.
-  var nativeToJS = [ObjectIdentifier: JavaScriptValue.Ref]()
+  // Prototypes are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a
+  // Dictionary value. Only the prototype is kept: creating an instance needs nothing else from the class,
+  // and reading the prototype from the class would cost a property lookup on every instance.
+  var nativeToPrototype = [ObjectIdentifier: JavaScriptObject.Ref]()
 
   // MARK: - Accessing
 
-  func getJavaScriptClass(nativeClassId: ObjectIdentifier) -> JavaScriptObject? {
-    return nativeToJS[nativeClassId]?.withUnwrappedValue { (value: borrowing JavaScriptValue) in value.getObject() }
-  }
-
-  func getJavaScriptClass(nativeClass: SharedObject.Type) -> JavaScriptObject? {
-    let nativeClassId = ObjectIdentifier(nativeClass)
-    return getJavaScriptClass(nativeClassId: nativeClassId)
+  /// Calls `body` with the prototype of the JavaScript class registered for the native class.
+  /// Returns `nil` when no class is registered.
+  func withPrototype<R: ~Copyable>(
+    nativeClassId: ObjectIdentifier,
+    _ body: (borrowing JavaScriptObject) throws -> R
+  ) rethrows -> R? {
+    return try nativeToPrototype[nativeClassId]?.withUnwrappedValue(body)
   }
 
   // MARK: - Registration
 
-  func register(nativeClassId: ObjectIdentifier, javaScriptClass: borrowing JavaScriptObject) {
-    nativeToJS[nativeClassId] = javaScriptClass.refToValue()
-  }
-
-  func register(nativeClass: SharedObject.Type, javaScriptClass: borrowing JavaScriptObject) {
-    let nativeClassId = ObjectIdentifier(nativeClass)
-    register(nativeClassId: nativeClassId, javaScriptClass: javaScriptClass)
+  func register(nativeClassId: ObjectIdentifier, prototype: consuming JavaScriptObject) {
+    nativeToPrototype[nativeClassId] = prototype.ref()
   }
 
   internal func clear() {
-    nativeToJS.removeAll()
+    nativeToPrototype.removeAll()
   }
 }

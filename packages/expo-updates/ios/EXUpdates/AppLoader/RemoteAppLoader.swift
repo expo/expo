@@ -69,9 +69,7 @@ public final class RemoteAppLoader: AppLoader {
           try self.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: self.config.scopeKey)
           successBlockArg(updateResponse)
         } catch {
-          let cause = UpdatesError.remoteAppLoaderHeaderDataError(cause: error)
-          self.logger.error(cause: cause, code: UpdatesErrorCode.unknown)
-          errorBlockArg(cause)
+          errorBlockArg(UpdatesError.remoteAppLoaderHeaderDataError(cause: error))
         }
       }
     } else {

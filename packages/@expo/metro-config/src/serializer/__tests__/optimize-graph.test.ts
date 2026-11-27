@@ -294,7 +294,7 @@ describe('cjs', () => {
           return a - b;
         }
       },"/app/math.js",[]);
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 });
@@ -446,6 +446,6 @@ it(`recursively expands export all statements with nested statements`, async () 
       const z2 = 0;
       const z3 = 0;
     },"/app/x2.js",[]);
-    TEST_RUN_MODULE("/app/index.js");"
+    __r("/app/index.js");"
   `);
 });

@@ -11,7 +11,9 @@ export type BarometerMeasurement = {
    */
   pressure: number;
   /**
-   * Measurement in meters (`m`).
+   * The change in altitude since the listener started, in meters (`m`).
+   * On Android, the value is calculated from the change in air pressure.
+   * @platform android
    * @platform ios
    */
   relativeAltitude?: number;

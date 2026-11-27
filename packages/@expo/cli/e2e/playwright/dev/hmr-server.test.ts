@@ -2,15 +2,15 @@ import { test, expect, type Page, type WebSocket } from '@playwright/test';
 import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { mutateFile, openPageAndEagerlyLoadJS, raceOrFail } from '../../utils/hmr';
 import { pageCollectErrors } from '../page';
 
-const projectRoot = getRouterE2ERoot();
-const indexFile = path.join(projectRoot, '__e2e__/server-loader/app/index.tsx');
-const postsFile = path.join(projectRoot, '__e2e__/server-loader/app/posts/[postId].tsx');
-const noLoaderFile = path.join(projectRoot, '__e2e__/server-loader/app/no-loader.tsx');
+const projectRoot = getServerTesterRoot();
+const indexFile = path.join(projectRoot, 'app/loaders/index.tsx');
+const postsFile = path.join(projectRoot, 'app/loaders/posts/[postId].tsx');
+const noLoaderFile = path.join(projectRoot, 'app/loaders/no-loader.tsx');
 
 const ORIGINAL_LOADER_VALUE = 'root-index';
 
@@ -27,8 +27,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'server-loader',
+      E2E_ROUTER_WEB_OUTPUT: 'server',
 
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
@@ -43,7 +42,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     console.timeEnd('expo start');
 
     console.time('Eagerly bundled JS');
-    await expoStart.fetchBundleAsync('/').then((response) => response.text());
+    await expoStart.fetchBundleAsync('/loaders').then((response) => response.text());
     console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async ({ page }) => {
@@ -59,7 +58,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      undefined,
+      new URL('/loaders', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -75,7 +74,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
 
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
-      if (request.url().includes('/_expo/loaders/')) {
+      if (request.url().includes('/_expo/loaders/loaders/')) {
         loaderRequests.push(request.url());
       }
     });
@@ -93,7 +92,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     expect(messages.commands).not.toContain('reload');
     const marker = await page.evaluate(() => (window as any).__e2eMarker);
     expect(marker).toBe('still-here');
-    expect(loaderRequests.some((url) => url.includes('/_expo/loaders/index'))).toBe(true);
+    expect(loaderRequests.some((url) => url.includes('/_expo/loaders/loaders/index'))).toBe(true);
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(nextValue);
 
     expect(pageErrors.all).toEqual([]);
@@ -106,7 +105,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      undefined,
+      new URL('/loaders', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -141,7 +140,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      undefined,
+      new URL('/loaders', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -176,13 +175,13 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      undefined,
+      new URL('/loaders', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
     await waitForHydration(page);
 
-    await page.click('a[href="/posts/static-post-1"]');
+    await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
     await page.waitForSelector('[data-testid="loader-result"]', { timeout: 30_000 });
     await expect(page.locator('[data-testid="loader-result"]')).toContainText('static-post-1');
 
@@ -219,15 +218,15 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/no-loader', expoStart.url.href).toString(),
+      new URL('/loaders/no-loader', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
     await waitForHydration(page);
 
-    const editedLabel = `Pathname edited-${Date.now()}`;
+    const editedTitle = `No loader edited-${Date.now()}`;
     await mutateFile(noLoaderFile, (contents) =>
-      contents.replace('label="Pathname"', `label="${editedLabel}"`)
+      contents.replace('title="No loader"', `title="${editedTitle}"`)
     );
 
     await waitForFashRefresh();
@@ -251,12 +250,12 @@ const resetPostsLoader = () =>
 
 const resetNoLoaderFile = () =>
   mutateFile(noLoaderFile, (contents) =>
-    contents.replace(/label="Pathname(?: edited-[\w\d]+)?"/g, 'label="Pathname"')
+    contents.replace(/title="No loader(?: edited-[\w\d]+)?"/g, 'title="No loader"')
   );
 
 // Route bundles load during hydration. Metro sends HMR updates only for bundles that loaded before the edit.
 async function waitForHydration(page: Page) {
-  await page.getByTestId('site-links-mounted').waitFor({ state: 'attached' });
+  await page.getByTestId('route-links-mounted').first().waitFor({ state: 'attached' });
 }
 
 const resetAllFixtures = async () => {

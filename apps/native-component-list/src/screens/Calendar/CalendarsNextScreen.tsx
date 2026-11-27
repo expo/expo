@@ -1,11 +1,8 @@
 import {
   AttendeeType,
   CalendarAccessLevel,
-  createCalendar,
   EntityTypes,
-  ExpoCalendar,
-  getCalendars,
-  presentPicker,
+  Calendar,
   useCalendarPermissions,
   useRemindersPermissions,
 } from 'expo-calendar';
@@ -19,9 +16,9 @@ import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
 
 const CalendarRow = (props: {
-  calendar: ExpoCalendar;
-  updateCalendar: (calendar: ExpoCalendar) => void;
-  deleteCalendar: (calendar: ExpoCalendar) => void;
+  calendar: Calendar;
+  updateCalendar: (calendar: Calendar) => void;
+  deleteCalendar: (calendar: Calendar) => void;
 }) => {
   const { calendar } = props;
   const calendarTypeName =
@@ -56,7 +53,7 @@ export default function CalendarsNextScreen() {
   const [, askForCalendarPermissions] = useCalendarPermissions();
   const [, askForReminderPermissions] = useRemindersPermissions();
 
-  const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
+  const [calendars, setCalendars] = useState<Calendar[]>([]);
 
   const findCalendars = async () => {
     try {
@@ -64,9 +61,9 @@ export default function CalendarsNextScreen() {
       const reminderGranted =
         Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
       if (calendarGranted && reminderGranted) {
-        const eventCalendars = (await getCalendars(EntityTypes.EVENT)) as unknown as any[];
+        const eventCalendars = (await Calendar.getAll(EntityTypes.EVENT)) as unknown as any[];
         const reminderCalendars = (
-          Platform.OS === 'ios' ? await getCalendars(EntityTypes.REMINDER) : []
+          Platform.OS === 'ios' ? await Calendar.getAll(EntityTypes.REMINDER) : []
         ) as any[];
         setCalendars([...eventCalendars, ...reminderCalendars]);
       }
@@ -104,7 +101,7 @@ export default function CalendarsNextScreen() {
     };
 
     try {
-      const calendar = await createCalendar(newCalendar);
+      const calendar = await Calendar.create(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
     } catch (e: any) {
@@ -112,7 +109,7 @@ export default function CalendarsNextScreen() {
     }
   };
 
-  const updateCalendar = async (calendar: ExpoCalendar) => {
+  const updateCalendar = async (calendar: Calendar) => {
     const newCalendar = {
       title: 'cool updated calendar' + new Date().toISOString(),
     };
@@ -125,7 +122,7 @@ export default function CalendarsNextScreen() {
     }
   };
 
-  const deleteCalendar = async (calendar: ExpoCalendar) => {
+  const deleteCalendar = async (calendar: Calendar) => {
     Alert.alert(`Are you sure you want to delete ${calendar.title}?`, 'This cannot be undone.', [
       {
         text: 'Cancel',
@@ -153,7 +150,7 @@ export default function CalendarsNextScreen() {
         {Platform.OS === 'ios' && (
           <Button
             onPress={async () => {
-              const picked = await presentPicker();
+              const picked = await Calendar.presentPicker();
               Alert.alert(picked ? `Picked: ${picked.title}` : 'Cancelled');
             }}
             title="Present Picker"

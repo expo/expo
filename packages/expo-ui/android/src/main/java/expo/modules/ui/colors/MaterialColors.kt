@@ -15,6 +15,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.ui.ExpoColorScheme
+import expo.modules.ui.composeOrNull
 
 /**
  * Whether the current device supports Material You wallpaper-based dynamic
@@ -165,3 +166,63 @@ internal fun ColorScheme.toTokenMap(): Map<String, String> = mapOf(
   "onTertiaryFixed" to onTertiaryFixed.toRgbaHex(),
   "onTertiaryFixedVariant" to onTertiaryFixedVariant.toRgbaHex()
 )
+
+/**
+ * Replaces the roles named in [overrides], keyed like [toTokenMap], and keeps the others.
+ */
+internal fun ColorScheme.withOverrides(overrides: Map<String, android.graphics.Color>): ColorScheme {
+  if (overrides.isEmpty()) {
+    return this
+  }
+  fun color(role: String, fallback: Color): Color = overrides[role]?.composeOrNull ?: fallback
+  return copy(
+    primary = color("primary", primary),
+    onPrimary = color("onPrimary", onPrimary),
+    primaryContainer = color("primaryContainer", primaryContainer),
+    onPrimaryContainer = color("onPrimaryContainer", onPrimaryContainer),
+    inversePrimary = color("inversePrimary", inversePrimary),
+    secondary = color("secondary", secondary),
+    onSecondary = color("onSecondary", onSecondary),
+    secondaryContainer = color("secondaryContainer", secondaryContainer),
+    onSecondaryContainer = color("onSecondaryContainer", onSecondaryContainer),
+    tertiary = color("tertiary", tertiary),
+    onTertiary = color("onTertiary", onTertiary),
+    tertiaryContainer = color("tertiaryContainer", tertiaryContainer),
+    onTertiaryContainer = color("onTertiaryContainer", onTertiaryContainer),
+    background = color("background", background),
+    onBackground = color("onBackground", onBackground),
+    surface = color("surface", surface),
+    onSurface = color("onSurface", onSurface),
+    surfaceVariant = color("surfaceVariant", surfaceVariant),
+    onSurfaceVariant = color("onSurfaceVariant", onSurfaceVariant),
+    surfaceTint = color("surfaceTint", surfaceTint),
+    inverseSurface = color("inverseSurface", inverseSurface),
+    inverseOnSurface = color("inverseOnSurface", inverseOnSurface),
+    error = color("error", error),
+    onError = color("onError", onError),
+    errorContainer = color("errorContainer", errorContainer),
+    onErrorContainer = color("onErrorContainer", onErrorContainer),
+    outline = color("outline", outline),
+    outlineVariant = color("outlineVariant", outlineVariant),
+    scrim = color("scrim", scrim),
+    surfaceBright = color("surfaceBright", surfaceBright),
+    surfaceDim = color("surfaceDim", surfaceDim),
+    surfaceContainer = color("surfaceContainer", surfaceContainer),
+    surfaceContainerHigh = color("surfaceContainerHigh", surfaceContainerHigh),
+    surfaceContainerHighest = color("surfaceContainerHighest", surfaceContainerHighest),
+    surfaceContainerLow = color("surfaceContainerLow", surfaceContainerLow),
+    surfaceContainerLowest = color("surfaceContainerLowest", surfaceContainerLowest),
+    primaryFixed = color("primaryFixed", primaryFixed),
+    primaryFixedDim = color("primaryFixedDim", primaryFixedDim),
+    onPrimaryFixed = color("onPrimaryFixed", onPrimaryFixed),
+    onPrimaryFixedVariant = color("onPrimaryFixedVariant", onPrimaryFixedVariant),
+    secondaryFixed = color("secondaryFixed", secondaryFixed),
+    secondaryFixedDim = color("secondaryFixedDim", secondaryFixedDim),
+    onSecondaryFixed = color("onSecondaryFixed", onSecondaryFixed),
+    onSecondaryFixedVariant = color("onSecondaryFixedVariant", onSecondaryFixedVariant),
+    tertiaryFixed = color("tertiaryFixed", tertiaryFixed),
+    tertiaryFixedDim = color("tertiaryFixedDim", tertiaryFixedDim),
+    onTertiaryFixed = color("onTertiaryFixed", onTertiaryFixed),
+    onTertiaryFixedVariant = color("onTertiaryFixedVariant", onTertiaryFixedVariant)
+  )
+}

@@ -1,0 +1,57 @@
+# Rechecks the screenshot/video request when a PR's description is edited or
+# new commits are pushed: `verify triage <target> --recheck-evidence` dismisses
+# expo-bot's "changes requested" evidence review once the description has a
+# screenshot or video, or the change no longer matches a rule, and requests
+# one when the PR now matches a `triage.evidenceRules` rule in
+# .expo-agents/verify/config.jsonc. No model runs; fixed code and the profile
+# decide every review. The opened event is handled by verify-triage.yml.
+name: verify (evidence)
+run-name: "evidence #${{ github.event.pull_request.number }}"
+
+on:
+  # pull_request_target is required so fork PRs get the bot token. Safe
+  # because the only checkout is a sparse, base-branch read of the
+  # .expo-agents/verify/ profile — no PR code is fetched or executed.
+  pull_request_target:
+    types: [edited, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  recheck:
+    # Same group as verify-triage.yml: the recheck does not wait for the
+    # triage receipt, so it must never run alongside the opened-event triage.
+    # Its own workflow keeps it out of the triage daily-limit count.
+    concurrency:
+      group: verify-triage-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    if: github.repository == 'expo/expo'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Advisory: a failure must never fail the repo's checks.
+    continue-on-error: true
+    env:
+      VERIFY_VERSION: ${{ vars.VERIFY_VERSION || '0.11.24' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: |
+            .expo-agents/verify
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      - name: Guard profile and credential env
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify verify-config
+
+      - name: Recheck evidence
+        run: npx --yes -p "@expo/verify@$VERIFY_VERSION" verify triage "$VERIFY_TARGET" --recheck-evidence
+        env:
+          # The target crosses as env only — never ${{ }} inside run: lines.
+          VERIFY_TARGET: ${{ github.repository }}#${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

@@ -55,9 +55,9 @@ Below are instructions on how to configure your Google project for Android and i
 
 ### Upload app to Google Play Store
 
-We recommend uploading the app to the Google Play Store if your app intends to run in production. You can submit your app to the stores for testing even if your project is still in development. This allows you to test Google Sign In when your app is signed by EAS for testing, and when it is signed by [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756?hl=en) for store deployment. To learn more about the app submission process, see the guides below in the order they are specified:
+We recommend uploading the app to the Google Play Store if your app intends to run in production. You can submit your app to the stores for testing even if your project is still in development. This allows you to test Google Sign In when your app is signed by Expo Build for testing, and when it is signed by [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756?hl=en) for store deployment. To learn more about the app submission process, see the guides below in the order they are specified:
 
-<BoxLink title="Create your first EAS Build" href="/build/setup/" Icon={Cube01Icon} />
+<BoxLink title="Create your first Expo Build" href="/build/setup/" Icon={Cube01Icon} />
 
 <BoxLink
   title="Build your project for app stores"
@@ -66,7 +66,7 @@ We recommend uploading the app to the Google Play Store if your app intends to r
 />
 
 <BoxLink
-  title="Submit to the Google Play Store with EAS Submit"
+  title="Submit to the Google Play Store with Expo Submit"
   href="/submit/android/"
   Icon={EasSubmitIcon}
 />
@@ -80,7 +80,7 @@ Refer to the library documentation for a more in-depth configuration guide:
 
 For Android, once you have uploaded your app, you need to provide the SHA-1 certificate fingerprint values when asked while configuring the project in Firebase or Google Cloud Console. There are two types of values that you can provide:
 
-- Fingerprint of the **.apk** you built (on your machine or using EAS Build). You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **Upload key certificate**.
+- Fingerprint of the **.apk** you built (on your machine or using Expo Build). You can find the SHA-1 certificate fingerprint in the Google Play Console under **Release** > **Setup** > **App Integrity** > **Upload key certificate**.
 - Fingerprint(s) of a **production app** downloaded from the play store. You can find the SHA-1 certificate fingerprint(s) in the Google Play Console under **Release** > **Setup** > **App Integrity** > **App signing key certificate**.
 
 ### With Firebase
@@ -97,13 +97,13 @@ For more instructions on how to configure your project for Android and iOS with 
   href="https://react-native-google-signin.github.io/docs/setting-up/expo#expo-and-firebase-authentication"
 />
 
-#### Upload google-services.json and GoogleService-Info.plist to EAS
+#### Upload google-services.json and GoogleService-Info.plist to Expo Services
 
-If you use the Firebase method for Android and iOS (as shared in sections above), you'll need to make sure **google-services.json** and **GoogleService-Info.plist** are available in EAS for building the app. You can check them into your repository because the files should not contain sensitive values, or you can treat the files as secrets, add them to **.gitignore** and use the guide below to make them available in EAS.
+If you use the Firebase method for Android and iOS (as shared in sections above), you'll need to make sure **google-services.json** and **GoogleService-Info.plist** are available to Expo Build for building the app. You can check them into your repository because the files should not contain sensitive values, or you can treat the files as secrets, add them to **.gitignore** and use the guide below to make them available to Expo Build.
 
 <BoxLink
-  title="Upload a secret file to EAS and use in the app config"
-  href="/eas/environment-variables/usage/#using-environment-variables-with-eas-build"
+  title="Upload a secret file to Expo Services and use in the app config"
+  href="/eas/environment-variables/usage/#using-environment-variables-with-expo-build"
 />
 
 ### With Google Cloud Console

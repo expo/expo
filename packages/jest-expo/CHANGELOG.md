@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Skip Jest's own stack frames when looking up native module mocks. On Jest 30 this lookup reread Jest's runtime source for every native module and slowed down test runs. ([#51778](https://github.com/expo/expo/pull/51778) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.11
 
 ### Patch Changes

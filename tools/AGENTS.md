@@ -12,7 +12,7 @@ real regression that a partial check missed:
 ```sh
 pnpm build                     # expo-build cjs:src=build — the compile that ships
 pnpm tsc --noEmit              # typecheck under THIS tsconfig (noUnusedLocals is on)
-pnpm lint --max-warnings 0     # eslint; warnings fail CI (import/order, etc.)
+pnpm lint --max-warnings 0     # oxlint; warnings fail CI
 ```
 
 Pitfalls that produced failed pushes:
@@ -23,8 +23,9 @@ Pitfalls that produced failed pushes:
 - `noUnusedLocals` means deleting a call site without deleting the callee
   fails the build. When bypassing or removing a feature, remove everything it
   made unreachable — the compiler lists them; iterate until silent.
-- `import/order` requires a blank line between import groups (`node:` builtins
-  vs local `../` imports).
+- Import order belongs to `oxfmt` (the pre-commit formatter, configured in the
+  root `.oxfmtrc.json`). Run `pnpm exec oxfmt --write <files>` instead of
+  ordering imports by hand.
 
 ## Running a command against the working tree
 

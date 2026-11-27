@@ -7,6 +7,7 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
+import type { EdgeInsets } from 'react-native-safe-area-context';
 import type { SceneRendererProps, TabBarIndicatorProps, TabViewProps } from 'react-native-tab-view';
 import type { NavigatorArgs } from 'standard-navigation';
 
@@ -309,6 +310,16 @@ export type MaterialTopTabNavigationConfig = Omit<
    * Function that returns a React element to display as the tab bar.
    */
   tabBar?: (props: MaterialTopTabBarProps) => React.ReactNode;
+  /**
+   * Safe area insets for the tab bar. The default tab bar pads its tabs by the left and right insets to avoid elements like the rail on iPhone Duo.
+   * By default, the device's safe area insets are automatically detected. You can override the behavior with this option.
+   */
+  safeAreaInsets?: {
+    top?: number;
+    right?: number;
+    bottom?: number;
+    left?: number;
+  };
 };
 
 export type MaterialTopTabBarProps = SceneRendererProps & {
@@ -316,6 +327,7 @@ export type MaterialTopTabBarProps = SceneRendererProps & {
   descriptors: MaterialTopTabDescriptorMap;
   emitter: MaterialTopTabEmitter;
   navigateToTab: (routeKey: string) => void;
+  insets: EdgeInsets;
 };
 
 export type MaterialTopTabAnimationContext = {

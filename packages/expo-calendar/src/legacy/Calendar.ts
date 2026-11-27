@@ -454,8 +454,8 @@ export type AlarmLocation = {
   };
 };
 
-// @docsMissing
 /**
+ * Days of the week numbered from `Sunday` (`1`) to `Saturday` (`7`).
  * @platform ios
  */
 export enum DayOfTheWeek {
@@ -516,7 +516,19 @@ export type RecurrenceRule = {
    */
   occurrence?: number;
   /**
-   * The days of the week the event should recur on. An array of [`DaysOfTheWeek`](#daysoftheweek) object.
+   * The days of the week the event should recur on.
+   * This field is only valid for `Calendar.Frequency.WEEKLY`, `Calendar.Frequency.MONTHLY`, and
+   * `Calendar.Frequency.YEARLY`.
+   * @example
+   * ```ts
+   * const recurrenceRule = {
+   *   frequency: Calendar.Frequency.WEEKLY,
+   *   daysOfTheWeek: [
+   *     { dayOfTheWeek: Calendar.DayOfTheWeek.Monday },
+   *     { dayOfTheWeek: Calendar.DayOfTheWeek.Wednesday },
+   *   ],
+   * };
+   * ```
    * @platform ios
    */
   daysOfTheWeek?: DaysOfTheWeek[];
@@ -563,7 +575,7 @@ export type RecurrenceRule = {
  */
 export type DaysOfTheWeek = {
   /**
-   * Sunday to Saturday - `DayOfTheWeek` enum.
+   * `Sunday` is `1` and `Saturday` is `7`.
    */
   dayOfTheWeek: DayOfTheWeek;
   /**

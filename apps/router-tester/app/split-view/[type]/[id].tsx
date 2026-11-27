@@ -1,5 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Id() {
   const { id, type } = useLocalSearchParams();
@@ -7,8 +8,10 @@ export default function Id() {
   console.log('Rendering [type]/[id] with id:', id, type);
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>ID: {id}</Text>
-    </View>
+    </SafeAreaView>
   );
 }

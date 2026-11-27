@@ -92,8 +92,8 @@ class AesCryptoModule : Module() {
         sealedData.combinedArray.formatted(format)
       }
       AsyncFunction("ciphertext") { sealedData: SealedData, options: CiphertextOptions? ->
-        val (includeTag, outputFormat) = options ?: CiphertextOptions()
-        sealedData.ciphertextBytes(withTag = includeTag).formatted(outputFormat)
+        val (includeTag, encoding) = options ?: CiphertextOptions()
+        sealedData.ciphertextBytes(withTag = includeTag).formatted(encoding)
       }
 
       Property("combinedSize") { sealedData -> sealedData.combinedSize }
@@ -137,7 +137,7 @@ class AesCryptoModule : Module() {
       options?.additionalData?.let { cipher.updateAAD(it.toBytes()) }
 
       val plaintext = cipher.decrypt(sealedData)
-      return plaintext.array().formatted(options?.output)
+      return plaintext.formatted(options?.output)
     } catch (err: Throwable) {
       throw DecryptionFailed(err)
     }

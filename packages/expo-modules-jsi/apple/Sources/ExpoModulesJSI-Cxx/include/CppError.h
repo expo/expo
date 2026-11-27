@@ -82,14 +82,25 @@ public:
   inline static auto tryCatch(jsi::IRuntime &runtime, Fn &&block) -> decltype(block()) {
     try {
       return block();
-    } catch (jsi::JSError e) {
-      _current = std::make_unique<CppError>(std::move(e));
-    } catch (const std::exception &e) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
     } catch (...) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
+      storeCaughtException(runtime);
     }
     return nullptr;
+  }
+
+  /**
+   Like `tryCatch`, for a callable that returns nothing. Returns `false` when an exception was caught
+   and stored, so the caller reads the thread-local error only after a failure.
+   */
+  template <typename Fn>
+  inline static bool tryCatchSucceeded(jsi::IRuntime &runtime, Fn &&block) {
+    try {
+      block();
+      return true;
+    } catch (...) {
+      storeCaughtException(runtime);
+    }
+    return false;
   }
 
   /**
@@ -128,6 +139,22 @@ public:
   }
 
 private:
+  /**
+   Stores the exception that is being handled as the current thread's error. Must be called from
+   a `catch` block.
+   */
+  inline static void storeCaughtException(jsi::IRuntime &runtime) {
+    try {
+      throw;
+    } catch (jsi::JSError e) {
+      _current = std::make_unique<CppError>(std::move(e));
+    } catch (const std::exception &e) {
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
+    } catch (...) {
+      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
+    }
+  }
+
   /**
    Pointer to the last thrown and caught error. Each thread maintains its own
    error pointer, eliminating the need for synchronization and preventing errors

@@ -6,7 +6,7 @@ exports[`Link with preview correctly renders link with Preview and asChild 1`] =
   data-testid="link-wrapper"
 >
   <a
-    class="css-text-146c3p1 r-cursor-1loqt21"
+    class="css-text-1kstuq4 r-cursor-1loqt21"
     data-testid="inner-text"
     dir="auto"
     href="/undefined/foo"
@@ -19,14 +19,14 @@ exports[`Link with preview correctly renders link with Preview and asChild 1`] =
 
 exports[`Link with preview renders a Link with preview as normal link 1`] = `
 <a
-  class="css-text-146c3p1 r-cursor-1loqt21"
+  class="css-text-1kstuq4 r-cursor-1loqt21"
   data-testid="link"
   dir="auto"
   href="/undefined/foo"
   role="link"
 >
   <span
-    class="css-textHasAncestor-1jxf684"
+    class="css-textHasAncestor-1ejxjx6"
   >
     Foo
   </span>

@@ -4,9 +4,9 @@ import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
-import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
@@ -173,34 +173,60 @@ export async function extractAndPrepareTemplateAppAsync(
   return projectRoot;
 }
 
-// Android resource XML (strings.xml): aapt2 resolves XML entities before its
-// own escape rules, so only &, <, > take entities; the rest (quotes, @, ?,
-// whitespace) needs Android's backslash escapes. The backslash escaping is a
-// copy of `XML.escapeAndroidString` from `@expo/config-plugins`, which this
-// package does not depend on.
-function escapeAndroidResourceValue(original: string): string {
-  const noAmps = original.replace(/&/g, '&amp;');
-  const noLt = noAmps.replace(/</g, '&lt;');
-  const noGt = noLt.replace(/>/g, '&gt;');
-  const escaped = noGt.replace(/[\n\r\t'"@?\\]/g, (m) => {
-    switch (m) {
+// Keep in sync with packages/@expo/config-plugins/src/utils/XML.ts.
+// Kept separate to avoid a runtime dependency on @expo/config-plugins.
+function escapeAndroidString(value: string): string {
+  let result = '';
+  let needsQuotes = false;
+
+  for (let index = 0; index < value.length; index++) {
+    const character = value.charAt(index);
+    switch (character) {
+      case '\0':
+        break;
       case '"':
       case "'":
       case '@':
       case '?':
       case '\\':
-        return '\\' + m;
+        result += '\\' + character;
+        break;
       case '\n':
-        return '\\n';
-      case '\r':
-        return '\\r';
+        result += '\\n';
+        break;
       case '\t':
-        return '\\t';
-      default:
-        throw new Error(`Cannot escape unhandled XML character: ${m}`);
+        result += '\\t';
+        break;
+      default: {
+        const code = value.charCodeAt(index);
+        if (code < 0x20 || code === 0xfffe || code === 0xffff) {
+          result += '\\u' + code.toString(16).padStart(4, '0');
+        } else {
+          result += character;
+          if (character === ' ' && result.charAt(result.length - 2) === ' ') {
+            needsQuotes = true;
+          }
+        }
+        break;
+      }
     }
-  });
-  return escaped.match(/(^\s|\s$)/) ? `"${escaped}"` : escaped;
+  }
+
+  if (
+    result.length === 0 ||
+    result.charAt(0).trim() === '' ||
+    result.charAt(result.length - 1).trim() === ''
+  ) {
+    needsQuotes = true;
+  }
+  return needsQuotes ? '"' + result + '"' : result;
+}
+
+function escapeAndroidResourceValue(original: string): string {
+  return escapeAndroidString(original)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function escapeXMLCharacters(original: string): string {
@@ -237,7 +263,7 @@ function escapeXMLCharacters(original: string): string {
  * `getTemplateFilesToRenameAsync()`.
  *
  * The file patterns are formatted as glob expressions to be interpreted by
- * [glob](https://github.com/isaacs/node-glob). Comments are supported with
+ * [tinyglobby](https://github.com/SuperchupuDev/tinyglobby). Comments are supported with
  * the `#` symbol, both in the plain-text file and string array formats.
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
@@ -296,16 +322,20 @@ export async function getTemplateFilesToRenameAsync({
     .map((line) => line.split(/(?<!\\)#/, 2)[0]?.trim() ?? '')
     .filter((line) => line !== '');
 
-  return await glob(config, {
-    cwd,
-    // `true` is consistent with .gitignore. Allows `*.xml` to match .xml files
-    // in all subdirs.
-    matchBase: true,
-    dot: true,
-    // Prevent climbing out of the template directory in case a template
-    // includes a symlink to an external directory.
-    follow: false,
-  });
+  return glob(
+    config.map((pattern) => {
+      const literalPattern = pattern.startsWith('!') ? `\\${pattern}` : pattern;
+      // NOTE(@kitten): tinyglobby has no matchBase option; bare patterns match in every directory.
+      return pattern.includes('/') ? literalPattern : `**/${literalPattern}`;
+    }),
+    {
+      cwd,
+      dot: true,
+      expandDirectories: false,
+      // NOTE(@kitten): Renaming must not modify files reached through template symlinks.
+      followSymbolicLinks: false,
+    }
+  );
 }
 
 /**

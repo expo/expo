@@ -4,7 +4,6 @@ import android.content.ContentProviderOperation
 import android.content.ContentValues
 import android.database.Cursor
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds
@@ -592,9 +591,6 @@ class Contact(var contactId: String, var appContext: AppContext) {
 
   private fun getThumbnailBitmap(photoUri: String): Bitmap {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uri = photoUri.toUri()
-    context.contentResolver.openInputStream(uri).use { inputStream ->
-      return BitmapFactory.decodeStream(inputStream)
-    }
+    return ContactPhotoDecoder.decode(context.contentResolver, photoUri.toUri())
   }
 }

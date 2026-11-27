@@ -1,0 +1,14 @@
+appId: dev.expo.routertester
+---
+- assertVisible:
+    id: "reanimated-zoom-target"
+# Dismiss the zoom destination with the interactive gesture. Android has no zoom transition.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - swipe:
+          start: 50%, 40%
+          end: 50%, 95%
+      - assertNotVisible:
+          id: "reanimated-zoom-target"

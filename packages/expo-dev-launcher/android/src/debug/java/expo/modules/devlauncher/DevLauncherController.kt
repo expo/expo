@@ -19,6 +19,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
+import expo.modules.devlauncher.helpers.DevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasEnabledFlag
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
@@ -36,9 +37,11 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHand
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherEmbeddedAppLoader
 import expo.modules.devlauncher.launcher.loaders.createAppLoader
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devlauncher.services.signInFromLaunchUrl
 import expo.modules.devmenu.launch.ExpoLauncherUrl
 import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.kotlin.weak
@@ -305,6 +308,7 @@ class DevLauncherController private constructor(
 
         // The dev menu params apply to every launcher command, with or without a `__expo_url`.
         DependencyInjection.devMenuPreferences?.let { launch.applyDevMenuLaunchParams(it) }
+        coroutineScope.launch { signInFromLaunchUrl(uri) }
 
         if (launch.targetUrl == null) {
           if (!launch.isLegacyHost && launch.remainderHasDestination) {
@@ -334,6 +338,8 @@ class DevLauncherController private constructor(
             pendingIntentRegistry.intent = Intent(intent).setData(launch.strippedUrl)
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
+            val appUrl = DevLauncherUrl(uri).url
+            DevLauncherRemoteLogManager.reportError(httpClient, appUrl, "Failed to load app from $appUrl.", e)
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
           }
         }
@@ -510,9 +516,7 @@ class DevLauncherController private constructor(
     internal fun initialize(context: Context, reactHost: ReactHost) {
       try {
         val splashScreenManagerClass = Class.forName("expo.modules.splashscreen.SplashScreenManager")
-        val splashScreenManager = splashScreenManagerClass
-          .kotlin
-          .objectInstance
+        val splashScreenManager = splashScreenManagerClass.getField("INSTANCE").get(null)
         splashScreenManagerClass.getMethod("hide")
           .invoke(splashScreenManager)
       } catch (e: Throwable) {

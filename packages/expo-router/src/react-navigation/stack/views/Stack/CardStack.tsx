@@ -1,8 +1,10 @@
+import type { VerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { Animated, type LayoutChangeEvent, Platform, StyleSheet, View } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { getDefaultHeaderHeight, SafeAreaProviderCompat } from '../../../elements';
+import { getHeaderStatusBarHeight } from '../../../elements/Header/getHeaderStatusBarHeight';
 import type { LocaleDirection, Route } from '../../../native';
 import {
   forModalPresentationIOS,
@@ -46,6 +48,7 @@ type GestureValues = {
 type Props = {
   direction: LocaleDirection;
   insets: EdgeInsets;
+  verticalBarEdge: VerticalBarEdgeIOS | null;
   state: StackViewState;
   descriptors: StackViewDescriptorMap;
   routes: Route<string>[];
@@ -142,14 +145,19 @@ const getIsModal = (scene: Scene, interpolationIndex: number, isParentModal: boo
 const getHeaderHeights = (
   scenes: Scene[],
   insets: EdgeInsets,
+  verticalBarEdge: VerticalBarEdgeIOS | null,
   isParentHeaderShown: boolean,
   isParentModal: boolean,
   layout: Layout,
   previous: Record<string, number>
 ) => {
   return scenes.reduce<Record<string, number>>((acc, curr, index) => {
-    const { headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, headerStyle } =
-      curr.descriptor.options;
+    const {
+      headerStatusBarHeight = isParentHeaderShown
+        ? 0
+        : getHeaderStatusBarHeight(insets, verticalBarEdge),
+      headerStyle,
+    } = curr.descriptor.options;
 
     const style = StyleSheet.flatten(headerStyle || {});
 
@@ -485,6 +493,7 @@ export class CardStack extends React.Component<Props, State> {
       headerHeights: getHeaderHeights(
         scenes,
         props.insets,
+        props.verticalBarEdge,
         props.isParentHeaderShown,
         props.isParentModal,
         state.layout,
@@ -527,6 +536,7 @@ export class CardStack extends React.Component<Props, State> {
         headerHeights: getHeaderHeights(
           state.scenes,
           props.insets,
+          props.verticalBarEdge,
           props.isParentHeaderShown,
           props.isParentModal,
           layout,

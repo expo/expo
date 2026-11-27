@@ -8,10 +8,14 @@ import EXManifests
 
 class TestStateChangeEventManager: UpdatesEventManager {
   var lastContext: UpdatesStateContext? = nil
-  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
+  var sendCount = 0
+
+  func setObserver(_ observer: any EXUpdates.UpdatesEventManagerObserver) {}
+  func removeObserver(_ observer: any EXUpdates.UpdatesEventManagerObserver) {}
 
   func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
     lastContext = context
+    sendCount += 1
   }
 }
 
@@ -38,6 +42,22 @@ struct UpdatesStateMachineTests {
     machine.processEventForTesting(.endStartup)
 
     #expect(machine.context.sequenceNumber == 4)
+  }
+
+  @Test
+  func `download times are in milliseconds in JSON`() throws {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["id": "00000000-0000-0000-0000-000000000000"]))
+
+    let context = machine.context
+    let startTime = try #require(context.downloadStartTime)
+    let finishTime = try #require(context.downloadFinishTime)
+    let json = context.json
+    #expect(json["downloadStartTime"] as? Int == Int(floor(startTime.timeIntervalSince1970 * 1000)))
+    #expect(json["downloadFinishTime"] as? Int == Int(floor(finishTime.timeIntervalSince1970 * 1000)))
   }
 
   @Test
@@ -162,6 +182,38 @@ struct UpdatesStateMachineTests {
   }
 
   @Test
+  func `should send download progress once per 1% step`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    let assetCount = 556
+    for asset in 0..<assetCount {
+      for chunk in 1...4 {
+        machine.processEventForTesting(.downloadProgress(progress: (Double(asset) + Double(chunk) / 4) / Double(assetCount)))
+      }
+    }
+
+    #expect(testStateChangeEventManager.sendCount == 101)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
+  func `should set download progress to 1 when a download completes`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadProgress(progress: 0.5))
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["updateId": "0000-xxxx"]))
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithRollback)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
   func `should handle rollback`() {
     let testStateChangeEventManager = TestStateChangeEventManager()
     let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
@@ -221,9 +273,10 @@ struct UpdatesStateMachineTests {
     // warning is the only record of what was lost.
     machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
 
-    let entry = try await droppedEventWarning(logReader: logReader, newerThan: since)
-    #expect(entry.contains("event = downloadError"))
-    #expect(entry.contains("Failed to download remote update: HTTP 502"))
+    let entry = try #require(UpdatesLogEntry.create(from: try await droppedEventWarning(logReader: logReader, newerThan: since)))
+    #expect(entry.key == "system.stateMachineEventDropped")
+    #expect(entry.message.contains("event = downloadError"))
+    #expect(entry.values?["error"] == "Failed to download remote update: HTTP 502")
   }
 
   /// The log handler writes asynchronously, so poll until the warning lands.

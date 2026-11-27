@@ -199,7 +199,7 @@ describe('FetchResponse', () => {
     // without calling controller.error(), so the bodyStreamClosed guard goes stale.
     // Native events landing after that used to throw on the errored stream.
 
-    it('surfaces the underlying error to the reader', async () => {
+    it('should surface the error and mark the body used after the first read rejects', async () => {
       const response = makeResponse();
 
       (response as any).startStreaming = async () => {
@@ -207,7 +207,12 @@ describe('FetchResponse', () => {
       };
 
       const reader = response.body!.getReader();
+      expect(response.bodyUsed).toBe(false);
       await expect(reader.read()).rejects.toThrow('native module call failed');
+      reader.releaseLock();
+
+      expect(response.bodyUsed).toBe(true);
+      expect(() => response.clone()).toThrow(TypeError);
     });
 
     it('does not throw on native events that arrive after pull() rejected', async () => {
@@ -377,6 +382,44 @@ describe('FetchResponse', () => {
       const response = makeResponse();
       response.body!.getReader();
       await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
+    });
+
+    it('flips bodyUsed and rejects text() after the body is canceled before any read', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      await response.body!.cancel('not needed');
+      expect(nativeCancel).toHaveBeenCalledTimes(1);
+      expect(response.bodyUsed).toBe(true);
+      await expect(response.text()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects body.cancel() while text() reads the body', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      const pending = response.text();
+      await expect(response.body!.cancel('not needed')).rejects.toHaveProperty('name', 'TypeError');
+      expect(nativeCancel).not.toHaveBeenCalled();
+      await expect(pending).resolves.toBe('hello world');
+      expect(response.body!.locked).toBe(true);
+    });
+
+    it('does not start native streaming when body.getReader() runs during arrayBuffer()', async () => {
+      const response = makeResponse();
+      const nativeStart = jest.spyOn(response, 'startStreaming');
+      const pending = response.arrayBuffer();
+      expect(() => response.body!.getReader()).toThrow();
+      expect(nativeStart).not.toHaveBeenCalled();
+      expect((await pending).byteLength).toBe(11);
+    });
+
+    it('calls native cancel when both clone branches are canceled', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      const cloned = response.clone();
+
+      await Promise.all([response.body!.cancel('not needed'), cloned.body!.cancel('not needed')]);
+
+      expect(nativeCancel).toHaveBeenCalledTimes(1);
     });
 
     it('rejects body methods on a clone after its body has been read', async () => {

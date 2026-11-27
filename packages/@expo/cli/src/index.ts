@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { installEventLogger } from '2g';
+import { boolish } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
-import { boolish } from 'getenv';
+
+import { markAsParentCommand } from './utils/parentCommand';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
@@ -22,6 +24,10 @@ const commands: { [command: string]: () => Promise<Command> } = {
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
+  compile: () => import('../src/compile/index.js').then((i) => i.expoCompile),
+  'compile:ios': () => import('../src/compile/ios/index.js').then((i) => i.expoCompileIos),
+  'compile:android': () =>
+    import('../src/compile/android/index.js').then((i) => i.expoCompileAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
   config: () => import('../src/config/index.js').then((i) => i.expoConfig),
@@ -144,6 +150,9 @@ if (!isSubcommand && args['--help']) {
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
+    compile: _compile,
+    'compile:ios': _compileIos,
+    'compile:android': _compileAndroid,
     serve,
     // All other commands
     ...others
@@ -251,6 +260,9 @@ if (args['--help']) {
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
+
+// Child CLI invocations inherit this command, including those launched through build tools.
+markAsParentCommand(`expo ${command}`);
 
 commands[command]!().then((exec) => {
   exec(commandArgs);

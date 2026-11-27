@@ -30,6 +30,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     return nil
   }
 
+  private var sceneSubscribers: [ExpoSceneDelegateSubscriberProtocol] {
+    return ExpoAppDelegateSubscriberRepository.subscribers.compactMap { $0 as? ExpoSceneDelegateSubscriberProtocol }
+  }
+
   open func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -47,6 +51,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
         + "ExpoAppDelegate, conforms to ExpoReactNativeFactoryProvider and creates its "
         + "RCTReactNativeFactory in application(_:didFinishLaunchingWithOptions:)."
       )
+    }
+
+    sceneSubscribers.forEach {
+      $0.scene?(windowScene, willConnectTo: session, options: connectionOptions)
     }
 
     let window = UIWindow(windowScene: windowScene)
@@ -89,6 +97,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
 
   open func sceneDidDisconnect(_ scene: UIScene) {
+    sceneSubscribers.forEach { $0.sceneDidDisconnect?(scene) }
     window = nil
   }
 
@@ -113,11 +122,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // reaches JS through the scene API. It reads a single context, hence one call per context.
     URLContexts.forEach { context in
       forwarder.open(url: context.url, options: Self.openURLOptions(from: context.options)) {
-        // TODO: Remove this when bumping react-native-tvos to 0.88
-        let selector = NSSelectorFromString("scene:openURLContexts:")
-        if RCTLinkingManager.responds(to: selector) {
-          _ = RCTLinkingManager.perform(selector, with: scene, with: Set([context]))
-        }
+        RCTLinkingManager.scene(scene, openURLContexts: [context])
       }
     }
   }
@@ -128,10 +133,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     forwarder.continue(userActivity) {
-      let selector = NSSelectorFromString("scene:continueUserActivity:")
-      if RCTLinkingManager.responds(to: selector) {
-        _ = RCTLinkingManager.perform(selector, with: scene, with: userActivity)
-      }
+      RCTLinkingManager.scene(scene, continue: userActivity)
     }
   }
 

@@ -12,6 +12,7 @@ import { Artifacts } from './Artifacts';
 import { Dependencies } from './Dependencies';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getMonorepoBuildDir, getPackageBuildDir, getSharedSpmDepsRoot } from './MonorepoLayout';
 import { withPackageLocalBuildPath } from './PackageLocalBuild';
 import { SPMBuild, getBuildFolderPrefixForPlatform, getBuildPlatformsForProduct } from './SPMBuild';
 import type { SPMProduct, SPMTarget, BuildPlatform } from './SPMConfig.types';
@@ -466,5 +467,41 @@ describe('computeVersionPrefixForDependency', () => {
         'RNWorklets.xcframework'
       )
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// MonorepoLayout path functions
+// ---------------------------------------------------------------------------
+
+describe('MonorepoLayout path functions', () => {
+  const repoRoot = '/repo';
+
+  describe('getMonorepoBuildDir', () => {
+    it('is the precompile build directory of a repo checkout', () => {
+      assert.equal(getMonorepoBuildDir(repoRoot), '/repo/packages/precompile/.build');
+    });
+  });
+
+  describe('getPackageBuildDir', () => {
+    it('is the directory the monorepo builds one package under', () => {
+      assert.equal(
+        getPackageBuildDir(repoRoot, 'expo-image'),
+        '/repo/packages/precompile/.build/expo-image'
+      );
+    });
+
+    it('keeps both segments of a scoped package name', () => {
+      assert.equal(
+        getPackageBuildDir(repoRoot, '@expo/ui'),
+        '/repo/packages/precompile/.build/@expo/ui'
+      );
+    });
+  });
+
+  describe('getSharedSpmDepsRoot', () => {
+    it('is the shared dependency directory of the monorepo build dir', () => {
+      assert.equal(getSharedSpmDepsRoot(repoRoot), '/repo/packages/precompile/.build/.spm-deps');
+    });
   });
 });

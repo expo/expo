@@ -66,7 +66,9 @@ export async function prebuildAsync(
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
-  }
+  },
+  /** Runs after native configuration, before native dependency installation. */
+  onProjectReady?: () => Promise<void>
 ): Promise<PrebuildResults | null> {
   const initialExp = getConfig(projectRoot).exp;
   const { platforms } = initialExp;
@@ -144,10 +146,15 @@ export async function prebuildAsync(
       // command. We now opt to not change dependencies unless a template
       // indicates a new dependency is required, or if the core dependencies are wrong.
       if (
-        await confirmAsync({
-          message: `Install the updated dependencies?`,
-          initial: true,
-        })
+        await confirmAsync(
+          {
+            message: `Install the updated dependencies?`,
+            initial: true,
+          },
+          {
+            nonInteractiveHelp: '--no-install: flag must be provided in non-interactive mode.',
+          }
+        )
       ) {
         const startedAt = Date.now();
         await installAsync([], {
@@ -188,6 +195,8 @@ export async function prebuildAsync(
     configSyncingStep.fail('Prebuild failed');
     throw error;
   }
+
+  await onProjectReady?.();
 
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.

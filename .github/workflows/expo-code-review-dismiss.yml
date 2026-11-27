@@ -13,10 +13,10 @@ on:
   issue_comment:
     types: [created]
 
+# Every write uses an expo-bot token (see GH_TOKEN in the steps), never GITHUB_TOKEN,
+# so GITHUB_TOKEN only needs to read the repository for the checkout.
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 jobs:
   dismiss:
@@ -118,7 +118,7 @@ jobs:
       - name: Reply to a rejected command
         if: always() && steps.cmd.outputs.reject != ''
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REJECT: ${{ steps.cmd.outputs.reject }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
@@ -126,7 +126,7 @@ jobs:
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
@@ -150,11 +150,25 @@ jobs:
           # the post step doesn't error trying to save an empty cache.
           package-manager-cache: false
 
+      # ecr rewrites the review comment and drops the automatic review count that
+      # expo-code-review.yml keeps in it. Read the count first, and write it back after.
+      - name: Read the automatic review count
+        id: count
+        if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+        run: bash .github/scripts/ai-review-auto-count.sh read
+
       # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GitHub token only, no OPENAI_API_KEY or model credential
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           SUB: ${{ steps.cmd.outputs.sub }}
           IDS: ${{ steps.cmd.outputs.ids }}
           REASON: ${{ steps.cmd.outputs.reason }}
@@ -166,3 +180,15 @@ jobs:
           [ -n "$REASON" ] && ARGS+=(--reason "$REASON")
           for id in $IDS; do ARGS+=("$id"); done
           ./scripts/expo-code-review ecr "$SUB" "${ARGS[@]}"
+
+      - name: Restore the automatic review count
+        if: always() && steps.count.outputs.count != ''
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          BOT_LOGIN: expo-bot
+          COMMENT_TAG: expo-ai-code-reviewer
+          COUNT: ${{ steps.count.outputs.count }}
+        run: bash .github/scripts/ai-review-auto-count.sh restore

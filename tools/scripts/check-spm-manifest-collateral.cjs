@@ -6,7 +6,7 @@
 // Additional exclusions: --exclude <npm-package>/<product> (repeatable).
 // Another checkout: --repo <dir> (default: the checkout holding this script).
 // Artifacts contain metadata only; this gate compares manifests, not compiled binaries.
-const { globSync } = require('glob');
+const { globSync } = require('node:fs');
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
@@ -63,7 +63,8 @@ function ensureBaselineReachable(base = values.base) {
 function configPaths(root = repo) {
   return globSync('packages/**/spm.config.json', {
     cwd: root,
-    ignore: ['**/node_modules/**', '**/.build/**', '**/build/**'],
+    exclude: (entry) =>
+      entry.split('/').some((part) => ['node_modules', '.build', 'build'].includes(part)),
   }).sort();
 }
 
@@ -121,6 +122,28 @@ function classifyInventory(before, after, excluded = new Set()) {
   };
 }
 
+/**
+ * Baseline products whose whole package is gone from the current tree. Deleting a package is
+ * deliberate, so these are not compared; the products depending on them still are.
+ */
+function removedPackageProducts(baselinePaths, before, after) {
+  const removedPackages = new Set();
+  for (const relative of baselinePaths) {
+    if (relative.includes('/external-configs/ios/')) continue;
+    const packageJson = path.join(path.dirname(relative), 'package.json');
+    if (fs.existsSync(path.join(repo, packageJson))) continue;
+    removedPackages.add(JSON.parse(git('show', `${values.base}:${packageJson}`).toString()).name);
+  }
+  return [...before.keys()].filter(
+    (id) => !after.has(id) && removedPackages.has(id.slice(0, id.lastIndexOf('/')))
+  );
+}
+
+function formatRemovedPackageProducts(removed) {
+  if (removed.length === 0) return undefined;
+  return `INFO: SwiftPM products removed with their package (not compared): ${removed.join(', ')}`;
+}
+
 function formatInventoryAdditions(additions) {
   if (additions.length === 0) return undefined;
   return `INFO: Current-only SwiftPM products (not compared): ${additions.join(', ')}`;
@@ -163,7 +186,14 @@ function checkInventory() {
   const changed = changedProducts(before, after).filter((id) => !excluded.has(id));
   const changedMessage = formatChangedProducts(changed);
   if (changedMessage) console.log(changedMessage);
-  const comparison = classifyInventory(ids.before, ids.after, new Set([...excluded, ...changed]));
+  const removed = removedPackageProducts(baselinePaths, before, after);
+  const removedMessage = formatRemovedPackageProducts(removed);
+  if (removedMessage) console.log(removedMessage);
+  const comparison = classifyInventory(
+    ids.before,
+    ids.after,
+    new Set([...excluded, ...changed, ...removed])
+  );
   const additionMessage = formatInventoryAdditions(comparison.additions);
   if (additionMessage) console.log(additionMessage);
   return comparison.comparable;

@@ -14,11 +14,13 @@ internal fun Cipher.encrypt(plaintext: ByteBuffer): SealedData {
   }
 }
 
-internal fun Cipher.decrypt(sealedData: SealedData): ByteBuffer {
+internal fun Cipher.decrypt(sealedData: SealedData): ByteArray {
   val inputBuf = sealedData.taggedCiphertextBuffer
-  val plaintextSize = getOutputSize(inputBuf.remaining())
-
-  return ByteBuffer.allocate(plaintextSize).also { outputBuf ->
-    doFinal(inputBuf, outputBuf)
+  val output = ByteArray(getOutputSize(inputBuf.remaining()))
+  val written = doFinal(inputBuf, ByteBuffer.wrap(output))
+  return if (written == output.size) {
+    output
+  } else {
+    output.copyOf(written)
   }
 }

@@ -6,8 +6,8 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 
 /**
  * Entry point for the error recovery flow. Responsible for initializing the error recovery handler
@@ -28,6 +28,8 @@ class ErrorRecovery(
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
   internal lateinit var handler: Handler
 
+  // Written on the error recovery thread and read on the thread that reports the exception.
+  @Volatile
   private var shouldHandleReactInstanceException = false
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
@@ -45,11 +47,16 @@ class ErrorRecovery(
   /**
    * Exception notifications sending from [expo.modules.core.interfaces.ReactNativeHostHandler]
    * This is only used for bridgeless mode.
+   *
+   * Takes the exception only while error recovery monitors the launch. After that window, it
+   * returns false so the React host rethrows the exception and the process ends.
    */
-  internal fun onReactInstanceException(exception: Exception) {
-    if (shouldHandleReactInstanceException) {
-      handleException(exception)
+  internal fun onReactInstanceException(exception: Exception): Boolean {
+    if (!shouldHandleReactInstanceException) {
+      return false
     }
+    handleException(exception)
+    return true
   }
 
   fun notifyNewRemoteLoadStatus(newStatus: ErrorRecoveryDelegate.RemoteLoadStatus) {
@@ -58,7 +65,7 @@ class ErrorRecovery(
   }
 
   internal fun handleException(exception: Exception) {
-    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", exception, UpdatesErrorCode.Unknown)
+    logger.error(UpdatesLogMessage.ErrorRecoveryJsException, exception, mapOf("error" to (exception.localizedMessage ?: exception.toString())))
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 

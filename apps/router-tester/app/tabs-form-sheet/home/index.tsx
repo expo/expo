@@ -1,15 +1,16 @@
 import { Link } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <Link href="/tabs-form-sheet/home/sheet" asChild>
         <Pressable accessibilityRole="button" style={styles.button}>
           <Text style={styles.buttonText}>Open form sheet</Text>
         </Pressable>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -6,13 +6,19 @@ import {
   type StyleProp,
   type ViewStyle,
   I18nManager,
+  processColor,
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
 import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
-import { getMaterialColors, HostPaletteContext } from '../colors';
+import {
+  getMaterialColors,
+  HostPaletteContext,
+  type MaterialColors,
+  type RgbaHex,
+} from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
 export interface HostProps extends PrimitiveBaseProps {
@@ -51,6 +57,14 @@ export interface HostProps extends PrimitiveBaseProps {
    * available to descendants via `useMaterialColors()`.
    */
   seedColor?: ColorValue;
+
+  /**
+   * Material 3 color roles that replace the matching roles of the palette from
+   * `colorScheme` and `seedColor`. Roles you omit keep their palette value.
+   * The overrides theme Compose children and are returned by `useMaterialColors()`
+   * in the same `#RRGGBBAA` form as the other roles.
+   */
+  colorOverrides?: Partial<MaterialColors>;
 
   /**
    * The layout direction for the content.
@@ -93,6 +107,7 @@ export function Host(props: HostProps) {
     layoutDirection,
     colorScheme,
     seedColor,
+    colorOverrides,
     ref,
     children,
     ...restProps
@@ -101,10 +116,19 @@ export function Host(props: HostProps) {
 
   const systemScheme = useRNColorScheme();
   const resolvedScheme = schemeString ?? (systemScheme === 'dark' ? 'dark' : 'light');
-  const palette = useMemo(
-    () => getMaterialColors({ scheme: resolvedScheme, seedColor }),
-    [resolvedScheme, seedColor]
+  // Key on the normalized values, not the object, so an inline `colorOverrides` object keeps
+  // the palette from `useMaterialColors()` reference-stable across re-renders.
+  const overridesKey = colorOverrides
+    ? JSON.stringify(normalizeColorOverrides(colorOverrides))
+    : null;
+  const normalizedOverrides = useMemo<Partial<MaterialColors> | undefined>(
+    () => (overridesKey ? JSON.parse(overridesKey) : undefined),
+    [overridesKey]
   );
+  const palette = useMemo(() => {
+    const basePalette = getMaterialColors({ scheme: resolvedScheme, seedColor });
+    return normalizedOverrides ? { ...basePalette, ...normalizedOverrides } : basePalette;
+  }, [resolvedScheme, seedColor, normalizedOverrides]);
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
   useWarnIfNestedHost('Jetpack Compose');
@@ -123,6 +147,7 @@ export function Host(props: HostProps) {
           }
           colorScheme={schemeString}
           seedColor={seedColor}
+          colorOverrides={normalizedOverrides}
           onLayoutContent={onLayoutContent}
           layoutDirection={
             layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
@@ -133,4 +158,25 @@ export function Host(props: HostProps) {
       </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );
+}
+
+function normalizeColorOverrides(overrides: Partial<MaterialColors>): Partial<MaterialColors> {
+  const normalized: Partial<MaterialColors> = {};
+  for (const [role, color] of Object.entries(overrides) as [keyof MaterialColors, RgbaHex][]) {
+    const hex = color != null ? toRgbaHex(color) : null;
+    if (hex) {
+      normalized[role] = hex;
+    }
+  }
+  return normalized;
+}
+
+// `processColor` returns `0xAARRGGBB`; the palette uses `#RRGGBBAA` like native `toTokenMap()`.
+function toRgbaHex(color: RgbaHex): RgbaHex | null {
+  const argb = processColor(color);
+  if (typeof argb !== 'number') {
+    return null;
+  }
+  const rgba = ((argb << 8) | (argb >>> 24)) >>> 0;
+  return `#${rgba.toString(16).padStart(8, '0').toUpperCase()}`;
 }

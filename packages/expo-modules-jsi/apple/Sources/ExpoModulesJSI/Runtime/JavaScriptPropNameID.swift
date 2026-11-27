@@ -10,6 +10,13 @@ public final class JavaScriptPropNameID: JavaScriptType {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+
+  /// Whether the property name belongs to the given runtime, the runtime that created it. Use it only with the runtime
+  /// it belongs to, on the thread of that runtime.
+  public func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle === runtime.handle
+  }
+
   internal let pointee: facebook.jsi.PropNameID
 
   /// Creates a PropNameID from existing `facebook.jsi.PropNameID`.
@@ -19,9 +26,19 @@ public final class JavaScriptPropNameID: JavaScriptType {
   }
 
   /// Creates a PropNameID from the string.
-  public init(_ runtime: JavaScriptRuntime, string: String) {
+  public init(_ runtime: borrowing JavaScriptRuntime, string: String) {
     self.runtimeHandle = runtime.handle
     self.pointee = string.toJSIPropNameID(in: runtime.pointee)
+  }
+
+  /// Creates a PropNameID from the symbol, for a property with a symbol key.
+  public init(_ runtime: borrowing JavaScriptRuntime, symbol: borrowing JavaScriptSymbol) {
+    assert(
+      symbol.runtimeHandle === runtime.handle,
+      "JavaScriptSymbol belongs to a different runtime than the PropNameID being created"
+    )
+    self.runtimeHandle = runtime.handle
+    self.pointee = facebook.jsi.PropNameID.forSymbol(runtime.pointee, symbol.pointee)
   }
 
   /// Copies the contents of the PropNameID into a string.
@@ -41,6 +58,15 @@ public final class JavaScriptPropNameID: JavaScriptType {
     // The engine's `utf16()` builds a `std::u16string` that Swift then has to transcode, which is
     // several times slower than going through UTF-8 for the same result.
     return utf8()
+  }
+
+  /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.PropNameID`, for example to pass a
+  /// cached property name to C++. The pointer is valid only for the duration of the closure and must not be stored
+  /// or escaped.
+  public func withUnsafePointee<R>(_ body: (UnsafeRawPointer) throws -> R) rethrows -> R {
+    return try withUnsafeBytes(of: pointee) { bytes in
+      return try body(bytes.baseAddress!)
+    }
   }
 
   // MARK: - JavaScriptType

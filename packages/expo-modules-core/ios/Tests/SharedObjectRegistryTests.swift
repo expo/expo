@@ -1,7 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+import ExpoModulesTestCore
 import Foundation
 import Testing
+import os
 
 @testable import ExpoModulesCore
 
@@ -26,9 +29,6 @@ struct SharedObjectRegistryTests {
     let jsObject = try runtime.createObject()
     registry.add(native: nativeObject, javaScript: jsObject)
 
-    // Pins the cross-package contract that `SharedObject::NativeState` derives
-    // from `expo::NativeState` on Apple. If the `__has_include` probe in
-    // `EventEmitter.h` falls back, this returns false.
     let hasNativeState = jsObject.hasNativeState()
     #expect(hasNativeState)
   }
@@ -149,17 +149,17 @@ struct SharedObjectRegistryTests {
 
   @Test
   func `re-adding a still-paired native object reuses its id and single registry entry`() throws {
-    let primaryRuntime = try runtime
-    let secondaryRuntime = JavaScriptRuntime()
-
     let nativeObject = TestSharedObject()
-    let firstId = registry.add(native: nativeObject, javaScript: primaryRuntime.createObject())
+    let firstObject = try runtime.createObject()
+    let firstId = registry.add(native: nativeObject, javaScript: firstObject)
 
-    // Pair the same, still-alive native object again (e.g. from a second runtime). Because it already
-    // carries a native state, `add` must reuse that state's id rather than mint a new one — otherwise
-    // the C++ `NativeState.objectId` (which drives the releaser/`delete`) would disagree with
-    // `sharedObjectId`, leaking the first registry entry.
-    let secondId = registry.add(native: nativeObject, javaScript: secondaryRuntime.createObject())
+    // Pair the same, still-alive native object again. Because its JS object still holds its native state,
+    // `add` must reuse that state's id rather than mint a new one — otherwise the C++ `NativeState.objectId`
+    // (which drives the releaser/`delete`) would disagree with `sharedObjectId`, leaking the first registry entry.
+    let secondObject = try runtime.createObject()
+    let secondId = withExtendedLifetime(firstObject) {
+      registry.add(native: nativeObject, javaScript: secondObject)
+    }
 
     #expect(secondId == firstId)
     #expect(nativeObject.sharedObjectId == firstId)
@@ -205,6 +205,30 @@ struct SharedObjectRegistryTests {
     let isFirstJSObject = encoded.asValue() == firstJSObject.asValue()
     let resolved = try SharedObject.native(from: encoded)
     #expect(isFirstJSObject == false)
+    #expect(resolved === nativeObject)
+  }
+
+  @Test
+  func `encoding a native object whose JS object was collected reuses its live native state`() throws {
+    let runtime = try runtime
+    let nativeObject = TestSharedObject()
+    let firstJSObject = runtime.createObject()
+    let id = registry.add(native: nativeObject, javaScript: firstJSObject)
+    let nativeState = try #require(nativeObject.nativeState)
+    // Keeps the C++ native state alive after its JS object is collected, like a finalizer that has not run yet
+    // or a JS object of another runtime.
+    let holder = runtime.createObject()
+    holder.setNativeState(nativeState)
+    _ = consume firstJSObject
+    try runtime.collectGarbage { nativeState.javaScriptObject(in: runtime) == nil }
+    let secondJSObject = try TestSharedObject.encode(nativeObject, in: runtime).asObject()
+    // The second JS object keeps the native object after the holder is collected.
+    _ = consume holder
+    try runtime.collectGarbage()
+    let resolved = try SharedObject.native(from: secondJSObject)
+    #expect(secondJSObject.getNativeState(as: SharedObjectNativeState.self) === nativeState)
+    #expect(registry.get(id) === nativeState)
+    #expect(nativeObject.sharedObjectId == id)
     #expect(resolved === nativeObject)
   }
 
@@ -334,6 +358,33 @@ struct SharedObjectRegistryTests {
       #expect(nativeState?.native === nativeObject)
       #expect(nativeState?.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
     }
+
+    @Test
+    func `gives one native state to a native object that two runtimes add at the same time`() throws {
+      let appContext = TestAppContext()
+      let runtimes: [JavaScriptRuntime] = [try appContext.runtime, try appContext.addRuntime()]
+      var objectsWithTwoNativeStates = 0
+
+      for _ in 0..<500 {
+        let nativeObject = TestSharedObject()
+        let pairing = ConcurrentPairing()
+        for runtime in runtimes {
+          runtime.schedule {
+            let jsObject = runtime.createObject()
+            pairing.waitForBothRuntimes()
+            appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject, in: runtime)
+            pairing.record(jsObject.getNativeState(as: SharedObjectNativeState.self))
+          }
+        }
+        for runtime in runtimes {
+          try runtime.execute {}
+        }
+        if !pairing.hasOneNativeState {
+          objectsWithTwoNativeStates += 1
+        }
+      }
+      #expect(objectsWithTwoNativeStates == 0)
+    }
   }
 
   @Suite("delete", .serialized)
@@ -428,3 +479,27 @@ struct SharedObjectRegistryTests {
 }
 
 private final class TestSharedObject: SharedObject {}
+
+/// The native states that two runtimes attach to their JS objects of one native object, when they add it to the
+/// registry at the same time.
+private final class ConcurrentPairing: Sendable {
+  private let state = OSAllocatedUnfairLock(initialState: (arrivedRuntimes: 0, nativeStates: [SharedObjectNativeState?]()))
+
+  /// Waits until the other runtime calls it too, for up to one second, so both runtimes add the object at the same time.
+  func waitForBothRuntimes() {
+    state.withLock { $0.arrivedRuntimes += 1 }
+    let deadline = ContinuousClock.now + .seconds(1)
+    while state.withLock({ $0.arrivedRuntimes }) < 2 && ContinuousClock.now < deadline {}
+  }
+
+  func record(_ nativeState: SharedObjectNativeState?) {
+    state.withLock { $0.nativeStates.append(nativeState) }
+  }
+
+  /// Whether both runtimes attached the same native state.
+  var hasOneNativeState: Bool {
+    return state.withLock { state in
+      return state.nativeStates.count == 2 && state.nativeStates[0] != nil && state.nativeStates[0] === state.nativeStates[1]
+    }
+  }
+}

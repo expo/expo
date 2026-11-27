@@ -20,19 +20,33 @@ internal func normalizeAccuracy(_ accuracy: CLLocationDirection) -> Int {
 }
 
 internal func exportLocation(_ location: CLLocation) -> [String: Any] {
+  let hasAltitude = location.verticalAccuracy > 0
+  let altitude: Any = hasAltitude ? location.ellipsoidalAltitude : NSNull()
+  let mslAltitude: Any = hasAltitude ? location.altitude : NSNull()
+  let altitudeAccuracy: Any = hasAltitude ? location.verticalAccuracy : NSNull()
   return [
     "coords": [
       "latitude": location.coordinate.latitude,
       "longitude": location.coordinate.longitude,
-      "altitude": location.altitude,
+      "altitude": altitude,
+      "mslAltitude": mslAltitude,
       "accuracy": location.horizontalAccuracy,
-      "altitudeAccuracy": location.verticalAccuracy,
+      "altitudeAccuracy": altitudeAccuracy,
       "heading": location.course,
       "speed": location.speed
     ],
     "timestamp": location.timestamp.timeIntervalSince1970 * 1000,
     // `sourceInformation` is nil for ordinary fixes; it is set for simulated or accessory-produced ones.
     "mocked": location.sourceInformation?.isSimulatedBySoftware ?? false
+  ]
+}
+
+internal func exportHeading(_ heading: CLHeading) -> [String: Any?] {
+  return [
+    "trueHeading": heading.trueHeading,
+    "magHeading": heading.magneticHeading,
+    "accuracy": normalizeAccuracy(heading.headingAccuracy),
+    "headingAccuracy": heading.headingAccuracy < 0 ? nil : heading.headingAccuracy
   ]
 }
 

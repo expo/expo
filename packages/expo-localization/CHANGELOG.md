@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Keep runtime `I18nManager.allowRTL` / `forceRTL` values when the config plugin does not set `supportsRTL` / `forcesRTL`. ([#51800](https://github.com/expo/expo/pull/51800) by [@zoontek](https://github.com/zoontek))
+
 ## 58.0.4
 
 ### Patch Changes

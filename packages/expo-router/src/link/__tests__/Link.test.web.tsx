@@ -23,7 +23,7 @@ it('renders a Link', () => {
   const node = getByTestId('link');
   expect(node).toMatchInlineSnapshot(`
     <a
-      class="css-text-146c3p1 r-cursor-1loqt21"
+      class="css-text-1kstuq4 r-cursor-1loqt21"
       data-testid="link"
       dir="auto"
       href="/foo"
@@ -52,7 +52,7 @@ it('renders a Link with a slot', () => {
         role="link"
       >
         <div
-          class="css-text-146c3p1"
+          class="css-text-1kstuq4"
           data-testid="inner-text"
           dir="auto"
         >
@@ -87,7 +87,7 @@ it('supports target blank', () => {
   expect(node.className).toMatch(/\sxxx\s/);
   expect(node).toMatchInlineSnapshot(`
     <a
-      class="css-text-146c3p1 xxx r-cursor-1loqt21"
+      class="css-text-1kstuq4 xxx r-cursor-1loqt21"
       data-testid="link"
       dir="auto"
       href="/foo"
@@ -109,7 +109,7 @@ it('mixes styles with className', () => {
   expect(node.className).toMatch(/\sxxx\s/);
   expect(node).toMatchInlineSnapshot(`
     <a
-      class="css-text-146c3p1 xxx r-cursor-1loqt21"
+      class="css-text-1kstuq4 xxx r-cursor-1loqt21"
       data-testid="link"
       dir="auto"
       href="/foo"
@@ -136,7 +136,7 @@ it('mixes registered styles with className', () => {
   expect(node.className).toMatch(/\sxxx\s/);
   expect(node).toMatchInlineSnapshot(`
     <a
-      class="css-text-146c3p1 r-color-howw7u xxx r-cursor-1loqt21"
+      class="css-text-1kstuq4 r-color-howw7u xxx r-cursor-1loqt21"
       data-testid="link"
       dir="auto"
       href="/foo"
@@ -156,7 +156,7 @@ it('uses web-only href attributes', () => {
   const node = getByTestId('link');
   expect(node).toMatchInlineSnapshot(`
     <a
-      class="css-text-146c3p1 r-cursor-1loqt21"
+      class="css-text-1kstuq4 r-cursor-1loqt21"
       data-testid="link"
       dir="auto"
       download="file.png"
@@ -168,6 +168,35 @@ it('uses web-only href attributes', () => {
       Hello
     </a>
   `);
+});
+
+describe('parentheses in hrefs', () => {
+  it('preserves search params containing parentheses', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href={{ pathname: '/test', params: { a: '(a)', b: 'b' } }}>
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('/test?a=(a)&b=b');
+  });
+
+  it('strips groups from the path but not the search params', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="/(app)/test?a=(a)">
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('/test?a=(a)');
+  });
+
+  it('does not strip parentheses from external URLs', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="https://example.com/my/cool/(file).pdf">
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('https://example.com/my/cool/(file).pdf');
+  });
 });
 
 describe('base url relative links', () => {

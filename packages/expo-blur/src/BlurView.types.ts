@@ -1,4 +1,4 @@
-import type { ComponentRef, RefObject } from 'react';
+import type { ComponentRef, Ref, RefObject } from 'react';
 import type { ViewProps, View } from 'react-native';
 
 /**
@@ -74,7 +74,7 @@ export type BlurViewProps = {
 } & ViewProps;
 
 export type BlurTargetViewProps = {
-  ref?: RefObject<ComponentRef<typeof View> | null>;
+  ref?: Ref<ComponentRef<typeof View>>;
 } & ViewProps;
 
 export type BlurTint =

@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Publish the release `arm64-apple-ios-simulator.abi.json` at `prebuilds/abi/<Product>/` for each product that sets `"publishAbiDescriptor": true` in `spm.config.json`. ([#51835](https://github.com/expo/expo/pull/51835) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#51778](https://github.com/expo/expo/pull/51778))
+  - jest-expo@58.0.12
+
 ## 58.0.3
 
 ### Patch Changes

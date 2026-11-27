@@ -23,7 +23,7 @@ The [Android media format support documentation](https://developer.android.com/m
 
 Note that audio automatically stops if headphones/Bluetooth audio devices are disconnected.
 
-> **info** For more advanced control over audio, we recommend [React Native Audio API](https://docs.swmansion.com/react-native-audio-api/). It implements the Web Audio API, so you can build audio graphs to synthesize sound, apply real-time effects and filters, analyze audio for visualizations, and schedule playback with sample-accurate timing.
+> **info** For more advanced control over audio, we recommend [React Native Audio API](https://docs.swmansion.com/react-native-audio-api/). It implements the Web Audio API, so you can build audio graphs to synthesize sound, apply real-time effects and filters, analyze audio for visualizations, and schedule playback with sample-accurate timing. For sound effects, see [Playing short sound effects](#playing-short-sound-effects).
 
 ## Installation
 
@@ -131,6 +131,14 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+### Playing short sound effects
+
+For a few short sounds, create one player for each sound and reuse it. To play the sound again, call `seekTo(0)` and then `play()`, as in the example above. Do not create a new player each time the sound plays.
+
+`AudioPlayer` is designed for music, speech, and other long or streamed audio. Each player is a full media player that decodes the audio while it plays, so many players that start in a short time can use a lot of resources. For web-specific details, see [Notes on web usage](#notes-on-web-usage).
+
+For many concurrent, overlapping sounds, such as sound effects in games, we recommend [React Native Audio API](https://docs.swmansion.com/react-native-audio-api/). It decodes each sound once into memory and reuses the decoded audio for each play, so it handles many short, overlapping sounds efficiently and with sample-accurate timing.
 
 ### Recording sounds
 
@@ -426,6 +434,7 @@ const player = createAudioPlayer(audioSource);
 
 ### Notes on web usage
 
+- On web, each `AudioPlayer` plays through its own HTML `<audio>` element. This works well for music, speech, and other long or streamed audio. It is not designed for many short sounds that play in quick succession or overlap, such as sound effects in games. Creating, seeking, and playing many players in a short time can make the page stutter or freeze, and the browser can request the audio file again for each new player. For sound effects, see [Playing short sound effects](#playing-short-sound-effects).
 - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012).
 - MediaRecorder encoding options and other configurations are inconsistent across browsers. Using a polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
 - Web browsers require sites to be served securely for them to listen to a mic. See [MediaDevices `getUserMedia()` security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.

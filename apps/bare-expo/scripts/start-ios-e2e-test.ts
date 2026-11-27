@@ -8,6 +8,7 @@ import * as path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 import {
   annotate,
   createMaestroFlowAsync,
@@ -16,13 +17,13 @@ import {
   retryAsync,
   prettyPrintTestSuiteLogs,
   printImageComparisonServerLogs,
+  reportPendingSpecs,
   runCustomMaestroFlowsAsync,
   runMaestroAsync,
   TEST_DURATION_LABEL,
   startGroup,
   endGroup,
 } from './lib/e2e-common';
-import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
@@ -293,11 +294,14 @@ async function testAsync(
     // reinstalled by the retry.
     reinstallMaestroDriver = false;
 
+    stopLogCollectionController.abort();
+    const testSuiteLogs = await getTestSuiteLogs();
+    reportPendingSpecs(testSuiteLogs);
+
     if (failedFlows.length > 0) {
-      stopLogCollectionController.abort();
       console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
 
-      console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
+      console.log(prettyPrintTestSuiteLogs(testSuiteLogs));
       await printImageComparisonServerLogs();
       // we need to always get these logs since it stops listener process
       const nativeLogs = await getNativeErrorLogs();

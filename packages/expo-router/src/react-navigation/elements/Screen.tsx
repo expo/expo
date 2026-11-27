@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { use } from 'react';
 import { Animated, type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
@@ -14,6 +15,8 @@ import { Background } from './Background';
 import { HeaderHeightContext } from './Header/HeaderHeightContext';
 import { HeaderShownContext } from './Header/HeaderShownContext';
 import { getDefaultHeaderHeight } from './Header/getDefaultHeaderHeight';
+import { getHeaderStatusBarHeight } from './Header/getHeaderStatusBarHeight';
+import { getUnfocusedScreenProps } from './getUnfocusedScreenProps';
 import { useFrameSize } from './useFrameSize';
 
 type Props = {
@@ -31,6 +34,7 @@ type Props = {
 
 export function Screen(props: Props) {
   const insets = useSafeAreaInsets();
+  const verticalBarEdge = useVerticalBarEdgeIOS();
 
   const isParentHeaderShown = use(HeaderShownContext);
   const parentHeaderHeight = use(HeaderHeightContext);
@@ -41,7 +45,9 @@ export function Screen(props: Props) {
     header,
     headerShown = true,
     headerTransparent,
-    headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top,
+    headerStatusBarHeight = isParentHeaderShown
+      ? 0
+      : getHeaderStatusBarHeight(insets, verticalBarEdge),
     navigation,
     route,
     children,
@@ -64,7 +70,7 @@ export function Screen(props: Props) {
 
   return (
     <Background
-      aria-hidden={!focused}
+      {...getUnfocusedScreenProps(focused)}
       style={[styles.container, style]}
       // On Fabric we need to disable collapsing for the background to ensure
       // that we won't render unnecessary views due to the view flattening.

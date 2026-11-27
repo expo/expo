@@ -15,30 +15,59 @@ export interface GatewayInfo {
   internal: boolean;
 }
 
+// NOTE(@kitten): Session caching accepts the unlikely risk of an address change during a native build.
+let cachedGateway: GatewayInfo | undefined;
+let pendingGateway: Promise<GatewayInfo> | undefined;
+
+export function resetGatewayCache(): void {
+  cachedGateway = undefined;
+  pendingGateway = undefined;
+}
+
+function getLoopbackGateway(): GatewayInfo {
+  return { iname: null, address: '127.0.0.1', gateway: null, internal: true };
+}
+
 export function getGateway(): GatewayInfo {
+  if (cachedGateway) {
+    return cachedGateway;
+  }
   try {
-    return lanNetworkSync(options);
+    cachedGateway = lanNetworkSync(options);
+    pendingGateway = undefined;
+    return cachedGateway;
   } catch {
-    return {
-      iname: null,
-      address: '127.0.0.1',
-      gateway: null,
-      internal: true,
-    };
+    return getLoopbackGateway();
   }
 }
 
-export async function getGatewayAsync(): Promise<GatewayInfo> {
-  try {
-    return await lanNetwork(options);
-  } catch {
-    return {
-      iname: null,
-      address: '127.0.0.1',
-      gateway: null,
-      internal: true,
-    };
+export function getGatewayAsync(): Promise<GatewayInfo> {
+  if (cachedGateway) {
+    return Promise.resolve(cachedGateway);
   }
+  if (pendingGateway) {
+    return pendingGateway;
+  }
+  const pending: Promise<GatewayInfo> = Promise.resolve()
+    .then(() => lanNetwork(options))
+    .then(
+      (gateway) => {
+        // A reset or synchronous discovery can supersede this request.
+        if (pendingGateway === pending) {
+          cachedGateway = gateway;
+          pendingGateway = undefined;
+        }
+        return gateway;
+      },
+      () => {
+        if (pendingGateway === pending) {
+          pendingGateway = undefined;
+        }
+        return getLoopbackGateway();
+      }
+    );
+  pendingGateway = pending;
+  return pending;
 }
 
 export async function getIpAddressAsync(): Promise<string> {
