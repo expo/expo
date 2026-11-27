@@ -5,7 +5,6 @@ import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@e
 import { loadUserConfig } from '@expo/metro-config';
 import type { Reporter } from '@expo/metro/metro';
 import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
-import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -31,6 +30,7 @@ import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { ExpoMetroConfig } from './ExpoMetroConfig';
+import { LiveLineTerminal } from './LiveLineTerminal';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { replaceMetroFileMap } from './createFileMap-fork';
@@ -107,7 +107,7 @@ function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
  * Without this, unmanaged stderr writes shift the cursor and cause
  * progress bars to get stuck as permanent output.
  */
-class LogRespectingTerminal extends Terminal {
+class LogRespectingTerminal extends LiveLineTerminal {
   #stderrQueue: string[] = [];
   #drainingStderr = false;
 
@@ -156,6 +156,7 @@ class LogRespectingTerminal extends Terminal {
 
   /** Write to stderr without corrupting Terminal's cursor tracking. */
   logStderr(line: string): void {
+    this.commitLiveLine();
     if (!(process.stdout as any).isTTY) {
       process.stderr.write(line + '\n');
       return;
