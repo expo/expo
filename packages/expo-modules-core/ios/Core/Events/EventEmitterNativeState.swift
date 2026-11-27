@@ -7,8 +7,8 @@
 ///
 /// A JS object of `expo.EventEmitter` gets one when JS adds its first listener. A module object gets a subclass when
 /// it is built, and a shared object gets a subclass when it is paired. The JS objects of a shared object in all
-/// runtimes share one native state. Its primary runtime is the main runtime, and the subclass keeps the listeners of
-/// the other runtimes (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
+/// runtimes share one native state. It has no primary runtime, and the subclass keeps the listeners of every runtime
+/// (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
 ///
 /// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime.
 internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendable {
@@ -29,7 +29,7 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   /// that runtime.
   @JavaScriptActor
   internal final func listeners(in runtime: JavaScriptRuntime) -> EventListeners? {
-    if runtime.id == primaryRuntimeId {
+    if let primaryRuntimeId, runtime.id == primaryRuntimeId {
       return primaryListeners
     }
     return listeners(inOtherRuntime: runtime, creatingIfNeeded: false)
@@ -39,7 +39,7 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   /// runtime can't have listeners. Call it on the thread of that runtime.
   @JavaScriptActor
   internal final func listenersCreatingIfNeeded(in runtime: JavaScriptRuntime) -> EventListeners? {
-    if runtime.id == primaryRuntimeId {
+    if let primaryRuntimeId, runtime.id == primaryRuntimeId {
       if let primaryListeners {
         return primaryListeners
       }
