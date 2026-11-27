@@ -3,8 +3,7 @@ package expo.modules.devlauncher
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
-import com.facebook.react.ReactActivityDelegate
-import com.facebook.react.ReactDelegate
+import com.facebook.react.ReactActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,18 +22,17 @@ internal object DevLauncherComponentSwitcher {
 
   suspend fun switch(
     activity: Activity?,
-    delegate: ReactActivityDelegate?,
     container: ViewGroup?,
     moduleName: String
   ): Boolean {
-    if (activity == null || delegate == null || container == null) {
-      Log.w(TAG, "Cannot switch component: missing activity/delegate/container.")
+    if (activity == null || container == null) {
+      Log.w(TAG, "Cannot switch component: missing activity/container.")
       return false
     }
 
-    val reactDelegate = readReactDelegate(delegate)
+    val reactDelegate = (activity as? ReactActivity)?.reactDelegate
     if (reactDelegate == null) {
-      Log.w(TAG, "Cannot switch component: could not access ReactDelegate via reflection.")
+      Log.w(TAG, "Cannot switch component: the activity has no ReactDelegate.")
       return false
     }
 
@@ -62,23 +60,4 @@ internal object DevLauncherComponentSwitcher {
       true
     }
   }
-
-  /**
-   * `ReactDelegate` is owned by `ReactActivityDelegate` as a private `mReactDelegate`
-   * ivar with only a protected `getReactDelegate()` accessor. We can't reflect on the
-   * ivar directly because the delegate we capture here is normally expo-modules-core's
-   * `ReactActivityDelegateWrapper`, whose own inherited `mReactDelegate` is null — the
-   * real one lives on the inner wrapped delegate. Invoking `getReactDelegate()` via
-   * reflection lets Kotlin's virtual dispatch route through the wrapper's override and
-   * return the right `ReactDelegate` whether we're handed the wrapper or the inner.
-   */
-  private fun readReactDelegate(delegate: ReactActivityDelegate): ReactDelegate? =
-    runCatching {
-      val method = ReactActivityDelegate::class.java.getDeclaredMethod("getReactDelegate")
-      method.isAccessible = true
-      method.invoke(delegate) as? ReactDelegate
-    }.getOrElse { t ->
-      Log.w(TAG, "Failed to invoke ReactActivityDelegate.getReactDelegate", t)
-      null
-    }
 }
