@@ -102,4 +102,13 @@ export default [
       'Example: `"config": "production-ios.yml"` will use workflow from `.eas/build/production-ios.yml`.',
     ],
   },
+  {
+    name: 'uploadDebugSymbols',
+    type: 'boolean',
+    description: [
+      'If set to `true`, the debug symbol (dSYM) files generated during the build are uploaded to Expo servers. Stored debug symbols are used by [Expo Observe](/eas/observe/errors/#upload-debug-symbols-with-expo-build) to symbolicate native crash stack traces. Defaults to `false`.',
+      '',
+      '**Note**: only available for builds that run on Expo Build servers. Local builds do not upload debug symbols.',
+    ],
+  },
 ];

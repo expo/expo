@@ -169,6 +169,28 @@ On iOS, the device resolves frames in system libraries to symbol names. The dash
 
 > **info** Native crash symbolication requires `expo-observe` 57.0.25 or later for SDK 57, and 58.0.5 or later for SDK 58. Crash reports from earlier versions do not include the universally unique identifiers (UUIDs) of the binaries, which Expo Observe needs to find the debug symbols.
 
+#### Upload debug symbols with Expo Build
+
+To store the debug symbols of each iOS build, set `uploadDebugSymbols` to `true` in the `ios` object of the build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "ios": {
+        "uploadDebugSymbols": true
+      }
+    }
+  }
+}
+```
+
+With this setting, Expo Build uploads the dSYM files of the build when the build finishes. The upload appears in [**Project settings** > **Observe debug symbols**](https://expo.dev/accounts/[account]/projects/[project]/settings/debug-symbols) with **EAS Build** as the uploader. Native crashes from that build are then symbolicated with no manual upload.
+
+> **info** Debug symbol upload requires EAS CLI version TBD or later and only works for builds that run on Expo Build servers. Local builds created with `eas build --local` do not upload debug symbols.
+
+If the upload fails, the build still completes and shows a warning in the build logs. For a local build or an Xcode archive, find and upload the dSYM files yourself, as the following sections describe.
+
 #### About debug symbols
 
 When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
@@ -177,11 +199,11 @@ Every build produces new UUIDs, so upload the dSYM files of each build you relea
 
 #### Find the debug symbols
 
-The location of the dSYM files depends on where you built the app.
+To upload the dSYM files yourself, first find them. Their location depends on where you built the app.
 
 ##### Expo Build
 
-Expo Build archives your app with fastlane. During the archive, fastlane compresses every dSYM in the archive into one file at **ios/build/&lt;app name&gt;.app.dSYM.zip**. To keep this file, add it to `buildArtifactPaths` in the build profile in **eas.json**:
+Expo Build archives your app with fastlane. During the archive, fastlane compresses every dSYM in the archive into one file at **ios/build/&lt;app name&gt;.app.dSYM.zip**. With [`uploadDebugSymbols`](#upload-debug-symbols-with-expo-build), Expo Build uploads this file for you. To upload it yourself instead, add it to `buildArtifactPaths` in the build profile in **eas.json**:
 
 ```json eas.json
 {
