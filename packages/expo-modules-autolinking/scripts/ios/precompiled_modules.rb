@@ -49,6 +49,24 @@ unless Enumerable.method_defined?(:filter_map)
   end
 end
 
+# ruby-macho < 4.1 raises on LC_ATOM_INFO, which mergeable frameworks carry, so CocoaPods
+# treats them as static and does not embed them. Drop this when ruby-macho 4.1 is the minimum version.
+# Only the ruby-macho that CocoaPods already activated is patched, to avoid a gem version conflict.
+if Gem.loaded_specs.key?('ruby-macho')
+  require 'macho'
+  load_commands = MachO::LoadCommands
+  unless load_commands::LOAD_COMMANDS.key?(0x36)
+    {
+      LOAD_COMMANDS: load_commands::LOAD_COMMANDS.merge(0x36 => :LC_ATOM_INFO),
+      LOAD_COMMAND_CONSTANTS: load_commands::LOAD_COMMAND_CONSTANTS.merge(LC_ATOM_INFO: 0x36),
+      LC_STRUCTURES: load_commands::LC_STRUCTURES.merge(LC_ATOM_INFO: 'LinkeditDataCommand'),
+    }.each do |name, table|
+      load_commands.send(:remove_const, name)
+      load_commands.const_set(name, table.freeze)
+    end
+  end
+end
+
 module Expo
   module PrecompiledModules
     # The environment variable that enables precompiled modules
