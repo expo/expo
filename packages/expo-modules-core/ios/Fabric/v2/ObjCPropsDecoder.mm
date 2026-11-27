@@ -17,19 +17,29 @@ namespace {
 std::atomic<bool> reportedConversionFailure{false};
 } // namespace
 
-ObjCPropsDecoder::ObjCPropsDecoder(id<EXViewPropsDecoding> decoder) : decoder_(decoder) {}
+ObjCPropsDecoder::ObjCPropsDecoder(id<EXViewPropsDecoding> decoder) : makeDecoder_(^{ return decoder; }) {}
+
+ObjCPropsDecoder::ObjCPropsDecoder(MakeObjCPropsDecoder makeDecoder) : makeDecoder_(makeDecoder) {}
+
+id<EXViewPropsDecoding> ObjCPropsDecoder::objcDecoder() const {
+  std::call_once(decoderOnce_, [this] {
+    decoder_ = makeDecoder_();
+    makeDecoder_ = nil;
+  });
+  return decoder_;
+}
 
 DecodedProps ObjCPropsDecoder::decode(
   jsi::Runtime &runtime,
   const jsi::Value &props,
   const DecodedProps &previous
 ) const {
-  const void *decoded = [decoder_ decodeProps:&props runtime:&runtime previous:previous.get()];
+  const void *decoded = [objcDecoder() decodeProps:&props runtime:&runtime previous:previous.get()];
   return decoded != nullptr ? DecodedProps::adopt(decoded) : previous;
 }
 
 std::vector<std::string> ObjCPropsDecoder::propNames() const {
-  NSArray<NSString *> *names = decoder_.propNames;
+  NSArray<NSString *> *names = objcDecoder().propNames;
   std::vector<std::string> propNames;
   propNames.reserve(names.count);
   for (NSString *name in names) {
@@ -51,7 +61,7 @@ DecodedProps ObjCPropsDecoder::decodeValues(
     valuePointers.push_back(&value);
     indexes.push_back(static_cast<NSInteger>(index));
   }
-  const void *decoded = [decoder_ decodeValues:valuePointers.data()
+  const void *decoded = [objcDecoder() decodeValues:valuePointers.data()
                                        indexes:indexes.data()
                                          count:static_cast<NSInteger>(values.size())
                                        runtime:&runtime
@@ -70,7 +80,7 @@ DecodedProps ObjCPropsDecoder::decodeDynamicValues(
   const auto *valuesPointer = &values;
   const auto *decoder = this;
 
-  const BOOL hasRuntime = [decoder_ withRuntimeForCurrentThread:^(const void *runtimePointer) {
+  const BOOL hasRuntime = [objcDecoder() withRuntimeForCurrentThread:^(const void *runtimePointer) {
     auto &runtime = *static_cast<jsi::Runtime *>(const_cast<void *>(runtimePointer));
     // A C++ exception must not leave the block, which Swift calls. The JSI values are destroyed in the block,
     // where the runtime is safe to use.
@@ -92,12 +102,12 @@ DecodedProps ObjCPropsDecoder::decodeDynamicValues(
   }];
 
   if (!hasRuntime) {
-    NSArray<NSString *> *allNames = decoder_.propNames;
+    NSArray<NSString *> *allNames = objcDecoder().propNames;
     NSMutableArray<NSString *> *names = [NSMutableArray arrayWithCapacity:values.size()];
     for (const auto &[index, value] : values) {
       [names addObject:allNames[index]];
     }
-    [decoder_ didSkipProps:names];
+    [objcDecoder() didSkipProps:names];
   }
   return decoded;
 }

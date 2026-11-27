@@ -169,13 +169,19 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
 
 + (void)registerComponentViewClass:(nonnull Class)viewClass propsDecoder:(nonnull id<EXViewPropsDecoding>)propsDecoder
 {
+  [self registerComponentViewClass:viewClass makePropsDecoder:^{ return propsDecoder; }];
+}
+
++ (void)registerComponentViewClass:(nonnull Class)viewClass
+                  makePropsDecoder:(id<EXViewPropsDecoding> _Nonnull (^ _Nonnull)(void))makePropsDecoder
+{
   RCTAssertMainQueue();
 
   std::string className([NSStringFromClass(viewClass) UTF8String]);
   auto &flavor = componentFlavors()[className];
 
   if (!flavor) {
-    flavor = makeComponentFlavor(viewClass, className, std::make_shared<views::ObjCPropsDecoder>(propsDecoder));
+    flavor = makeComponentFlavor(viewClass, className, std::make_shared<views::ObjCPropsDecoder>(makePropsDecoder));
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 }

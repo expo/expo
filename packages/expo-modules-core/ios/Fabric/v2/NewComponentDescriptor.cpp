@@ -53,7 +53,9 @@ NewComponentDescriptor::NewComponentDescriptor(const react::ComponentDescriptorP
   if (componentFlavor().decoder == nullptr) {
     throw std::invalid_argument("expo::views::NewComponentFlavor requires a decoder");
   }
+}
 
+void NewComponentDescriptor::buildPropIndexes() const {
   propNames_ = componentFlavor().decoder->propNames();
   propIndexes_.reserve(propNames_.size());
   for (size_t index = 0; index < propNames_.size(); index++) {
@@ -201,6 +203,7 @@ DecodedProps NewComponentDescriptor::decodeProps(const react::RawProps &rawProps
 #endif
 
 std::optional<size_t> NewComponentDescriptor::propIndex(react::RawPropsPropNameHash hash, std::string_view name) const {
+  std::call_once(propIndexesOnce_, [this] { buildPropIndexes(); });
   auto entry = std::lower_bound(
     propIndexes_.begin(),
     propIndexes_.end(),

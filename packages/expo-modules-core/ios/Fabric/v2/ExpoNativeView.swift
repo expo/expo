@@ -92,8 +92,12 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     objc_registerClassPair(viewClass)
     registeredViewTypes[componentName] = ObjectIdentifier(viewType)
 
-    let propsDecoder = viewType._makePropsDecoder(viewName: unqualifiedTypeName(viewType))
-    ExpoNativeViewObjC.registerComponentViewClass(viewClass, propsDecoder: propsDecoder)
+    // The decoder is created on the first decode, so registering a view that the app doesn't render doesn't create it.
+    // `_makePropsDecoder` is nonisolated, because it runs on the thread that decodes.
+    nonisolated(unsafe) let decodedViewType = viewType
+    ExpoNativeViewObjC.registerComponentViewClass(viewClass) {
+      return decodedViewType._makePropsDecoder(viewName: unqualifiedTypeName(decodedViewType))
+    }
   }
 
   /// Returns the component name of a view that the package with the given name exports, for example
