@@ -245,10 +245,18 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     guard pointee.isObject() else {
       return false
     }
-    guard let jsiRuntime else {
+    if expo.hasNativeTypedArraySupport() {
+      guard let jsiRuntime else {
+        FatalError.runtimeLost()
+      }
+      return expo.isTypedArrayValue(jsiRuntime, pointee)
+    }
+    guard let runtime = runtimeHandle?.unretainedRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
+    return runtime._withUnsafeGuaranteedRef { runtime in
+      JavaScriptTypedArray.isTypedArrayFallback(pointee.getObject(runtime.pointee), in: runtime)
+    }
   }
 
   /// Checks whether the value is an `ArrayBuffer`.
