@@ -885,8 +885,9 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `the teardown sweep releases the error of an awaited rejected promise`() async throws {
-    // Same guarantee for rejections: `DeferredPromise` caches the `JavaScriptError` (which owns a
-    // `jsi::JSError`), so `allowRelease()` must drop `deferredPromise` before the runtime goes away.
+    // Same guarantee for rejections: `DeferredPromise` caches the `SettledError` box (which owns a
+    // `JavaScriptError` / `jsi::JSError`), so `allowRelease()` must release `settledError` before
+    // the runtime goes away.
     let testRuntime = await TestRuntimeScheduler().makeRuntime()
     let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
       let runtime = testRuntime.runtime
@@ -964,22 +965,467 @@ struct JavaScriptPromiseTests {
   }
 
   @Test
-  func `a resolve with a JS object queued before the runtime goes away does not crash on teardown`() async throws {
-    let testRuntime = await ReleasableTestRuntime()
-    let (promise, objectValue) = try await testRuntime.scheduler.runIsolated {
-      let runtime = testRuntime.runtime!
+  func `queued on-thread resolves with JS objects do not crash when runtime tears down before tasks drop`() throws {
+    let holder = HeldTaskScheduler()
+    try withExtendedLifetime(holder) {
+      var promise: JavaScriptPromise?
+      do {
+        let baseRuntime = JavaScriptRuntime()
+        let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+          JavaScriptRuntime(
+            unsafePointer: pointer,
+            scheduler: holder.opaquePointer,
+            dispatch: unsafeBitCast(holdOnTestRuntime, to: UnsafeRawPointer.self)
+          )
+        }
+        let deferred = try JavaScriptPromise(schedulerRuntime)
+        // Queue two pointer-bearing JS objects on the JS thread so both `pendingResolveValue` and
+        // `pendingResolveOverflow` are populated before Hermes is destroyed.
+        deferred.resolve(schedulerRuntime.createObject().asValue())
+        deferred.resolve(schedulerRuntime.createObject().asValue())
+        #expect(holder.count == 2)
+        promise = consume deferred
+      }
+      // Hermes is now destroyed; dropping the queued closures and the wrapper must not touch freed memory.
+      holder.dropAll()
+      #expect(promise?.isDeferred == false)
+      promise = nil
+    }
+  }
+
+  @Test
+  func `queued off-thread resolve with a JS object does not crash when runtime tears down before task drops`() throws {
+    let holder = HeldTaskScheduler()
+    try withExtendedLifetime(holder) {
+      var promiseBox: UncheckedSendable<JavaScriptPromise>?
+      do {
+        let baseRuntime = JavaScriptRuntime()
+        let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+          JavaScriptRuntime(
+            unsafePointer: pointer,
+            scheduler: holder.opaquePointer,
+            dispatch: unsafeBitCast(holdOnTestRuntime, to: UnsafeRawPointer.self)
+          )
+        }
+        let box = UncheckedSendable(value: try JavaScriptPromise(schedulerRuntime))
+        let objectRef = schedulerRuntime.createObject().asValue().ref()
+        let queued = DispatchSemaphore(value: 0)
+        Thread.detachNewThread {
+          if let value = objectRef.take() {
+            box.value.resolve(value)
+          }
+          queued.signal()
+        }
+        queued.wait()
+        #expect(holder.count == 1)
+        promiseBox = box
+      }
+      // Hermes is now destroyed; `clearPendingResources()` must have released the off-thread ref first.
+      holder.dropAll()
+      #expect(promiseBox?.value.isDeferred == false)
+      promiseBox = nil
+    }
+  }
+
+  @Test
+  func `queued on-thread and off-thread rejects with JavaScriptError do not crash on teardown`() throws {
+    let holder = HeldTaskScheduler()
+    try withExtendedLifetime(holder) {
+      var onThreadBox: UncheckedSendable<JavaScriptPromise>?
+      var offThreadBox: UncheckedSendable<JavaScriptPromise>?
+      do {
+        let baseRuntime = JavaScriptRuntime()
+        let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+          JavaScriptRuntime(
+            unsafePointer: pointer,
+            scheduler: holder.opaquePointer,
+            dispatch: unsafeBitCast(holdOnTestRuntime, to: UnsafeRawPointer.self)
+          )
+        }
+        let onThreadPromise = UncheckedSendable(value: try JavaScriptPromise(schedulerRuntime))
+        let offThreadPromise = UncheckedSendable(value: try JavaScriptPromise(schedulerRuntime))
+        do {
+          let onThreadError = JavaScriptError(schedulerRuntime, value: schedulerRuntime.createObject().asValue())
+          onThreadPromise.value.reject(onThreadError)
+
+          let offThreadError = JavaScriptError(schedulerRuntime, value: schedulerRuntime.createObject().asValue())
+          let queued = DispatchSemaphore(value: 0)
+          Thread.detachNewThread {
+            offThreadPromise.value.reject(offThreadError)
+            queued.signal()
+          }
+          queued.wait()
+        }
+        #expect(holder.count == 2)
+        onThreadBox = onThreadPromise
+        offThreadBox = offThreadPromise
+      }
+      // Hermes is now destroyed; dropping the queued rejection closures must not run `~JSError()` on freed memory.
+      holder.dropAll()
+      #expect(onThreadBox?.value.isDeferred == false)
+      #expect(offThreadBox?.value.isDeferred == false)
+      onThreadBox = nil
+      offThreadBox = nil
+    }
+  }
+
+  @Test
+  func `duplicate on-thread resolves untrack and release overflow JS object values`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakSecond) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
       let promise = try JavaScriptPromise(runtime)
-      let object = runtime.createObject()
-      return (UncheckedSendable(value: promise), object.asValue().ref())
+      let first = runtime.createObject()
+      first.setProperty("id", value: 1)
+      let second = runtime.createObject()
+      second.setProperty("id", value: 2)
+      let weakSecond = second.createWeak()
+      // Both calls queue on the JS thread before the first settle runs, exercising `pendingResolveOverflow`.
+      promise.resolve(first.asValue())
+      promise.resolve(second.asValue())
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakSecond))
     }
 
-    await testRuntime.releaseRuntime(afterQueueing: {
-      if let value = objectValue.take() {
-        promise.value.resolve(value)
-      }
-    })
+    let awaited = try await promise.value.await().ref()
+    let (firstId, secondCollected) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let id = try awaited.take().getObject().getProperty("id").getInt()
+      let isCollected = { weakSecond.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return (id, isCollected())
+    }
+    #expect(firstId == 1)
+    #expect(secondCollected)
+  }
 
-    await testRuntime.tearDown()
+  @Test(.timeLimit(.minutes(1)))
+  func `teardown sweep marks non-owning wrapper scheduler dead when wrapper outlives Hermes`() async throws {
+    var nonOwning: JavaScriptRuntime?
+    var promise: JavaScriptPromise?
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      let wrapper = baseRuntime.withUnsafePointee { pointer in
+        JavaScriptRuntime(unsafePointer: pointer)
+      }
+      promise = try JavaScriptPromise(wrapper)
+      nonOwning = wrapper
+    }
+    // `baseRuntime` (Hermes) is now destroyed while `nonOwning` is still referenced.
+    #expect(nonOwning != nil)
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await promise?.await()
+    }
+    promise = nil
+    nonOwning = nil
+  }
+
+  @Test
+  func `teardown sweep releases settled handles when a custom thenable invokes callbacks twice`() async throws {
+    // Fulfilled twice
+    do {
+      let testRuntime = await TestRuntimeScheduler().makeRuntime()
+      let (promise, weakFirst) = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        let first = runtime.createObject()
+        first.setProperty("tag", value: "first")
+        let second = runtime.createObject()
+        second.setProperty("tag", value: "second")
+        let weakFirst = first.createWeak()
+        let firstRef = first.asValue().ref()
+        let secondRef = second.asValue().ref()
+        let thenable = runtime.createObject()
+        let then = runtime.createFunction("then") { _, arguments in
+          _ = try arguments[0].getFunction().call(arguments: firstRef)
+          _ = try arguments[0].getFunction().call(arguments: secondRef)
+          return .undefined()
+        }
+        thenable.setProperty("then", value: then.asValue())
+        return (UncheckedSendable(value: try JavaScriptPromise(runtime, thenable)), UncheckedSendable(value: weakFirst))
+      }
+
+      let awaited = try await promise.value.await().ref()
+      let (tag, isCollected) = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        let tag = try awaited.take().getObject().getProperty("tag").getString()
+        runtime.longLivedObjects.clear()
+        let isCollected = { weakFirst.value.lock() == nil }
+        runtime.collectGarbage(until: isCollected)
+        return (tag, isCollected())
+      }
+      #expect(tag == "first")
+      #expect(isCollected)
+    }
+
+    // Rejected twice
+    do {
+      let testRuntime = await TestRuntimeScheduler().makeRuntime()
+      let (promise, weakFirst) = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        let first = runtime.createObject()
+        let second = runtime.createObject()
+        let weakFirst = first.createWeak()
+        let firstRef = first.asValue().ref()
+        let secondRef = second.asValue().ref()
+        let thenable = runtime.createObject()
+        let then = runtime.createFunction("then") { _, arguments in
+          _ = try arguments[1].getFunction().call(arguments: firstRef)
+          _ = try arguments[1].getFunction().call(arguments: secondRef)
+          return .undefined()
+        }
+        thenable.setProperty("then", value: then.asValue())
+        return (UncheckedSendable(value: try JavaScriptPromise(runtime, thenable)), UncheckedSendable(value: weakFirst))
+      }
+
+      do {
+        _ = try await promise.value.await()
+      } catch {
+        let caught = error
+        try await testRuntime.scheduler.runIsolated {
+          _ = caught
+        }
+      }
+
+      let isCollected = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        runtime.longLivedObjects.clear()
+        let isCollected = { weakFirst.value.lock() == nil }
+        runtime.collectGarbage(until: isCollected)
+        return isCollected()
+      }
+      #expect(isCollected)
+    }
+  }
+
+  @Test
+  func `custom thenable invoking callbacks with zero arguments settles with undefined`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let fulfillThenable = try JavaScriptPromise(
+        runtime,
+        runtime.eval("({ then(onFulfilled) { onFulfilled(); } })").getObject()
+      )
+      let fulfilled = try await fulfillThenable.await()
+      #expect(fulfilled.isUndefined() == true)
+
+      let rejectThenable = try await runtime.execute {
+        UncheckedSendable(
+          value: try JavaScriptPromise(
+            runtime,
+            runtime.eval("({ then(_, onRejected) { onRejected(); } })").getObject()
+          )
+        )
+      }
+      let thrownError = await #expect(throws: JavaScriptError.self) {
+        _ = try await rejectThenable.value.await()
+      }
+      let error = try #require(thrownError)
+      let isUndefined = try await runtime.execute {
+        error.toValue().isUndefined()
+      }
+      #expect(isUndefined)
+    }
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `awaiting a promise after the teardown sweep throws RuntimeLostError`() async throws {
+    // First await after sweep
+    do {
+      let runtime = JavaScriptRuntime()
+      let promise = try JavaScriptPromise(runtime)
+      runtime.longLivedObjects.clear()
+      await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+        _ = try await promise.await()
+      }
+    }
+
+    // Second await on an already-rejected promise after sweep
+    do {
+      let testRuntime = await TestRuntimeScheduler().makeRuntime()
+      let promise = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        let promise = try JavaScriptPromise(runtime)
+        promise.reject(JavaScriptError(runtime, message: "boom"))
+        return UncheckedSendable(value: promise)
+      }
+      do {
+        _ = try await promise.value.await()
+      } catch {
+        let caught = error
+        try await testRuntime.scheduler.runIsolated {
+          _ = caught
+        }
+      }
+      try await testRuntime.scheduler.runIsolated {
+        testRuntime.runtime.longLivedObjects.clear()
+      }
+      await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+        _ = try await promise.value.await()
+      }
+    }
+  }
+
+  @Test
+  func `deferred promise construction rejects non-function Promise and recovers from throwing constructor`()
+    async throws
+  {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      try runtime.eval(
+        """
+        globalThis.SavedNativePromise = globalThis.Promise;
+        globalThis.Promise = {};
+        """
+      )
+      #expect(throws: Error.self) {
+        _ = try JavaScriptPromise(runtime)
+      }
+      #expect(runtime.longLivedObjects.count == 0)
+
+      // Custom constructor that invokes executor and then throws must restore slots and register nothing.
+      try runtime.eval(
+        """
+        globalThis.Promise = function ThrowingPromise(executor) {
+          executor(() => {}, () => {});
+          throw new Error('ctor boom');
+        };
+        """
+      )
+      #expect(throws: Error.self) {
+        _ = try JavaScriptPromise(runtime)
+      }
+      #expect(runtime.longLivedObjects.count == 0)
+
+      // Restoring Promise must allow subsequent deferred promises to capture their own handles cleanly.
+      try runtime.eval("globalThis.Promise = globalThis.SavedNativePromise;")
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(7)
+      #expect(try await promise.await().getInt() == 7)
+    }
+  }
+
+  @Test
+  func `throwing or non-callable custom resolver falls back to rejecter without leaking CppError`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      // Throwing resolver rejects with the resolver's error.
+      try runtime.eval(
+        """
+        const NativePromise = globalThis.Promise;
+        globalThis.Promise = function (executor) {
+          return new NativePromise((_, reject) => {
+            executor(() => { throw new Error('resolver boom'); }, reject);
+          });
+        };
+        """
+      )
+      let throwingResolverPromise = try JavaScriptPromise(runtime)
+      throwingResolverPromise.resolve(1)
+      let resolverError = await #expect(throws: JavaScriptError.self) {
+        _ = try await throwingResolverPromise.await()
+      }
+      let thrownResolver = try #require(resolverError)
+      let resolverMessage = try await runtime.execute {
+        thrownResolver.toValue().getObject().getProperty("message").getString()
+      }
+      #expect(resolverMessage == "resolver boom")
+
+      // Non-callable resolver rejects via rejecter.
+      let nonCallablePromise = try await runtime.execute {
+        try runtime.eval(
+          """
+          const NativePromise2 = globalThis.Promise;
+          globalThis.Promise = function (executor) {
+            return new NativePromise2((_, reject) => {
+              executor(123, reject);
+            });
+          };
+          """
+        )
+        let promise = try JavaScriptPromise(runtime)
+        promise.resolve(1)
+        return UncheckedSendable(value: promise)
+      }
+      await #expect(throws: JavaScriptError.self) {
+        _ = try await nonCallablePromise.value.await()
+      }
+
+      // Both resolver and rejecter throwing must not poison TLS CppError for subsequent JSI calls.
+      let sum = try await runtime.execute {
+        try runtime.eval(
+          """
+          globalThis.Promise = function (executor) {
+            executor(
+              () => { throw new Error('res boom'); },
+              () => { throw new Error('rej boom'); }
+            );
+            return {};
+          };
+          """
+        )
+        let promise = try JavaScriptPromise(runtime)
+        promise.resolve(1)
+        return try runtime.eval("1 + 1").getInt()
+      }
+      #expect(sum == 2)
+    }
+  }
+
+  @Test
+  func `reject promise with non-ASCII and empty JavaScriptThrowable fields and throwing code setter`() async throws {
+    struct CodedError: JavaScriptThrowable {
+      var message: String
+      var code: String
+    }
+
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let unicodePromise = try JavaScriptPromise(runtime)
+      unicodePromise.reject(CodedError(message: "błąd 🚀", code: "ERR_ŻÓŁĆ"))
+      let unicodeError = try #require(
+        await #expect(throws: JavaScriptError.self) {
+          _ = try await unicodePromise.await()
+        }
+      )
+      try await runtime.execute {
+        let obj = unicodeError.toValue().getObject()
+        #expect(obj.getProperty("message").getString() == "błąd 🚀")
+        #expect(obj.getProperty("code").getString() == "ERR_ŻÓŁĆ")
+      }
+
+      let emptyPromise = try await runtime.execute {
+        let promise = try JavaScriptPromise(runtime)
+        promise.reject(CodedError(message: "", code: ""))
+        return UncheckedSendable(value: promise)
+      }
+      let emptyError = try #require(
+        await #expect(throws: JavaScriptError.self) {
+          _ = try await emptyPromise.value.await()
+        }
+      )
+      try await runtime.execute {
+        let obj = emptyError.toValue().getObject()
+        #expect(obj.getProperty("message").getString() == "")
+        #expect(obj.getProperty("code").isUndefined() == true)
+      }
+
+      // Throwing setter on `Error.prototype.code` must stay contained inside `createErrorValueWithCode`.
+      let setterPromise = try await runtime.execute {
+        try runtime.eval(
+          """
+          Object.defineProperty(Error.prototype, 'code', {
+            configurable: true,
+            set() { throw new Error('setter boom'); }
+          });
+          """
+        )
+        let promise = try JavaScriptPromise(runtime)
+        promise.reject(CodedError(message: "with bad setter", code: "ERR_SETTER"))
+        return UncheckedSendable(value: promise)
+      }
+      await #expect(throws: JavaScriptError.self) {
+        _ = try await setterPromise.value.await()
+      }
+      let sum = try await runtime.execute {
+        try runtime.eval("delete Error.prototype.code; 1 + 1").getInt()
+      }
+      #expect(sum == 2)
+    }
   }
 
   @Test

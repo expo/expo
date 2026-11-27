@@ -1116,6 +1116,63 @@ struct JavaScriptRuntimeTests {
       await #expect(throws: Error.self) {
         _ = try await promise.await()
       }
+      // Only the test's own `promise` wrapper should be registered; the settler was never registered.
+      #expect(try await runtime.execute { runtime.longLivedObjects.count } == 1)
+    }
+  }
+
+  @Test
+  func `async function suspending off-thread resolves with JS object and deregisters settler`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let ranOffJSThread = InlineRunFlag()
+      let fn = runtime.createAsyncFunction("suspendedResolve") { _, _ in
+        let object = runtime.createObject()
+        object.setProperty("answer", value: 42)
+        let objectRef = object.asValue().ref()
+        return {
+          try await Task.sleep(nanoseconds: 5_000_000)
+          ranOffJSThread.value = !runtime.isOnJavaScriptThread()
+          return try objectRef.take()
+        }
+      }
+      runtime.global().setProperty("suspendedResolve", value: fn.asValue())
+
+      let answer = try await runtime.evalAsync("suspendedResolve().then((o) => o.answer)")
+      #expect(answer.getInt() == 42)
+      #expect(ranOffJSThread.value == true)
+      #expect(try await runtime.execute { runtime.longLivedObjects.count } == 0)
+    }
+  }
+
+  @Test
+  func `async function suspending off-thread rejects with JavaScriptThrowable and deregisters settler`() async throws {
+    struct OffThreadError: JavaScriptThrowable {
+      var message: String { "off-thread boom" }
+      var code: String { "ERR_OFF_THREAD" }
+    }
+
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let ranOffJSThread = InlineRunFlag()
+      let fn = runtime.createAsyncFunction("suspendedReject") { _, _ in
+        return {
+          try await Task.sleep(nanoseconds: 5_000_000)
+          ranOffJSThread.value = !runtime.isOnJavaScriptThread()
+          throw OffThreadError()
+        }
+      }
+      runtime.global().setProperty("suspendedReject", value: fn.asValue())
+
+      let resultRef = try await runtime.evalAsync(
+        "suspendedReject().then(() => null, (e) => [e instanceof Error, e.message, e.code])"
+      ).ref()
+      try await runtime.execute {
+        let result = try resultRef.take().getArray()
+        #expect(result[0].getBool() == true)
+        #expect(result[1].getString() == "off-thread boom")
+        #expect(result[2].getString() == "ERR_OFF_THREAD")
+        #expect(runtime.longLivedObjects.count == 0)
+      }
+      #expect(ranOffJSThread.value == true)
     }
   }
 

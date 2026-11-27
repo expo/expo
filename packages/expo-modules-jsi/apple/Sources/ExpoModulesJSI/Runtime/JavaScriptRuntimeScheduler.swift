@@ -30,14 +30,19 @@ extension JavaScriptRuntime {
       uncheckedState: []
     )
 
-    /// Pointer-bearing `JavaScriptValue.Ref`s queued from off the JavaScript thread (for example by
-    /// `resolve(_ value: consuming JavaScriptValue)`), swept on teardown so a dropped or late task
-    /// never destroys a `jsi::Value` against freed engine memory. Keyed by raw pointer identity to
+    /// Pointer-bearing `JavaScriptValue.Ref`s and JSI-owning errors (`PendingJSIError`) queued from
+    /// off the JavaScript thread (for example by `resolve(_ value: consuming JavaScriptValue)` or
+    /// `reject(_ error:)`), swept on teardown so a dropped or late task never destroys a `jsi::Value`
+    /// or `jsi::JSError` against freed engine memory. Value refs are keyed by raw pointer identity to
     /// avoid casting `JavaScriptRef<~Copyable>` to `AnyObject` (which requires iOS 18+).
-    private let pendingValues = OSAllocatedUnfairLock<
-      (isCleared: Bool, refs: [UnsafeMutableRawPointer: JavaScriptValue.Ref])
+    private let pendingTeardown = OSAllocatedUnfairLock<
+      (
+        isCleared: Bool,
+        values: [UnsafeMutableRawPointer: JavaScriptValue.Ref],
+        errors: [ObjectIdentifier: PendingJSIError]
+      )
     >(
-      uncheckedState: (false, [:])
+      uncheckedState: (false, [:], [:])
     )
 
     /// Captured at construction time, which runs on the JavaScript thread.
@@ -59,7 +64,7 @@ extension JavaScriptRuntime {
       return pointee.isRuntimeAlive()
     }
 
-    /// Called from the runtime's `deinit`.
+    /// Called from the runtime's `deinit` and teardown sweep.
     internal func markRuntimeGone() {
       pointee.markRuntimeGone()
     }
@@ -68,33 +73,59 @@ extension JavaScriptRuntime {
     /// teardown sweep has already run.
     internal func trackPendingValue(_ ref: JavaScriptValue.Ref) -> Bool {
       let key = Unmanaged.passUnretained(ref).toOpaque()
-      return pendingValues.withLockUnchecked { state in
+      return pendingTeardown.withLockUnchecked { state in
         guard !state.isCleared else {
           return false
         }
-        state.refs[key] = ref
+        state.values[key] = ref
         return true
       }
     }
 
     internal func untrackPendingValue(_ ref: JavaScriptValue.Ref) {
       let key = Unmanaged.passUnretained(ref).toOpaque()
-      pendingValues.withLockUnchecked { state in
-        state.refs[key] = nil
+      pendingTeardown.withLockUnchecked { state in
+        state.values[key] = nil
       }
     }
 
-    /// Releases every tracked off-thread pending value ref while the runtime is still valid.
-    @JavaScriptActor
-    internal func clearPendingValues() {
-      let survivors = pendingValues.withLockUnchecked { state -> [JavaScriptValue.Ref] in
-        state.isCleared = true
-        let values = Array(state.refs.values)
-        state.refs.removeAll()
-        return values
+    /// Registers an off-thread pending JSI error box for teardown sweep. Returns `false` if the
+    /// teardown sweep has already run.
+    internal func trackPendingError(_ error: PendingJSIError) -> Bool {
+      let key = ObjectIdentifier(error)
+      return pendingTeardown.withLockUnchecked { state in
+        guard !state.isCleared else {
+          return false
+        }
+        state.errors[key] = error
+        return true
       }
-      for ref in survivors {
+    }
+
+    internal func untrackPendingError(_ error: PendingJSIError) {
+      let key = ObjectIdentifier(error)
+      pendingTeardown.withLockUnchecked { state in
+        state.errors[key] = nil
+      }
+    }
+
+    /// Releases every tracked off-thread pending value ref and error while the runtime is still valid.
+    @JavaScriptActor
+    internal func clearPendingResources() {
+      let (values, errors) = pendingTeardown.withLockUnchecked {
+        state -> ([JavaScriptValue.Ref], [PendingJSIError]) in
+        state.isCleared = true
+        let values = Array(state.values.values)
+        let errors = Array(state.errors.values)
+        state.values.removeAll()
+        state.errors.removeAll()
+        return (values, errors)
+      }
+      for ref in values {
         ref.release()
+      }
+      for error in errors {
+        error.release()
       }
     }
 

@@ -1026,7 +1026,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // have to hop to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
-          scheduler.clearPendingValues()
+          scheduler.markRuntimeGone()
+          scheduler.clearPendingResources()
           // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
           // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
           // the freed runtime when it deallocates. Reached through the handle so the teardown object doesn't
