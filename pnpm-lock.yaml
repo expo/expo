@@ -5712,9 +5712,6 @@ importers:
       expo-server:
         specifier: workspace:^
         version: link:../expo-server
-      expo-status-bar:
-        specifier: workspace:^
-        version: link:../expo-status-bar
       react:
         specifier: '*'
         version: 19.3.0
