@@ -141,7 +141,7 @@ export function Image(props: ImageProps) {
   return (
     <ImageNativeView
       {...transformProps(restProps)}
-      source={ReactNativeImage.resolveAssetSource(source)}
+      source={ReactNativeImage.resolveAssetSource(source) ?? null}
       onLoad={onLoad}
       onError={onError ? ({ nativeEvent }) => onError(nativeEvent.error) : undefined}
     />
