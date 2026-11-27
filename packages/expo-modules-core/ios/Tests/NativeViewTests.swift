@@ -26,6 +26,29 @@ private final class NativeCardView: ExpoNativeView {
 @ExpoView<NativeCardProps>
 private final class OtherCardView: ExpoNativeView {}
 
+// Each registration test has view types of its own. A view type is registered once per process, and its class
+// can be one component only, so another test that registers the same type would change the result.
+@ExpoView<NativeCardProps>
+private final class RegisteredCardView: ExpoNativeView {
+  var diffs: [NativeCardProps.Diff] = []
+
+  func didUpdateProps(_ diff: NativeCardProps.Diff) {
+    diffs.append(diff)
+  }
+}
+
+@ExpoView<NativeCardProps>
+private final class FirstSharedNameView: ExpoNativeView {}
+
+@ExpoView<NativeCardProps>
+private final class SecondSharedNameView: ExpoNativeView {}
+
+@ExpoView<NativeCardProps>
+private final class PackageCardView: ExpoNativeView {}
+
+@ExpoView<NativeCardProps>
+private final class TwoNamesCardView: ExpoNativeView {}
+
 @ExpoModule("NativeCards", views: [NativeCardView.self])
 private final class NativeCardsModule: Module {}
 
@@ -200,31 +223,42 @@ struct NativeViewTests {
   }
 
   @Test
-  func `registered component class is a subclass that applies the props`() throws {
-    ExpoNativeView.registerComponent(
-      NativeCardView.self,
-      componentName: ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "NativeCardView")
-    )
+  func `registered component is the view class and applies the props`() throws {
+    let componentName = ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "RegisteredCardView")
+    ExpoNativeView.registerComponent(RegisteredCardView.self, componentName: componentName)
 
-    let viewClass: AnyClass = try #require(NSClassFromString("ViewManagerAdapter_NativeViewTests_NativeCardView"))
-    #expect(class_getSuperclass(viewClass) == NativeCardView.self)
+    #expect(EXTestNewComponentDescriptor(viewClass: RegisteredCardView.self).componentName == componentName)
+    #expect(NSClassFromString(componentName) == nil)
 
     // `RCTComponentViewFactory` creates the views with `+new`.
-    let object = (viewClass as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue()
-    let view = try #require(object as? NativeCardView)
+    let object = (RegisteredCardView.self as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue()
+    let view = try #require(object as? RegisteredCardView)
     view.update(nil)
 
     #expect(view.diffs.count == 1)
   }
 
   @Test
-  func `another view type with a registered component name isn't registered`() throws {
+  func `another view type with a registered component name isn't registered`() {
     let componentName = ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "SharedName")
-    ExpoNativeView.registerComponent(NativeCardView.self, componentName: componentName)
-    ExpoNativeView.registerComponent(OtherCardView.self, componentName: componentName)
+    ExpoNativeView.registerComponent(FirstSharedNameView.self, componentName: componentName)
+    ExpoNativeView.registerComponent(SecondSharedNameView.self, componentName: componentName)
 
-    let viewClass: AnyClass = try #require(NSClassFromString("ViewManagerAdapter_NativeViewTests_SharedName"))
-    #expect(class_getSuperclass(viewClass) == NativeCardView.self)
+    #expect(EXTestNewComponentDescriptor(viewClass: FirstSharedNameView.self).componentName == componentName)
+    #expect(NSClassFromString(componentName) == nil)
+  }
+
+  @Test
+  func `view type with a second component name gets a subclass named after it`() throws {
+    let moduleComponentName = ExpoFabricView.componentName(moduleName: "NativeViewTests", viewName: "TwoNamesCardView")
+    let packageComponentName = ExpoNativeView.packageComponentName(packageName: "native-view-tests", viewName: "TwoNamesCardView")
+    ExpoNativeView.registerComponent(TwoNamesCardView.self, componentName: moduleComponentName)
+    ExpoNativeView.registerComponent(TwoNamesCardView.self, componentName: packageComponentName)
+
+    #expect(EXTestNewComponentDescriptor(viewClass: TwoNamesCardView.self).componentName == moduleComponentName)
+    let subclass: AnyClass = try #require(NSClassFromString(packageComponentName))
+    #expect(class_getSuperclass(subclass) == TwoNamesCardView.self)
+    #expect(EXTestNewComponentDescriptor(viewClass: subclass).componentName == packageComponentName)
   }
 
   @Test
@@ -236,12 +270,11 @@ struct NativeViewTests {
   }
 
   @Test
-  func `view of a package is registered under the package component name`() throws {
-    let componentName = ExpoNativeView.packageComponentName(packageName: "native-view-tests", viewName: "NativeCardView")
-    ExpoNativeView.registerComponent(NativeCardView.self, componentName: componentName)
+  func `view of a package is registered under the package component name`() {
+    let componentName = ExpoNativeView.packageComponentName(packageName: "native-view-tests", viewName: "PackageCardView")
+    ExpoNativeView.registerComponent(PackageCardView.self, componentName: componentName)
 
-    let viewClass: AnyClass = try #require(NSClassFromString("native_view_tests_NativeCardView"))
-    #expect(class_getSuperclass(viewClass) == NativeCardView.self)
+    #expect(EXTestNewComponentDescriptor(viewClass: PackageCardView.self).componentName == componentName)
   }
 }
 

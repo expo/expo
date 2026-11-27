@@ -103,6 +103,11 @@ static folly::dynamic dynamicPropsFromDictionary(NSDictionary<NSString *, id> *p
   _props = nullptr;
 }
 
+- (NSString *)componentName
+{
+  return @(_descriptor->getComponentName());
+}
+
 - (float)opacity
 {
   return _props ? static_cast<const views::NewViewProps &>(*_props).opacity : 1;

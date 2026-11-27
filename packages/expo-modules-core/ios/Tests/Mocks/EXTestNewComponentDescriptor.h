@@ -57,6 +57,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) float opacity;
 
+/**
+ The name of the component that the descriptor creates.
+ */
+@property (nonatomic, readonly) NSString *componentName;
+
 @end
 
 NS_ASSUME_NONNULL_END

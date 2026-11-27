@@ -12,7 +12,7 @@ namespace expo::views {
 
 /**
  Returns the provider of the component that `+[ExpoNativeViewObjC registerComponentViewClass:propsDecoder:]`
- registered for the given class, found by the class name. A class that wasn't registered gets a component that decodes
+ registered for the given class, found by the class. A class that wasn't registered gets a component that decodes
  no props. The component views of UIKit and SwiftUI views of Expo Modules v2 share this registry.
  */
 facebook::react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass);

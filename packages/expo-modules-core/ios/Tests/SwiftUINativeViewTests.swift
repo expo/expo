@@ -128,11 +128,12 @@ struct SwiftUINativeViewTests {
   }
 
   @Test
-  func `registers a subclass of the component view class`() throws {
-    ExpoNativeView.registerComponent(SwiftUICardView.self, componentName: "swiftui_native_view_tests_SwiftUICardView")
+  func `registers the component view class`() throws {
+    let componentName = "swiftui_native_view_tests_SwiftUICardView"
+    ExpoNativeView.registerComponent(SwiftUICardView.self, componentName: componentName)
 
-    let viewClass: AnyClass = try #require(NSClassFromString("swiftui_native_view_tests_SwiftUICardView"))
-    #expect(class_getSuperclass(viewClass) == SwiftUICardView._componentViewBaseClass)
+    let viewClass: AnyClass = SwiftUICardView._componentViewBaseClass
+    #expect(EXTestNewComponentDescriptor(viewClass: viewClass).componentName == componentName)
     #expect(try newComponentView(of: viewClass) is any ExpoSwiftUI.AnyChild)
   }
 
