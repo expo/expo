@@ -2,6 +2,7 @@ import HMRClient from '../hmr';
 import { reload } from '../hmrUtils';
 
 const listeners: Record<string, ((...args: any[]) => void)[]> = {};
+const mockReactNativeRegisterBundle = jest.fn();
 
 function emit(event: string, ...args: any[]) {
   const handlers = listeners[event];
@@ -35,6 +36,21 @@ jest.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
     hasPendingUpdates = jest.fn(() => false);
   },
 }));
+
+jest.mock('react-native/Libraries/Utilities/HMRClient', () => ({
+  __esModule: true,
+  default: {
+    registerBundle: mockReactNativeRegisterBundle,
+  },
+}));
+
+it('registers an async bundle with the React Native HMR client before Expo setup', () => {
+  const requestUrl = 'http://localhost:8081/AsyncScreen.bundle?platform=ios';
+
+  HMRClient.registerBundle(requestUrl);
+
+  expect(mockReactNativeRegisterBundle).toHaveBeenCalledWith(requestUrl);
+});
 
 it('reloads through the platform reload helper when an async bundle is registered after Metro disconnected', () => {
   HMRClient.setup('ios', 'index.bundle', 'localhost', 8081, true, 'http');
