@@ -340,10 +340,6 @@ export function getDefaultConfig(
       ],
     },
     cacheStores,
-    watcher: {
-      // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
-      additionalExts: ['env', 'local', 'development'],
-    },
     serializer: {
       isThirdPartyModule(module) {
         // Block virtual modules from appearing in the source maps.

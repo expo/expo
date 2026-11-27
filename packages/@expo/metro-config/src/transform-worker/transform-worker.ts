@@ -211,7 +211,6 @@ async function transformImpl(
       // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
       // defined in the script or bash, essentially all places where HMR is not possible.
       // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
-      // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
       const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
 
     export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
