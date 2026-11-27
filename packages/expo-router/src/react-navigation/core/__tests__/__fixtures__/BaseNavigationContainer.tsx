@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { nanoid } from 'nanoid/non-secure';
 
 import { RemovalPreventionProvider } from '../../../../global-state/removalPrevention';
 import { RoutingQueueProvider } from '../../../../global-state/routingQueueContext';
+import { nanoid } from '../../../../utils/nanoid';
 import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { NavigationState, ParamListBase, PartialState } from '../../../routers';
 import type { NavigationContainerRef } from '../../types';
@@ -78,7 +78,7 @@ function getInitialState(children: React.ReactNode): NavigationState {
 
   // TODO(@ubax): replace the nanoid bookkeeping with `createSeededRootState` and
   // `completeParsedState`.
-  const nanoidMock = require('nanoid/non-secure');
+  const nanoidMock = require('../../../../utils/nanoid');
   if (typeof nanoidMock.__key === 'number') {
     nanoidMock.__key--;
   }

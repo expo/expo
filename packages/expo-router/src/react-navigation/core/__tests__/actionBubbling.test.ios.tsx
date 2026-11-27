@@ -18,7 +18,7 @@ import { usePreventRemove } from '../usePreventRemove';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
-jest.mock('nanoid/non-secure', () => {
+jest.mock('../../../utils/nanoid', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
 
   return m;
@@ -27,7 +27,7 @@ jest.mock('nanoid/non-secure', () => {
 beforeEach(() => {
   MockRouterKey.current = 0;
 
-  require('nanoid/non-secure').__key = 0;
+  require('../../../utils/nanoid').__key = 0;
 });
 
 test("lets parent handle the action if child didn't", async () => {

@@ -8,13 +8,13 @@ import { useNavigationBuilder } from '../useNavigationBuilder';
 import { usePreventRemove } from '../usePreventRemove';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 
-jest.mock('nanoid/non-secure', () => {
+jest.mock('../../../utils/nanoid', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
   return m;
 });
 
 beforeEach(() => {
-  require('nanoid/non-secure').__key = 0;
+  require('../../../utils/nanoid').__key = 0;
 });
 
 test('blocks removal and emits removed with deferred effect cleanup', async () => {

@@ -1,10 +1,10 @@
 import { renderHook } from '@testing-library/react-native';
-import { nanoid } from 'nanoid/non-secure';
 
 import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../../navigationParams';
+import { nanoid } from '../../../utils/nanoid';
 import { useIsPreview } from '../../preview/PreviewRouteContext';
 import { isZoomTransitionEnabled } from '../ZoomTransitionEnabler';
 import { useZoomHref } from '../useZoomHref';

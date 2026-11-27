@@ -1,8 +1,8 @@
 'use client';
-import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import { use } from 'react';
 
+import { nanoid } from '../../utils/nanoid';
 import { SingleNavigatorContext } from './EnsureSingleNavigator';
 
 /**
