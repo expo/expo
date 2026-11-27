@@ -52,17 +52,15 @@ export async function runCanaryAsync(options: CanaryOptions): Promise<void> {
   await updateVersionDerivedFilesAsync(versionedPackages, true);
   await refreshPnpmLockfileAsync();
   await runTurboTasksAsync(['build']);
-  await runTurboTasksAsync(['precompile-ios', 'precompile-android']);
 
+  // Precompiling every native package does not fit in the canary job timeout. Canaries ship
+  // without prebuilds, so apps build their native code from source.
+  const env = { ...getReleasePublishEnv(), EXPO_PUBLISH_SKIP_PREBUILDS: '1' };
   if (options.dryRun) {
-    await packChangesetsAsync('expo-canary-pack-');
+    await packChangesetsAsync('expo-canary-pack-', env);
   } else {
     const tag = await getReleaseTagAsync(options.branchName, 'canary');
-    await runChangesetsAsync(
-      ['publish', '--tag', tag, '--no-git-tag'],
-      spawnAsync,
-      getReleasePublishEnv()
-    );
+    await runChangesetsAsync(['publish', '--tag', tag, '--no-git-tag'], spawnAsync, env);
   }
 }
 

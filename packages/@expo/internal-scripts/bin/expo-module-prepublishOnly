@@ -15,6 +15,9 @@ async function runAsync() {
   await commandRunner(path.join(dirname, 'expo-module-clean'));
   // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
   await packageManagerRunAsync(['build']);
+  if (process.env.EXPO_PUBLISH_SKIP_PREBUILDS === '1') {
+    return;
+  }
   validateRawIosPrebuilds();
   validateRawAndroidPrebuilds();
 }
