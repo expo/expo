@@ -28,7 +28,7 @@ export function replaceAllValues<T>(values: T[], original: T, replacement: T): T
 
 /** lodash.uniqBy */
 export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
-  const seen: { [key: string]: boolean } = {};
+  const seen: { [key: string]: boolean } = Object.create(null);
   return array.filter((item) => {
     const k = key(item);
     if (seen[k]) {

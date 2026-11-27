@@ -1,4 +1,4 @@
-import { findLastIndex, groupBy, intersecting, replaceValue } from '../array';
+import { findLastIndex, groupBy, intersecting, replaceValue, uniqBy } from '../array';
 
 describe(findLastIndex, () => {
   it('should return the last index of an item based on a given criteria', () => {
@@ -31,5 +31,12 @@ describe(groupBy, () => {
       John: [{ name: 'John' }],
       Wick: [{ name: 'Wick' }],
     });
+  });
+});
+
+describe(uniqBy, () => {
+  it(`keeps keys inherited from Object.prototype`, () => {
+    const items = [{ id: '__proto__' }, { id: 'constructor' }, { id: 'toString' }];
+    expect(uniqBy(items, (item) => item.id)).toEqual(items);
   });
 });
