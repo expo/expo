@@ -17,7 +17,6 @@ import expo.modules.calendar.next.domain.wrappers.EventId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.TimeZone
-import kotlin.time.Duration.Companion.milliseconds
 
 class EventRepository(private val contentResolver: ContentResolver) {
   suspend fun findById(id: EventId): EventEntity? = withContext(Dispatchers.IO) {
@@ -44,9 +43,17 @@ class EventRepository(private val contentResolver: ContentResolver) {
   }
 
   suspend fun update(id: EventId, eventUpdate: EventUpdate): Boolean = withContext(Dispatchers.IO) {
+    val missingTimingFields = with(eventUpdate) {
+      listOf(dtStart, dtEnd, rrule, allDay).count { it.isUndefined }
+    }
+    val existing = if (missingTimingFields in 1..3) {
+      findById(id) ?: return@withContext false
+    } else {
+      null
+    }
     contentResolver.safeUpdate(
       uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, id.value),
-      values = eventUpdate.toContentValues()
+      values = eventUpdate.toContentValues(existing)
     ) > 0
   }
 
@@ -75,15 +82,7 @@ class EventRepository(private val contentResolver: ContentResolver) {
         return@let
       }
 
-      if (recurrence.endDate == null && recurrence.occurrence == null) {
-        val eventStartDate = requireNotNull(dtStart)
-        val eventEndDate = requireNotNull(dtEnd)
-        val duration = (eventEndDate - eventStartDate).milliseconds.inWholeSeconds
-
-        putNull(CalendarContract.Events.LAST_DATE)
-        putNull(CalendarContract.Events.DTEND)
-        put(CalendarContract.Events.DURATION, "PT${duration}S")
-      }
+      putRecurringDuration(dtStart, dtEnd, allDay == true)
       put(CalendarContract.Events.RRULE, recurrence.toRuleString())
     }
 
@@ -126,7 +125,7 @@ class EventRepository(private val contentResolver: ContentResolver) {
     }
   }
 
-  private fun EventUpdate.toContentValues() = ContentValues().apply {
+  private fun EventUpdate.toContentValues(existing: EventEntity?) = ContentValues().apply {
     if (!dtStart.isUndefined) {
       put(CalendarContract.Events.DTSTART, dtStart.optional)
     }
@@ -134,22 +133,27 @@ class EventRepository(private val contentResolver: ContentResolver) {
       put(CalendarContract.Events.DTEND, dtEnd.optional)
     }
 
+    val rule = if (rrule.isUndefined) existing?.rrule else rrule.optional
+    val hasRecurrence = !rule?.frequency.isNullOrEmpty()
+    if (hasRecurrence) {
+      val start = if (dtStart.isUndefined) existing?.dtStart else dtStart.optional
+      val end = if (dtEnd.isUndefined && !dtStart.isUndefined && start != null && existing?.dtStart != null && existing.dtEnd != null) {
+        Math.addExact(start, Math.subtractExact(existing.dtEnd, existing.dtStart))
+      } else if (dtEnd.isUndefined) {
+        existing?.dtEnd
+      } else {
+        dtEnd.optional
+      }
+      putRecurringDuration(start, end, (allDay.optional ?: existing?.allDay) == true)
+    }
     if (!rrule.isUndefined) {
-      val recurrence = rrule.optional
-      if (recurrence != null && recurrence.frequency.isNotEmpty()) {
-        if (recurrence.endDate == null && recurrence.occurrence == null) {
-          val eventStartDate = dtStart.optional
-            ?: throw IllegalArgumentException("Start date must be provided when updating recurrence rule without end date or occurrence count")
-          val eventEndDate = dtEnd.optional
-            ?: throw IllegalArgumentException("End date must be provided when updating recurrence rule without end date or occurrence count")
-          val duration = (eventEndDate - eventStartDate).milliseconds.inWholeSeconds
-          putNull(CalendarContract.Events.LAST_DATE)
-          putNull(CalendarContract.Events.DTEND)
-          put(CalendarContract.Events.DURATION, "PT${duration}S")
-        }
-        put(CalendarContract.Events.RRULE, recurrence.toRuleString())
+      if (hasRecurrence) {
+        put(CalendarContract.Events.RRULE, rule?.toRuleString())
       } else {
         putNull(CalendarContract.Events.RRULE)
+        putNull(CalendarContract.Events.DURATION)
+        val end = if (dtEnd.isUndefined) existing?.dtEnd else dtEnd.optional
+        put(CalendarContract.Events.DTEND, requireNotNull(end) { "Provide endDate when clearing a recurrence rule with no stored end date" })
       }
     }
 
@@ -191,6 +195,17 @@ class EventRepository(private val contentResolver: ContentResolver) {
     }
   }
 
+  private fun ContentValues.putRecurringDuration(start: Long?, end: Long?, allDay: Boolean) {
+    requireNotNull(start) { "Missing recurring event start date" }
+    requireNotNull(end) { "Missing recurring event end date" }
+    val millis = Math.subtractExact(end, start)
+    require(millis >= 0) { "Recurring event end date precedes its start date" }
+    val duration = if (allDay && millis % 86_400_000L == 0L) "P${millis / 86_400_000L}D" else "PT${millis / 1000L}S"
+    putNull(CalendarContract.Events.LAST_DATE)
+    putNull(CalendarContract.Events.DTEND)
+    put(CalendarContract.Events.DURATION, duration)
+  }
+
   companion object {
     val FULL_PROJECTION = arrayOf(
       CalendarContract.Events._ID,
@@ -200,6 +215,7 @@ class EventRepository(private val contentResolver: ContentResolver) {
       CalendarContract.Events.CALENDAR_ID,
       CalendarContract.Events.DESCRIPTION,
       CalendarContract.Events.DTEND,
+      CalendarContract.Events.DURATION,
       CalendarContract.Events.DTSTART,
       CalendarContract.Events.EVENT_END_TIMEZONE,
       CalendarContract.Events.EVENT_LOCATION,

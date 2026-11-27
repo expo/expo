@@ -290,7 +290,7 @@ class EventRepositoryTest {
   }
 
   @Test
-  fun `given recurring event with occurrence, when insert, then keeps dtEnd and does not write duration`() = runTest {
+  fun `given recurring event with occurrence, when insert, then stores duration`() = runTest {
     // Given
     val valuesSlot = slot<ContentValues>()
     val insertedUri = mockk<Uri>()
@@ -313,13 +313,12 @@ class EventRepositoryTest {
 
     // Then
     Assert.assertEquals("FREQ=WEEKLY;INTERVAL=2;COUNT=5", valuesSlot.captured.getAsString(CalendarContract.Events.RRULE))
-    Assert.assertEquals(1_060_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTEND).toLong())
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.LAST_DATE))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DTEND))
+    Assert.assertEquals("PT60S", valuesSlot.captured.getAsString(CalendarContract.Events.DURATION))
   }
 
   @Test
-  fun `given recurring event with endDate, when insert, then keeps dtEnd and serializes until`() = runTest {
+  fun `given recurring event with endDate, when insert, then stores duration and serializes until`() = runTest {
     // Given
     val valuesSlot = slot<ContentValues>()
     val insertedUri = mockk<Uri>()
@@ -343,9 +342,8 @@ class EventRepositoryTest {
 
     // Then
     Assert.assertEquals(recurrence.toRuleString(), valuesSlot.captured.getAsString(CalendarContract.Events.RRULE))
-    Assert.assertEquals(1_060_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTEND).toLong())
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.LAST_DATE))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DTEND))
+    Assert.assertEquals("PT60S", valuesSlot.captured.getAsString(CalendarContract.Events.DURATION))
   }
 
   @Test
@@ -425,6 +423,9 @@ class EventRepositoryTest {
     val valuesSlot = slot<ContentValues>()
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(CalendarContract.Events._ID to 42L)
+    )
     val update = EventUpdate(
       dtStart = ValueOrUndefined.Value(1_000_000L),
       dtEnd = ValueOrUndefined.Value(1_060_000L),
@@ -499,12 +500,13 @@ class EventRepositoryTest {
   }
 
   @Test
-  fun `given recurring update with occurrence, when update, then keeps dtEnd and does not write duration`() = runTest {
+  fun `given recurring update with occurrence, when update, then stores duration`() = runTest {
     // Given
     val valuesSlot = slot<ContentValues>()
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
     val update = EventUpdate(
+      allDay = ValueOrUndefined.Value(false),
       dtStart = ValueOrUndefined.Value(1_000_000L),
       dtEnd = ValueOrUndefined.Value(1_060_000L),
       rrule = ValueOrUndefined.Value(
@@ -522,13 +524,12 @@ class EventRepositoryTest {
 
     // Then
     Assert.assertEquals("FREQ=WEEKLY;INTERVAL=2;COUNT=5", valuesSlot.captured.getAsString(CalendarContract.Events.RRULE))
-    Assert.assertEquals(1_060_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTEND).toLong())
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.LAST_DATE))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DTEND))
+    Assert.assertEquals("PT60S", valuesSlot.captured.getAsString(CalendarContract.Events.DURATION))
   }
 
   @Test
-  fun `given recurring update with endDate, when update, then keeps dtEnd and serializes until`() = runTest {
+  fun `given recurring update with endDate, when update, then stores duration and serializes until`() = runTest {
     // Given
     val valuesSlot = slot<ContentValues>()
     val recurrence = RecurrenceRule(
@@ -540,6 +541,7 @@ class EventRepositoryTest {
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
     val update = EventUpdate(
+      allDay = ValueOrUndefined.Value(false),
       dtStart = ValueOrUndefined.Value(1_000_000L),
       dtEnd = ValueOrUndefined.Value(1_060_000L),
       rrule = ValueOrUndefined.Value(recurrence)
@@ -550,9 +552,8 @@ class EventRepositoryTest {
 
     // Then
     Assert.assertEquals(recurrence.toRuleString(), valuesSlot.captured.getAsString(CalendarContract.Events.RRULE))
-    Assert.assertEquals(1_060_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTEND).toLong())
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.LAST_DATE))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DTEND))
+    Assert.assertEquals("PT60S", valuesSlot.captured.getAsString(CalendarContract.Events.DURATION))
   }
 
   @Test
@@ -562,6 +563,7 @@ class EventRepositoryTest {
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
     val update = EventUpdate(
+      allDay = ValueOrUndefined.Value(false),
       dtStart = ValueOrUndefined.Value(1_000_000L),
       dtEnd = ValueOrUndefined.Value(1_060_000L),
       rrule = ValueOrUndefined.Value(
@@ -591,6 +593,7 @@ class EventRepositoryTest {
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
     val update = EventUpdate(
+      allDay = ValueOrUndefined.Value(false),
       dtStart = ValueOrUndefined.Value(1_000_000L),
       dtEnd = ValueOrUndefined.Value(1_060_000L),
       rrule = ValueOrUndefined.Value(
@@ -609,8 +612,8 @@ class EventRepositoryTest {
     // Then
     Assert.assertTrue(valuesSlot.captured.containsKey(CalendarContract.Events.RRULE))
     Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.RRULE))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
-    Assert.assertFalse(valuesSlot.captured.containsKey(CalendarContract.Events.LAST_DATE))
+    Assert.assertTrue(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DURATION))
   }
 
   @Test
@@ -619,6 +622,14 @@ class EventRepositoryTest {
     val valuesSlot = slot<ContentValues>()
     every { contentResolver.update(any(), capture(valuesSlot), any(), any()) } returns 1
 
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(
+        CalendarContract.Events._ID to 42L,
+        CalendarContract.Events.DTSTART to 1000L,
+        CalendarContract.Events.DURATION to "PT1H30M",
+        CalendarContract.Events.RRULE to "FREQ=DAILY"
+      )
+    )
     val update = EventUpdate(
       rrule = ValueOrUndefined.Value(null)
     )
@@ -629,9 +640,77 @@ class EventRepositoryTest {
     // Then
     Assert.assertTrue(valuesSlot.captured.containsKey(CalendarContract.Events.RRULE))
     Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.RRULE))
+    Assert.assertEquals(5_401_000L, valuesSlot.captured.getAsLong(CalendarContract.Events.DTEND).toLong())
+    Assert.assertTrue(valuesSlot.captured.containsKey(CalendarContract.Events.DURATION))
+    Assert.assertNull(valuesSlot.captured.get(CalendarContract.Events.DURATION))
   }
 
   // endregion
+
+  @Test
+  fun `updating just the end of a recurring event recomputes duration`() = runTest {
+    val values = slot<ContentValues>()
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(
+        CalendarContract.Events._ID to 42L,
+        CalendarContract.Events.DTSTART to 1000L,
+        CalendarContract.Events.DURATION to "P3600S",
+        CalendarContract.Events.RRULE to "FREQ=WEEKLY"
+      )
+    )
+    every { contentResolver.update(any(), capture(values), any(), any()) } returns 1
+
+    repository.update(EventId(42L), EventUpdate(dtEnd = ValueOrUndefined.Value(7_201_000L)))
+
+    Assert.assertNull(values.captured.get(CalendarContract.Events.DTEND))
+    Assert.assertEquals("PT7200S", values.captured.getAsString(CalendarContract.Events.DURATION))
+    Assert.assertFalse(values.captured.containsKey(CalendarContract.Events.RRULE))
+  }
+
+  @Test
+  fun `moving a series start alone preserves the duration`() = runTest {
+    val values = slot<ContentValues>()
+    every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+      mapOf(
+        CalendarContract.Events._ID to 42L,
+        CalendarContract.Events.DTSTART to 1000L,
+        CalendarContract.Events.DURATION to "PT3600S",
+        CalendarContract.Events.RRULE to "FREQ=WEEKLY"
+      )
+    )
+    every { contentResolver.update(any(), capture(values), any(), any()) } returns 1
+    repository.update(EventId(42L), EventUpdate(dtStart = ValueOrUndefined.Value(86_401_000L)))
+    Assert.assertEquals("PT3600S", values.captured.getAsString(CalendarContract.Events.DURATION))
+    Assert.assertEquals(86_401_000L, values.captured.getAsLong(CalendarContract.Events.DTSTART).toLong())
+  }
+
+  @Test
+  fun `all day recurrence uses whole days for duration`() = runTest {
+    val values = slot<ContentValues>()
+    every { contentResolver.insert(any(), capture(values)) } returns Uri.parse("content://com.android.calendar/events/42")
+    repository.insert(EventInput(dtStart = 0L, dtEnd = 172_800_000L, allDay = true, rrule = RecurrenceRule("weekly", 1, 5, null)))
+    Assert.assertEquals("P2D", values.captured.getAsString(CalendarContract.Events.DURATION))
+    Assert.assertNull(values.captured.get(CalendarContract.Events.DTEND))
+  }
+
+  @Test
+  fun `read duration recovers the occurrence end from common provider formats`() = runTest {
+    for ((text, expected) in mapOf(
+      "P3600S" to 3_600_000L,
+      "PT3600S" to 3_600_000L,
+      "PT1H30M" to 5_400_000L,
+      "P1W" to 604_800_000L,
+      "P2DT1H" to 176_400_000L,
+      "P" to null,
+      "PT" to null,
+      "P99999999999999999999999999D" to null
+    )) {
+      every { contentResolver.query(any(), any(), any(), any(), any()) } returns cursorWithRows(
+        mapOf(CalendarContract.Events._ID to 42L, CalendarContract.Events.DTSTART to 0L, CalendarContract.Events.DURATION to text)
+      )
+      Assert.assertEquals(text, expected, repository.findById(EventId(42))?.dtEnd)
+    }
+  }
 
   // region remove
 
@@ -673,7 +752,7 @@ class EventRepositoryTest {
       return emptyCursor()
     }
 
-    val columnNames = rows.first().keys.toTypedArray()
+    val columnNames = EventRepository.FULL_PROJECTION
     val cursor = MatrixCursor(columnNames)
 
     for (row in rows) {
