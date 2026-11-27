@@ -4,6 +4,7 @@
     {
       "name": "EASClient",
       "podName": "EASClient",
+      "headersXCFramework": true,
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",

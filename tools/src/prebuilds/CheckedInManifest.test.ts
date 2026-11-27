@@ -708,6 +708,20 @@ it('direct stand-ins: requires externalDependencies to list "@expo/ui/ExpoUI"', 
   );
 });
 
+it('direct stand-ins: replaces EASClientHeaders with expo-eas-client/EASClient', async () => {
+  const input = withHeadersStandIn('EASClientHeaders', ['expo-eas-client/EASClient']);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-eas-client/EASClient',
+  ]);
+});
+
+it('direct stand-ins: requires externalDependencies to list "expo-eas-client/EASClient"', async () => {
+  await rejectsManifest(
+    withHeadersStandIn('EASClientHeaders', ['expo-modules-core/ExpoModulesCore']),
+    /: it names unknown dependency "expo-eas-client\/EASClient", which the generated package/
+  );
+});
+
 for (const product of ['RNWorklets', 'RNScreens']) {
   it(`direct stand-ins: replaces ${product}Headers with ${product}`, async () => {
     const input = withHeadersStandIn(`${product}Headers`, [product]);
