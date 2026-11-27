@@ -167,6 +167,12 @@ Run the command from an Expo project with a valid app config, or pass `--sdk-ver
 
 This is expected when the session starts without `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. Install a local simulator or emulator build through the controller, or start a new session with an application source.
 
+### `EAS_INSTALL_APPLICATION_REQUIRES_NEWER_IOS`
+
+The minimum iOS version of the app is higher than the iOS version of the session's Simulator, so the app does not install when the session starts. The session reports this error code with the message "This app requires a newer iOS version than the selected iOS Simulator runs." `eas simulator:start` prints the message, and `eas simulator:get --json` returns it in the `errors` array.
+
+Lower the iOS deployment target of the app and build it again, or select an iOS device that runs a newer iOS version. See [Devices](/eas/simulators/reference/devices/) for the Xcode version of each image.
+
 ### The screenshot shows old source code
 
 A release build embeds JavaScript at build time. Rebuild it from the current source, confirm that an existing Expo Build has the matching fingerprint, or install a development build and connect it to Metro.
