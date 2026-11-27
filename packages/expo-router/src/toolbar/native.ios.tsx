@@ -35,7 +35,7 @@ const RouterToolbarItemView: React.ComponentType<
     type?: string;
     titleStyle?: {
       fontFamily?: string;
-      fontSize?: number;
+      fontSize?: TextStyle['fontSize'];
       fontWeight?: TextStyle['fontWeight'];
       color?: ColorValue;
     };

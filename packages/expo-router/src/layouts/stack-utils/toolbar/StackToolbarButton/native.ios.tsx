@@ -38,7 +38,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       xcassetName={props.xcassetName}
       title={props.label}
       tintColor={props.tintColor}
-      titleStyle={StyleSheet.flatten(props.style)}
+      titleStyle={StyleSheet.flatten(props.style) ?? undefined}
     />
   );
 };

@@ -159,12 +159,9 @@ const getHeaderHeights = (
       headerStyle,
     } = curr.descriptor.options;
 
-    const style = StyleSheet.flatten(headerStyle || {});
+    const style = StyleSheet.flatten(headerStyle);
 
-    const height =
-      'height' in style && typeof style.height === 'number'
-        ? style.height
-        : previous[curr.route.key];
+    const height = typeof style?.height === 'number' ? style.height : previous[curr.route.key];
 
     const interpolationIndex = getInterpolationIndex(scenes, index);
     const isModal = getIsModal(curr, interpolationIndex, isParentModal);

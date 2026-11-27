@@ -37,7 +37,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = ({
 }) => {
   const identifier = useId();
 
-  const titleStyle = StyleSheet.flatten(style);
+  const titleStyle = StyleSheet.flatten(style) ?? undefined;
   const renderingMode = imageRenderingMode ?? (tintColor !== undefined ? 'template' : 'original');
   if (process.env.NODE_ENV !== 'production' && source) {
     console.warn(

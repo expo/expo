@@ -3,6 +3,7 @@
   "include": ["./src", "./metro-require"],
   "exclude": ["**/__typetests__/*"],
   "compilerOptions": {
+    "customConditions": ["expo-source", "react-native-unstable-internals"],
     "noEmit": true,
     "lib": ["dom", "esnext"],
     "rootDir": ".",

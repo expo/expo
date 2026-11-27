@@ -1,7 +1,7 @@
 import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
 import type { Ref } from 'react';
 import React, { act as reactAct, forwardRef, useEffect, useState } from 'react';
-import type { ViewProps } from 'react-native';
+import type { ViewInstance, ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
 import { unstable_useIsNavigating } from '../exports';
@@ -252,14 +252,14 @@ it('should allow Href objects', async () => {
 });
 
 it('allows for custom elements', async () => {
-  const CustomTabs = forwardRef(({ children, ...props }: ViewProps, ref: Ref<View>) => {
+  const CustomTabs = forwardRef(({ children, ...props }: ViewProps, ref: Ref<ViewInstance>) => {
     return (
       <View ref={ref} testID="custom-tabs" {...props}>
         {children}
       </View>
     );
   });
-  const CustomTabList = forwardRef(({ children, ...props }: ViewProps, ref: Ref<View>) => {
+  const CustomTabList = forwardRef(({ children, ...props }: ViewProps, ref: Ref<ViewInstance>) => {
     return (
       <View ref={ref} testID="custom-tablist" {...props}>
         {children}

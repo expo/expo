@@ -1,8 +1,7 @@
-import * as ReactNative from 'react-native';
+import { useVerticalBarEdgeIOS as useCoreVerticalBarEdgeIOS } from 'react-native';
 
 import type { VerticalBarEdgeIOS } from './useVerticalBarEdgeIOS';
 
-export const useVerticalBarEdgeIOS: () => VerticalBarEdgeIOS | null =
-  // The legacy React Native typings this package compiles against don't declare the hook.
-  (ReactNative as unknown as { useVerticalBarEdgeIOS: () => VerticalBarEdgeIOS | null })
-    .useVerticalBarEdgeIOS;
+export function useVerticalBarEdgeIOS(): VerticalBarEdgeIOS | null {
+  return useCoreVerticalBarEdgeIOS() ?? null;
+}
