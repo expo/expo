@@ -2,6 +2,7 @@ import {
   environmentVariableSerializerPlugin,
   getTransformEnvironment,
   getEnvVarDevString,
+  projectRootSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from '../environmentVariableSerializerPlugin';
 
@@ -27,6 +28,40 @@ describe(serverPreludeSerializerPlugin, () => {
       code: 'first\nsecond',
       lineCount: 2,
     });
+  });
+});
+
+describe(projectRootSerializerPlugin, () => {
+  const originalProjectRootEnv = process.env.EXPO_PUBLIC_PROJECT_ROOT;
+  afterEach(() => {
+    if (originalProjectRootEnv === undefined) {
+      delete process.env.EXPO_PUBLIC_PROJECT_ROOT;
+    } else {
+      process.env.EXPO_PUBLIC_PROJECT_ROOT = originalProjectRootEnv;
+    }
+  });
+
+  function serializePrelude(options: { dev: boolean; projectRoot: string }) {
+    const data = { code: 'var __DEV__=true;', lineCount: 1 };
+    const prelude = { path: '__prelude__', output: [{ type: 'js/script', data }] };
+    projectRootSerializerPlugin(
+      '/index.js',
+      [prelude] as any,
+      { transformOptions: { customTransformOptions: { environment: 'client' } } } as any,
+      options as any
+    );
+    return data;
+  }
+
+  it('defines the project root only in the dev prelude, ignoring EXPO_PUBLIC_PROJECT_ROOT', () => {
+    process.env.EXPO_PUBLIC_PROJECT_ROOT = '/other/worktree';
+
+    const dev = serializePrelude({ dev: true, projectRoot: '/app' });
+    const production = serializePrelude({ dev: false, projectRoot: '/app' });
+
+    expect(dev.code).toBe('var __DEV__=true;var __EXPO_PROJECT_ROOT__="/app";');
+    expect(dev.lineCount).toBe(1);
+    expect(production.code).toBe('var __DEV__=true;');
   });
 });
 

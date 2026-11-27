@@ -72,6 +72,24 @@ export function serverPreludeSerializerPlugin(
   return [entryPoint, preModules, graph, options];
 }
 
+export function projectRootSerializerPlugin(
+  entryPoint: string,
+  preModules: readonly Module<MixedOutput>[],
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): SerializerParameters {
+  if (options.dev) {
+    const prelude = preModules.find((module) => module.path === '__prelude__');
+    const data = prelude?.output[0]?.data as any;
+    const declaration = `var __EXPO_PROJECT_ROOT__=${JSON.stringify(options.projectRoot)};`;
+    if (data && !data.code.includes(declaration)) {
+      data.code += declaration;
+      data.lineCount = countLines(data.code);
+    }
+  }
+  return [entryPoint, preModules, graph, options];
+}
+
 export function environmentVariableSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module<MixedOutput>[],
