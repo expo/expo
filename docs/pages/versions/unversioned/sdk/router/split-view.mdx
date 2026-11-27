@@ -15,9 +15,8 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
 
-> **important** SplitView is an [alpha](/more/release-statuses/#alpha) API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes and is not ready for production usage yet.
+> **important** `SplitView` is an [alpha](/more/release-statuses/#alpha) API for iOS. It requires `react-native-screens` 5.0.0-beta.2 or later.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
 
@@ -109,17 +108,6 @@ To use `expo-router/unstable-split-view` in your project, you need to install `e
   description="Learn how to install Expo Router in your project."
   href="/router/installation/"
   Icon={RouterLogo}
-/>
-
-`SplitView` requires `react-native-screens` 5.0.0-beta.2 or later. With an earlier version, `SplitView` throws an error. Install it with:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo install react-native-screens@5.0.0-beta.2'],
-    yarn: ['$ yarn expo install react-native-screens@5.0.0-beta.2'],
-    pnpm: ['$ pnpm expo install react-native-screens@5.0.0-beta.2'],
-    bun: ['$ bun expo install react-native-screens@5.0.0-beta.2'],
-  }}
 />
 
 ## Using `SplitView.Column`
@@ -253,6 +241,8 @@ export default function Layout() {
 
 Use the `header` prop of `SplitView.Column` and `SplitView.Content` to configure the column's navigation bar. The prop accepts [`Stack.HeaderConfig` props from React Native Screens](https://github.com/software-mansion/react-native-screens/blob/5.0.0-beta.2/src/components/stack/header/StackHeaderConfig.types.ts). Set iOS-specific options under `ios`.
 
+> **warning** The column header configuration API can change in patch releases.
+
 ```tsx app/_layout.tsx
 <SplitView>
   <SplitView.Column
@@ -275,7 +265,7 @@ If you used the earlier SplitView header API, move `largeTitle` to `ios.largeTit
 
 ## Navigation stack in the content column
 
-Set `stackIntegration` on `SplitView.Content` to navigate the content column with an `ExperimentalStack`. The layout of the content route must render the stack as its root. The stack then pushes screens in the content column, and its header is the navigation bar of the column:
+Set `stackIntegration` on `SplitView.Content` to navigate the content column with an [`ExperimentalStack`](/versions/latest/sdk/router/experimental-stack/). The layout of the content route must render the stack as its root. The stack pushes screens in the content column and provides its navigation bar.
 
 <FileTree
   files={[
