@@ -10,7 +10,6 @@
 
 'use client';
 
-import { Slot as ReactSlot } from '@radix-ui/react-slot';
 import {
   startTransition,
   useCallback,
@@ -41,6 +40,7 @@ import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Li
 import { resolveHref } from '../../link/href';
 import { useInteropClassName, useHrefAttrs } from '../../link/useLinkHooks';
 import type { Href } from '../../types.js';
+import { Slot as ReactSlot } from '../../ui/RadixSlot';
 import useLatestCallback from '../../utils/useLatestCallback';
 import { PARAM_KEY_SKIP, getComponentIds, getInputString } from './common.js';
 import type { RouteProps } from './common.js';

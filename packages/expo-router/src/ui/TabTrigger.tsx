@@ -1,4 +1,3 @@
-import { Slot } from '@radix-ui/react-slot';
 import type { ReactNode, ReactElement, ComponentProps } from 'react';
 import { use, useCallback } from 'react';
 import type { View, PressableProps } from 'react-native';
@@ -13,6 +12,7 @@ import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
+import { Slot } from './RadixSlot';
 import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
 import { buildTabAction, type TriggerMap } from './common';
 
@@ -56,7 +56,8 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren &
     href?: string;
   };
 
-const TabTriggerSlot = Slot as React.ForwardRefExoticComponent<TabTriggerSlotProps>;
+// Slot forwards these React Native props and refs to its child.
+const TabTriggerSlot = Slot as React.ComponentType<TabTriggerSlotProps>;
 
 /**
  * Creates a trigger to navigate to a tab. When used as child of `TabList`, its
