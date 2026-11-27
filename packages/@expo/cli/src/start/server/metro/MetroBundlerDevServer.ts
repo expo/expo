@@ -49,7 +49,6 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
-import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
 import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -112,7 +111,7 @@ import {
 } from './router';
 import { serialAssetsToStaticContentAssets } from './serializeHtml';
 import { getServerEntryArtifact, persistServerArtifacts } from './serverArtifacts';
-import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('@expo/router-server/build/server/render').getManifest>
@@ -1277,34 +1276,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async watchEnvironmentVariables() {
-    if (!this.instance) {
-      throw new Error(
-        'Cannot observe environment variable changes without a running Metro instance.'
-      );
-    }
-    if (!this.metro) {
-      // This can happen when the run command is used and the server is already running in another
-      // process.
-      return;
-    }
-
-    const mode = this.instanceMetroOptions.mode ?? 'development';
-
-    observeFileChanges(
-      {
-        metro: this.metro,
-        server: this.instance.server,
-      },
-      getEnvFiles(this.projectRoot, mode),
-      () => {
-        debugEvent('env_reload', {});
-        // Force reload the environment variables.
-        reloadEnvFiles(this.projectRoot, mode);
-      }
-    );
-  }
-
   rscRenderer: Awaited<ReturnType<typeof createServerComponentsMiddleware>> | null = null;
 
   protected async startImplementationAsync(
@@ -1366,6 +1337,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.instanceMetroOptions = instanceMetroOptions;
 
     const parsedOptions = {
+      mode,
+      reloadEnvironment: options.reloadEnvironment,
       host: options.location.hostType === 'localhost' ? '127.0.0.1' : undefined,
       port: this.getPort(),
       maxWorkers: options.maxWorkers,

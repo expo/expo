@@ -29,10 +29,12 @@ import { getPlatformBundlers } from './server/platformBundlers';
 export async function _getMultiBundlerStartOptions(
   projectRoot: string,
   options: Options,
-  platformBundlers: PlatformBundlers
+  platformBundlers: PlatformBundlers,
+  settings: { webOnly?: boolean } = {}
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions, number | undefined]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
+    reloadEnvironment: !settings.webOnly,
     devClient: options.devClient,
     privateKeyPath: options.privateKeyPath ?? undefined,
     https: options.https,
@@ -105,7 +107,8 @@ export async function startAsync(
   const [defaultOptions, startOptions, webPort] = await _getMultiBundlerStartOptions(
     projectRoot,
     options,
-    platformBundlers
+    platformBundlers,
+    settings
   );
 
   const devServerManager = new DevServerManager(projectRoot, defaultOptions, webPort);
@@ -120,8 +123,6 @@ export async function startAsync(
   await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   if (!settings.webOnly) {
-    await devServerManager.watchEnvironmentVariables();
-
     // After the server starts, we can start attempting to bootstrap TypeScript.
     await devServerManager.bootstrapTypeScriptAsync();
   }
