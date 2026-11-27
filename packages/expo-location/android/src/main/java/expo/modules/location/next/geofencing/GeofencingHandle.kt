@@ -7,6 +7,7 @@ import expo.modules.location.next.locationProviders.LocationProvider
 import expo.modules.location.next.locationProviders.ProviderResult
 
 private const val MAX_REQUEST_ID_LENGTH = 100
+private const val MAX_REGIONS_PER_APP = 100
 
 class GeofencingHandle(
   val taskName: String,
@@ -20,6 +21,10 @@ class GeofencingHandle(
     }
     if (taskName.isEmpty() || !hasOnlyASCIIAlphanumerics) {
       throw GeofencingTaskNameInvalid(taskName)
+    }
+
+    if (regions.size > MAX_REGIONS_PER_APP) {
+      throw GeofencingRegionLimitExceeded()
     }
 
     val identifiers = mutableSetOf<String>()

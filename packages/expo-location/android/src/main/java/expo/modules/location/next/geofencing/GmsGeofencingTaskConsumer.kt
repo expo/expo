@@ -33,6 +33,7 @@ class GmsGeofencingTaskConsumer(
 
   @Volatile
   private var pendingIntent: PendingIntent? = null
+  private val requestGeneration = AtomicInteger(0)
 
   private val geofencingClient: GeofencingClient by lazy {
     LocationServices.getGeofencingClient(context)
@@ -55,7 +56,13 @@ class GmsGeofencingTaskConsumer(
     val currentPendingIntent = pendingIntent ?: return
     val taskName = task?.name ?: return
     val regions = options.orEmpty().toGeofencingRegions()
-    geofencingClient.removeGeofences(currentPendingIntent).addOnFailureListener(::stopRequestAndReportError)
+    val generation = requestGeneration.incrementAndGet()
+    fun onRequestFailed(cause: Exception) {
+      if (requestGeneration.compareAndSet(generation, generation + 1)) {
+        stopRequestAndReportError(cause)
+      }
+    }
+    geofencingClient.removeGeofences(currentPendingIntent).addOnFailureListener(::onRequestFailed)
 
     if (regions.isNotEmpty()) {
       val request = GeofencingRequest.Builder()
@@ -63,9 +70,9 @@ class GmsGeofencingTaskConsumer(
         .addGeofences(regions.map { it.toGeofence(taskName) })
         .build()
       try {
-        geofencingClient.addGeofences(request, currentPendingIntent).addOnFailureListener(::stopRequestAndReportError)
+        geofencingClient.addGeofences(request, currentPendingIntent).addOnFailureListener(::onRequestFailed)
       } catch (e: Exception) {
-        stopRequestAndReportError(e)
+        onRequestFailed(e)
       }
     }
   }

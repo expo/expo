@@ -29,6 +29,12 @@ class GeofencingUnsupported :
       "services, so select the Gms or the Fallback provider on a device that has them"
   )
 
+class GeofencingRegionLimitExceeded :
+  CodedException(
+    "Android monitors at most 100 regions per app, so it cannot monitor the regions passed to start. " +
+      "Reduce the number of regions and call start again"
+  )
+
 fun Exception.toGeofencingErrorMessage(): String {
   val statusCode = (this as? ApiException)?.statusCode
   return when (statusCode) {
