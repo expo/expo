@@ -299,7 +299,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   override fun onViewAdded(child: View?) {
     super.onViewAdded(child)
-    recomposeScope?.invalidate()
+    onComposableChildrenChanged()
   }
 
   override fun onViewRemoved(child: View?) {
@@ -309,6 +309,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     if (child != null && isViewTransitioning(child)) {
       return
     }
+    onComposableChildrenChanged()
+  }
+
+  /**
+   * Called when the children to compose change. It is not called while a removed child is
+   * still animating out, so the old content stays on screen until the transition ends.
+   * Subclasses that keep their own child state (e.g. a child count) update it here.
+   */
+  protected open fun onComposableChildrenChanged() {
     recomposeScope?.invalidate()
   }
 
@@ -327,7 +336,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   override fun endViewTransition(view: View) {
     super.endViewTransition(view)
     if (transitioningChildren.remove(view) && view.parent != this) {
-      recomposeScope?.invalidate()
+      onComposableChildrenChanged()
     }
   }
 
