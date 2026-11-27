@@ -4,4 +4,6 @@ The `shallowequal` dependency is inlined because the dispatcher only needs its b
 
 The `invariant` calls use equivalent conditional `Error` throws to avoid retaining the dependency.
 
+The `react-fast-compare` import points to the vendored copy.
+
 This is a fork of `react-helmet-async` https://github.com/staylor/react-helmet-async

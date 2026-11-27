@@ -1,5 +1,4 @@
-import isEqual from 'react-fast-compare';
-
+import isEqual from '../../../vendor/react-fast-compare';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,

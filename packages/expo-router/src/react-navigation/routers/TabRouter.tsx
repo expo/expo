@@ -1,5 +1,4 @@
-import isEqual from 'react-fast-compare';
-
+import isEqual from '../../../vendor/react-fast-compare';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';

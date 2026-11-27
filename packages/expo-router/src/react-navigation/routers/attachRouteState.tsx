@@ -1,5 +1,4 @@
-import isEqual from 'react-fast-compare';
-
+import isEqual from '../../../vendor/react-fast-compare';
 import type { NavigationState, PartialState, Route } from './types';
 
 export type RouteState = (NavigationState | PartialState<NavigationState>) & {
