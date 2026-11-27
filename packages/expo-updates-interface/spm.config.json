@@ -4,6 +4,7 @@
     {
       "name": "EXUpdatesInterface",
       "podName": "EXUpdatesInterface",
+      "headersXCFramework": true,
       "platforms": [
         "iOS(\"16.4\")"
       ],
