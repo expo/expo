@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import UIKit
+
 /**
  Since iOS 11, launching ImagePicker with `allowsEditing` option makes cropping rectangle
  slightly moved upwards, because of StatusBar visibility.

@@ -1,7 +1,6 @@
 import { Link, useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const colors = ['#ff6a00', '#1e3a8a', '#16a34a', '#c026d3', '#0891b2', '#e11d48'];
 
@@ -13,8 +12,7 @@ export default function CornerRadius() {
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
       contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView
-        edges={['left', 'right']}
+      <View
         style={{
           padding: 24,
           flexDirection: 'row',
@@ -46,7 +44,7 @@ export default function CornerRadius() {
             </Link.Menu>
           </Link>
         ))}
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }

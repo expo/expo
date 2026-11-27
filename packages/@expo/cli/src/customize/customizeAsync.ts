@@ -4,6 +4,7 @@ import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/ro
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { loadEnvFiles } from '../utils/nodeEnv';
+import { reportProgramResult } from '../utils/programStatus';
 import { queryAndGenerateAsync, selectAndGenerateAsync } from './generate';
 import type { Options } from './resolveOptions';
 import type { DestinationResolutionProps } from './templates';
@@ -35,16 +36,17 @@ export async function customizeAsync(files: string[], options: Options, extras: 
 
   // If the user provided files, we'll generate them without prompting.
   if (files.length) {
-    return queryAndGenerateAsync(projectRoot, {
+    await queryAndGenerateAsync(projectRoot, {
       files,
       props,
       extras,
     });
+  } else {
+    // Otherwise, we'll prompt the user to select which files to generate.
+    await selectAndGenerateAsync(projectRoot, {
+      props,
+      extras,
+    });
   }
-
-  // Otherwise, we'll prompt the user to select which files to generate.
-  await selectAndGenerateAsync(projectRoot, {
-    props,
-    extras,
-  });
+  reportProgramResult({ state: 'done', msg: 'Finished customizing' });
 }

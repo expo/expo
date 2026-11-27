@@ -1,5 +1,4 @@
 import type { ComponentType, JSX, PropsWithChildren } from 'react';
-// @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 import { AppRegistry } from 'react-native-web';
 
 import type { ExpoRootProps } from '../ExpoRoot';

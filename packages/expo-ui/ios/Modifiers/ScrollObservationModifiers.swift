@@ -3,18 +3,13 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
+internal struct OnScrollGeometryChangeModifier: EventDispatchingViewModifier, Record {
   // Worklet path: synchronous invocation on the UI runtime (no JS-thread dispatch).
   @Field var workletCallback: WorkletCallback?
   // JS-thread path: async event via the global modifier event dispatcher.
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
@@ -34,15 +29,10 @@ internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
   }
 }
 
-internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
+internal struct OnScrollPhaseChangeModifier: EventDispatchingViewModifier, Record {
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   func body(content: Content) -> some View {
     if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {

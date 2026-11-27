@@ -36,15 +36,7 @@ public final class ExpoUIModule: Module {
       }
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        let newValue = wrapper["value"]
-        // Update state on the UI thread
-        if Thread.isMainThread {
-          state.value = newValue
-        } else {
-          DispatchQueue.main.async {
-            state.value = newValue
-          }
-        }
+        state.setValueOnMainThread(wrapper["value"])
       }
 
       Function("setOnChange") { (state: ObservableState, callback: WorkletCallback?) in
@@ -136,8 +128,6 @@ public final class ExpoUIModule: Module {
     // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
-    View(NamespaceView.self)
-    View(GridRowView.self)
 
     // MARK: - Expo UI Views
 

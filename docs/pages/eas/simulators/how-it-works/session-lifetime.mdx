@@ -11,12 +11,7 @@ An Expo Simulators session runs until you stop it or until it reaches a limit. T
 
 ## Maximum duration
 
-| Account    | Maximum duration | Default duration |
-| ---------- | ---------------- | ---------------- |
-| Free plan  | 40 minutes       | 40 minutes       |
-| Paid plans | 115 minutes      | 115 minutes      |
-
-If you do not set a duration, the session gets the maximum for the account. On any plan, you can set a shorter duration: pass `--max-duration-minutes` to EAS CLI or `maxDurationMinutes` to the REST API. A value above the account's maximum fails.
+Expo Simulators is available only on [paid plans](/eas/simulators/reference/usage-and-billing/#access). A session runs for at most 115 minutes. If you do not set a duration, the session gets this maximum. You can set a shorter duration: pass `--max-duration-minutes` to EAS CLI or `maxDurationMinutes` to the REST API. A value above 115 minutes fails.
 
 The session timer starts when the session is ready. The job that runs the session has a hard limit of the maximum duration plus five minutes.
 
@@ -29,7 +24,7 @@ Pass `--max-idle-time-minutes` to stop the session after that many minutes witho
 | Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium. On iOS, browser input and some `simulator:control` actions, such as app launches and screenshots, also reset the timer. |
 | Activity that does not reset the timer | Watching the preview, or browser input on Android                                                                                                                                 |
 | `web-preview-only` sessions            | Supported on iOS. On Android, Expo Simulators rejects an idle timeout and does not create the session.                                                                            |
-| Allowed values                         | A positive number up to the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one.                                         |
+| Allowed values                         | A positive number up to the session's maximum duration: the value of `--max-duration-minutes`, or 115 minutes when you do not set one.                                            |
 
 For a session that a person uses in the browser preview, limit the session with the maximum duration. The idle timeout can stop the session while the person only watches it, or while they use it on Android.
 

@@ -59,9 +59,8 @@ class UpdatesPackage : Package {
         UpdatesController.instance.onDidCreateReactInstance(reactContext)
       }
 
-      override fun onReactInstanceException(useDeveloperSupport: Boolean, exception: Exception) {
+      override fun handleReactInstanceException(useDeveloperSupport: Boolean, exception: Exception): Boolean =
         UpdatesController.instance.onReactInstanceException(exception)
-      }
     }
     return listOf(handler)
   }

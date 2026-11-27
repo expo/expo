@@ -3,8 +3,9 @@ package expo.modules.haptics.arguments
 import android.annotation.SuppressLint
 import android.os.Build
 import android.view.HapticFeedbackConstants
+import io.github.expo.modules.v2.Enumerable
 
-enum class NotificationType(val value: String) {
+enum class NotificationType(val value: String) : Enumerable {
   SUCCESS("success"),
   WARNING("warning"),
   ERROR("error");
@@ -31,7 +32,7 @@ enum class NotificationType(val value: String) {
     }
 }
 
-enum class ImpactStyle(val value: String) {
+enum class ImpactStyle(val value: String) : Enumerable {
   LIGHT("light"),
   MEDIUM("medium"),
   HEAVY("heavy"),
@@ -60,7 +61,7 @@ enum class ImpactStyle(val value: String) {
     }
 }
 
-enum class HapticType(val value: String) {
+enum class HapticType(val value: String) : Enumerable {
   CONFIRM("confirm"),
   REJECT("reject"),
   GESTURE_START("gesture-start"),

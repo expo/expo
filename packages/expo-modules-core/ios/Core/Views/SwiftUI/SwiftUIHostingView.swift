@@ -162,7 +162,7 @@ extension ExpoSwiftUI {
     public override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
       var children = props.children ?? []
       let child: any AnyChild
-      if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.View) {
+      if let view = childComponentView as AnyObject as? (any ExpoSwiftUI.AnyChild) {
         child = view
       } else {
         child = UIViewHost(view: childComponentView)
@@ -241,8 +241,11 @@ extension ExpoSwiftUI {
       parentController?.addChild(hostingController)
       #else
       guard let parentController else {
-        hostingController.view.removeFromSuperview()
+        // Mounted on the window with no view controller, as `FullWindowOverlay` does.
+        // Render without containment.
         hostingController.removeFromParent()
+        addSubview(hostingController.view)
+        setupHostingViewConstraints()
         return
       }
       // `reactViewController()` walks the responder chain, which may not match the view hierarchy:

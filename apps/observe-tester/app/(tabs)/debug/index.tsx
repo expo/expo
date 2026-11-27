@@ -1,5 +1,5 @@
-import AppMetrics from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
+import { AppMetrics } from 'expo-observe/debug';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -13,6 +13,7 @@ import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
 import { RenderErrorSection } from '@/components/RenderErrorSection';
 import { ReportErrorSection } from '@/components/ReportErrorSection';
+import { StoredDataSection } from '@/components/StoredDataSection';
 import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
@@ -32,6 +33,8 @@ export default function Debug() {
     <ScrollView
       style={{ backgroundColor: theme.background.screen }}
       contentContainerStyle={styles.container}>
+      <StoredDataSection />
+      <Divider />
       <LogEventsSection />
       <Divider />
       <NetworkRequestObserverSection />

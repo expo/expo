@@ -5,12 +5,6 @@
 #import <React/RCTDevMenu.h>
 #import <ExpoModulesCore/EXReactDelegateProtocol.h>
 
-@interface RCTRootViewFactory ()
-
-- (NSURL *)bundleURL;
-
-@end
-
 @implementation EXReactRootViewFactory
 
 - (instancetype)initWithReactDelegate:(nullable EXReactDelegate *)reactDelegate
@@ -19,6 +13,16 @@
 {
   if (self = [super initWithConfiguration:configuration andTurboModuleManagerDelegate:turboModuleManagerDelegate]) {
     self.reactDelegate = reactDelegate;
+    _fallbackBundleURLBlock = configuration.bundleURLBlock;
+
+    __weak __typeof(self) weakSelf = self;
+    configuration.bundleURLBlock = ^NSURL *_Nullable {
+      EXReactRootViewFactory *strongSelf = weakSelf;
+      if (strongSelf == nil) {
+        return nil;
+      }
+      return [((id<EXReactDelegateProtocol>)strongSelf.reactDelegate) bundleURL] ?: strongSelf.fallbackBundleURLBlock();
+    };
   }
   return self;
 }
@@ -91,10 +95,5 @@
               devMenuConfiguration:devMenuConfiguration];
 }
 #endif
-
-- (NSURL *)bundleURL
-{
-  return [((id<EXReactDelegateProtocol>)self.reactDelegate) bundleURL] ?: [super bundleURL];
-}
 
 @end

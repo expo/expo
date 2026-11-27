@@ -358,9 +358,10 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
 
 /**
  Calls `defineProperty`, the runtime's `Reflect.defineProperty`, on `object` with a new descriptor that holds
- `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
- JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
- and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
+ `value` (when `hasValue` is set) and all three attributes. `Reflect.defineProperty` keeps an attribute that
+ the descriptor leaves out when the property exists, so a `false` attribute is written too. Taking the function
+ and the descriptor keys from the caller lets it create them once per runtime, and building the descriptor and
+ the arguments here avoids a round trip through Swift for each of them.
  */
 inline void defineProperty(
   jsi::IRuntime &runtime,
@@ -380,17 +381,18 @@ inline void defineProperty(
 ) {
   expo::CppError::tryCatch(runtime, [&] {
     jsi::Object descriptor(runtime);
-    if (configurable) {
-      descriptor.setProperty(runtime, configurableKey, true);
-    }
-    if (enumerable) {
-      descriptor.setProperty(runtime, enumerableKey, true);
-    }
-    if (writable) {
-      descriptor.setProperty(runtime, writableKey, true);
-    }
+    descriptor.setProperty(runtime, configurableKey, configurable);
+    descriptor.setProperty(runtime, enumerableKey, enumerable);
+    descriptor.setProperty(runtime, writableKey, writable);
     if (hasValue) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+      // `Object::setProperty` clones a `const Value &` before it sets it; `setPropertyValue` doesn't. Before
+      // React Native 0.86, `setPropertyValue` is protected.
+      runtime.setPropertyValue(descriptor, valueKey, value);
+#else
       descriptor.setProperty(runtime, valueKey, value);
+#endif
     }
     defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
     return jsi::Value::undefined();
@@ -654,6 +656,19 @@ inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, co
 }
 
 /**
+ Sets the native state of the object. Returns `false` when the engine refuses, for example when the object is
+ frozen, a Proxy or a host object. A C++ exception can't cross into Swift, so it's caught here.
+ */
+inline bool trySetNativeState(jsi::IRuntime &runtime, const jsi::Object &object, const expo::NativeStateShared &nativeState) {
+  try {
+    object.setNativeState(runtime, nativeState);
+    return true;
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
+}
+
+/**
  Removes the native state from the object. Returns `false` when the engine refuses, for example when the
  object is frozen. A C++ exception can't cross into Swift, so it's caught here.
  */
@@ -689,9 +704,9 @@ inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, c
 }
 
 /**
- Factory used by the default `JavaScriptNativeState` initializer. Builds a fresh
- `expo::NativeState` with the given context/deallocator and returns it wrapped in
- the `expo::NativeStateShared` typedef so Swift can hold it as a single value.
+ Builds the C++ state of a `JavaScriptNativeState`: a fresh `expo::NativeState` with
+ the given context/deallocator, wrapped in the `expo::NativeStateShared` typedef so
+ Swift can hold it as a single value.
  */
 inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Context context,
                                                          expo::NativeState::ContextDeallocator deallocator) {
@@ -705,19 +720,6 @@ inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Cont
  */
 inline expo::NativeStateWeak makeNativeStateWeak(const expo::NativeStateShared &shared) {
   return expo::NativeStateWeak(shared);
-}
-
-/**
- Moves the heap-allocated `expo::NativeStateShared` at `ptr` into a returned
- by-value `NativeStateShared`, then `delete`s the heap allocation. Pairs with
- `new expo::NativeStateShared(...)` performed by no-interop C++ consumers
- (e.g. `EXSharedObjectUtils.mm`) — using Swift's `UnsafeMutablePointer.deallocate()`
- on a pointer obtained from C++ `new` would be an allocator mismatch.
- */
-inline expo::NativeStateShared consumeNativeStateSharedPtr(expo::NativeStateShared *ptr) {
-  expo::NativeStateShared shared = std::move(*ptr);
-  delete ptr;
-  return shared;
 }
 
 } // namespace expo

@@ -20,7 +20,6 @@
     "@react-native-vector-icons/material-design-icons": "^13.1.2",
     "async-retry": "^1.1.4",
     "expo": "workspace:*",
-    "expo-app-metrics": "workspace:*",
     "expo-application": "workspace:*",
     "expo-asset": "workspace:*",
     "expo-audio": "workspace:*",
@@ -76,8 +75,8 @@
     "lodash": "^4.18.1",
     "path": "^0.12.7",
     "react": "19.3.0",
-    "react-native": "0.89.0-rc.0",
-    "react-native-gesture-handler": "~3.3.0",
+    "react-native": "0.89.0-rc.3",
+    "react-native-gesture-handler": "~3.5.0",
     "react-native-safe-area-context": "~5.11.1",
     "semver": "^7.7.4"
   },

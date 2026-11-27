@@ -201,6 +201,26 @@ A single page (for example, `/get-started/set-up-your-environment/`) is reachabl
 | `/get-started/set-up-your-environment/index.md`  | static asset (canonical path) |
 | Following `<link rel="alternate">` from the HTML | discovery hint                |
 
+## WebMCP tools
+
+[WebMCP](https://github.com/webmachinelearning/webmcp) lets a web page give tools to an AI agent that runs in the browser. `WebMcpTools` in `ui/components/WebMcpTools/` registers the docs tools with `document.modelContext.registerTool()` on every page. Browsers without WebMCP skip the registration. The tool definitions are in `ui/components/WebMcpTools/tools.ts`.
+
+| Tool                | Input                               | What it does                                                                                                                                                                                                                  | Read-only |
+| ------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `search_docs`       | `query`, optional `limit`           | Searches the Algolia index for the current SDK version. Returns a title and a path for each result.                                                                                                                           | Yes       |
+| `get_page_markdown` | optional `path`, optional `section` | Returns a page as markdown. Without a `path`, it returns the current page. With a `section`, it returns only the parts under the matching headings, each with its parent headings.                                            | Yes       |
+| `get_page_info`     | optional `path`                     | Returns the frontmatter fields and the headings of a page as JSON, without the page text.                                                                                                                                     | Yes       |
+| `get_site_overview` | none                                | Returns `/llms.txt`.                                                                                                                                                                                                          | Yes       |
+| `list_sections`     | optional `area`, optional `section` | Without input, returns each sidebar area with its section names. With an `area`, returns the pages of that area or of one section.                                                                                            | Yes       |
+| `read_skill`        | `skill_name`                        | Returns the `SKILL.md` of a skill listed in `/.well-known/agent-skills/index.json`.                                                                                                                                           | Yes       |
+| `ask_docs`          | `query`                             | Asks the Kapa AI assistant that powers Ask AI, and returns its answer with source links.                                                                                                                                      | Yes       |
+| `navigate_page`     | `path`                              | Opens a docs page in the current tab.                                                                                                                                                                                         | No        |
+| `send_feedback`     | `feedback`, optional `path`         | Sends feedback about a page to the endpoint that the footer feedback form uses. Agents send feedback only when they have something specific and actionable to report, such as an error or misleading or outdated information. | No        |
+
+Tools that take a `path` accept a path that starts with `/` or a full `https://docs.expo.dev` URL. They read or open that path on the current site, so the same input works on previews and in local development. They reject other origins before any request or navigation.
+
+Each call sends a `webmcp_tool_call` event to Google Analytics, through `reportWebMcpToolCall` in `providers/Analytics.tsx`. The event has 3 parameters: `webmcp_tool_name`, `webmcp_outcome` (`success`, `invalid_input`, `not_found`, `error`, or `cancelled`), and `webmcp_tool_page`, the path of the page where the call started. `invalid_input` means the input failed a check, in the schema or in the tool. `not_found` means the page, heading, section, or skill does not exist. `error` means any other failure, such as a failed request. The event never includes tool input, such as a search query or feedback text. It follows the same cookie consent rules as the other analytics events.
+
 ## Search
 
 We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used in the docs, expo.dev, and EAS dashboard.

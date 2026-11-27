@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI SplitButtonLayout matches the official Jetpack Compose [`SplitButtonLayout`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-split-button-layout.html) API. It places a leading button for the primary action next to a trailing button, which usually opens a menu of related actions. Both buttons take the same height.
 
@@ -21,7 +22,13 @@ Expo UI SplitButtonLayout matches the official Jetpack Compose [`SplitButtonLayo
 
 `SplitButtonLayout` has two slots: `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton`. Put a `SplitButtonLeadingButton` in the leading slot. To open a menu from the trailing button, put a [`DropdownMenu`](./dropdownmenu) in the trailing slot with a `SplitButtonTrailingButton` as the menu's trigger. The menu then opens below the button. Set `checked` on the trailing button while the menu is expanded. Material 3 changes the shape of a checked button to show that the menu is open.
 
-```tsx SplitButtonWithMenu.tsx
+<ComponentExample
+  title="SplitButtonWithMenu.tsx"
+  src="/static/images/expo-ui/examples/splitbuttonlayout-menu-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/splitbuttonlayout-menu-android-dark.webp"
+  alt="A Send split button with its trailing button checked and a menu below it holding Schedule send">
+
+```tsx
 import {
   DropdownMenu,
   DropdownMenuItem,
@@ -79,13 +86,21 @@ export default function SplitButtonWithMenu() {
 }
 ```
 
+</ComponentExample>
+
 The slots accept other content too. For example, wrap the trailing button in a [`TooltipBox`](./tooltip) to show a tooltip on long press.
 
 ### Full-width split button
 
 The layout measures the trailing button first and gives the leading button the remaining width. Apply `fillMaxWidth()` to both the layout and the leading button to make the split button span its container.
 
-```tsx FullWidthSplitButton.tsx
+<ComponentExample
+  title="FullWidthSplitButton.tsx"
+  src="/static/images/expo-ui/examples/splitbuttonlayout-full-width-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/splitbuttonlayout-full-width-android-dark.webp"
+  alt="A full-width split button labeled Squash and merge with a drop-down arrow button at the end">
+
+```tsx
 import {
   Host,
   Icon,
@@ -124,6 +139,8 @@ export default function FullWidthSplitButton() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

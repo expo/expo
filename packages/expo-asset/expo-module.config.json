@@ -4,7 +4,6 @@
     "modules": ["AssetModule"]
   },
   "android": {
-    "modules": ["expo.modules.asset.AssetModule"],
     "publication": {
       "groupId": "expo.modules.asset",
       "artifactId": "expo.modules.asset",

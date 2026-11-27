@@ -7,20 +7,33 @@ import Foundation
 /// are specialized for the props type in the module that creates the adapter.
 public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchecked Sendable {
   @usableFromInline
-  internal let decodeProps: @Sendable (UnsafeRawPointer, UnsafeRawPointer, Any?) -> AnyObject?
+  internal let decodeProps: @Sendable (UnsafeRawPointer, UnsafeRawPointer, UnsafeRawPointer?) -> UnsafeRawPointer?
+
+  @usableFromInline
+  internal let decodeValues: @Sendable (
+    UnsafePointer<UnsafeRawPointer>, UnsafePointer<Int>, Int, UnsafeRawPointer, UnsafeRawPointer?
+  ) -> UnsafeRawPointer?
 
   @usableFromInline
   internal let skipProps: @Sendable ([String]) -> Void
+
+  public let propNames: [String]
 
   // A designated initializer of a class can't be `@inlinable` with library evolution (the precompiled
   // XCFrameworks), so the inlinable initializer below builds the closures and delegates to this one.
   @usableFromInline
   internal init(
-    decodeProps: @escaping @Sendable (UnsafeRawPointer, UnsafeRawPointer, Any?) -> AnyObject?,
-    skipProps: @escaping @Sendable ([String]) -> Void
+    decodeProps: @escaping @Sendable (UnsafeRawPointer, UnsafeRawPointer, UnsafeRawPointer?) -> UnsafeRawPointer?,
+    decodeValues: @escaping @Sendable (
+      UnsafePointer<UnsafeRawPointer>, UnsafePointer<Int>, Int, UnsafeRawPointer, UnsafeRawPointer?
+    ) -> UnsafeRawPointer?,
+    skipProps: @escaping @Sendable ([String]) -> Void,
+    propNames: [String]
   ) {
     self.decodeProps = decodeProps
+    self.decodeValues = decodeValues
     self.skipProps = skipProps
+    self.propNames = propNames
     super.init()
   }
 
@@ -29,24 +42,82 @@ public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchec
   @inlinable
   public convenience init<Props: AnyViewProps>(_ decoder: ViewPropsDecoder<Props>) {
     self.init(
-      decodeProps: { propsPointer, runtimePointer, previous in
-        // Only this decoder makes the decoded props of its descriptor, so the previous props are always
-        // `DecodedViewProps<Props>`. `unsafeDowncast` checks it in debug builds.
-        return decoder.decode(
-          propsPointer: propsPointer,
-          runtimePointer: runtimePointer,
-          previous: previous.map { unsafeDowncast($0 as AnyObject, to: DecodedViewProps<Props>.self) }
+      decodeProps: { propsPointer, runtimePointer, previousPointer in
+        let previous = decodedViewProps(Props.self, at: previousPointer)
+        return retainedPointer(
+          to: decoder.decode(propsPointer: propsPointer, runtimePointer: runtimePointer, previous: previous),
+          unlessIdenticalTo: previous
         )
       },
-      skipProps: { decoder.didSkipProps($0) }
+      decodeValues: { valuePointers, indexes, count, runtimePointer, previousPointer in
+        let previous = decodedViewProps(Props.self, at: previousPointer)
+        return retainedPointer(
+          to: decoder.decode(
+            valuePointers: valuePointers,
+            indexes: indexes,
+            count: count,
+            runtimePointer: runtimePointer,
+            previous: previous
+          ),
+          unlessIdenticalTo: previous
+        )
+      },
+      skipProps: { decoder.didSkipProps($0) },
+      propNames: decoder.propNameStrings
     )
   }
 
-  public func decode(propsPointer: UnsafeRawPointer, runtimePointer: UnsafeRawPointer, previous: Any?) -> Any? {
+  public func decode(
+    propsPointer: UnsafeRawPointer,
+    runtimePointer: UnsafeRawPointer,
+    previous: UnsafeRawPointer?
+  ) -> UnsafeRawPointer? {
     return decodeProps(propsPointer, runtimePointer, previous)
+  }
+
+  public func decode(
+    valuePointers: UnsafePointer<UnsafeRawPointer>,
+    indexes: UnsafePointer<Int>,
+    count: Int,
+    runtimePointer: UnsafeRawPointer,
+    previous: UnsafeRawPointer?
+  ) -> UnsafeRawPointer? {
+    return decodeValues(valuePointers, indexes, count, runtimePointer, previous)
+  }
+
+  public func withRuntimeForCurrentThread(_ block: (UnsafeRawPointer) -> Void) -> Bool {
+    return ViewPropsRuntimes.withRuntimeForCurrentThread(block)
   }
 
   public func didSkipProps(_ propNames: [String]) {
     skipProps(propNames)
   }
+}
+
+/// The decoded props at an unretained pointer from the component descriptor. Only the adapter of the
+/// view type makes the decoded props of its descriptor, so they're always `DecodedViewProps<Props>`.
+/// `unsafeDowncast` checks that in debug builds and costs nothing in optimized builds.
+@inlinable
+internal func decodedViewProps<Props: AnyViewProps>(
+  _ propsType: Props.Type,
+  at pointer: UnsafeRawPointer?
+) -> DecodedViewProps<Props>? {
+  guard let pointer else {
+    return nil
+  }
+  let object = Unmanaged<AnyObject>.fromOpaque(pointer).takeUnretainedValue()
+  return unsafeDowncast(object, to: DecodedViewProps<Props>.self)
+}
+
+/// Passes new decoded props to the component descriptor, which takes over one retain, or `nil` when the
+/// decode changed no prop.
+@inlinable
+internal func retainedPointer<Props: AnyViewProps>(
+  to decoded: DecodedViewProps<Props>?,
+  unlessIdenticalTo previous: DecodedViewProps<Props>?
+) -> UnsafeRawPointer? {
+  guard let decoded, decoded !== previous else {
+    return nil
+  }
+  return UnsafeRawPointer(Unmanaged.passRetained(decoded).toOpaque())
 }

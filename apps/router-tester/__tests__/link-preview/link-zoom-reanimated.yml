@@ -1,0 +1,30 @@
+appId: dev.expo.routertester
+name: Link zoom with Reanimated
+---
+- stopApp: dev.expo.routertester
+# A dev client opens its launcher on a cold deep link. Connect it to Metro on 8081 (from maestro/test.sh) first.
+- openLink: router-tester://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+- extendedWaitUntil:
+    visible: "Current Path: /"
+    timeout: 60000
+- openLink: router-tester://link-preview/reanimated
+- runFlow: ../close-warning.yml
+# Each zoom source must stay in the accessibility tree after its animation, and zoom into an animated target.
+- tapOn: "Resize"
+- tapOn:
+    id: "reanimated-zoom-width-trigger"
+- runFlow: ../assert-zoom-target-dismissed.yml
+- assertVisible:
+    id: "reanimated-zoom-width-trigger"
+- tapOn: "Move"
+- tapOn:
+    id: "reanimated-zoom-move-trigger"
+- runFlow: ../assert-zoom-target-dismissed.yml
+- assertVisible:
+    id: "reanimated-zoom-move-trigger"
+- tapOn: "Expand"
+- tapOn:
+    id: "reanimated-zoom-layout-trigger"
+- runFlow: ../assert-zoom-target-dismissed.yml
+- assertVisible:
+    id: "reanimated-zoom-layout-trigger"

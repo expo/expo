@@ -9,11 +9,26 @@ internal class QueueUpdatesEventManager: UpdatesEventManager {
     self.logger = logger
   }
 
-  internal weak var observer: (any UpdatesEventManagerObserver)?
+  private struct WeakObserver {
+    weak var observer: (any UpdatesEventManagerObserver)?
+  }
+  private let weakObserver = Mutex(WeakObserver())
+
+  internal func setObserver(_ observer: UpdatesEventManagerObserver) {
+    weakObserver.withLock { $0.observer = observer }
+  }
+
+  internal func removeObserver(_ observer: UpdatesEventManagerObserver) {
+    weakObserver.withLock {
+      if $0.observer === observer {
+        $0.observer = nil
+      }
+    }
+  }
 
   internal func sendStateMachineContextEvent(context: UpdatesStateContext) {
     logger.debug(message: "Sending state machine context to observer")
-    guard let observer = observer else {
+    guard let observer = weakObserver.withLock({ $0.observer }) else {
       logger.debug(message: "Unable to send state machine context to observer, no observer", code: .jsRuntimeError)
       return
     }

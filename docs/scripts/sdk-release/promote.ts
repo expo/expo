@@ -247,6 +247,24 @@ function bumpUpgradeGuide() {
   );
 }
 
+function pointApiRedirectAtLatest() {
+  const redirectsPath = join(docsDir, 'public', '_redirects');
+  const source = readFileSync(redirectsPath, 'utf8');
+  const nativeModulesUrl = (sdkVersion: string) =>
+    `https://api.expo.dev/v2/sdks/${sdkVersion}/native-modules`;
+
+  const updated = source.replaceAll(nativeModulesUrl(currentVersion), nativeModulesUrl(version));
+
+  if (updated === source) {
+    throw new Error(
+      `Could not find ${nativeModulesUrl(currentVersion)} in public/_redirects, so /api was not ` +
+        `moved to SDK ${version}. Check the /api and /api/ rules by hand.`
+    );
+  }
+
+  writeFileSync(redirectsPath, updated);
+}
+
 // generate-bare-diffs derives its whole version range from packages/expo's major
 // (tools/src/commands/GenerateBareDiffs.ts), and wipes the raw/ directory before regenerating.
 // Running it while that package still sits on the previous SDK would delete the new version's
@@ -281,6 +299,7 @@ const steps: { label: string; run: () => void | Promise<void> }[] = [
   { label: 'Update the latest-label navigation test', run: updateNavigationTest },
   { label: 'Refresh latest hardcoded type links from unversioned', run: refreshLatestTypeLinks },
   { label: `Bump the Upgrade Expo SDK guide to ${version}`, run: bumpUpgradeGuide },
+  { label: `Point /api at the SDK ${version} native modules`, run: pointApiRedirectAtLatest },
   { label: 'Regenerate the native upgrade helper diffs', run: generateBareDiffs },
 ];
 

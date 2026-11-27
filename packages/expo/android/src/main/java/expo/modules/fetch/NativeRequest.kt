@@ -3,6 +3,7 @@
 package expo.modules.fetch
 
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.devtools.DevToolsRequestId
 import expo.modules.kotlin.sharedobjects.SharedObject
 import okhttp3.Call
 import okhttp3.CookieJar
@@ -56,6 +57,9 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
       .headers(headers)
       .method(requestInit.method, reqBody)
       .url(OkHttpFileUrlInterceptor.handleFileUrl(url))
+      .apply {
+        requestInit.devToolsRequestId?.let { tag(DevToolsRequestId::class.java, DevToolsRequestId(it)) }
+      }
       .build()
     this.requestHolder.request = request
 

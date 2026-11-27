@@ -3,10 +3,11 @@ import { vol } from 'memfs';
 import {
   collectPackageRoots,
   groupScannedModules,
+  groupScannedPackageClasses,
   hasModuleAnnotations,
   scanExpoModulesAsync,
   type ModulesScanner,
-  type ScanModulesOutput,
+  type ScanPackagesOutput,
 } from '../apple/moduleScanner';
 
 afterEach(() => {
@@ -20,7 +21,7 @@ const packageRoots: Record<string, string> = {
   'expo-camera': '/app/node_modules/expo-camera',
 };
 
-function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
+function scannerOutput(partial: Partial<ScanPackagesOutput>): ScanPackagesOutput {
   return {
     schemaVersion: 2,
     modules: [],
@@ -30,9 +31,9 @@ function scannerOutput(partial: Partial<ScanModulesOutput>): ScanModulesOutput {
   };
 }
 
-function mockScanner(result: ScanModulesOutput | Error): ModulesScanner {
+function mockScanner(result: ScanPackagesOutput | Error): ModulesScanner {
   return {
-    scanModules: jest.fn(() =>
+    scanPackages: jest.fn(() =>
       result instanceof Error ? Promise.reject(result) : Promise.resolve(result)
     ),
   };
@@ -44,7 +45,7 @@ describe(scanExpoModulesAsync, () => {
 
     await scanExpoModulesAsync(scanner, packageRoots);
 
-    expect(scanner.scanModules).toHaveBeenCalledWith(
+    expect(scanner.scanPackages).toHaveBeenCalledWith(
       ['/app/node_modules/expo-clipboard', '/app/node_modules/expo-camera'],
       { timeout: 5000 }
     );
@@ -81,7 +82,7 @@ describe(scanExpoModulesAsync, () => {
 
     expect(
       await scanExpoModulesAsync(
-        mockScanner(new Error('`scan-modules` returned schema version 3')),
+        mockScanner(new Error('`scan-packages` returned schema version 3')),
         packageRoots
       )
     ).toBeNull();
@@ -94,7 +95,7 @@ describe(scanExpoModulesAsync, () => {
     const scanner = mockScanner(scannerOutput({}));
 
     expect(await scanExpoModulesAsync(scanner, {})).toBeNull();
-    expect(scanner.scanModules).not.toHaveBeenCalled();
+    expect(scanner.scanPackages).not.toHaveBeenCalled();
   });
 
   it('prints the scanner warnings with their locations', async () => {
@@ -140,11 +141,16 @@ describe(groupScannedModules, () => {
 
     const grouped = groupScannedModules(output, packageRoots, 'ios');
 
-    // The registration name stays null: the module's own `Name(...)` DSL entry and the macro's
-    // `_jsName` must keep precedence, exactly as for config-declared string entries.
     expect(grouped).toEqual({
-      'expo-clipboard': [{ name: null, class: 'ClipboardModule' }],
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-clipboard': [
+        {
+          name: 'ClipboardModule',
+          file: '/app/node_modules/expo-clipboard/ios/ClipboardModule.swift',
+        },
+      ],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -219,12 +225,14 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
     expect(groupScannedModules(output, packageRoots, 'tvos')).toEqual({
       'expo-camera': [
-        { name: null, class: 'TvOnlyModule' },
-        { name: null, class: 'CameraModule' },
+        { name: 'TvOnlyModule', file: '/app/node_modules/expo-camera/ios/TvOnlyModule.swift' },
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
       ],
     });
   });
@@ -265,7 +273,9 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'apple')).toEqual({
-      'expo-camera': [{ name: null, class: 'TvOnlyModule' }],
+      'expo-camera': [
+        { name: 'TvOnlyModule', file: '/app/node_modules/expo-camera/ios/TvOnlyModule.swift' },
+      ],
     });
   });
 
@@ -291,7 +301,9 @@ describe(groupScannedModules, () => {
     });
 
     expect(groupScannedModules(output, packageRoots, 'ios')).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -315,7 +327,7 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, nestedRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera-next': [{ name: null, class: 'NextCameraModule' }],
+      'expo-camera-next': [{ name: 'NextCameraModule', file: scannedModule.file }],
     });
   });
 
@@ -361,7 +373,9 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, packageRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera': [{ name: null, class: 'CameraModule' }],
+      'expo-camera': [
+        { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+      ],
     });
   });
 
@@ -385,8 +399,100 @@ describe(groupScannedModules, () => {
     const grouped = groupScannedModules(output, nestedRoots, 'ios');
 
     expect(grouped).toEqual({
-      'expo-camera-next': [{ name: null, class: 'NextCameraModule' }],
+      'expo-camera-next': [
+        {
+          name: 'NextCameraModule',
+          file: '/app/node_modules/expo-camera/next/ios/NextCameraModule.swift',
+        },
+      ],
     });
+  });
+});
+
+describe(groupScannedPackageClasses, () => {
+  function scannedClass(
+    name: string,
+    file: string,
+    accessLevel: ScanPackagesOutput['modules'][number]['accessLevel'] = 'public'
+  ) {
+    return { name, jsName: name, accessLevel, file, platforms: ALL_PLATFORMS };
+  }
+
+  it('groups the modules, shared objects and views by package', () => {
+    const output = scannerOutput({
+      modules: [
+        scannedClass('CameraModule', '/app/node_modules/expo-camera/ios/CameraModule.swift'),
+      ],
+      sharedObjects: [
+        scannedClass('CameraSession', '/app/node_modules/expo-camera/ios/CameraSession.swift'),
+        scannedClass('ClipboardItem', '/app/node_modules/expo-clipboard/ios/ClipboardItem.swift'),
+      ],
+      views: [scannedClass('CameraView', '/app/node_modules/expo-camera/ios/CameraView.swift')],
+    });
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: {
+        'expo-camera': [
+          { name: 'CameraModule', file: '/app/node_modules/expo-camera/ios/CameraModule.swift' },
+        ],
+      },
+      sharedObjects: {
+        'expo-camera': [
+          { name: 'CameraSession', file: '/app/node_modules/expo-camera/ios/CameraSession.swift' },
+        ],
+        'expo-clipboard': [
+          {
+            name: 'ClipboardItem',
+            file: '/app/node_modules/expo-clipboard/ios/ClipboardItem.swift',
+          },
+        ],
+      },
+      views: {
+        'expo-camera': [
+          { name: 'CameraView', file: '/app/node_modules/expo-camera/ios/CameraView.swift' },
+        ],
+      },
+    });
+  });
+
+  it('accepts the output of a scanner that does not report shared objects and views', () => {
+    const output = scannerOutput({});
+    delete output.sharedObjects;
+    delete output.views;
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: {},
+      sharedObjects: {},
+      views: {},
+    });
+  });
+
+  it('excludes internal shared objects and views without a warning', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const output = scannerOutput({
+      sharedObjects: [
+        scannedClass(
+          'CameraSession',
+          '/app/node_modules/expo-camera/ios/CameraSession.swift',
+          'internal'
+        ),
+      ],
+      views: [
+        scannedClass(
+          'CameraView',
+          '/app/node_modules/expo-camera/ios/CameraView.swift',
+          'internal'
+        ),
+      ],
+    });
+
+    expect(groupScannedPackageClasses(output, packageRoots, 'ios')).toEqual({
+      modules: {},
+      sharedObjects: {},
+      views: {},
+    });
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 });
 

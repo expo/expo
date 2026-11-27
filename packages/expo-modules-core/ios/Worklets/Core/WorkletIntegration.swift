@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+@_spi(Internal) import ExpoModulesCore
 import ExpoModulesJSI
 
 /// Registers the worklet runtime factory with ExpoModulesCore.
@@ -18,6 +18,26 @@ public final class WorkletIntegration: NSObject {
         throw WorkletRuntimePointerExtractionException()
       }
       return workletRuntime
+    }
+    AppContext.uiRuntimeLocator = { holder, runtime in
+      let handle = runtime.withUnsafePointee { runtimePointee in
+        holder.withUnsafePointee { holderPointee in
+          WorkletRuntimeHandle(runtimePointer: runtimePointee, holderPointer: holderPointee)
+        }
+      }
+      guard let handle else {
+        return nil
+      }
+      // The handle is safe to use on any thread.
+      nonisolated(unsafe) let unsafeHandle = handle
+      return {
+        var workletRuntime: WorkletRuntime?
+        // Making the wrapper calls JSI on the UI runtime, which the JavaScript thread can use at the same time.
+        _ = unsafeHandle.runSync { runtimePointer in
+          workletRuntime = WorkletRuntime(runtimePointer: runtimePointer)
+        }
+        return workletRuntime
+      }
     }
   }
 }

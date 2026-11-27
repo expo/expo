@@ -1,0 +1,44 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoTaskManager",
+      "podName": "ExpoTaskManager",
+      "platforms": ["iOS(\"16.4\")"],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore"
+      ],
+      "swiftLanguageVersions": ["6"],
+      "targets": [
+        {
+          "type": "objc",
+          "name": "ExpoTaskManagerObjC",
+          "moduleName": "ExpoTaskManager",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": ["Foundation", "UIKit"]
+        },
+        {
+          "type": "swift",
+          "name": "ExpoTaskManager",
+          "dependencies": [
+            "Hermes",
+            "React",
+            "ReactNativeDependencies",
+            "expo-modules-core/ExpoModulesCore",
+            "ExpoTaskManagerObjC"
+          ],
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "resources": [{ "path": "ios/ExpoTaskManager/PrivacyInfo.xcprivacy", "rule": "copy" }]
+        }
+      ]
+    }
+  ]
+}

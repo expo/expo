@@ -184,7 +184,9 @@ describe(browserLoginAsync, () => {
     await browserLoginAsync({ sso: false });
 
     expect(writesWhileWaiting).toEqual([
-      ['\x1b]7501;state=blocked:app=expo:kind=auth:msg=V2FpdGluZyBmb3IgYnJvd3NlciBsb2dpbg==\x1b\\'],
+      [
+        '\x1b]7501;state=blocked:app=expo:kind=auth:msg=V2FpdGluZyBmb3IgYnJvd3NlciBsb2dpbg==:id=3\x1b\\',
+      ],
     ]);
   });
 });

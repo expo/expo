@@ -2,11 +2,27 @@ import ExpoUI from './modules/expo-ui';
 
 const nativeModuleStubs: Record<string, any> = { ExpoUI };
 
+// The objects of `expo.packages`. List each view that `@expo/ui` registers for its package (a public `@ExpoView`).
+const nativePackageStubs: Record<string, Record<string, any>> = {
+  '@expo/ui': {
+    GridRowView: createViewStub('GridRowView'),
+    NamespaceView: createViewStub('NamespaceView'),
+  },
+};
+
 export function requireNativeModule(name: string) {
   return nativeModuleStubs[name] ?? {};
 }
 
+export function requireOptionalNative(packageName: string) {
+  return nativePackageStubs[packageName] ?? null;
+}
+
 export function requireNativeView(moduleName: string, viewName: string) {
+  return createViewStub(viewName);
+}
+
+function createViewStub(viewName: string) {
   const wrapper = {
     [viewName]: (props?: Record<string, any>) => {
       return {

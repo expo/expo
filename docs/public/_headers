@@ -2,10 +2,13 @@
 /_next/*
   Cache-Control: public, max-age=31536000, immutable
 
-# llms.txt and sitemap discovery for AI agents that fetch pages without content negotiation
+# llms.txt and sitemap discovery for AI agents that fetch pages without content negotiation.
+# Origin-Trial enables WebMCP on https://docs.expo.dev until 30-Mar-2027 (Chrome 149 to 162).
+# A second /* rule drops these headers, so add every /* header here.
 /*
   Link: </llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"
   X-Llms-Txt: /llms.txt
+  Origin-Trial: Agy7pYNUr+ZTg4d2QR2stXYUUWavpsz/EyYSBXbksPhEwIsohP/dFVkP0v4vBihtHE2uqw29vvd9W9oztgOnswsAAABNeyJvcmlnaW4iOiJodHRwczovL2RvY3MuZXhwby5kZXY6NDQzIiwiZmVhdHVyZSI6IldlYk1DUCIsImV4cGlyeSI6MTgwNjM2NDgwMH0=
 
 /.well-known/ai-catalog.json
   Content-Type: application/ai-catalog+json

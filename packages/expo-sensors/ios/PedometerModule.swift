@@ -24,6 +24,15 @@ public final class PedometerModule: Module {
       return CMPedometer.isStepCountingAvailable()
     }
 
+    AsyncFunction("isRecordingAvailableAsync") {
+      // iOS keeps collecting history automatically (up to seven days), so recording is
+      // effectively "available" whenever step counting is available.
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
+      return CMPedometer.isStepCountingAvailable()
+    }
+
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
       let startDate = Date(timeIntervalSince1970: startTime / 1000.0)
       let endDate = Date(timeIntervalSince1970: endTime / 1000.0)

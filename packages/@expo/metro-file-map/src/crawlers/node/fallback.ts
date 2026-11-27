@@ -68,7 +68,7 @@ export default function createFallbackFilesystem(
   );
 
   function readdir(
-    _normalPath: string,
+    normalPath: string,
     absolutePath: string,
     dirNode: DirectoryNode | null | undefined
   ): DirectoryNode | null {
@@ -99,14 +99,22 @@ export default function createFallbackFilesystem(
           result.set(name, childDir);
         }
       } else if (entry.isSymbolicLink()) {
-        // We can skip reading the symlink target here, since it'll be read lazily
         if (includeSymlinks && !result.has(name)) {
-          result.set(name, [null, 0, 0, null, 1, null]);
+          // A link that can't be read is omitted, as in `lookup`
+          try {
+            const childNormalPath = normalPath === '' ? name : normalPath + path.sep + name;
+            const symlinkTarget = fs.readlinkSync(childAbsolutePath);
+            // Cached value should be in posix format
+            const target = normalizePathSeparatorsToPosix(
+              rootPathUtils.resolveSymlinkToNormal(childNormalPath, symlinkTarget)
+            );
+            result.set(name, [null, null, 0, null, target, null]);
+          } catch {}
         }
       } else if (entry.isFile()) {
         const ext = path.extname(name).slice(1);
         if (exts[ext] && !result.has(name)) {
-          result.set(name, [null, 0, 0, null, 0, null]);
+          result.set(name, [null, null, 0, null, 0, null]);
         }
       }
     }

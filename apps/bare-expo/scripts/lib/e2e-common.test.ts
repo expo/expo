@@ -5,7 +5,10 @@ import * as path from 'path';
 
 import {
   annotate,
+  findPendingSpecs,
   MaestroNoResultsError,
+  prettyPrintTestSuiteLogs,
+  reportPendingSpecs,
   runCustomMaestroFlowsAsync,
   runMaestroAsync,
 } from './e2e-common';
@@ -259,5 +262,95 @@ describe(annotate, () => {
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
     annotate('error', 'title', 'message');
     expect(log).not.toHaveBeenCalled();
+  });
+});
+
+describe(findPendingSpecs, () => {
+  it('reads specs skipped at run time from iOS and Android log lines once each', () => {
+    const logs = [
+      '2026-11-22 00:12:19.567 BareExpo[1:2] [com.facebook.react.log:javascript] [TEST-SUITE-PENDING] {"spec":"Fetch Response types skipped: httpbin.io is unreachable","reason":"httpbin.io is unreachable, skipping specs that depend on it"}',
+      '11-22 00:12:19.567  5492  5547 I ReactNativeJS: [TEST-SUITE-PENDING] {"spec":"ImageView prefetch prefetches an image","reason":"images.unsplash.com is unreachable, skipping specs that depend on it"}',
+      '11-22 00:12:19.567  5492  5547 I ReactNativeJS: [TEST-SUITE-PENDING] {"spec":"ImageView prefetch prefetches an image","reason":"images.unsplash.com is unreachable, skipping specs that depend on it"}',
+      '11-22 00:12:19.600  5492  5547 I ReactNativeJS: {"magic":"[TEST-SUITE-END]","failed":0}',
+      '11-22 00:12:19.601  5492  5547 I ReactNativeJS: [TEST-SUITE-PENDING] {"spec":"cut off',
+      '[TEST-SUITE-PENDING] {"spec":"Local file should fetch ios app info.plist","reason":"Temporarily disabled with xit"}',
+      '[TEST-SUITE-PENDING] {"spec":"SQLite in an xdescribe suite","reason":""}',
+    ];
+    expect(findPendingSpecs(logs)).toEqual([
+      {
+        spec: 'Fetch Response types skipped: httpbin.io is unreachable',
+        reason: 'httpbin.io is unreachable, skipping specs that depend on it',
+      },
+      {
+        spec: 'ImageView prefetch prefetches an image',
+        reason: 'images.unsplash.com is unreachable, skipping specs that depend on it',
+      },
+    ]);
+  });
+});
+
+describe(reportPendingSpecs, () => {
+  const originalActions = process.env.GITHUB_ACTIONS;
+
+  afterEach(() => {
+    process.env.GITHUB_ACTIONS = originalActions;
+    jest.restoreAllMocks();
+  });
+
+  it('adds one warning annotation for each skip reason', () => {
+    process.env.GITHUB_ACTIONS = 'true';
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const line = (spec: string, host: string) =>
+      `[TEST-SUITE-PENDING] ${JSON.stringify({ spec, reason: `${host} is unreachable` })}`;
+    reportPendingSpecs([
+      line('Image loads an image', 'images.unsplash.com'),
+      line('ImageView onLoad emits an event', 'images.unsplash.com'),
+      line('Fetch Response types', 'httpbin.io'),
+    ]);
+    expect(log.mock.calls).toEqual([
+      ['::warning title=Skipped tests::2 test(s) skipped: images.unsplash.com is unreachable'],
+      ['::warning title=Skipped tests::1 test(s) skipped: httpbin.io is unreachable'],
+    ]);
+  });
+
+  it('does nothing when no spec was pending', () => {
+    process.env.GITHUB_ACTIONS = 'true';
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    reportPendingSpecs(['{"magic":"[TEST-SUITE-END]","failed":0}']);
+    expect(log).not.toHaveBeenCalled();
+    expect(warn).not.toHaveBeenCalled();
+  });
+});
+
+describe(prettyPrintTestSuiteLogs, () => {
+  it('prints the failures from a result line that logcat cut', () => {
+    const line =
+      '11-22 00:12:19.567  5492  5547 I ReactNativeJS: {"magic":"[TEST-SUITE-END]","failed":1,' +
+      '"failures":"+++ SQLite opens a database\\nExpected 1 to be 2.\\n",' +
+      '"results":"--- SQLite closes a database\\n+++ SQLite opens a databa';
+    expect(prettyPrintTestSuiteLogs([line])).toBe(
+      [
+        '  ❌ Test suite had following test failures:',
+        '    +++ SQLite opens a database',
+        '    Expected 1 to be 2.',
+      ].join('\n')
+    );
+  });
+
+  it('says so when logcat cut the failures', () => {
+    const line =
+      'I ReactNativeJS: {"magic":"[TEST-SUITE-END]","failed":2,' +
+      '"failures":"+++ SQLite opens a database\\nExpected 1 to be 2.\\n+++ SQLite cl';
+    expect(prettyPrintTestSuiteLogs([line])).toBe(
+      [
+        '  ❌ Test suite had following test failures:',
+        '    +++ SQLite opens a database',
+        '    Expected 1 to be 2.',
+        '    +++ SQLite cl',
+        '    (the log line ends here)',
+      ].join('\n')
+    );
   });
 });

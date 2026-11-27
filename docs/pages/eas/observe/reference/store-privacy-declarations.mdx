@@ -87,6 +87,8 @@ Google's **Analytics** purpose covers monitoring app health, diagnosing crashes,
 
 The data is **required** by default because the library dispatches from every release build. You can declare it **optional** only if every user, in every region, can turn it off. To offer that, pass `dispatchingEnabled: false` in every `configure()` call after the user opts out, because each call replaces the previous configuration. [Sampling](/eas/observe/configuration/#sampling) does not make the data optional, because the user does not control it.
 
+[User consent](/eas/observe/configuration/#ask-for-user-consent) is another way to let the user turn it off. Call `Observe.setConsent('not-granted')` one time, and the device keeps the value. Expo Observe then stops collection on the device and deletes the stored data.
+
 ## App Store privacy details
 
 In App Store Connect, the **App Privacy** section asks whether you or your third-party partners collect data from the app. It then asks which data types you collect. For each type, it asks for the purposes, whether the data is linked to the user's identity, and whether it is used for tracking.

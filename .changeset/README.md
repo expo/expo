@@ -13,6 +13,7 @@ Select every affected public package and choose its semantic bump:
 - `major` for breaking changes. Do not use `major` on an `sdk-*` release branch.
 
 Write the summary for package users. Multiple paragraphs and fenced code blocks are supported. Prefix internal work with `[Internal]`.
+If a change is reflected in multiple packages, prefer combining this into one changeset that references multiple packages.
 
 If a PR was merged without a changeset, a `See:` line can be added in a follow-up PR to override the automatically generated pull request link, to reference the original PR:
 

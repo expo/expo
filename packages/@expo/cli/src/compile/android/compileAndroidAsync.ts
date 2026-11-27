@@ -1,10 +1,11 @@
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { reportProgramResult, withProgramStatus } from '../../utils/programStatus';
 import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
 import type { ResolvedOptions } from '../resolveOptions';
-import { buildAsync, getApkPath } from './gradle';
+import { buildAsync, getAabPath, getApkPath } from './gradle';
 import { resolveOptionsAsync } from './resolveOptions';
 
 export async function compileAndroidAsync(projectRoot: string, options: ResolvedOptions) {
@@ -17,14 +18,17 @@ export async function compileAndroidAsync(projectRoot: string, options: Resolved
 
   const doneBuild = event.span();
   try {
-    await buildAsync(projectRoot, props);
+    await withProgramStatus({ state: 'working', msg: 'Building Android app' }, () =>
+      buildAsync(projectRoot, props)
+    );
   } catch (error) {
     event('build:failed', { platform: 'android', error: event.error(error as Error) });
     throw error;
   }
   doneBuild('build:done', { platform: 'android', mode: props.mode });
 
-  let binaryPath = getApkPath(projectRoot, props);
+  let binaryPath =
+    props.outputType === 'aab' ? getAabPath(projectRoot, props) : getApkPath(projectRoot, props);
   if (props.outputDir) {
     binaryPath = await copyBinaryToOutputAsync(binaryPath, props.outputDir);
   }
@@ -34,6 +38,7 @@ export async function compileAndroidAsync(projectRoot: string, options: Resolved
     outputType: props.outputType,
     outputPath: event.path(binaryPath),
   });
+  reportProgramResult({ state: 'done', msg: 'Build complete' });
   Log.log(chalk`\n{green ✓} Build complete`);
   Log.log(chalk`{bold Binary:} ${binaryPath}`);
 }

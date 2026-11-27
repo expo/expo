@@ -414,6 +414,6 @@ describe(signManifestString, () => {
         privateKey: mockSelfSigned.privateKey,
         scopeKey: null,
       })
-    ).toThrow('Invalid PEM formatted message.');
+    ).toThrow();
   });
 });

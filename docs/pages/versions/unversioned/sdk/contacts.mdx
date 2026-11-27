@@ -55,6 +55,20 @@ You can configure `expo-contacts` using its built-in [config plugin](/config-plu
       description: 'A string to set the [`NSContactsUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your contacts"',
     },
+    {
+      name: 'readContactsAndroid',
+      platform: 'android',
+      description:
+        'A boolean that determines whether to enable the `READ_CONTACTS` permission on Android.',
+      default: 'true',
+    },
+    {
+      name: 'writeContactsAndroid',
+      platform: 'android',
+      description:
+        'A boolean that determines whether to enable the `WRITE_CONTACTS` permission on Android.',
+      default: 'true',
+    },
   ]}
 />
 

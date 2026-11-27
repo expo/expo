@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../../app-metrics';
 import { createNavigationBlockingTime } from '../../shared/navigation/blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
 import type { RouterPerformanceMark, RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',
@@ -549,20 +548,9 @@ describe('initListeners', () => {
   });
 });
 
-describe('navigation total blocking time flag', () => {
-  it.each([undefined, true, {}, { experimental_totalBlockingTime: false }])(
-    'does not measure tbt when the experimental flag is not enabled (config: %p)',
-    (config) => {
-      mockCreateNavigationBlockingTime.mockClear();
-      setRouterConfig(config);
-      expect(mockCreateNavigationBlockingTime).not.toHaveBeenCalled();
-    }
-  );
-});
-
 describe('navigation total blocking time', () => {
   beforeEach(async () => {
-    setRouterConfig({ experimental_totalBlockingTime: true });
+    setRouterConfig(true);
     focus(events, 'a');
     await flushAsync();
   });
@@ -608,7 +596,7 @@ describe('navigation total blocking time', () => {
   });
 
   it('filters route params from tbt', async () => {
-    setRouterConfig({ filteredParams: ['token'], experimental_totalBlockingTime: true });
+    setRouterConfig({ filteredParams: ['token'] });
     dispatch(events, 'NAVIGATE');
     focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
     await flushAsync();

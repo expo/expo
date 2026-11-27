@@ -1,8 +1,19 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
+  }
+}
+
 plugins {
   id 'com.android.library'
   id 'kotlin-parcelize'
   id 'expo-module-gradle-plugin'
 }
+
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 
 group = 'host.exp.exponent'
 version = '58.1.6'
@@ -36,6 +47,7 @@ dependencies {
   implementation 'androidx.core:core:1.17.0'
   implementation 'androidx.lifecycle:lifecycle-process:2.9.3'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+  implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0'
 
   // release notes in https://firebase.google.com/support/release-notes/android - cmd + f "Cloud Messaging version"
   implementation 'com.google.firebase:firebase-messaging:26.0.1'

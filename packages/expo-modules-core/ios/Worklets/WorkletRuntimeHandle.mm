@@ -29,6 +29,20 @@
   return self;
 }
 
+- (nullable instancetype)initWithRuntimePointer:(void *)runtimePointer holderPointer:(const void *)holderPointer
+{
+  id<EXWorkletsProvider> provider = EXWorkletsProviderRegistry.shared;
+  id handle = [provider workletRuntimeHandleWithRuntimePointer:runtimePointer holderPointer:holderPointer];
+  if (!handle) {
+    return nil;
+  }
+  if (self = [super init]) {
+    _runtimeHandle = handle;
+    _provider = provider;
+  }
+  return self;
+}
+
 - (void)scheduleWorklet:(EXJavaScriptSerializable *)serializable
               arguments:(NSArray *)arguments
 {
@@ -43,6 +57,11 @@
   [_provider executeWorkletWithRuntimeHandle:_runtimeHandle
                                 serializable:serializable
                                    arguments:arguments];
+}
+
+- (BOOL)runSync:(NS_NOESCAPE void (^)(void *runtimePointer))block
+{
+  return [_provider runSyncWithRuntimeHandle:_runtimeHandle block:block];
 }
 
 @end

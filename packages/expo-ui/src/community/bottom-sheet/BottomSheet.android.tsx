@@ -64,6 +64,8 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers,
+    contentWindowInsets,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -113,11 +115,16 @@ export function BottomSheet(props: BottomSheetProps) {
       setIsOpen(false);
       fireCloseCallbacks();
     } else if (indexProp >= 0) {
-      pendingIndexRef.current = clampIndex(indexProp);
       closedRef.current = false;
       setIsOpen(true);
     }
-  }, [clampIndex, indexProp, fireCloseCallbacks]);
+  }, [indexProp, fireCloseCallbacks]);
+
+  useEffect(() => {
+    const requestedIndex = indexProp >= 0 ? indexProp : pendingIndexRef.current;
+    if (requestedIndex == null) return;
+    pendingIndexRef.current = clampIndex(requestedIndex);
+  }, [indexProp, clampIndex]);
 
   const handleDismiss = useCallback(() => {
     setIsOpen(false);
@@ -196,6 +203,8 @@ export function BottomSheet(props: BottomSheetProps) {
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
+            modifiers={modifiers}
+            contentWindowInsets={contentWindowInsets}
             properties={{
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,

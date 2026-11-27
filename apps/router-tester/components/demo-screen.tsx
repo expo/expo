@@ -4,7 +4,6 @@ import type { StackHeaderProps } from 'expo-router/js-stack';
 import { getHeaderTitle, Header, HeaderBackground, useTheme } from 'expo-router/react-navigation';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export function DemoScreen({ title, children }: { title: string; children?: ReactNode }) {
   const pathname = usePathname();
@@ -14,7 +13,7 @@ export function DemoScreen({ title, children }: { title: string; children?: Reac
     <ScrollView
       style={{ backgroundColor: colors.background }}
       contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={styles.content}>
+      <View style={styles.content}>
         <View>
           <Text testID="e2e-screen" style={[styles.title, { color: colors.text }]}>
             {title}
@@ -24,7 +23,7 @@ export function DemoScreen({ title, children }: { title: string; children?: Reac
           </Text>
         </View>
         {children}
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }

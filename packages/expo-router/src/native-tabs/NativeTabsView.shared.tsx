@@ -85,7 +85,11 @@ export interface InternalTabScreenProps {
 }
 
 export function useSharedScreenProps(props: InternalTabScreenProps) {
-  const { options, isFocused, name } = props;
+  const {
+    options: { hiddenTitle, ...options },
+    isFocused,
+    name,
+  } = props;
   const title = options.title ?? name;
   const {
     ios: nativeIosOverrides,
@@ -98,7 +102,10 @@ export function useSharedScreenProps(props: InternalTabScreenProps) {
   const selectedIcon = useAwaitedScreensIcon(options.selectedIcon);
 
   return {
-    options,
+    options: {
+      ...options,
+      tabBarItemAccessibilityLabel: options.tabBarItemAccessibilityLabel ?? hiddenTitle,
+    },
     // TODO(@ubax): https://linear.app/expo/issue/ENG-20736/remove-pointerevents-from-nativetabsview
     pointerEvents: (isFocused ? 'box-none' : 'none') as 'box-none' | 'none',
     title,

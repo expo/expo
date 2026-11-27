@@ -239,6 +239,12 @@ build_slice() {
   # DEVELOPER_DIR and TOOLCHAINS are forwarded so the nested build uses the same Xcode and
   # Swift toolchain as compute_hash and the app build, not the xcode-select Xcode or the
   # default toolchain.
+  #
+  # SwiftPM evaluates Package.swift under `sandbox-exec`, and macOS doesn't allow a sandbox
+  # inside another one. When the app build already runs in a sandbox (remote build machines,
+  # Nix, CI or agent sandboxes), package resolution fails with
+  # "sandbox-exec: sandbox_apply: Operation not permitted". The package has no dependencies
+  # or plugins, so the manifest and plugin sandboxes only ever run our own Package.swift.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     ${DEVELOPER_DIR:+"DEVELOPER_DIR=$DEVELOPER_DIR"} ${TOOLCHAINS:+"TOOLCHAINS=$TOOLCHAINS"} \
     EXPO_CUSTOM_BUILD_ROOT="$BUILD_ROOT" \
@@ -253,6 +259,8 @@ build_slice() {
     -disableAutomaticPackageResolution \
     -skipPackagePluginValidation \
     -skipMacroValidation \
+    -IDEPackageSupportDisableManifestSandbox=YES \
+    -IDEPackageSupportDisablePluginExecutionSandbox=YES \
     -parallelizeTargets \
     SYMROOT="${BUILD_PRODUCTS_PATH}" \
     OBJROOT="${DERIVED_DATA_PATH}/Build/Intermediates.noindex" \

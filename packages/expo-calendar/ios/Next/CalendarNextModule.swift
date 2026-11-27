@@ -653,8 +653,31 @@ public final class CalendarNextModule: Module {
       }
     }
 
-    // Available only on Android
-    Class(ExpoCalendarAttendee.self) {}
+    Class(ExpoCalendarAttendee.self) {
+      Property("isCurrentUser") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.isCurrentUser
+      }
+
+      Property("name") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.name
+      }
+
+      Property("role") { (expoAttendee: ExpoCalendarAttendee) in
+        participantToString(role: expoAttendee.attendee.participantRole)
+      }
+
+      Property("status") { (expoAttendee: ExpoCalendarAttendee) in
+        participantStatusToString(status: expoAttendee.attendee.participantStatus)
+      }
+
+      Property("type") { (expoAttendee: ExpoCalendarAttendee) in
+        participantTypeToString(type: expoAttendee.attendee.participantType)
+      }
+
+      Property("url") { (expoAttendee: ExpoCalendarAttendee) in
+        expoAttendee.attendee.url.absoluteString.removingPercentEncoding
+      }
+    }
   }
 
   private func presentEventEditViewController(event: EKEvent, promise: Promise) throws {

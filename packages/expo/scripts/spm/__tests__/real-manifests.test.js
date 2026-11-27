@@ -3,17 +3,19 @@
 const fs = require('fs');
 const path = require('path');
 
-const { dependsOnCoreHeaders, dumpModuleManifest, emitDirectPackage } = require('../direct');
+const { dumpModuleManifest, emitDirectPackage, headersStandInsOf } = require('../direct');
 const { makeTempDir, removeTempDirs } = require('./helpers');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../../..');
+
+const REPO_FOLDERS = { '@expo/ui': 'expo-ui' };
 
 /**
  * Copies a repository package the way npm installs it: the package's `.npmignore` strips
  * `/ios/Tests/**`, so a manifest that excludes `Tests` names a directory that is not there.
  */
 function installLikeNpm(packageName, destination) {
-  const source = path.join(REPO_ROOT, 'packages', packageName);
+  const source = path.join(REPO_ROOT, 'packages', REPO_FOLDERS[packageName] ?? packageName);
   const moduleRoot = path.join(destination, 'node_modules', packageName);
   fs.cpSync(source, moduleRoot, {
     recursive: true,
@@ -27,36 +29,40 @@ function installLikeNpm(packageName, destination) {
 
 afterEach(removeTempDirs);
 
+const CORE_ONLY = ['ExpoModulesCoreHeaders'];
+
 const DIRECT_MANIFESTS = [
-  ['expo-age-range', 'ExpoAgeRange'],
-  ['expo-apple-authentication', 'ExpoAppleAuthentication'],
-  ['expo-asset', 'ExpoAsset'],
-  ['expo-background-fetch', 'ExpoBackgroundFetch'],
-  ['expo-battery', 'ExpoBattery'],
-  ['expo-blur', 'ExpoBlur'],
-  ['expo-brightness', 'ExpoBrightness'],
-  ['expo-cellular', 'ExpoCellular'],
-  ['expo-document-picker', 'ExpoDocumentPicker'],
-  ['expo-font', 'ExpoFont'],
-  ['expo-haptics', 'ExpoHaptics'],
-  ['expo-keep-awake', 'ExpoKeepAwake'],
-  ['expo-linear-gradient', 'ExpoLinearGradient'],
-  ['expo-linking', 'ExpoLinking'],
-  ['expo-live-photo', 'ExpoLivePhoto'],
-  ['expo-local-authentication', 'ExpoLocalAuthentication'],
-  ['expo-mail-composer', 'ExpoMailComposer'],
-  ['expo-mesh-gradient', 'ExpoMeshGradient'],
-  ['expo-network', 'ExpoNetwork'],
-  ['expo-print', 'ExpoPrint'],
-  ['expo-secure-store', 'ExpoSecureStore'],
-  ['expo-sensors', 'ExpoSensors'],
-  ['expo-sms', 'ExpoSMS'],
-  ['expo-speech', 'ExpoSpeech'],
-  ['expo-status-bar', 'ExpoStatusBar'],
-  ['expo-store-review', 'ExpoStoreReview'],
-  ['expo-symbols', 'ExpoSymbols'],
-  ['expo-video-thumbnails', 'ExpoVideoThumbnails'],
-  ['expo-web-browser', 'ExpoWebBrowser'],
+  ['@expo/ui', 'ExpoUI', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
+  ['expo-age-range', 'ExpoAgeRange', CORE_ONLY],
+  ['expo-ai', 'ExpoAI', CORE_ONLY],
+  ['expo-apple-authentication', 'ExpoAppleAuthentication', CORE_ONLY],
+  ['expo-asset', 'ExpoAsset', CORE_ONLY],
+  ['expo-background-fetch', 'ExpoBackgroundFetch', CORE_ONLY],
+  ['expo-battery', 'ExpoBattery', CORE_ONLY],
+  ['expo-blur', 'ExpoBlur', CORE_ONLY],
+  ['expo-brightness', 'ExpoBrightness', CORE_ONLY],
+  ['expo-cellular', 'ExpoCellular', CORE_ONLY],
+  ['expo-document-picker', 'ExpoDocumentPicker', CORE_ONLY],
+  ['expo-font', 'ExpoFont', CORE_ONLY],
+  ['expo-haptics', 'ExpoHaptics', CORE_ONLY],
+  ['expo-hinge', 'ExpoHinge', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
+  ['expo-keep-awake', 'ExpoKeepAwake', CORE_ONLY],
+  ['expo-linear-gradient', 'ExpoLinearGradient', CORE_ONLY],
+  ['expo-linking', 'ExpoLinking', CORE_ONLY],
+  ['expo-live-photo', 'ExpoLivePhoto', CORE_ONLY],
+  ['expo-local-authentication', 'ExpoLocalAuthentication', CORE_ONLY],
+  ['expo-mail-composer', 'ExpoMailComposer', CORE_ONLY],
+  ['expo-mesh-gradient', 'ExpoMeshGradient', CORE_ONLY],
+  ['expo-network', 'ExpoNetwork', CORE_ONLY],
+  ['expo-print', 'ExpoPrint', CORE_ONLY],
+  ['expo-secure-store', 'ExpoSecureStore', CORE_ONLY],
+  ['expo-sensors', 'ExpoSensors', CORE_ONLY],
+  ['expo-sms', 'ExpoSMS', CORE_ONLY],
+  ['expo-speech', 'ExpoSpeech', CORE_ONLY],
+  ['expo-status-bar', 'ExpoStatusBar', CORE_ONLY],
+  ['expo-store-review', 'ExpoStoreReview', CORE_ONLY],
+  ['expo-symbols', 'ExpoSymbols', CORE_ONLY],
+  ['expo-web-browser', 'ExpoWebBrowser', CORE_ONLY],
 ];
 
 // expo-dev-menu-interface depends on nothing, so the plugin builds it through the generated
@@ -70,17 +76,21 @@ const CHECKED_IN_MANIFESTS = [
 // SwiftPM does rather than a recorded dump of them.
 it.each(DIRECT_MANIFESTS)(
   'links the real %s, installed from npm, directly through its checked-in Package.swift',
-  (packageName, productName) => {
+  (packageName, productName, standIns) => {
     const tmp = makeTempDir('spm-real-manifest-');
     const moduleRoot = installLikeNpm(packageName, path.join(tmp, 'app'));
     expect(fs.existsSync(path.join(moduleRoot, 'ios', 'Tests'))).toBe(false);
 
     const { manifest } = dumpModuleManifest(moduleRoot, packageName);
-    expect(dependsOnCoreHeaders(manifest)).toBe(true);
+    expect(headersStandInsOf(manifest)).toEqual(standIns);
 
     const outDir = path.join(tmp, 'out');
-    const coreHeadersXCFramework = path.join(tmp, 'headers', 'ExpoModulesCoreHeaders.xcframework');
-    fs.mkdirSync(coreHeadersXCFramework, { recursive: true });
+    const headersXCFrameworks = Object.fromEntries(
+      standIns.map((name) => [name, path.join(tmp, 'headers', `${name}.xcframework`)])
+    );
+    Object.values(headersXCFrameworks).forEach((xcframework) =>
+      fs.mkdirSync(xcframework, { recursive: true })
+    );
     const macrosPackageRoot = path.join(tmp, 'app', 'node_modules', 'expo-modules-macros');
     fs.mkdirSync(macrosPackageRoot, { recursive: true });
     fs.writeFileSync(
@@ -92,15 +102,18 @@ it.each(DIRECT_MANIFESTS)(
       moduleRoot,
       packageName,
       outDir,
-      coreHeadersXCFramework,
+      headersXCFrameworks,
       jsiHeadersPkgPath: path.join(outDir, 'ExpoModulesJSIHeaders'),
       macrosPackageRoot,
       manifest,
     });
 
+    const swiftPackageName = packageName.startsWith('@')
+      ? packageName.slice(1).replace('/', '-')
+      : packageName;
     const link = path.join(outDir, 'direct', packageName);
-    expect(ok.packageDep).toEqual({ name: packageName, path: link });
-    expect(ok.productDeps).toEqual([{ name: productName, package: packageName }]);
+    expect(ok.packageDep).toEqual({ name: swiftPackageName, path: link });
+    expect(ok.productDeps).toEqual([{ name: productName, package: swiftPackageName }]);
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
   },
   60_000

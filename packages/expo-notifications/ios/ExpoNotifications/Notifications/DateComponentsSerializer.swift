@@ -1,3 +1,5 @@
+import Foundation
+
 class DateComponentsSerializer {
 
   static func serializedDateComponents(_ dateComponents: DateComponents) -> [String: Any] {

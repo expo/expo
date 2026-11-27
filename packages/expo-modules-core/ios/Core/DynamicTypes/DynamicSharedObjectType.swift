@@ -64,6 +64,21 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     return "SharedObject<\(innerType)>"
   }
 
+  func castToJS<ValueType>(
+    _ value: ValueType,
+    appContext: AppContext,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    guard let nativeObject = value as? SharedObject, let sharedObjectType = innerType as? SharedObject.Type else {
+      return try castToJS(value, appContext: appContext)
+    }
+    // Called on the declared type. The main runtime gives its class to a new object whose type has no `_jsClassType`.
+    nonisolated(unsafe) let sharedObject = nativeObject
+    return try JavaScriptActor.assumeIsolated {
+      return try sharedObjectType.encode(sharedObject, in: runtime)
+    }
+  }
+
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
     if let sharedObject = value as? SharedObject {
@@ -71,7 +86,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       if let jsObject = sharedObject.getJavaScriptObject() {
         return jsObject.asValue()
       }
-      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, isSharedRef: sharedObject.sharedRefType != nil)) else {
+      guard let jsObject = (try? appContext.newObject(of: innerType)) ?? (try? newBaseSharedObject(appContext, isSharedRef: sharedObject.sharedRefType != nil)) else {
         // Throwing is not possible here due to swift-objC interop.
         log.warn("Unable to create a JS object for \(description)")
         return JavaScriptValue.undefined()

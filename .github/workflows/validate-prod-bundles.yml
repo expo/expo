@@ -12,6 +12,7 @@ on:
       - packages/@expo/metro-runtime/**
       - packages/babel-preset-expo/**
       - packages/expo/**
+      - packages/expo-modules-core/**
       - package.json
       - pnpm-lock.yaml
       - '!**.md'
@@ -24,6 +25,7 @@ on:
       - packages/@expo/metro-runtime/**
       - packages/babel-preset-expo/**
       - packages/expo/**
+      - packages/expo-modules-core/**
       - package.json
       - pnpm-lock.yaml
       - '!**.md'

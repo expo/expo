@@ -2,7 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.observe.shared.ObserveConsent
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -11,10 +11,20 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
+import kotlinx.coroutines.CancellationException
+import expo.modules.observe.shared.dispatch.LEGACY_DATABASE_NAME
+import expo.modules.observe.shared.dispatch.OBSERVE_DEFAULT_BASE_URL
+import expo.modules.observe.shared.dispatch.OBSERVE_TAG
+import expo.modules.observe.shared.dispatch.ObservabilityBackgroundWorker
+import expo.modules.observe.shared.dispatch.ObservabilityManager
+import expo.modules.observe.shared.dispatch.ObservePreferences
+import expo.modules.observe.shared.dispatch.PersistedBundleDefaults
+import expo.modules.observe.shared.dispatch.PersistedConfig
 
 @OptimizedRecord
-class Config(
+internal class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
@@ -26,10 +36,15 @@ class Config(
 ) : Record
 
 @OptimizedRecord
-class BundleDefaults(
+internal class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
 ) : Record
+
+internal enum class ConsentValue(val value: String) : Enumerable {
+  GRANTED("granted"),
+  NOT_GRANTED("not-granted")
+}
 
 class ObserveModule : Module() {
   private val context: Context
@@ -47,14 +62,27 @@ class ObserveModule : Module() {
       Events("configure")
 
       OnCreate {
-        appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
-          "AppMetricsModule is required by ObserveModule. Make sure expo-app-metrics is installed."
+        // Deletes what a build with consent stored. Module start is late enough, because nothing is
+        // sent without consent.
+        if (!ObserveConsent.isGranted) {
+          context.deleteDatabase(LEGACY_DATABASE_NAME)
+          ObservePreferences.deleteStoredSettings(context)
         }
-        val sessionManager = appMetricsModule.sessionManager
+        appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
+          "AppMetricsModule is required by ObserveModule but is not registered. The expo-observe " +
+            "native install is incomplete. Reinstall expo-observe and rebuild the app."
+        }
+        val manifest = checkNotNull(getManifest(appContext.service<ConstantsInterface>())) {
+          "Manifest is required to initialize ObservabilityManager."
+        }
+        val projectId = checkNotNull(manifest.projectId) {
+          "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
+        }
         observabilityManager = ObservabilityManager(
           context,
-          appContext.service<ConstantsInterface>(),
-          sessionManager = sessionManager
+          projectId = projectId,
+          baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL,
+          sessionManager = appMetricsModule.sessionManager
         )
       }
 
@@ -64,6 +92,10 @@ class ObserveModule : Module() {
 
       Constant("clientId") {
         EASClientID(context).uuid.toString().lowercase()
+      }
+
+      AsyncFunction("setConsent") Coroutine { consent: ConsentValue ->
+        applyConsent(context, consent, appMetricsModule::setConsent)
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->
@@ -118,4 +150,61 @@ class ObserveModule : Module() {
         appMetricsModule.setEnvironment(defaults.environment)
       }
     }
+}
+
+/**
+ * Applies `Observe.setConsent`. A revoke deletes the Observe data under the app metrics consent
+ * lock, after the gate closes, also when the consent save failed. A failed consent save is reported
+ * before a failed delete.
+ */
+internal suspend fun applyConsent(
+  context: Context,
+  consent: ConsentValue,
+  setAppMetricsConsent: suspend (Boolean, suspend () -> Unit) -> Unit
+) {
+  var deleteError: Exception? = null
+  try {
+    setAppMetricsConsent(consent == ConsentValue.GRANTED) {
+      try {
+        deleteObserveData(context)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        deleteError = e
+      }
+    }
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    deleteError?.let(e::addSuppressed)
+    throw e
+  }
+  deleteError?.let { throw it }
+}
+
+/**
+ * Deletes the Observe settings, the dispatch cursors among them, and the scheduled dispatch. Each
+ * step runs also when an earlier step fails. The first error is thrown, with the others attached.
+ */
+internal suspend fun deleteObserveData(context: Context) {
+  var error: Exception? = null
+  // The local deletes first, because they do not suspend. So a canceled dispatch cancel cannot
+  // skip them.
+  val localDeletes = listOf({ context.deleteDatabase(LEGACY_DATABASE_NAME) }, { ObservePreferences.deleteStoredSettings(context) })
+  for (delete in localDeletes) {
+    try {
+      delete()
+    } catch (e: Exception) {
+      error?.addSuppressed(e) ?: run { error = e }
+    }
+  }
+  try {
+    ObservabilityBackgroundWorker.cancelBackgroundDispatch(context)
+  } catch (e: CancellationException) {
+    error?.let(e::addSuppressed)
+    throw e
+  } catch (e: Exception) {
+    error?.addSuppressed(e) ?: run { error = e }
+  }
+  error?.let { throw it }
 }

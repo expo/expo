@@ -15,7 +15,7 @@ import type {
   CppTarget,
 } from './SPMConfig.types';
 import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
-import { parseLinkedFrameworks } from './SPMIdentifier';
+import { parseLinkedFrameworks, swiftPMPackageName } from './SPMIdentifier';
 import type { ResolvedTarget } from './SPMPackage.types';
 
 export interface CheckedInResolvedTarget extends ResolvedTarget {
@@ -178,6 +178,12 @@ function manifestError(product: string, target: string, what: string, how: strin
  */
 const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
   expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
+  expomodulesworkletsheaders: {
+    ExpoModulesWorkletsHeaders: 'expo-modules-core/ExpoModulesWorklets',
+  },
+  expouiheaders: { ExpoUIHeaders: '@expo/ui/ExpoUI' },
+  rnscreensheaders: { RNScreensHeaders: 'RNScreens' },
+  rnworkletsheaders: { RNWorkletsHeaders: 'RNWorklets' },
   xcframeworks: { ReactHeaders: 'React' },
 };
 
@@ -927,7 +933,7 @@ async function readExpectedPackageName(root: string, error: ManifestError): Prom
       'Add the npm package name to package.json.'
     );
   }
-  return name.startsWith('@') ? name.slice(1).replace('/', '-') : name;
+  return swiftPMPackageName(name);
 }
 
 function environmentForTarget(

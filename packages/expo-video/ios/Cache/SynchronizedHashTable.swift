@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import Foundation
+
 internal class SynchronizedHashTable<T: AnyObject> {
   private let lock = NSLock()
   private let hashTable: NSHashTable<T>

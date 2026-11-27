@@ -17,9 +17,16 @@ public struct PropsDiff<Props: AnyViewProps> {
   public let changedProps: Props.PropSet
 
   internal init(old: DecodedViewProps<Props>?, new: DecodedViewProps<Props>) {
+    self.init(old: old, new: new, changedProps: new.changedProps(since: old))
+  }
+
+  // Not `@inlinable`: with library evolution (the precompiled XCFrameworks), an inlinable initializer of
+  // a struct that isn't `@frozen` can't assign its properties. Inlinable code computes `changedProps`.
+  @usableFromInline
+  internal init(old: DecodedViewProps<Props>?, new: DecodedViewProps<Props>, changedProps: Props.PropSet) {
     self.old = old
     self.new = new
-    self.changedProps = new.changedProps(since: old)
+    self.changedProps = changedProps
   }
 
   /// The props after the update.

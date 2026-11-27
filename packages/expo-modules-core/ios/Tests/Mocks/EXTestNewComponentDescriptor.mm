@@ -20,6 +20,21 @@ namespace views = expo::views;
   std::shared_ptr<const views::NewComponentFlavor> _flavor;
   std::unique_ptr<const react::ComponentDescriptor> _descriptor;
   react::Props::Shared _props;
+  folly::dynamic _preparedDynamicProps;
+}
+
+static folly::dynamic dynamicPropsFromDictionary(NSDictionary<NSString *, id> *props)
+{
+  folly::dynamic dynamicProps = folly::dynamic::object;
+  for (NSString *key in props) {
+    id value = props[key];
+    if ([value isKindOfClass:[NSString class]]) {
+      dynamicProps[key.UTF8String] = [value UTF8String];
+    } else if ([value isKindOfClass:[NSNumber class]]) {
+      dynamicProps[key.UTF8String] = [value doubleValue];
+    }
+  }
+  return dynamicProps;
 }
 
 - (instancetype)initWithDecoder:(id<EXViewPropsDecoding>)decoder
@@ -47,16 +62,17 @@ namespace views = expo::views;
 
 - (nullable id)updateWithDynamicProps:(NSDictionary<NSString *, id> *)props
 {
-  folly::dynamic dynamicProps = folly::dynamic::object;
-  for (NSString *key in props) {
-    id value = props[key];
-    if ([value isKindOfClass:[NSString class]]) {
-      dynamicProps[key.UTF8String] = [value UTF8String];
-    } else if ([value isKindOfClass:[NSNumber class]]) {
-      dynamicProps[key.UTF8String] = [value doubleValue];
-    }
-  }
-  return [self cloneWithRawProps:react::RawProps(std::move(dynamicProps))];
+  return [self cloneWithRawProps:react::RawProps(dynamicPropsFromDictionary(props))];
+}
+
+- (void)prepareDynamicProps:(NSDictionary<NSString *, id> *)props
+{
+  _preparedDynamicProps = dynamicPropsFromDictionary(props);
+}
+
+- (nullable id)updateWithPreparedDynamicProps
+{
+  return [self cloneWithRawProps:react::RawProps(folly::dynamic(_preparedDynamicProps))];
 }
 
 - (nullable id)cloneWithRawProps:(react::RawProps)rawProps
@@ -64,6 +80,11 @@ namespace views = expo::views;
   react::PropsParserContext context{-1, *_contextContainer};
   _props = _descriptor->cloneProps(context, _props, std::move(rawProps));
   return (__bridge id)static_cast<const views::NewViewProps &>(*_props).decodedProps.get();
+}
+
+- (void)reset
+{
+  _props = nullptr;
 }
 
 - (float)opacity

@@ -81,7 +81,14 @@ export const home = [
     makePage('mcp.mdx'),
     makeGroup(
       'AI agents',
-      [makePage('agents/claude.mdx'), makePage('agents/codex.mdx'), makePage('agents/cursor.mdx')],
+      [
+        makePage('agents/claude.mdx'),
+        makePage('agents/codex.mdx'),
+        makePage('agents/cursor.mdx'),
+        makePage('agents/devin.mdx'),
+        makePage('agents/grok-bot.mdx'),
+        makePage('agents/grok.mdx'),
+      ],
       {
         expanded: false,
       }
@@ -419,6 +426,7 @@ export const general = [
     ]),
     makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
     makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
+    makeGroup('Voice and video', [makePage('guides/using-livekit.mdx')]),
     makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),
   ]),
   makeSection(

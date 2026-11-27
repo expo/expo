@@ -1,7 +1,6 @@
 import { Link, Stack, type Href } from 'expo-router';
 import React from 'react';
-import { Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, Pressable, ScrollView, View } from 'react-native';
 import { featureFlags } from 'react-native-screens';
 
 import { PresentationPanel } from '../../components/presentation-panel';
@@ -21,7 +20,7 @@ const HomeIndex = () => {
       <Stack.Toolbar placement="left">
         <Stack.Toolbar.Button icon="xmark" onPress={() => console.log('Index Xmark pressed')} />
       </Stack.Toolbar>
-      <SafeAreaView edges={['left', 'right']} style={{ alignItems: 'center', gap: 16 }}>
+      <View style={{ alignItems: 'center', gap: 16 }}>
         <Text>
           Synchronous updates:{' '}
           {featureFlags.experiment.synchronousScreenUpdatesEnabled ? 'Enabled' : 'Disabled'}
@@ -30,7 +29,7 @@ const HomeIndex = () => {
         <CaseLink href="/modals/form-sheet-nested" text="Form Sheet Modal - nested Stack" />
         <CaseLink href="/modals/form-sheet" text="Form Sheet Modal" />
         <CaseLink href="/modals/form-sheet-content" text="Form Sheet Modal - fitToContent" />
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

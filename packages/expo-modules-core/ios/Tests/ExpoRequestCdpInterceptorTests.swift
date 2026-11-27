@@ -70,7 +70,7 @@ struct ExpoRequestCdpInterceptorTests {
     let request = NSMutableURLRequest(url: URL(string: "https://example.com/data")!)
     #expect(ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
 
-    ExpoNetworkReporter().mark(request)
+    ExpoNetworkReporter.mark(request, requestId: ExpoNetworkReporter.makeRequestId())
     #expect(!ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
   }
 

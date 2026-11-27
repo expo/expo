@@ -25,7 +25,7 @@ Either way, your app must already send data. Follow [Get started](/eas/observe/g
 
 ## Option 1: Expo MCP Server
 
-The Expo MCP Server exposes read-only tools for app versions, metric summaries, metric samples, routes, user-defined events, and session timelines. The agent signs in with your Expo account, so it needs no access token. Each tool call counts toward your account's Expo MCP Server usage. Plan limits are the same as in the dashboard and the EAS CLI. See [Tools](/mcp/#tools) for the current list.
+The Expo MCP Server exposes read-only tools for app versions, metric summaries, metric samples, routes, user-defined events, session timelines, errors and native crashes, and network traces. The agent signs in with your Expo account, so it needs no access token. Each tool call counts toward your account's Expo MCP Server usage. Plan limits are the same as in the dashboard and the EAS CLI. See [Tools](/mcp/#tools) for the current list.
 
 <Tabs>
 
@@ -47,9 +47,11 @@ Then run `/mcp` inside your Claude Code session to sign in.
 
 <Tab label="Codex">
 
-Install the Expo plugin, which registers the server and installs [Expo Skills](/skills/):
+Install the Expo plugin, which connects Codex to the server and installs [Expo Skills](/skills/):
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated', '', '$ codex mcp login expo']} />
+<Terminal cmd={['$ codex plugin add expo2@openai-curated-remote']} />
+
+Then sign in to your Expo account. Type `/apps` in a Codex session, search for **Expo2**, and select **Install on ChatGPT**. In the browser window that opens, connect the app and sign in to your Expo account. Then return to Codex and confirm that the install is complete.
 
 </Tab>
 

@@ -38,6 +38,7 @@ it('loads expected modules by default', async () => {
     '@expo/cli/build/src/utils/interactive.js',
     '@expo/cli/build/src/utils/metadata.js',
     '@expo/cli/build/src/utils/nodeEnv.js',
+    '@expo/cli/build/src/utils/programStatus.js',
   ]);
 });
 

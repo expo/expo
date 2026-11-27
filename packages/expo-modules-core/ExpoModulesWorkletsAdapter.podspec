@@ -95,5 +95,7 @@ Pod::Spec.new do |s|
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
 
+  s.compiler_flags = '-DWORKLETS_STABLE_API_TARGET=\"0.14.0\"'
+
   s.source_files = 'ios/WorkletsAdapter/**/*.{h,m,mm}'
 end

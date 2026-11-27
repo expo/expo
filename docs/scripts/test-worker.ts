@@ -584,28 +584,54 @@ async function testRemovedSdkRedirectsAsync(): Promise<void> {
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   console.log('\n--- Testing agent discovery redirects ---');
 
-  const api = await fetch(`${BASE_URL}/api`, { redirect: 'manual' });
-  const apiLocation = api.headers.get('location') ?? '';
+  const { version } = JSON.parse(fs.readFileSync('package.json', 'utf8')) as { version: string };
+  const nativeModulesUrl = `https://api.expo.dev/v2/sdks/${version}/native-modules`;
 
-  if (api.status !== 301 || !apiLocation.includes('/versions/latest')) {
-    throw new Error(
-      `Expected /api to redirect to /versions/latest, got: HTTP ${api.status} -> ${apiLocation}`
-    );
+  for (const from of ['/api', '/api/']) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 302 || location !== nativeModulesUrl) {
+      throw new Error(
+        `Expected ${from} to 302 to ${nativeModulesUrl}, the native modules of the latest SDK in ` +
+          `package.json, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to the SDK ${version} native modules`);
   }
-  console.log('✓ /api redirects to the API reference');
 
-  const developers = await fetch(`${BASE_URL}/developers`, { redirect: 'manual' });
-  const developersLocation = developers.headers.get('location') ?? '';
+  const programmaticAccessPath = '/accounts/programmatic-access/';
+  for (const from of ['/developers', '/developers/']) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
 
-  if (
-    developers.status !== 301 ||
-    !(developersLocation === '/' || developersLocation === `${BASE_URL}/`)
-  ) {
-    throw new Error(
-      `Expected /developers to redirect to /, got: HTTP ${developers.status} -> ${developersLocation}`
-    );
+    if (response.status !== 301 || location !== programmaticAccessPath) {
+      throw new Error(
+        `Expected ${from} to 301 to ${programmaticAccessPath}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to the programmatic access page`);
   }
-  console.log('✓ /developers redirects to the docs home');
+
+  const pricingCases: { from: string; to: string; headers: Record<string, string> }[] = [
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing/', to: 'https://expo.dev/pricing', headers: {} },
+    { from: '/pricing.md', to: 'https://expo.dev/pricing.md', headers: {} },
+    { from: '/pricing', to: 'https://expo.dev/pricing', headers: { Accept: 'text/markdown' } },
+  ];
+
+  for (const { from, to, headers } of pricingCases) {
+    const response = await fetch(`${BASE_URL}${from}`, { headers, redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+    const accept = headers.Accept ? ` with Accept: ${headers.Accept}` : '';
+
+    if (response.status !== 301 || location !== to) {
+      throw new Error(
+        `Expected ${from}${accept} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from}${accept} redirects to ${to}`);
+  }
 }
 
 async function testHtmlNotFoundAsync(): Promise<void> {

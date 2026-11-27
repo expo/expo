@@ -38,17 +38,12 @@ private func parsePresentationDetent(_ detent: Either<PresentationDetentPreset, 
   return nil
 }
 
-internal struct PresentationDetentsModifier: ViewModifier, Record {
+internal struct PresentationDetentsModifier: EventDispatchingViewModifier, Record {
   @Field var detents: [Either<PresentationDetentPreset, PresentationDetentItem>]?
   @Field var selection: Either<PresentationDetentPreset, PresentationDetentItem>?
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func parseDetents() -> Set<PresentationDetent> {

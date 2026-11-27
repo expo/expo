@@ -24,6 +24,7 @@ const MINIFY_JSON = true;
 
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
+  'expo-ui/community/bottom-sheet': ['community/bottom-sheet/index.tsx', 'expo-ui'],
   'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
   'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
   'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
@@ -277,6 +278,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['index.ts'],
   'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
+  'expo-media-session': ['index.ts'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],
@@ -308,7 +310,6 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-tracking-transparency': ['TrackingTransparency.ts'],
   'expo-updates': ['index.ts'],
   'expo-video': ['index.ts'],
-  'expo-video-thumbnails': ['VideoThumbnails.ts'],
   'expo-web-browser': ['WebBrowser.ts'],
   '@expo/fingerprint': ['index.ts'],
   'expo-age-range': ['index.ts'],

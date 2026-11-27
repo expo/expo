@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/Platform.h>
+#import <ExpoModulesCore/EXViewEventEmitting.h>
 #import <ExpoModulesCore/EXViewPropsDecoding.h>
 
 #ifdef __cplusplus
@@ -43,13 +44,15 @@
 #endif // __cplusplus
 
 // Addition to the interface that is visible in both Swift and Objective-C
-@interface ExpoNativeViewObjC (ExpoNativeViewInterface)
+@interface ExpoNativeViewObjC (ExpoNativeViewInterface) <EXViewEventEmitting>
 
 /**
- Called when Fabric mounts new props, with the decoded props that the props hold, or `nil` when no
- props of the view were decoded yet. Implemented in `ExpoNativeView.swift`.
+ Called on the main thread when Fabric mounts new props, with the decoded props that the props hold
+ (an unretained `DecodedViewProps`), or `NULL` when no props of the view were decoded yet. Implemented in
+ `ExpoNativeView.swift`. It's nonisolated in Swift, so the call skips Swift's runtime check of the main
+ actor, which costs more than the rest of an update.
  */
-- (void)updateDecodedProps:(nullable id)decodedProps NS_SWIFT_UI_ACTOR;
+- (void)updateDecodedProps:(nullable const void *)decodedProps NS_SWIFT_NONISOLATED;
 
 #pragma mark - Component registration
 

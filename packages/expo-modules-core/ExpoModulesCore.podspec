@@ -117,7 +117,8 @@ Pod::Spec.new do |s|
 
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
-  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+  # The other files in `common/cpp` are for Android only. iOS implements them in Swift.
+  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/fabric/**/*.{h,cpp}'
   s.exclude_files = ['ios/Tests', 'ios/Benchmarks', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
   s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
@@ -131,15 +132,10 @@ Pod::Spec.new do |s|
     # config. It reaches them through the library's `compiler_flags`, which test specs
     # inherit and CocoaPods applies per-file to C-family sources.
     #
-    # OTHER_LDFLAGS: the library's -lc++ lives in `user_target_xcconfig` (for consuming
-    # apps), which a test_spec target doesn't inherit. The test bundle links
-    # libExpoModulesCore.a (C++), so link libc++ explicitly.
-    #
     # SWIFT_OBJC_BRIDGING_HEADER: a test target has no module for its own Obj-C sources,
     # so the Swift tests see the Obj-C test doubles (`ios/Tests/Mocks`) through the
     # bridging header.
     test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++',
       'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
     }
   end
@@ -147,9 +143,10 @@ Pod::Spec.new do |s|
   # Performance benchmarks. A separate spec, so unit test runs neither build nor run them.
   s.test_spec 'Benchmarks' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'ios/Benchmarks/**/*.swift'
+    # The descriptor benchmarks run `NewComponentDescriptor` through the test double that the tests use.
+    test_spec.source_files = 'ios/Benchmarks/**/*.{h,swift}', 'ios/Tests/Mocks/EXTestNewComponentDescriptor.{h,mm}'
     test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+      'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Benchmarks/Benchmarks-Bridging-Header.h'
     }
   end
 end

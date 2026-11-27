@@ -8,6 +8,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.KeyEvent
 import android.view.inputmethod.InputMethodManager
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
@@ -49,6 +51,7 @@ data class ModalBottomSheetViewProps(
   val scrimColor: Color? = null,
   val showDragHandle: Boolean = true,
   val sheetGesturesEnabled: Boolean = true,
+  val contentWindowInsets: PaddingValuesRecord? = null,
   val properties: ModalBottomSheetPropertiesRecord = ModalBottomSheetPropertiesRecord(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -153,6 +156,15 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     }
   val resolvedScrimColor = props.scrimColor.composeOrNull ?: BottomSheetDefaults.ScrimColor
   val dragHandleSlotView = findChildSlotView(view, "dragHandle")
+  val layoutDirection = LocalLayoutDirection.current
+  val contentWindowInsets = props.contentWindowInsets?.toPaddingValues()?.let {
+    WindowInsets(
+      left = it.calculateLeftPadding(layoutDirection),
+      top = it.calculateTopPadding(),
+      right = it.calculateRightPadding(layoutDirection),
+      bottom = it.calculateBottomPadding()
+    )
+  }
 
   ModalBottomSheet(
     sheetState = sheetState,
@@ -170,6 +182,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
       }
       else -> null
     },
+    contentWindowInsets = { contentWindowInsets ?: BottomSheetDefaults.modalWindowInsets },
     properties = ModalBottomSheetProperties(
       shouldDismissOnBackPress = props.properties.shouldDismissOnBackPress,
       shouldDismissOnClickOutside = props.properties.shouldDismissOnClickOutside

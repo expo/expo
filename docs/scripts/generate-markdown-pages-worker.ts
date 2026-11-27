@@ -26,6 +26,7 @@ import {
   insertAgentInstructionsAfterH1,
   type ResolvedMdxImport,
 } from './generate-markdown-pages-utils.ts';
+import { joinWrappedLinkText, rewriteDocsLinksToMarkdown } from './markdown-link-utils.ts';
 import { SCENE_PAGES } from './scene-page-manifest.ts';
 
 const outDir: string = workerData.outDir;
@@ -94,7 +95,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
         }
 
         const mdxContent = fs.readFileSync(absoluteMdxPath, 'utf-8');
-        const variantMarkdown = convertMdxInstructionToMarkdown(
+        const convertedMarkdown = convertMdxInstructionToMarkdown(
           mdxContent,
           (importPath, fromPath): ResolvedMdxImport | null => {
             const basePath = fromPath ? path.dirname(fromPath) : path.dirname(absoluteMdxPath);
@@ -112,6 +113,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
             visitedPaths: new Set([absoluteMdxPath]),
           }
         ).trim();
+        const variantMarkdown = rewriteDocsLinksToMarkdown(joinWrappedLinkText(convertedMarkdown));
 
         if (!variantMarkdown) {
           continue;

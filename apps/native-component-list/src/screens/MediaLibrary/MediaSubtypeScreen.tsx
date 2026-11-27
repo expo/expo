@@ -4,7 +4,7 @@ import {
   type AssetMetadata,
   MediaSubtype,
   Query,
-  requestPermissionsAsync,
+  MediaLibrary,
 } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
@@ -47,7 +47,7 @@ const MediaSubtypeScreen = () => {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      const { status } = await requestPermissionsAsync();
+      const { status } = await MediaLibrary.requestPermissions();
       if (status === 'denied') {
         Alert.alert('Permission denied', 'Cannot proceed without media library permissions.');
       }

@@ -58,7 +58,11 @@ interface IUpdatesController {
 
   fun onDidCreateReactInstance(reactContext: ReactContext)
 
-  fun onReactInstanceException(exception: java.lang.Exception)
+  /**
+   * Receives an unhandled React instance exception. Returns whether the controller takes it, so
+   * the React host does not rethrow it.
+   */
+  fun onReactInstanceException(exception: java.lang.Exception): Boolean
 
   /**
    * Indicates that the controller is in active state.

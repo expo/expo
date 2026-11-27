@@ -182,7 +182,7 @@ export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
        * ```ts
        * config = withBuildProperties(config as ExpoConfig, {
        *   android: {
-       *     kotlinVersion: "1.6.10",
+       *     kotlinVersion: "2.3.21",
        *   },
        * });
        * config = withBuildProperties(config as ExpoConfig, {

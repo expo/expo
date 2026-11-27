@@ -34,6 +34,7 @@ export type ActivityFamily = 'small' | 'medium';
  * - `systemMedium` - Medium widget (4x2 grid).
  * - `systemLarge` - Large widget (4x4 grid).
  * - `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid).
+ * - `systemExtraLargePortrait` - Extra large portrait widget (iOS 27+).
  * - `accessoryCircular` - Circular accessory widget for the Lock Screen.
  * - `accessoryRectangular` - Rectangular accessory widget for the Lock Screen.
  * - `accessoryInline` - Inline accessory widget for the Lock Screen.
@@ -44,14 +45,14 @@ export type WidgetFamily =
   | 'systemMedium'
   | 'systemLarge'
   | 'systemExtraLarge'
+  | 'systemExtraLargePortrait'
   | 'accessoryCircular'
   | 'accessoryRectangular'
   | 'accessoryInline';
 
 export type WidgetEnvironment<T extends object | undefined = undefined> = {
   /**
-   * The date of this timeline entry.
-   * @platform iOS
+   * The date when the widget was rendered.
    */
   date?: Date;
   /**
@@ -59,6 +60,14 @@ export type WidgetEnvironment<T extends object | undefined = undefined> = {
    * @platform iOS
    */
   widgetFamily?: WidgetFamily;
+  /**
+   * The size of the widget in density-independent pixels (dp).
+   * @platform android
+   */
+  widgetSize?: {
+    width: number;
+    height: number;
+  };
   /**
    * The color scheme of the widget's environment.
    */

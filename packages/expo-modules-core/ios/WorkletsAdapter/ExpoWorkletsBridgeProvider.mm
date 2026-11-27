@@ -34,6 +34,27 @@ namespace jsi = facebook::jsi;
 @implementation ExpoWorkletsRuntimeHandle
 @end
 
+namespace {
+
+// The scheduler handle of a worklet runtime. It's never freed, because the runtime can dispatch with it
+// after the worklet runtime is gone, so it holds the runtime weakly.
+struct WorkletRuntimeScheduler {
+  std::weak_ptr<worklets::WorkletRuntime> runtime;
+};
+
+void scheduleOnWorkletRuntime(void *scheduler, int priority, void (^callback)())
+{
+  auto workletRuntime = static_cast<WorkletRuntimeScheduler *>(scheduler)->runtime.lock();
+  if (!workletRuntime) {
+    return;
+  }
+  workletRuntime->schedule([callback](jsi::Runtime &) {
+    callback();
+  });
+}
+
+} // namespace
+
 static EXSerializableValueType toObjCValueType(worklets::Serializable::ValueType type)
 {
   switch (type) {
@@ -165,6 +186,18 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   return handle;
 }
 
+- (void * _Nullable)schedulerWithRuntimePointer:(void *)runtimePointer
+                                       dispatch:(const void * _Nullable * _Nonnull)dispatch
+{
+  jsi::Runtime *jsiRuntime = reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  auto weakRuntime = worklets::WorkletRuntime::getWeakRuntimeFromJSIRuntime(*jsiRuntime);
+  if (!weakRuntime.lock()) {
+    return nullptr;
+  }
+  *dispatch = reinterpret_cast<const void *>(&scheduleOnWorkletRuntime);
+  return new WorkletRuntimeScheduler{weakRuntime};
+}
+
 - (void * _Nullable)uiRuntimePointerWithRuntimePointer:(void *)runtimePointer
                                          holderPointer:(const void *)holderPointer
 {
@@ -183,6 +216,25 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
 
   jsi::Runtime &uiRuntime = worklets::getJSIRuntimeFromWorkletRuntime(workletRuntime);
   return &uiRuntime;
+}
+
+- (nullable id)workletRuntimeHandleWithRuntimePointer:(void *)runtimePointer
+                                        holderPointer:(const void *)holderPointer
+{
+  jsi::Runtime &rt = *reinterpret_cast<jsi::Runtime *>(runtimePointer);
+  const jsi::Value &holderValue = *reinterpret_cast<const jsi::Value *>(holderPointer);
+
+  if (!holderValue.isObject()) {
+    return nil;
+  }
+  std::shared_ptr<worklets::WorkletRuntime> workletRuntime =
+    worklets::getWorkletRuntimeFromHolder(rt, holderValue.getObject(rt));
+  if (!workletRuntime) {
+    return nil;
+  }
+  ExpoWorkletsRuntimeHandle *handle = [[ExpoWorkletsRuntimeHandle alloc] init];
+  handle->runtime = workletRuntime;
+  return handle;
 }
 
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
@@ -237,6 +289,23 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) {
     callWorklet(rt, worklet, arguments);
   });
+}
+
+- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void *runtimePointer))block
+{
+  ExpoWorkletsRuntimeHandle *runtimeWrapper = runtimeHandleFromOpaqueHandle(runtimeHandle, @"lock");
+  if (!runtimeWrapper) {
+    return NO;
+  }
+  auto workletRuntime = runtimeWrapper->runtime.lock();
+  if (!workletRuntime) {
+    return NO;
+  }
+  // A reference, because copying the block to the lambda would copy it to the heap on each call.
+  workletRuntime->runSync([&block](jsi::Runtime &rt) {
+    block(&rt);
+  });
+  return YES;
 }
 
 @end

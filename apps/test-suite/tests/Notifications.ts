@@ -764,6 +764,104 @@ export async function test(t: JasmineInterface) {
         });
       });
 
+      const describeBulkCategories = ['ios', 'android'].includes(Platform.OS)
+        ? t.describe
+        : t.xdescribe;
+
+      describeBulkCategories('bulk category registration', () => {
+        let originalCategories: Notifications.NotificationCategory[] | undefined;
+
+        t.beforeEach(async () => {
+          originalCategories = undefined;
+          originalCategories = await Notifications.getNotificationCategoriesAsync();
+        });
+
+        t.afterEach(async () => {
+          if (originalCategories) {
+            await Notifications.setNotificationCategoriesAsync(originalCategories);
+          }
+        });
+
+        t.it('replaces the complete set of categories', async () => {
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoriesAsync([testCategory2]);
+
+          const categories = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categories.map((category) => category.identifier)).toEqual([
+            testCategory2.identifier,
+          ]);
+          t.expect(categories[0].actions.map((action) => action.identifier)).toEqual(
+            testCategory2.actions.map((action) => action.identifier)
+          );
+          t.expect(categories[0].actions[1].textInput?.placeholder).toBe(
+            testCategory2.actions[1].textInput.placeholder
+          );
+          if (Platform.OS === 'ios') {
+            t.expect(categories[0].options).toEqual(testCategory2.options);
+          }
+        });
+
+        t.it('clears all categories when given an empty array', async () => {
+          await Notifications.setNotificationCategoriesAsync([testCategory1, testCategory2]);
+          await Notifications.setNotificationCategoriesAsync([]);
+
+          t.expect(await Notifications.getNotificationCategoriesAsync()).toEqual([]);
+        });
+
+        t.it('keeps single category operations in sync after replacement', async () => {
+          await Notifications.setNotificationCategoriesAsync([]);
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          await Notifications.setNotificationCategoriesAsync([testCategory2]);
+          await Notifications.setNotificationCategoryAsync(
+            testCategory1.identifier,
+            testCategory1.actions,
+            testCategory1.options
+          );
+          t.expect(
+            await Notifications.deleteNotificationCategoryAsync(testCategory2.identifier)
+          ).toBe(true);
+
+          const categories = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categories.map((category) => category.identifier)).toEqual([
+            testCategory1.identifier,
+          ]);
+        });
+
+        t.it('rejects duplicate identifiers before changing categories', async () => {
+          await Notifications.setNotificationCategoriesAsync([testCategory1]);
+          const categoriesBefore = await Notifications.getNotificationCategoriesAsync();
+          let error: unknown;
+          try {
+            await Notifications.setNotificationCategoriesAsync([testCategory2, testCategory2]);
+          } catch (err) {
+            error = err;
+          }
+
+          t.expect(error).toBeDefined();
+          t.expect(await Notifications.getNotificationCategoriesAsync()).toEqual(categoriesBefore);
+        });
+
+        t.it('preserves canonically distinct Unicode identifiers', async () => {
+          const identifiers = ['\u00e9', 'e\u0301'];
+          await Notifications.setNotificationCategoriesAsync(
+            identifiers.map((identifier) => ({ ...testCategory1, identifier }))
+          );
+
+          const categories = await Notifications.getNotificationCategoriesAsync();
+          t.expect(categories.map((category) => category.identifier).sort()).toEqual(
+            [...identifiers].sort()
+          );
+        });
+      });
+
       t.describe('setNotificationCategoriesAsync()', () => {
         t.afterEach(async () => {
           for (const id of allTestCategoryIds) {

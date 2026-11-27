@@ -27,6 +27,20 @@ private class DevLauncherWrapperView: UIView {
     devLauncherViewController?.view.layoutIfNeeded()
   }
 #endif
+
+#if os(tvOS)
+  // This view is the window root view controller's view, so UIKit's
+  // preferred-focus search passes through it. A plain UIView prefers nothing,
+  // which ends the search before the React root view (the view of
+  // devLauncherViewController). Forward the search to it, or nothing on screen
+  // can take focus and `hasTVPreferredFocus` and `focus()` are ignored.
+  override var preferredFocusEnvironments: [UIFocusEnvironment] {
+    if let viewController = devLauncherViewController {
+      return [viewController]
+    }
+    return super.preferredFocusEnvironments
+  }
+#endif
 }
 
 @objc
@@ -75,12 +89,12 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
   @objc
   public func isReactInstanceValid() -> Bool {
-    return self.reactNativeFactory?.rootViewFactory.value(forKey: "reactHost") != nil
+    return self.reactNativeFactory?.rootViewFactory.reactHost != nil
   }
 
   @objc
   public func destroyReactInstance() {
-    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "reactHost")
+    self.reactNativeFactory?.rootViewFactory.reactHost = nil
   }
 
   // MARK: EXDevelopmentClientControllerDelegate implementations
@@ -93,7 +107,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
+    self.reactNativeFactory?.rootViewFactory.reactHost = nil
 
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),

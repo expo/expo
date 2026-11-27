@@ -4,6 +4,13 @@ let defaultScreenOrientationMaskKey = "EXDefaultScreenOrientationMask"
 let supportedOrientationsKey = "UISupportedInterfaceOrientations"
 let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 
+// Declares a react-native-screens method so `RNSScreenWindowTraits`, found at runtime, can be
+// called without a build dependency. The selector must match the one in RNSScreenWindowTraits.
+@objc private protocol ScreenOrientationRNSScreenWindowTraits {
+  @objc(shouldAskScreensForScreenOrientationInViewController:)
+  static func shouldAskScreensForScreenOrientation(in viewController: UIViewController) -> Bool
+}
+
 class ScreenOrientationViewController: ExpoRootViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask

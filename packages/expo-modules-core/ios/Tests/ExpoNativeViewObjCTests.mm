@@ -5,12 +5,15 @@
 // The tests decode props with a Hermes runtime, which a build without Hermes doesn't have.
 #ifdef USE_HERMES
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
+#import <ExpoModulesCore/ExpoSwiftUIViewObjC.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/NewViewProps.h>
 
 #include <memory>
 #include <string>
 
 #include <hermes/hermes.h>
+#include <react/renderer/core/LayoutableShadowNode.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/utils/ContextContainer.h>
 
@@ -28,25 +31,83 @@ namespace views = expo::views;
 
 @implementation RecordingNativeViewObjC
 
-- (void)updateDecodedProps:(nullable id)decodedProps
+- (void)updateDecodedProps:(nullable const void *)decodedProps
 {
   self.updateCount++;
-  self.lastDecodedProps = decodedProps;
+  self.lastDecodedProps = (__bridge id)decodedProps;
 }
 
 @end
 
 /**
- Decodes any props into a new object.
+ The component view of a SwiftUI view.
+ */
+@interface TestSwiftUIViewObjC : ExpoSwiftUIViewObjC
+@end
+
+@implementation TestSwiftUIViewObjC
+@end
+
+namespace {
+
+/**
+ A shadow node that the descriptor of a component creates. It keeps the descriptor, because the family of the node
+ refers to it.
+ */
+struct TestShadowNode {
+  react::ComponentDescriptor::Unique descriptor;
+  std::shared_ptr<react::ShadowNode> node;
+};
+
+TestShadowNode createShadowNode(const react::ComponentDescriptorProvider &provider)
+{
+  auto contextContainer = std::make_shared<react::ContextContainer>();
+  auto descriptor = provider.constructor(react::ComponentDescriptorParameters{
+    .eventDispatcher = {},
+    .contextContainer = contextContainer,
+    .flavor = provider.flavor,
+  });
+  react::PropsParserContext context{-1, *contextContainer};
+  auto props = descriptor->cloneProps(context, nullptr, react::RawProps());
+  auto family = descriptor->createFamily({.tag = 1, .surfaceId = 1, .instanceHandle = nullptr});
+  auto node = descriptor->createShadowNode({.props = props}, family);
+  return {.descriptor = std::move(descriptor), .node = std::move(node)};
+}
+
+} // namespace
+
+/**
+ Decodes the `title` prop into a new object.
  */
 @interface NewObjectViewPropsDecoder : NSObject <EXViewPropsDecoding>
 @end
 
 @implementation NewObjectViewPropsDecoder
 
-- (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
+- (nullable const void *)decodeProps:(const void *)props
+                             runtime:(const void *)runtime
+                            previous:(nullable const void *)previous
 {
-  return [NSObject new];
+  return (__bridge_retained const void *)[NSObject new];
+}
+
+- (NSArray<NSString *> *)propNames
+{
+  return @[ @"title" ];
+}
+
+- (nullable const void *)decodeValues:(const void *const _Nonnull *)values
+                              indexes:(const NSInteger *)indexes
+                                count:(NSInteger)count
+                              runtime:(const void *)runtime
+                             previous:(nullable const void *)previous
+{
+  return (__bridge_retained const void *)[NSObject new];
+}
+
+- (BOOL)withRuntimeForCurrentThread:(NS_NOESCAPE void (^)(const void *runtime))block
+{
+  return NO;
 }
 
 - (void)didSkipProps:(NSArray<NSString *> *)propNames
@@ -103,6 +164,50 @@ namespace views = expo::views;
   // Updates without new props don't pass the decoded props again.
   [view finalizeUpdates:RNComponentViewUpdateMaskNone];
   XCTAssertEqual(view.updateCount, 1);
+}
+
+- (void)testOnlySwiftUIViewsKeepTheirDirectChildren
+{
+  [ExpoNativeViewObjC registerComponentViewClass:[TestSwiftUIViewObjC class]
+                                    propsDecoder:[NewObjectViewPropsDecoder new]];
+  auto keepsDirectChildren = [](Class viewClass) {
+    return createShadowNode(views::componentDescriptorProvider(viewClass))
+      .node->getTraits()
+      .check(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
+  };
+
+  // Each direct child of a SwiftUI view is an element of its `children`, so Fabric must not flatten it.
+  XCTAssertTrue(keepsDirectChildren([TestSwiftUIViewObjC class]));
+  XCTAssertFalse(keepsDirectChildren([RecordingNativeViewObjC class]));
+}
+
+- (void)testMeasuringSkipsTheLayoutOriginOfSwiftUIViews
+{
+  [ExpoNativeViewObjC registerComponentViewClass:[TestSwiftUIViewObjC class]
+                                    propsDecoder:[NewObjectViewPropsDecoder new]];
+  // The offset that `measure()` adds for a view to the positions of its descendants, for a view at (30, 40).
+  auto contentOriginOffset = [](Class viewClass, bool includeTransform) {
+    auto shadowNode = createShadowNode(views::componentDescriptorProvider(viewClass));
+    auto &node = static_cast<react::LayoutableShadowNode &>(*shadowNode.node);
+    auto layoutMetrics = node.getLayoutMetrics();
+    layoutMetrics.frame.origin = {.x = 30, .y = 40};
+    node.setLayoutMetrics(layoutMetrics);
+    return node.getContentOriginOffset(includeTransform);
+  };
+
+  // SwiftUI places the view, not Yoga, so the offset takes its layout origin away.
+  auto swiftUIOffset = contentOriginOffset([TestSwiftUIViewObjC class], true);
+  XCTAssertEqual(swiftUIOffset.x, -30);
+  XCTAssertEqual(swiftUIOffset.y, -40);
+
+  // Without the transform, the caller asks for a scroll offset, which the view doesn't have.
+  auto scrollOffset = contentOriginOffset([TestSwiftUIViewObjC class], false);
+  XCTAssertEqual(scrollOffset.x, 0);
+  XCTAssertEqual(scrollOffset.y, 0);
+
+  auto uiKitOffset = contentOriginOffset([RecordingNativeViewObjC class], true);
+  XCTAssertEqual(uiKitOffset.x, 0);
+  XCTAssertEqual(uiKitOffset.y, 0);
 }
 
 @end

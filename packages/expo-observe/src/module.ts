@@ -1,11 +1,6 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, {
-  recordSpan,
-  setErrorHandlerEnabled,
-  startSpan,
-  withSpan,
-} from 'expo-app-metrics';
 
+import AppMetrics, { recordSpan, setErrorHandlerEnabled, startSpan, withSpan } from './app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import {
@@ -15,7 +10,14 @@ import {
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
-import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
+import { reportFeedback } from './reportFeedback';
+import type {
+  ObserveConfig,
+  ObserveConsent,
+  ObserveFeedback,
+  ObserveIntegrationsConfig,
+  ObserveModule,
+} from './types';
 
 /**
  * Normalizes the `networkTraces` sugar (`true` / `false` / `{ enabled, filter }`) into the config
@@ -63,6 +65,10 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
+// Native code can apply two concurrent calls in either order, so each call starts after the
+// previous one settles. A rejected call does not stop the calls after it.
+let consentQueue: Promise<unknown> = Promise.resolve();
+
 const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
@@ -71,7 +77,7 @@ const Observe: ObserveModule = new Proxy(native, {
         // toggles whether it records anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
 
-        // Recording is gated in expo-app-metrics (the producer side), so the setting travels
+        // Recording is gated in the app-metrics module (the producer side), so the setting travels
         // there rather than into the native `configure` payload. Applies to future captures
         // only; spans persisted earlier in the launch still dispatch.
         AppMetrics.setNetworkTracesConfig(networkTracesConfigFromOption(config.networkTraces));
@@ -117,8 +123,19 @@ const Observe: ObserveModule = new Proxy(native, {
       };
     }
 
+    if (prop === 'setConsent') {
+      return (consent: ObserveConsent) => {
+        const call = consentQueue.then(() => target.setConsent(consent));
+        consentQueue = call.catch(() => {});
+        return call;
+      };
+    }
+
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+    if (prop === 'reportFeedback') {
+      return (feedback: ObserveFeedback) => reportFeedback(feedback, target);
     }
 
     // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,

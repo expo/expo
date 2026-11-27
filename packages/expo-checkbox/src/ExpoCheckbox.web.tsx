@@ -10,12 +10,12 @@
  */
 
 import React from 'react';
-// @ts-expect-error: TODO(@kitten): We optimally shouldn't pull in all of react-native-web just for expo-checkbox. It's excessive
+// TODO(@kitten): We optimally shouldn't pull in all of react-native-web just for expo-checkbox. It's excessive
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
-const ExpoCheckbox = React.forwardRef(
+const ExpoCheckbox = React.forwardRef<View, CheckboxProps>(
   ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
       const value = event.nativeEvent.target.checked;

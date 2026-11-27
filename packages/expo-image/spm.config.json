@@ -78,14 +78,20 @@
               "replace": "\"dav1d/src/arm/32\", \"dav1d/src/arm/64\", \"dav1d/src/arm/asm.S\", "
             }
           ]
+        },
+        {
+          "url": "https://github.com/SDWebImage/libwebp-Xcode.git",
+          "productName": "libwebp",
+          "version": {
+            "exact": "1.6.0"
+          }
         }
       ],
+      "swiftLanguageVersions": ["6"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoImage",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
@@ -96,10 +102,10 @@
             "SDWebImageSVGCoder",
             "SDWebImageWebPCoder",
             "libavif",
-            "libdav1d"
+            "libdav1d",
+            "libwebp"
           ],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "exclude": ["Tests/**"]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

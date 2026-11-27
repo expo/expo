@@ -15,7 +15,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-Expo Skills are structured instruction files that teach AI agents how to build, deploy, and debug Expo and React Native apps accurately and efficiently. They work with Claude Code, Cursor, Codex, and other AI agents.
+Expo Skills are structured instruction files that teach AI agents how to build, deploy, and debug Expo and React Native apps accurately and efficiently. They work with Claude Code, Cursor, Codex, Grok Build, and other AI agents.
 
 <VideoBoxLink
   videoId="WLGAuwagI8o"
@@ -42,9 +42,19 @@ You can also run `/plugin install expo@claude-plugins-official` inside a Claude 
 
 From the command line, run the following command to install the official Expo plugin:
 
-<Terminal cmd={['$ codex plugin add expo@openai-curated']} />
+<Terminal cmd={['$ codex plugin add expo2@openai-curated-remote']} />
 
-You can also open `/plugins` in Codex and install `expo` from the `openai-curated` marketplace.
+You can also open `/plugins` in Codex and install `expo2` from the `openai-curated-remote` marketplace.
+
+</Tab>
+
+<Tab label="Grok Build">
+
+Run `grok` one time and sign in. Then run the following command to install the official Expo plugin from the Grok Build plugin marketplace:
+
+<Terminal cmd={['$ grok plugin install expo --trust']} />
+
+You can also type `/marketplace` inside Grok Build and install `expo` from the catalog.
 
 </Tab>
 
@@ -94,7 +104,7 @@ Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compa
 
 </Tabs>
 
-> **info** For Claude Code and Codex, the plugin also registers the [Expo MCP Server](/mcp/), so you do not add it separately. The skills CLI installs skills only.
+> **info** For Claude Code, Codex, and Grok Build, the plugin also registers the [Expo MCP Server](/mcp/), so you do not add it separately. The skills CLI installs skills only.
 
 ## Available Expo Skills
 

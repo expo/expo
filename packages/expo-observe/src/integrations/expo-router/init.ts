@@ -1,7 +1,6 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import type { ObserveIntegrationsConfig } from '../../types';
-import { getNavigationMetricParams, isTotalBlockingTimeEnabled } from '../navigationConfig';
+import { getNavigationMetricParams } from '../navigationConfig';
 import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
@@ -14,9 +13,9 @@ import {
 import { type RouterIntegrationStorage } from './storage';
 
 // TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
-// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// web bundle doesn't pull in the app-metrics native bridge calls. The web
 // version should be an explicit no-op (return a noop cleanup) rather than
-// relying on the web stubs in `expo-app-metrics/module.web.ts`.
+// relying on the web stubs in `app-metrics/module.web.ts`.
 
 const MAX_ENQUEUE_TIMES = 100;
 
@@ -37,9 +36,9 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
-  const blockingTime = isTotalBlockingTimeEnabled(routerIntegrationConfig)
-    ? createNavigationBlockingTime((metric) => AppMetrics.getMainSession().addMetric(metric))
-    : undefined;
+  const blockingTime = createNavigationBlockingTime((metric) =>
+    AppMetrics.getMainSession().addMetric(metric)
+  );
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {

@@ -1,7 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ActivityHome() {
   const pathname = usePathname();
@@ -16,7 +15,7 @@ export default function ActivityHome() {
 
   return (
     <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+      <View style={styles.contentContainer}>
         <Text style={styles.title} testID="e2e-screen">
           Navigation Aware Activity
         </Text>
@@ -60,7 +59,7 @@ export default function ActivityHome() {
             so both counts stay unchanged.
           </Text>
         </View>
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 }

@@ -13,3 +13,5 @@ internal class PackageManagerNotFoundException : CodedException("Package Manager
 internal class NoMatchingActivityException : CodedException("No matching browser activity found")
 
 internal class NoUrlProvidedException : CodedException("No url provided")
+
+internal class BrowserHeadersException(message: String) : CodedException(message)

@@ -1086,6 +1086,57 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[0]![0].title).toBe(''); // Route name is used as title when Label is empty
   });
 
+  it('when Label with hidden has text, passes the text as tabBarItemAccessibilityLabel', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Label hidden>Home</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
+      title: '',
+      tabBarItemAccessibilityLabel: 'Home',
+    } as TabsScreenProps);
+    expect(TabsScreen.mock.calls[0]![0]).not.toHaveProperty('hiddenTitle');
+  });
+
+  it('when a screen shows a Label hidden by the layout, removes the hidden text from tabBarItemAccessibilityLabel', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Label hidden>Home</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+          </NativeTabs.Trigger>
+        </View>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    // First render uses the layout options only.
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
+      title: '',
+      tabBarItemAccessibilityLabel: 'Home',
+    } as TabsScreenProps);
+    const lastProps = TabsScreen.mock.calls[1]![0];
+    expect(lastProps.title).toBe('Profile');
+    expect(lastProps.tabBarItemAccessibilityLabel).toBeUndefined();
+  });
+
   it('when selectedLabelStyle is provided, it is passed to screen', async () => {
     await renderRouter({
       _layout: () => (

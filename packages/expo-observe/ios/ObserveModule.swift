@@ -1,10 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import EASClient
-import ExpoAppMetrics
 import ExpoModulesCore
-
-internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
 internal struct Config: Record {
   @Field var environment: String?
@@ -15,6 +12,11 @@ internal struct Config: Record {
   @Field var ignoredMetrics: [String] = []
   @Field var ignoredEvents: [String] = []
   @Field var integrations: [String: Any]?
+}
+
+internal enum ConsentValue: String, Enumerable {
+  case granted
+  case notGranted = "not-granted"
 }
 
 internal struct BundleDefaults: Record {
@@ -31,6 +33,11 @@ public final class ObserveModule: Module {
     Events("configure")
 
     OnCreate {
+      // Deletes what a build with consent stored. Module start is late enough, because nothing is
+      // sent without consent.
+      if ObserveConsent.state == .notGranted {
+        ObserveUserDefaults.deleteStoredSettings()
+      }
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
@@ -41,6 +48,10 @@ public final class ObserveModule: Module {
 
     Constant("clientId") {
       EASClientID.uuid().uuidString.lowercased()
+    }
+
+    AsyncFunction("setConsent") { (consent: ConsentValue) in
+      await applyConsent(consent, toAppMetrics: AppMetrics.setConsent(granted:))
     }
 
     AsyncFunction("dispatchEvents") {
@@ -75,9 +86,14 @@ public final class ObserveModule: Module {
       return self.lastIntegrations
     }
 
+    Function("hasUserContentPrivacyEntry") {
+      let url = Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy")
+      return hasUserContentEntry(privacyManifest: url.flatMap { try? Data(contentsOf: $0) })
+    }
+
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
-        observeLogger.warn(
+        logger.warn(
           "[EAS Observe] setBundleDefaults received empty environment; skipping. "
             + "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
         )
@@ -95,7 +111,7 @@ public final class ObserveModule: Module {
 
 private func getManifest(_ appContext: AppContext?) -> [String: Any]? {
   guard let manifest = appContext?.constants?.constants()["manifest"] as? [String: Any] else {
-    observeLogger.warn("[EAS Observe] Unable to read the manifest")
+    logger.warn("[EAS Observe] Unable to read the manifest")
     return nil
   }
   return manifest
@@ -104,7 +120,7 @@ private func getManifest(_ appContext: AppContext?) -> [String: Any]? {
 private func getProjectId(manifest: [String: Any]) -> String? {
   let value = getManifestProperty("extra.eas.projectId", manifest)
   guard let projectId = value as? String else {
-    observeLogger.warn("[EAS Observe] Unable to get the project ID")
+    logger.warn("[EAS Observe] Unable to get the project ID")
     return nil
   }
   return projectId
@@ -126,4 +142,32 @@ private func getManifestProperty(_ propertyChain: String, _ manifest: [String: A
     value = nextValue
   }
   return value
+}
+
+/// Whether the privacy manifest declares a user content data type, which covers user feedback.
+internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
+  guard let privacyManifest,
+    let plist = try? PropertyListSerialization.propertyList(from: privacyManifest, format: nil) as? [String: Any],
+    let dataTypes = plist["NSPrivacyCollectedDataTypes"] as? [[String: Any]]
+  else {
+    return false
+  }
+  let userContentTypes: Set = [
+    "NSPrivacyCollectedDataTypeOtherUserContent",
+    "NSPrivacyCollectedDataTypeCustomerSupport",
+  ]
+  return dataTypes.contains { userContentTypes.contains($0["NSPrivacyCollectedDataType"] as? String ?? "") }
+}
+
+/// Applies a consent change to App Metrics. A revoke also deletes the Observe settings, the dispatch
+/// cursors among them.
+@AppMetricsActor
+func applyConsent(
+  _ consent: ConsentValue,
+  toAppMetrics setAppMetricsConsent: @AppMetricsActor (Bool) -> Void
+) {
+  setAppMetricsConsent(consent == .granted)
+  if consent == .notGranted {
+    ObserveUserDefaults.deleteStoredSettings()
+  }
 }

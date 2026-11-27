@@ -146,7 +146,7 @@ export async function disableAppSwitcherProtectionAsync(): Promise<void> {
  * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
  * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
  * - **Post-Android 13**: No additional permissions required.
- * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasyncwriteonly-granularpermissions).
+ * You can request the appropriate permissions by using [`MediaLibrary.requestPermissions()`](./media-library/#requestpermissionswriteonly-granularpermissions).
  *
  * @param listener The function that will be executed when the user takes a screenshot.
  * This function accepts no arguments.

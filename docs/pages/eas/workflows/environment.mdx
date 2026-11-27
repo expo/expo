@@ -259,6 +259,12 @@ jobs:
 
 For the event domains that populate each field and full examples, see [`app_store_connect`](/eas/workflows/syntax/#app_store_connect) in the Syntax guide.
 
+### `observe`
+
+The error event that triggered an [`on.observe.new_error`](/eas/workflows/syntax/#onobservenew_error) workflow. Use `observe.event` in trigger conditions and jobs to read the error's severity, environment, platform, fingerprint, and exception details. This context is also available when you retry the run, but not when you start the workflow manually.
+
+For the full field reference, see [`observe`](/eas/workflows/syntax/#observe). For a complete example, see [Trigger a workflow for a new error](/eas/observe/errors/#trigger-a-workflow-for-a-new-error).
+
 ## Additional environment variables
 
 In addition to the variables you set, the worker provides a number of variables on every job that runs on a virtual machine (VM), such as `EAS_BUILD_ID`, `EAS_BUILD_PROJECT_ID`, and `CI`. They are read at runtime, so reference them from within a `run` step. For the full list, see [Built-in environment variables](/eas/environment-variables/usage/#built-in-environment-variables).

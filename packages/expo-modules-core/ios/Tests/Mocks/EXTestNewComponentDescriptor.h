@@ -31,6 +31,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable id)updateWithDynamicProps:(NSDictionary<NSString *, id> *)props NS_SWIFT_NAME(update(dynamicProps:));
 
 /**
+ Builds `folly::dynamic` props from the dictionary once, for `updateWithPreparedDynamicProps`, so a benchmark
+ doesn't measure the conversion of the dictionary.
+ */
+- (void)prepareDynamicProps:(NSDictionary<NSString *, id> *)props NS_SWIFT_NAME(prepare(dynamicProps:));
+
+/**
+ Clones the current props with a copy of the props that `prepareDynamicProps:` built, and returns the decoded
+ props of the result.
+ */
+- (nullable id)updateWithPreparedDynamicProps NS_SWIFT_NAME(updateWithPreparedDynamicProps());
+
+/**
+ Drops the current props, as Fabric does when the view's shadow node goes away.
+ */
+- (void)reset;
+
+/**
  The `opacity` of the current props, one of the base view props that React Native parses.
  */
 @property (nonatomic, readonly) float opacity;

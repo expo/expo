@@ -20,7 +20,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
 
-  s.resource_bundles = {'ExpoApplication_privacy' => ['PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {'ExpoApplication_privacy' => ['ExpoApplication/PrivacyInfo.xcprivacy']}
 
   s.source_files = "**/*.{h,m,swift}"
   # Swift/Objective-C compatibility
@@ -35,8 +35,5 @@ Pod::Spec.new do |s|
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'Tests/**/*.{m,swift}'
-    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
-    # user_target_xcconfig (-lc++), so link the C++ runtime explicitly.
-    test_spec.libraries = 'c++'
   end
 end

@@ -276,6 +276,12 @@ function metroImportAll(
 ): any | Exports | Record<string, any> {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedAll !== EMPTY) {
     return modules.get(moduleId)!.importedAll;
+  } else if (
+    moduleId != null &&
+    !modules.has(moduleId) &&
+    !moduleDefinersBySegmentID[definingSegmentByModuleID.get(moduleId) ?? 0]
+  ) {
+    throw unknownModuleError(moduleId, moduleIdHint);
   }
 
   const exports: Exports = metroRequire(moduleId, moduleIdHint);

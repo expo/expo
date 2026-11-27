@@ -1,3 +1,5 @@
+import Foundation
+
 /// Stores and resolves ``VideoAssetTransportProvider`` instances used by `expo-video`.
 ///
 /// The registry is the public entry point for transport modules to register custom source

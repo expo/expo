@@ -359,6 +359,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/MediaSessionScreen'));
+    },
+    name: 'MediaSession',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/MediaLibraryLegacy/MediaLibraryScreen'));
     },
     name: 'MediaLibrary@legacy',
@@ -556,12 +562,6 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/VideoThumbnailsScreen'));
-    },
-    name: 'Video Thumbnails',
   },
   {
     getComponent() {

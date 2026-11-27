@@ -549,7 +549,7 @@ it.each([
 
     expect(result.status).toBe('complete');
     if (result.status !== 'complete') return;
-    expect(result.code).toBe(source);
+    expect(result.code).toBe(`"use strict";\n${source}`);
     expect(result.metadata.loaderReference).toBeUndefined();
     expect(result.metadata.performConstantFolding).toBeUndefined();
   }
@@ -867,12 +867,12 @@ describe('object rest/spread transform profiles', () => {
     const module = { exports: {} as unknown };
     factory?.(
       globalThis,
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
-      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
+      (name: string) => requireFromBabelPresetExpo(name),
       module,
       module.exports,
-      []
+      result.dependencies.map(({ name }) => name)
     );
     expect(module.exports).toEqual({ b: 2 });
   });
@@ -1732,7 +1732,7 @@ it('rewrites React Native named imports on the native web path', async () => {
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.dependencies.map(({ name }) => name)).toEqual([
-    'react-native-web/dist/index',
+    'react-native-web/dist/index.js',
     'react-native-web/dist/exports/View',
     'react-native-web/dist/exports/createElement',
     'react-native-web/dist/exports/Text',
@@ -1765,7 +1765,7 @@ it('rewrites React Native CommonJS bindings on the native web path', async () =>
   expect(result.dependencies.map(({ name }) => name)).toEqual([
     'react-native-web/dist/exports/View',
     'react-native-web/dist/exports/Text',
-    'react-native-web/dist/index',
+    'react-native-web/dist/index.js',
   ]);
 });
 
@@ -1851,7 +1851,7 @@ it('preserves development deep React Native import warnings', async () => {
   expect(
     result.result.code.match(/Deep imports from the 'react-native' package are deprecated/g)
   ).toHaveLength(4);
-  expect(result.result.code).toContain(`Source: ${candidate} 1:0`);
+  expect(result.result.code).toContain(`Source: ${candidate} 2:0`);
   expect(result.result.code).not.toContain(
     "deprecated ('react-native/Libraries/Core/InitializeCore')"
   );
@@ -1884,7 +1884,7 @@ it.each([
     });
     expect(result.status).toBe('complete');
     if (result.status !== 'complete') return;
-    expect(result.result.code).toContain('react/compiler-runtime');
+    expect(result.dependencies.map(({ name }) => name)).toContain('react/compiler-runtime');
     expect(result.result.code).toContain('exports.App = App');
     expect(result.result.code).not.toContain('type Props');
     expect(result.result.code).not.toContain('<View');

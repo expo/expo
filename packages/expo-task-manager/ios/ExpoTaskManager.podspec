@@ -19,22 +19,18 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'UMAppLoader'
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
   }
   s.resource_bundles = {
-    'ExpoTaskManager_privacy' => ['PrivacyInfo.xcprivacy']
+    'ExpoTaskManager_privacy' => ['ExpoTaskManager/PrivacyInfo.xcprivacy']
   }
   s.source_files = '**/*.{h,m,mm,swift}'
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'ExpoTaskManagerTests/'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
-    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
-    # user_target_xcconfig (-lc++), so link the C++ runtime explicitly.
-    test_spec.libraries = 'c++'
+    test_spec.source_files = 'ExpoTaskManagerTests/**/*.{m,swift}'
   end
 end

@@ -4,6 +4,8 @@ import Foundation
 
 class APIClient {
   static let shared = APIClient()
+  /// The `UserDefaults` key of the stored session secret.
+  static let sessionKey = "expo-session-secret"
 
   private var useStaging: Bool {
     return false
@@ -24,6 +26,12 @@ class APIClient {
     return useStaging
       ? "https://staging.exp.host/--/graphql"
       : "https://exp.host/--/graphql"
+  }
+
+  var apiOrigin: String {
+    return useStaging
+      ? "https://staging-api.expo.dev"
+      : "https://api.expo.dev"
   }
 
   var websiteOrigin: String {

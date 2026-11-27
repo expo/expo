@@ -6,10 +6,30 @@ hasVideoLink: true
 searchRank: 9
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+<AgentPrompt
+  title="Deploy your first web app with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Deploy the web version of my Expo Router project to Expo Hosting. Use https://docs.expo.dev/eas/hosting/get-started.md as the source for each command.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. Read `web.output` in the app config. If it is not set, ask me to choose `single`, `static`, or `server`, and set it. The `server` output is for projects with API routes or server functions.
+5. Run `npx expo export --platform web`. The command writes the export to the dist directory.
+6. Ask me for a preview subdomain name, for example `my-app` for `https://my-app.expo.app`. Run `eas deploy --non-interactive --dev-domain <name>`. If the command says that the preview URL is already set, run `eas deploy --non-interactive` without `--dev-domain`. If the command says that the name is taken, ask me for another name.
+7. Do not run `eas deploy --prod` unless I ask for a production deployment.
+8. Give me the deployment URL and the dashboard link from the command output. Tell me which commands you ran.
+```
+
+</AgentPrompt>
 
 Expo Hosting is a react hosting service that allows you to deploy an exported Expo web build to a preview or production URL.
 
@@ -35,10 +55,10 @@ This guide will walk you through the process of creating your first web deployme
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-58'],
-        yarn: ['$ yarn create expo-app my-app --template default@sdk-58'],
-        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-58'],
-        bun: ['$ bun create expo my-app --template default@sdk-58'],
+        npm: ['$ npx create-expo-app@latest my-app'],
+        yarn: ['$ yarn create expo-app my-app'],
+        pnpm: ['$ pnpm create expo-app my-app'],
+        bun: ['$ bun create expo my-app'],
       }}
     />
 

@@ -36,6 +36,11 @@ private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   var nickname: String = ""
 
+  @JS(.cached)
+  var cachedNickname: String {
+    return nickname
+  }
+
   // A `Record` argument and return.
   @JS
   func repeated(options: MacroOptions) -> MacroOptions {
@@ -243,6 +248,27 @@ private struct MacroModuleTests {
       expo.modules.MacroGreeter.nickname
       """)
     #expect(try value.asString() == "Ada")
+  }
+
+  @Test
+  func `stores the first value of a @JS(.cached) property on the module object`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const module = expo.modules.MacroGreeter
+        module.nickname = 'Ada'
+        const first = module.cachedNickname
+        module.nickname = 'Grace'
+        const descriptor = Object.getOwnPropertyDescriptor(module, 'cachedNickname')
+        return [first, module.cachedNickname, descriptor.value, descriptor.writable]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "Ada")
+    #expect(try result[1].asString() == "Ada")
+    #expect(try result[2].asString() == "Ada")
+    #expect(try result[3].asBool() == false)
   }
 
   // MARK: - Async functions
@@ -464,4 +490,27 @@ private struct MacroModuleTests {
       #expect(try message.asString().contains("TypeError"))
     }
   }
+
+  // MARK: - Attached runtimes
+
+  @Test
+  func `binds the module in an attached runtime`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter.greet('Expo')").asString() == "Hi, Expo")
+  }
+
+  @Test
+  func `rebuilds the module object in an attached runtime when the module is replaced`() throws {
+    register(MacroGreeter(appContext: appContext))
+    let attachedRuntime = JavaScriptRuntime()
+    try appContext.attach(runtime: attachedRuntime)
+    try attachedRuntime.eval("first = expo.modules.MacroGreeter")
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter === first").getBool())
+
+    register(MacroGreeter(appContext: appContext))
+    #expect(try attachedRuntime.eval("expo.modules.MacroGreeter !== first").getBool())
+  }
+
 }

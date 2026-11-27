@@ -100,11 +100,9 @@ public final class SharingModule: Module {
     from viewController: UIViewController,
     anchor: SharingOptions.Rect?
   ) {
-    // Popovers are a regular-width behavior, not an iPad one.
-    guard viewController.traitCollection.horizontalSizeClass == .regular else {
-      return
-    }
-
+    // Anchor for every presenter. A presented sheet, such as a share sheet that is still on screen,
+    // reports a compact width inside a regular-width window. UIKit then shows a popover, and a popover
+    // without a source view throws. In a compact window the popover adapts and ignores the anchor.
     let viewFrame = viewController.view.frame
     SceneGeometry.anchorPopover(
       of: activityController,
@@ -116,6 +114,11 @@ public final class SharingModule: Module {
         height: anchor?.height ?? 0
       )
     )
+
+    // Popovers are a regular-width behavior, not an iPad one.
+    guard viewController.traitCollection.horizontalSizeClass == .regular else {
+      return
+    }
     activityController.modalPresentationStyle = .pageSheet
   }
 

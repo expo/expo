@@ -65,6 +65,12 @@ expo-modules swift:check
 expo-modules swift:check --symbol HapticsModule.impactAsync ios
 ```
 
+With `--fix`, the command first applies the Fix-Its of the diagnostics to the files in place, and prints each one. Then it checks the files again and prints the diagnostics that are left: those without a Fix-It, and those whose Fix-It it skipped, for example because the diagnostic has more than one Fix-It to choose from. It doesn't format the files. `--fix` can't be combined with `--json`.
+
+```sh
+expo-modules swift:check --fix ios
+```
+
 Both commands use the `expo-modules-macros` version that the package's `expo-modules-core` depends on, as `typegen` does, and need version 0.27.0 or later. They find it from the first path.
 
 Options of both commands:

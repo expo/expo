@@ -20,6 +20,7 @@ import type {
   AlarmMethod,
   OpenEventDialogResult,
   Attendee,
+  Calendar,
 } from './legacy/Calendar';
 import type { RecurrenceRule } from './types/RecurrenceRule';
 
@@ -44,6 +45,8 @@ export type AddEventWithFormOptions = PresentationOptions & {
   alarms?: Alarm[];
   recurrenceRule?: RecurrenceRule;
 };
+
+export type CalendarDetails = Partial<Calendar>;
 
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
@@ -206,7 +209,7 @@ export declare class ExpoCalendar {
    * @param startDate Beginning of time period to search for reminders in, or `null` for all completed reminders before `endDate`.
    * @param endDate End of time period to search for reminders in, or `null` for all completed reminders after `startDate`.
    * @param status One of `Calendar.ReminderStatus.COMPLETED` or `Calendar.ReminderStatus.INCOMPLETE`. If not defined, both completed and incomplete reminders will be returned.
-   * @return An array of [`ExpoCalendarReminder`](#expocalendarreminder) objects matching the search criteria.
+   * @return An array of [`CalendarReminder`](#calendarreminder) objects matching the search criteria.
    * @platform ios
    */
   listReminders(
@@ -259,7 +262,7 @@ export declare class ExpoCalendar {
    * > resolved - real calendars require full calendar access.
    *
    * @param calendarId The ID of the calendar to get.
-   * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
+   * @returns A [`Calendar`](#calendar) object representing the calendar.
    */
   static get(calendarId: string): Promise<ExpoCalendar>;
 }
@@ -490,7 +493,7 @@ export declare class ExpoCalendarEvent {
   /**
    * Gets an event by its ID. Throws an error if the event with the given ID does not exist.
    * @param eventId The ID of the event to get.
-   * @returns An [`ExpoCalendarEvent`](#expocalendarevent) object representing the event.
+   * @returns A [`CalendarEvent`](#calendarevent) object representing the event.
    */
   static get(eventId: string): Promise<ExpoCalendarEvent>;
 }
@@ -579,7 +582,7 @@ export declare class ExpoCalendarReminder {
   /**
    * Gets a reminder by its ID. Throws an error if the reminder with the given ID does not exist.
    * @param reminderId The ID of the reminder to get.
-   * @returns An [`ExpoCalendarReminder`](#expocalendarreminder) object representing the reminder.
+   * @returns A [`CalendarReminder`](#calendarreminder) object representing the reminder.
    * @platform ios
    */
   static get(reminderId: string): Promise<ExpoCalendarReminder>;
@@ -587,7 +590,6 @@ export declare class ExpoCalendarReminder {
 
 /**
  * Represents a calendar attendee object.
- * @platform android
  */
 export declare class ExpoCalendarAttendee {
   /**

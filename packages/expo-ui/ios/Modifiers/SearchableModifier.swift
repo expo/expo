@@ -35,18 +35,13 @@ internal enum SearchFieldPlacementType: String, Enumerable {
   }
 }
 
-internal struct SearchableModifier: ViewModifier, Record {
+internal struct SearchableModifier: EventDispatchingViewModifier, Record {
   @Field var text: ObservableState?
   @Field var placement: SearchFieldPlacementType = .automatic
   @Field var prompt: String?
   var eventDispatcher: EventDispatcher?
 
   init() {}
-
-  init(from params: Dict, appContext: AppContext, eventDispatcher: EventDispatcher) throws {
-    try self = .init(from: params, appContext: appContext)
-    self.eventDispatcher = eventDispatcher
-  }
 
   @ViewBuilder
   func body(content: Content) -> some View {

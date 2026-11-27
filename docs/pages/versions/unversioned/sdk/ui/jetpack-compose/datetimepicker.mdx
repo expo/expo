@@ -147,7 +147,13 @@ export default function InputVariantExample() {
 
 Set `showTitle={false}` and `showHeadline={false}` to hide the "Select date" title and the selected-date headline. Use these props when the picker is in a screen or sheet that already has its own heading. The same props are available on `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog`. The following example also sets `showVariantToggle={false}` to hide the button that toggles between variants, so only the calendar shows.
 
-```tsx CalendarOnlyExample.tsx
+<ComponentExample
+  title="CalendarOnlyExample.tsx"
+  src="/static/images/expo-ui/examples/datetimepicker-calendar-only-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/datetimepicker-calendar-only-android-dark.webp"
+  alt="A calendar for November 2026 with the 18th selected and no title or headline above it">
+
+```tsx
 import { useState } from 'react';
 import { Host, DateTimePicker } from '@expo/ui/jetpack-compose';
 
@@ -174,6 +180,8 @@ export default function CalendarOnlyExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Date range picker
 

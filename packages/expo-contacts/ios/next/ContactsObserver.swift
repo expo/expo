@@ -1,3 +1,5 @@
+import Contacts
+
 typealias OnContactsChange = ([String: Any?]) -> Void
 
 class ContactsObserver {

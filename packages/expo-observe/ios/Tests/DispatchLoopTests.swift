@@ -1,4 +1,3 @@
-import ExpoAppMetrics
 import Testing
 
 @testable import ExpoObserve
@@ -189,6 +188,7 @@ struct DispatchLoopTests {
         sent = ObservabilityManager.sampledLogs(
           batch,
           shouldDispatch: true,
+          shouldDispatchErrors: true,
           ignoredEvents: ["hidden"]
         ).map(\.name)
         return .retryableFailure(retryAfter: nil)

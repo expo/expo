@@ -6,7 +6,7 @@ const mockAppMetrics = {
   reportError: jest.fn(),
 };
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../../../app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
 }));

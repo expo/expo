@@ -14,6 +14,7 @@ import {
   retryAsync,
   prettyPrintTestSuiteLogs,
   printImageComparisonServerLogs,
+  reportPendingSpecs,
   setupLogger,
   runCustomMaestroFlowsAsync,
   runMaestroAsync,
@@ -144,6 +145,11 @@ async function testAsync(
     `\n📷 Starting Maestro tests - deviceId[${deviceId}] flows[${flowRelativePaths.join(', ')}]`
   );
   const getLogs = setupLogger(`adb logcat -e ${APP_ID}`, stopLogCollectionController.signal);
+  // The JavaScript console of the app. The filter above does not match these lines.
+  const getJavaScriptLogs = setupLogger(
+    'adb logcat -T 1 -s ReactNativeJS',
+    stopLogCollectionController.signal
+  );
   try {
     console.time(TEST_DURATION_LABEL);
     let failedFlows: string[];
@@ -161,11 +167,14 @@ async function testAsync(
     // reinstalled by the retry.
     reinstallMaestroDriver = false;
 
+    stopLogCollectionController.abort();
+    const javaScriptLogs = await getJavaScriptLogs();
+    reportPendingSpecs(javaScriptLogs);
+
     if (failedFlows.length > 0) {
-      stopLogCollectionController.abort();
       console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
       const logs = await getLogs();
-      console.log(prettyPrintTestSuiteLogs(logs));
+      console.log(prettyPrintTestSuiteLogs(javaScriptLogs));
       await printImageComparisonServerLogs();
       if (!(await isAppRunning())) {
         if (logs.length > 0) {

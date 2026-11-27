@@ -20,8 +20,8 @@
           "type": "cpp",
           "name": "ExpoModulesCore_common_cpp",
           "path": "common/cpp",
-          "pattern": "**/*.cpp",
-          "headerPattern": "**/*.h",
+          "pattern": "fabric/**/*.cpp",
+          "headerPattern": "fabric/**/*.h",
           "exclude": [],
           "dependencies": [
             "Hermes",
@@ -104,6 +104,7 @@
     {
       "name": "ExpoModulesWorklets",
       "podName": "ExpoModulesWorklets",
+      "headersXCFramework": true,
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -180,7 +181,8 @@
             "RNWorklets"
           ],
           "linkedFrameworks": ["Foundation"],
-          "includeDirectories": ["."]
+          "includeDirectories": ["."],
+          "compilerFlags": ["-DWORKLETS_STABLE_API_TARGET=\"0.14.0\""]
         }
       ]
     }

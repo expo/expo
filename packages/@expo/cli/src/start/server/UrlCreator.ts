@@ -55,11 +55,11 @@ export class UrlCreator {
   constructor(
     public defaults: CreateURLOptions,
     private bundlerInfo: BundlerInfo,
-    private gatewayInfo: GatewayInfo = getGateway()
+    private gatewayInfo?: GatewayInfo
   ) {}
 
   static async init(defaults: CreateURLOptions | undefined | null, bundlerInfo: BundlerInfo) {
-    const gatewayInfo = await getGatewayAsync();
+    const gatewayInfo = defaults?.hostType === 'localhost' ? undefined : await getGatewayAsync();
     return new UrlCreator(defaults || {}, bundlerInfo, gatewayInfo);
   }
 
@@ -129,7 +129,7 @@ export class UrlCreator {
   }
 
   public getDefaultRouteAddress(): string {
-    return this.gatewayInfo.address;
+    return (this.gatewayInfo ??= getGateway()).address;
   }
 
   /** URL scheme configured for development-build deep links (e.g. `myapp`). `null` when unset. */
@@ -183,7 +183,7 @@ export class UrlCreator {
     return {
       hostname: getDefaultHostname(
         options,
-        this.gatewayInfo,
+        () => this.getDefaultRouteAddress(),
         this.bundlerInfo.getHostnameOverride?.()
       ),
       port: this.bundlerInfo.getPort().toString(),
@@ -232,7 +232,7 @@ function getUrlComponentsFromProxyUrl(
 
 const getDefaultHostname = (
   options: CreateURLOptions,
-  gateway: GatewayInfo,
+  getGatewayAddress: () => string,
   hostnameOverride?: string | null
 ) => {
   if (hostnameOverride) {
@@ -242,8 +242,7 @@ const getDefaultHostname = (
     // to normalize to an address that's consistent
     return '127.0.0.1';
   } else {
-    // Fall back to local address
-    return options.hostname || gateway.address;
+    return options.hostname || getGatewayAddress();
   }
 };
 

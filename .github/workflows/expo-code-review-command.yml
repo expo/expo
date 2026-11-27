@@ -5,6 +5,9 @@ name: AI code review (command)
 #   /review (or /expo-review, or @expo-bot review)  run once; router picks agents
 #   /review all (or /expo-review all, or @expo-bot review all)
 #   /review correctness security (either command, or @expo-bot review …)
+#                            Each named agent must exist in every routing scope
+#                            the PR touches, or that scope fails. `correctness`
+#                            and `security` are in every scope.
 #   @expo-bot check          the review half of "verify + review from one
 #                            comment" (verify-comment.yml owns the verify
 #                            half). Any tail belongs to verify (--fix), so
@@ -274,7 +277,61 @@ jobs:
           esac
           gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 
+      # The same untrusted context as expo-code-review.yml, so a /review judges the
+      # same evidence as the automatic review. A dispatch has no PR in its payload,
+      # so read the title and body from the API for both paths.
+      # The review runs without the PR text if this fails.
+      - name: Write the PR title and body for reviewers
+        if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+        run: |
+          gh pr view "$PR" --repo "${{ github.repository }}" --json title,body \
+            --jq '"Pull request title: \(.title // "")\n\nPull request body:\n\(.body // "")"' > "$RUNNER_TEMP/pr-description.md"
+
+      # The same sandbox as expo-code-review.yml, under the same rules: only for a PR
+      # with files in the autonomous scope, and on a fork PR only with the ai-review
+      # label. The comment gate admits any collaborator, so a commenter also needs write
+      # access. If this step fails, the review runs without a sandbox.
+      - name: Check whether the review gets a sandbox
+        id: scope
+        if: steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+          COMMENTER: ${{ github.event.comment.user.login }}
+        run: |
+          writer=true
+          if [ -n "$COMMENTER" ]; then
+            case "$(gh api "repos/$REPO/collaborators/$COMMENTER/permission" --jq .permission 2>/dev/null || true)" in
+              admin | maintain | write) ;;
+              *) writer=false ;;
+            esac
+          fi
+          echo "writer=$writer" >> "$GITHUB_OUTPUT"
+          bash .github/scripts/ai-review-scope.sh
+          gh pr view "$PR" --repo "$REPO" --json isCrossRepository,labels,headRefOid \
+            --jq '"fork=\(.isCrossRepository)", "labeled=\(any(.labels[]; .name == "ai-review"))", "head=\(.headRefOid)"' >> "$GITHUB_OUTPUT"
+
+      - name: Mint sandbox token
+        if: >-
+          steps.cmd.outputs.run == 'true'
+          && steps.scope.outputs.writer == 'true'
+          && steps.scope.outputs.autonomous == 'true'
+          && (steps.scope.outputs.fork == 'false' || steps.scope.outputs.labeled == 'true')
+        continue-on-error: true
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+          RUN_ID: ${{ github.run_id }}
+        run: bash .github/scripts/ai-review-sandbox-token.sh mint
+
       - name: Run AI review
+        id: review
         if: steps.cmd.outputs.run == 'true'
         continue-on-error: true
         env:
@@ -288,11 +345,15 @@ jobs:
           BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
+          SESSION_STORE_REPO: expo/code-review-sessions
+          SESSION_STORE_TOKEN: ${{ secrets.ECR_SESSION_STORE_TOKEN }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
           PR_NUMBER: ${{ inputs.pr }}
           CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+          HEAD_SHA: ${{ steps.scope.outputs.head }}
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
@@ -328,7 +389,64 @@ jobs:
               ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-agents/code-review")
             fi
           fi
-          ./scripts/expo-code-review ecr ci "${ARGS[@]}"
+          # REVIEW_SANDBOX_TOKEN is the child token. The config's mcpServers.sandbox reads it.
+          if [ -f "$SANDBOX_MCP_CONFIG" ]; then
+            REVIEW_SANDBOX_TOKEN=$(jq -r '.mcpServers.sandbox.headers.Authorization | sub("^Bearer "; "")' "$SANDBOX_MCP_CONFIG")
+            export REVIEW_SANDBOX_TOKEN
+          fi
+          # Review only the head read above, so the decision step knows which commit it judged.
+          if [ -n "$HEAD_SHA" ]; then
+            ARGS+=(--expect-head "$HEAD_SHA")
+          fi
+          bash .github/scripts/ai-review-capture.sh \
+            ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
+
+      # Same decision as the automatic workflow. A review of selected agents is
+      # partial, so it does not approve or request changes. The comment gate admits
+      # any collaborator, so only a commenter with write access gets a decision.
+      - name: Submit the autonomous review decision
+        if: steps.review.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+          BOT_LOGIN: expo-bot
+          HEAD_SHA: ${{ steps.scope.outputs.head }}
+          POSTED: ${{ runner.temp }}/ai-review-posted.md
+          ECR_LOG: ${{ runner.temp }}/ai-review-ecr.log
+          DECIDE: >-
+            ${{ steps.scope.outputs.only_autonomous == 'true'
+            && steps.cmd.outputs.agents == ''
+            && steps.scope.outputs.writer == 'true' }}
+        run: bash .github/scripts/ai-review-decision.sh
+
+      # ecr rewrites the comment on every run, so put the attach line back after it.
+      # Only a review that finished has a stored session to reopen.
+      - name: Tell Expo staff how to reopen the review
+        if: always() && steps.cmd.outputs.run == 'true' && steps.review.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+          BOT_LOGIN: expo-bot
+        run: bash .github/scripts/ai-review-attach-note.sh
+
+      - name: Destroy review sandbox
+        if: always() && steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+        run: bash .github/scripts/cleanup-agent-sandboxes.sh "$SANDBOX_MCP_CONFIG"
+
+      - name: Revoke sandbox token
+        if: always() && steps.cmd.outputs.run == 'true'
+        continue-on-error: true
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
+        run: bash .github/scripts/ai-review-sandbox-token.sh revoke
 
       # Same ephemeral per-run log as expo-code-review.yml — a review command
       # runs the full `ecr ci`, whose .expo-agents/code-review/.runs/ log is gone when the

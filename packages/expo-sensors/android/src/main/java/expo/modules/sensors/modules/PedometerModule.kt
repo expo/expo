@@ -1,66 +1,106 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.sensors.modules
 
-import android.Manifest
 import android.hardware.Sensor
-import android.os.Build
-import android.os.Bundle
-import expo.modules.interfaces.permissions.Permissions
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.sensors.UseSensorProxy
+import expo.modules.sensors.PedometerResult
+import expo.modules.sensors.PermissionResponse
+import expo.modules.sensors.PlayServicesNotLinkedException
+import expo.modules.sensors.SensorProxy
+import expo.modules.sensors.askForActivityRecognitionPermissions
 import expo.modules.sensors.createSensorProxy
+import expo.modules.sensors.getActivityRecognitionPermissions
+import expo.modules.sensors.startObserving
+import expo.modules.sensors.stopObserving
+import expo.modules.sensors.toPedometerResult
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.async.Promise
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-private const val EventName = "Exponent.pedometerUpdate"
-
-class NotSupportedException(message: String) : CodedException(message)
-
+@ExpoModule("ExponentPedometer")
 class PedometerModule : Module() {
   private var stepsAtTheBeginning: Int? = null
 
-  private val sensorProxy by lazy {
-    createSensorProxy(EventName, Sensor.TYPE_STEP_COUNTER, appContext) { sensorEvent ->
-      if (stepsAtTheBeginning == null) {
-        stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
-      }
-      Bundle().apply {
-        putDouble("steps", (sensorEvent.values[0] - (stepsAtTheBeginning ?: (sensorEvent.values[0].toInt() - 1))).toDouble())
-      }
+  private val sensorProxy: SensorProxy = createSensorProxy(
+    Sensor.TYPE_STEP_COUNTER
+  ) { sensorEvent ->
+    val initialSteps = stepsAtTheBeginning
+      ?: (sensorEvent.values[0].toInt() - 1).also { stepsAtTheBeginning = it }
+    onUpdate(sensorEvent.toPedometerResult(initialSteps))
+  }
+
+  private val playServices: PedometerPlayServices? by lazy {
+    val isPlayServicesLinked = try {
+      Class.forName("com.google.android.gms.fitness.FitnessLocal")
+      true
+    } catch (_: ClassNotFoundException) {
+      false
+    }
+    if (isPlayServicesLinked) {
+      PedometerPlayServices(androidContext.applicationContext)
+    } else {
+      null
     }
   }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExponentPedometer")
+  @Event(name = "Exponent.pedometerUpdate")
+  private val onUpdate = event<PedometerResult>(
+    onStartObserving = {
+      stepsAtTheBeginning = null
+      startObserving(sensorProxy)
+    },
+    onStopObserving = { stopObserving(sensorProxy) }
+  )
 
-    UseSensorProxy(
-      this@PedometerModule,
-      Sensor.TYPE_STEP_COUNTER,
-      EventName,
-      listenerDecorator = { stepsAtTheBeginning = null }
-    ) { sensorProxy }
+  override fun onDestroy() {
+    stopObserving(sensorProxy)
+  }
 
-    AsyncFunction("getPermissionsAsync") { promise: Promise ->
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
-      } else {
-        // Permissions don't need to be requested on Android versions below Q
-        Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise)
-      }
-    }
+  @JS
+  fun setUpdateInterval(updateInterval: Int): Promise<Unit> {
+    sensorProxy.setUpdateInterval(updateInterval)
+    return Promise.resolve()
+  }
 
-    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.ACTIVITY_RECOGNITION)
-      } else {
-        // Permissions don't need to be requested on Android versions below Q
-        Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise)
-      }
-    }
+  @JS
+  fun isAvailableAsync(): Promise<Boolean> = Promise.resolve(sensorProxy.isAvailable)
 
-    AsyncFunction<Unit, Int, Int>("getStepCountAsync") { _, _ ->
-      throw NotSupportedException("Getting step count for date range is not supported on Android yet")
+  @JS
+  private fun getPermissionsAsync(): Promise<PermissionResponse> =
+    getActivityRecognitionPermissions()
+
+  @JS
+  private fun requestPermissionsAsync(): Promise<PermissionResponse> =
+    askForActivityRecognitionPermissions()
+
+  @JS
+  suspend fun isRecordingAvailableAsync(): Boolean = withContext(Dispatchers.IO) {
+    playServices?.isRecordingAvailable() ?: false
+  }
+
+  @JS
+  suspend fun subscribeRecordingAsync() {
+    withContext(Dispatchers.IO) {
+      val playServices = playServices ?: throw PlayServicesNotLinkedException()
+      playServices.subscribeRecording()
     }
   }
+
+  @JS
+  suspend fun unsubscribeRecordingAsync() {
+    withContext(Dispatchers.IO) {
+      playServices?.unsubscribeRecording()
+    }
+  }
+
+  @JS
+  private suspend fun getStepCountAsync(startTime: Long, endTime: Long): PedometerResult =
+    withContext(Dispatchers.IO) {
+      val playServices = playServices ?: throw PlayServicesNotLinkedException()
+      PedometerResult(steps = playServices.getStepCount(startTime, endTime).toInt())
+    }
 }

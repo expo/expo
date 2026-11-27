@@ -6,6 +6,7 @@ const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
+  setConsent: jest.fn(),
 };
 // The real native module is a JSI host object.
 // Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
@@ -20,6 +21,7 @@ const mockAppMetrics = {
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
+  reportFeedback: jest.fn(),
   setNetworkTracesConfig: jest.fn(),
 };
 
@@ -33,7 +35,7 @@ jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
 }));
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
@@ -77,7 +79,7 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
-  jest.doMock('expo-app-metrics', () => ({
+  jest.doMock('../app-metrics', () => ({
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
@@ -666,5 +668,176 @@ describe('module Proxy', () => {
     });
     expect(() => Observe.reportError(new Error('boom'))).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('forwards valid feedback to AppMetrics with the default scale', () => {
+    const Observe = loadModule();
+    const feedback = { id: 'checkout', message: 'Great', rating: 10, attributes: { plan: 'pro' } };
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      ...feedback,
+      scale: { min: 0, max: 10 },
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards feedback with only a message', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: 'Great' });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      message: 'Great',
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [
+      { id: 'checkout', rating: 0 },
+      { id: 'checkout', rating: 0, scale: { min: 0, max: 10 } },
+    ],
+    [
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
+    ],
+    [
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
+    ],
+  ])('forwards a rating with its scale: %o', (feedback, expected) => {
+    const Observe = loadModule();
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(expected);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  const idReason = '`id` must be a non-empty string';
+  const messageReason = '`message` must be a string';
+  const ratingReason = '`rating` must be a whole number';
+  const scaleReason = '`scale.min` and `scale.max` must be whole numbers';
+  const scaleOrderReason = '`scale.min` must be less than `scale.max`';
+  const scaleRangeReason = '`scale.min` and `scale.max` must be from 0 to 10';
+  const scaleWithoutRatingReason = 'set `rating` when you set `scale`';
+  const emptyReason = 'set `message` or `rating`';
+
+  it.each([
+    [{ id: 'checkout' }, emptyReason],
+    [{ id: 42, message: 'Great' }, idReason],
+    [{ id: 'checkout', message: 42 }, messageReason],
+    [{ id: 'checkout', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: NaN }, ratingReason],
+    [{ id: 'checkout', rating: Infinity }, ratingReason],
+    [{ id: 'checkout', rating: '5' }, ratingReason],
+    [{ id: 'checkout', rating: 2 ** 53 }, ratingReason],
+    [{ id: 'checkout', message: 'Great', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: -1 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 11 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 0, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 6, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 1, scale: { min: 0, max: 1.5 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: '0', max: 1 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 0 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: 'stars' }, scaleReason],
+    [{ id: 'checkout', rating: 0, scale: { min: -1, max: 1 } }, scaleRangeReason],
+    [{ id: 'checkout', rating: 5, scale: { min: 0, max: 11 } }, scaleRangeReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 1, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 5, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', message: 'Great', scale: { min: 1, max: 5 } }, scaleWithoutRatingReason],
+    [{ id: '', message: 'Great' }, idReason],
+    [{ id: '  ', message: 'Great' }, idReason],
+    [{ id: 'checkout', message: '' }, emptyReason],
+    [{ id: 'checkout', message: '  ' }, emptyReason],
+  ])('drops feedback with a warning: %o', (feedback, reason) => {
+    const Observe = loadModule();
+    // The cases pass wrong types on purpose, the way an untyped caller can.
+    Observe.reportFeedback(feedback as Parameters<typeof Observe.reportFeedback>[0]);
+    expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      `[expo-observe] \`reportFeedback\` dropped the report: ${reason}.`
+    );
+  });
+
+  it.each([null, undefined, 'Great'])(
+    'drops a non-object feedback argument with a warning: %p',
+    (feedback) => {
+      const Observe = loadModule();
+      // The cases pass wrong types on purpose, the way an untyped caller can.
+      Observe.reportFeedback(feedback as unknown as Parameters<typeof Observe.reportFeedback>[0]);
+      expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[expo-observe] `reportFeedback` dropped the report: the argument must be an object.'
+      );
+    }
+  );
+
+  it('omits an empty message when a rating is set', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: '  ', rating: 5 });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      rating: 5,
+      scale: { min: 0, max: 10 },
+    });
+    expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('never throws when the native reportFeedback call throws', () => {
+    const Observe = loadModule();
+    mockAppMetrics.reportFeedback.mockImplementationOnce(() => {
+      throw new Error('native rejected the payload');
+    });
+    expect(() => Observe.reportFeedback({ id: 'checkout', rating: 5 })).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+});
+
+describe('setConsent', () => {
+  type PendingCall = { consent: string; resolve: () => void; reject: (error: Error) => void };
+  const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  function deferNativeCalls() {
+    const calls: PendingCall[] = [];
+    mockNativeTarget.setConsent.mockImplementation(
+      (consent: string) =>
+        new Promise<void>((resolve, reject) => calls.push({ consent, resolve, reject }))
+    );
+    return calls;
+  }
+
+  it('starts each native call after the previous one settles, in call order', async () => {
+    const Observe = loadModule();
+    const calls = deferNativeCalls();
+
+    const grant = Observe.setConsent('granted');
+    const revoke = Observe.setConsent('not-granted');
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted']);
+
+    calls[0]!.resolve();
+    await grant;
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted', 'not-granted']);
+
+    calls[1]!.resolve();
+    await expect(revoke).resolves.toBeUndefined();
+  });
+
+  it('runs a later call after an earlier call rejects, and rejects only the failed call', async () => {
+    const Observe = loadModule();
+    const calls = deferNativeCalls();
+
+    const grant = Observe.setConsent('granted');
+    const revoke = Observe.setConsent('not-granted');
+    await flush();
+    expect(calls.map((call) => call.consent)).toEqual(['granted']);
+    calls[0]!.reject(new Error('not saved'));
+    await expect(grant).rejects.toThrow('not saved');
+    await flush();
+
+    expect(calls.map((call) => call.consent)).toEqual(['granted', 'not-granted']);
+    calls[1]!.resolve();
+    await expect(revoke).resolves.toBeUndefined();
   });
 });

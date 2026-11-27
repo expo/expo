@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react-native';
 import { Children } from 'react';
+import { NativeComponentRegistry } from 'react-native';
 
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
+import { SharedObject } from '../SharedObject';
 
 jest.mock('react-native', () => {
   const ReactNative = jest.requireActual('react-native');
@@ -113,5 +115,29 @@ describe('requireNativeViewManager', () => {
     expect(testNativeComponent.props.accessibilityLabel).toBe('Next');
     expect(testNativeComponent.props.accessibilityElementsHidden).toBe(false);
     expect(testNativeComponent.props.importantForAccessibility).toBeUndefined();
+  });
+
+  it(`sends the ID of a new shared object of the same class to native`, () => {
+    const getViewConfig = jest.spyOn(NativeComponentRegistry, 'get');
+    requireNativeViewManager('ExpoTestPlayerView');
+    const expo = globalThis.expo as any;
+    const originalGetViewConfig = expo.getViewConfig;
+    expo.getViewConfig = () => ({ validAttributes: { player: true }, directEventTypes: {} });
+    const { validAttributes } = getViewConfig.mock.calls.at(-1)![1]();
+    expo.getViewConfig = originalGetViewConfig;
+    getViewConfig.mockRestore();
+
+    const player = new SharedObject();
+    Object.defineProperty(player, '__expo_shared_object_id__', { value: 1 });
+    const nextPlayer = new SharedObject();
+    Object.defineProperty(nextPlayer, '__expo_shared_object_id__', { value: 2 });
+
+    // The renderer builds the props that native gets on an update with this function.
+    const {
+      diff: diffAttributePayload,
+    } = require('react-native/Libraries/ReactNative/ReactFabricPublicInstance/ReactNativeAttributePayload');
+    expect(diffAttributePayload({ player }, { player: nextPlayer }, validAttributes)).toEqual({
+      player: 2,
+    });
   });
 });

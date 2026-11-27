@@ -192,6 +192,8 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    * @platform iOS
    */
   tabBarItemAccessibilityLabel?: string;
+  // Internal. The text of a hidden `Label`, used as the accessibility label.
+  hiddenTitle?: string;
   /**
    * @platform iOS
    */
@@ -697,7 +699,7 @@ export interface NativeTabTriggerProps {
   testID?: string;
   /**
    * The accessibility label of the tab bar item, announced by screen readers.
-   * Defaults to the visible tab label.
+   * Defaults to the visible tab label. When the label is hidden, defaults to the text of the hidden label.
    *
    * On Android, maps to the item's `contentDescription` and requires API 26 or above.
    *

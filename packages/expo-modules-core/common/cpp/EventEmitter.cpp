@@ -91,25 +91,10 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
 
 #pragma mark - NativeState
 
-NativeState::NativeState(void *context, void (*contextDeallocator)(void *))
-#if __has_include(<ExpoModulesJSI/NativeState.h>)
-  : NativeStateBase(context, contextDeallocator) {}
-#else
-  : NativeStateBase() {}
-#endif
+NativeState::NativeState() : jsi::NativeState() {}
 
 NativeState::~NativeState() {
   listeners.clear();
-  setListeningHook(nullptr, nullptr, nullptr);
-}
-
-void NativeState::setListeningHook(void *context, ListeningHook hook, void (*releaseContext)(void *)) noexcept {
-  if (releaseListeningHookContext != nullptr) {
-    releaseListeningHookContext(listeningHookContext);
-  }
-  listeningHookContext = context;
-  listeningHook = hook;
-  releaseListeningHookContext = releaseContext;
 }
 
 NativeState::Shared NativeState::get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing) {
@@ -145,21 +130,13 @@ void callObservingFunction(jsi::Runtime &runtime, const jsi::Object &object, con
     });
 }
 
-void notifyListening(jsi::Runtime &runtime, const jsi::Object &emitter, NativeState &state, const std::string &eventName, bool isListening) {
-  if (state.listeningHook != nullptr) {
-    state.listeningHook(state.listeningHookContext, eventName.c_str(), isListening);
-    return;
-  }
-  callObservingFunction(runtime, emitter, isListening ? "__expo_onStartListeningToEvent" : "__expo_onStopListeningToEvent", eventName);
-  callObservingFunction(runtime, emitter, isListening ? "startObserving" : "stopObserving", eventName);
-}
-
 void addListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Function &listener) {
   if (NativeState::Shared state = NativeState::get(runtime, emitter, true)) {
     state->listeners.add(runtime, eventName, listener);
 
     if (state->listeners.listenersCount(eventName) == 1) {
-      notifyListening(runtime, emitter, *state, eventName, true);
+      callObservingFunction(runtime, emitter, "__expo_onStartListeningToEvent", eventName);
+      callObservingFunction(runtime, emitter, "startObserving", eventName);
     }
   }
 }
@@ -171,7 +148,8 @@ void removeListener(jsi::Runtime &runtime, const jsi::Object &emitter, const std
     state->listeners.remove(runtime, eventName, listener);
 
     if (listenersCountBefore >= 1 && state->listeners.listenersCount(eventName) == 0) {
-      notifyListening(runtime, emitter, *state, eventName, false);
+      callObservingFunction(runtime, emitter, "__expo_onStopListeningToEvent", eventName);
+      callObservingFunction(runtime, emitter, "stopObserving", eventName);
     }
   }
 }
@@ -183,7 +161,8 @@ void removeAllListeners(jsi::Runtime &runtime, const jsi::Object &emitter, const
     state->listeners.removeAll(eventName);
 
     if (listenersCountBefore >= 1) {
-      notifyListening(runtime, emitter, *state, eventName, false);
+      callObservingFunction(runtime, emitter, "__expo_onStopListeningToEvent", eventName);
+      callObservingFunction(runtime, emitter, "stopObserving", eventName);
     }
   }
 }

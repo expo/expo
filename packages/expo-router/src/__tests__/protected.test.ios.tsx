@@ -514,7 +514,87 @@ it('redirects a guarded route in a nested navigator to that navigator anchor', a
   expect(screen).toHavePathname('/nested/home');
 });
 
-it('uses the innermost failing guard redirectTo for a nested guarded route', async () => {
+it('uses the outer guard redirectTo when both nested guards fail', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Protected guard={false} redirectTo="/upgrade">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+            <Stack.Screen name="upgrade" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      upgrade: () => <Text testID="upgrade">upgrade</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('ignores the inner guard redirectTo when the failing outer guard has no redirectTo', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false}>
+              <Stack.Protected guard={false} redirectTo="/upgrade">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="upgrade" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      upgrade: () => <Text testID="upgrade">upgrade</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('uses the outer guard redirectTo when the failing inner guard has no redirectTo', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('uses the inner guard redirectTo when only the inner guard fails', async () => {
   await renderRouter(
     {
       _layout: function Layout() {
@@ -877,6 +957,131 @@ it('works with tabs', async () => {
 
   expect(screen).toHavePathname('/protected');
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
+});
+
+it('replaces a guarded group with the root index when they share a URL', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn}>
+              <Stack.Screen name="(app)" />
+            </Stack.Protected>
+            <Stack.Protected guard={!signedIn}>
+              <Stack.Screen name="index" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="login">Login</Text>,
+      '(app)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+        </Tabs>
+      ),
+      '(app)/(home)/_layout': () => <Stack />,
+      '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+    },
+    { initialUrl: '/(app)/(home)' }
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  await act(() => setSignedIn(false));
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
+it('opens the root index on a cold start at a guarded group that shares its URL', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="(app)" />
+          </Stack.Protected>
+          <Stack.Screen name="index" />
+        </Stack>
+      ),
+      '(app)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+        </Tabs>
+      ),
+      '(app)/(home)/_layout': () => <Stack />,
+      '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+      index: () => <Text testID="login">Login</Text>,
+    },
+    { initialUrl: '/(app)/(home)' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen.queryByTestId('home')).toBeNull();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
+it('replaces a fully guarded nested navigator with the parent fallback when they share a URL', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'index' },
+        default: () => <Stack />,
+      },
+      index: () => <Text testID="login">Login</Text>,
+      '(app)/_layout': function AppLayout() {
+        const [signedIn, setState] = useState(true);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={signedIn}>
+              <Stack.Screen name="index" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      '(app)/index': () => <Text testID="home">Home</Text>,
+    },
+    { initialUrl: '/(app)' }
+  );
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  await act(() => setSignedIn(false));
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen.queryByTestId('home')).toBeNull();
+  expect(screen).toHavePathname('/');
+  expect(screen).toHaveSegments([]);
+});
+
+it('throws when the redirectTo of a passing Protected component is an external URL', async () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  try {
+    await expect(
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Protected guard redirectTo="https://example.com/login">
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        ),
+        index: () => <Text testID="home">home</Text>,
+        secret: () => <Text testID="secret">secret</Text>,
+      })
+    ).rejects.toThrow(
+      '`Protected` in "app/_layout" requires an app route for `redirectTo`. Open external URLs with `Linking.openURL`.'
+    );
+  } finally {
+    errorSpy.mockRestore();
+  }
 });
 
 describe('all routes guarded', () => {

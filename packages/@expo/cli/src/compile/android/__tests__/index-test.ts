@@ -3,13 +3,18 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { stripAnsi } from '../../../utils/ansi';
 import { copyAsync, removeAsync } from '../../../utils/dir';
+import { isInteractive } from '../../../utils/interactive';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
 import { event } from '../../events';
 import { expoCompileAndroid } from '../index';
 
 jest.mock('../../../log');
 jest.mock('../../../utils/dir');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), { virtual: true });
 jest.mock('../../events', () => {
   const done = jest.fn();
@@ -51,10 +56,12 @@ afterEach(() => {
 });
 
 const output = () =>
-  jest
-    .mocked(Log.log)
-    .mock.calls.map(([message]) => message)
-    .join('');
+  stripAnsi(
+    jest
+      .mocked(Log.log)
+      .mock.calls.map(([message]) => message)
+      .join('')
+  );
 
 it('documents itself without touching the project', async () => {
   await expoCompileAndroid(['--help']);
@@ -76,7 +83,7 @@ it('builds the app for every architecture', async () => {
     { cwd: '/app/android', stdio: 'inherit' }
   );
   expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Build complete'));
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${apkPath}`));
+  expect(output()).toContain(`Binary: ${apkPath}`);
   const done = jest.mocked(event.span).mock.results[0]?.value;
   expect(done).toHaveBeenCalledWith('build:done', { platform: 'android', mode: 'development' });
   expect(done).toHaveBeenCalledWith('done', {
@@ -87,13 +94,40 @@ it('builds the app for every architecture', async () => {
   });
 });
 
+it('reports working while building and done after', async () => {
+  const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+  let writesWhileBuilding: unknown[][] = [];
+  const spawn = jest.mocked(spawnAsync).getMockImplementation()!;
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(spawnAsync).mockImplementationOnce((command, args, options) => {
+    writesWhileBuilding = [...write.mock.calls];
+    return spawn(command, args, options);
+  });
+
+  try {
+    await expoCompileAndroid(['--dev']);
+
+    expect(writesWhileBuilding).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgQW5kcm9pZCBhcHA=:id=2\x1b\\'],
+    ]);
+    expect(write.mock.calls).toEqual([
+      ['\x1b]7501;state=working:app=expo:msg=QnVpbGRpbmcgQW5kcm9pZCBhcHA=:id=2\x1b\\'],
+      ['\x1b]7501;state=clear:id=2\x1b\\'],
+      ['\x1b]7501;state=done:app=expo:msg=QnVpbGQgY29tcGxldGU=\x1b\\'],
+    ]);
+  } finally {
+    write.mockRestore();
+    jest.mocked(isInteractive).mockReturnValue(false);
+  }
+});
+
 it('builds from a child directory of the project', async () => {
   jest.mocked(process.cwd).mockReturnValue('/app/android');
 
   await expoCompileAndroid(['--dev']);
 
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining(`Binary: ${apkPath}`));
+  expect(output()).toContain(`Binary: ${apkPath}`);
 });
 
 it('copies the app to the output directory', async () => {
@@ -101,31 +135,61 @@ it('copies the app to the output directory', async () => {
 
   expect(removeAsync).toHaveBeenCalledWith('/app/build/app-debug.apk');
   expect(copyAsync).toHaveBeenCalledWith(apkPath, '/app/build/app-debug.apk');
-  expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /app/build/app-debug.apk'));
+  expect(output()).toContain('Binary: /app/build/app-debug.apk');
 });
 
-it('refuses production before loading env files', async () => {
-  await expect(expoCompileAndroid([])).rejects.toThrow(/EXIT_CALLED/);
-
-  expect(Log.exit).toHaveBeenCalledWith(
-    expect.objectContaining({
-      message: 'Production builds are not supported yet. Pass --dev to build in development mode.',
-    })
+it('builds a production apk', async () => {
+  vol.fromJSON(
+    {
+      'android/app/build/outputs/apk/release/output-metadata.json': JSON.stringify({
+        elements: [{ type: 'SINGLE', outputFile: 'app-release.apk' }],
+      }),
+    },
+    '/app'
   );
-  expect(loadEnvFiles).not.toHaveBeenCalled();
-  expect(spawnAsync).not.toHaveBeenCalled();
+
+  await expoCompileAndroid(['--prod', '--output-type', 'apk']);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    '/app/android/gradlew',
+    ['app:assembleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
+    { cwd: '/app/android', stdio: 'inherit' }
+  );
+  expect(output()).toContain('Binary: /app/android/app/build/outputs/apk/release/app-release.apk');
+});
+
+it('builds a production aab by default', async () => {
+  vol.fromJSON({ 'android/app/build/outputs/bundle/release/app-release.aab': '' }, '/app');
+
+  await expoCompileAndroid([]);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    '/app/android/gradlew',
+    ['app:bundleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
+    { cwd: '/app/android', stdio: 'inherit' }
+  );
+  expect(output()).toContain(
+    'Binary: /app/android/app/build/outputs/bundle/release/app-release.aab'
+  );
+  const done = jest.mocked(event.span).mock.results[0]?.value;
+  expect(done).toHaveBeenCalledWith('done', {
+    platform: 'android',
+    mode: 'production',
+    outputType: 'aab',
+    outputPath: '/app/android/app/build/outputs/bundle/release/app-release.aab',
+  });
 });
 
 it('refuses unsupported flags before finding the project', async () => {
   vol.reset();
 
-  await expect(expoCompileAndroid(['--dev', '--output-type', 'aab'])).rejects.toThrow(
-    /EXIT_CALLED/
-  );
+  await expect(expoCompileAndroid(['--device', 'emulator-5554'])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Building an aab is not supported yet. Omit --output-type to build an apk.',
+      message: 'Device builds are not supported yet. Omit --device to build for all architectures.',
     })
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
@@ -146,4 +210,32 @@ it('reports a failed build', async () => {
     error: expect.objectContaining({ message: expect.stringContaining('error code 1') }),
   });
   expect(Log.log).not.toHaveBeenCalledWith(expect.stringContaining('Build complete'));
+});
+
+it('reports when gradlew cannot start', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(Object.assign(new Error(), { code: 'EACCES', status: null }));
+
+  await expect(expoCompileAndroid(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build Android project. Could not run "gradlew" (EACCES).',
+    })
+  );
+});
+
+it('reports when gradlew is stopped by a signal', async () => {
+  jest
+    .mocked(spawnAsync)
+    .mockRejectedValueOnce(Object.assign(new Error(), { signal: 'SIGKILL', status: null }));
+
+  await expect(expoCompileAndroid(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Failed to build Android project. "gradlew" was stopped by SIGKILL.',
+    })
+  );
 });

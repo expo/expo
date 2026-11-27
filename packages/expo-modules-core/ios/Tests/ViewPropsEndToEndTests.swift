@@ -1,9 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
+import Foundation
 import Testing
 
-@testable import ExpoModulesCore
+@_spi(Internal) @testable import ExpoModulesCore
 
 @ViewProps
 private struct EndToEndProps {
@@ -75,13 +76,116 @@ struct ViewPropsEndToEndTests {
   }
 
   @Test
-  func `props without a runtime keep the decoded props`() throws {
+  func `decoded props are freed when the descriptor drops them`() throws {
+    weak var created: DecodedViewProps<EndToEndProps>?
+    weak var updated: DecodedViewProps<EndToEndProps>?
+    try autoreleasepool {
+      created = try update("{ title: 'Card' }")
+      // A value that doesn't decode changes no prop, so the decoder passes `NULL` and the previous props stay.
+      let unchanged = try update("{ title: 5 }")
+      #expect(unchanged === created)
+    }
+    #expect(created != nil)
+
+    try autoreleasepool {
+      updated = try update("{ title: 'New card' }")
+    }
+    // The descriptor keeps only the latest props.
+    #expect(created == nil)
+    #expect(updated != nil)
+
+    descriptor.reset()
+    #expect(updated == nil)
+  }
+
+  @Test
+  func `props without a runtime keep the decoded props on a thread without a runtime`() throws {
     let created = try update("{ title: 'Card' }")
-    let updated =
-      descriptor.update(dynamicProps: ["title": "New card", "opacity": 0.5]) as? DecodedViewProps<EndToEndProps>
+    // A new thread, so no runtime is registered for it.
+    nonisolated(unsafe) let descriptor = descriptor
+    nonisolated(unsafe) var updated: DecodedViewProps<EndToEndProps>?
+    let finished = DispatchSemaphore(value: 0)
+    Thread {
+      updated =
+        descriptor.update(dynamicProps: ["title": "New card", "opacity": 0.5]) as? DecodedViewProps<EndToEndProps>
+      finished.signal()
+    }.start()
+    finished.wait()
 
     #expect(updated === created)
     #expect(updated?.props.title == "Card")
     #expect(descriptor.opacity == 0.5)
+  }
+
+  @Test
+  func `props without a runtime are decoded in the runtime of the current thread`() throws {
+    // Prepares its runtime on this thread, as React Native prepares the main runtime on the JavaScript thread.
+    let appContext = AppContext.create()
+    _ = try update("{ title: 'Card' }")
+    let updated = try #require(
+      descriptor.update(dynamicProps: ["title": "New card", "radius": 8, "opacity": 0.5])
+        as? DecodedViewProps<EndToEndProps>
+    )
+
+    #expect(updated.props.title == "New card")
+    #expect(updated.props.radius == 8)
+    #expect(descriptor.opacity == 0.5)
+    withExtendedLifetime(appContext) {}
+  }
+
+  @Test
+  func `props without a runtime are decoded in the lock of a runtime that other threads use too`() throws {
+    _ = try update("{ title: 'Card' }")
+    let lockingRuntime = LockingTestRuntime()
+    let updated = try #require(updateOnNewThread(registering: lockingRuntime, dynamicProps: ["title": "New card"]))
+
+    #expect(updated.props.title == "New card")
+    #expect(lockingRuntime.lockCount == 1)
+  }
+
+  @Test
+  func `props without a runtime keep the decoded props when the engine of a locked runtime is gone`() throws {
+    let created = try update("{ title: 'Card' }")
+    let lockingRuntime = LockingTestRuntime()
+    lockingRuntime.isEngineGone = true
+    let updated = updateOnNewThread(registering: lockingRuntime, dynamicProps: ["title": "New card"])
+
+    #expect(updated === created)
+    #expect(updated?.props.title == "Card")
+  }
+
+  /// Registers `runtime` for a new thread and sends the props there as `folly::dynamic`.
+  private func updateOnNewThread(
+    registering runtime: JavaScriptRuntime,
+    dynamicProps: [String: Any]
+  ) -> DecodedViewProps<EndToEndProps>? {
+    nonisolated(unsafe) let descriptor = descriptor
+    nonisolated(unsafe) let runtime = runtime
+    nonisolated(unsafe) let dynamicProps = dynamicProps
+    nonisolated(unsafe) var updated: DecodedViewProps<EndToEndProps>?
+    let finished = DispatchSemaphore(value: 0)
+    Thread {
+      ViewPropsRuntimes.registerForCurrentThread(runtime)
+      updated = descriptor.update(dynamicProps: dynamicProps) as? DecodedViewProps<EndToEndProps>
+      finished.signal()
+    }.start()
+    finished.wait()
+    return updated
+  }
+}
+
+/// A runtime that other threads use too, such as the worklets UI runtime.
+private final class LockingTestRuntime: JavaScriptRuntime, JavaScriptRuntimeLocking, @unchecked Sendable {
+  /// Whether the engine runtime is gone, as the worklets UI runtime is after a reload.
+  var isEngineGone = false
+  private(set) var lockCount = 0
+
+  func withLock(_ body: () -> Void) -> Bool {
+    if isEngineGone {
+      return false
+    }
+    lockCount += 1
+    body()
+    return true
   }
 }

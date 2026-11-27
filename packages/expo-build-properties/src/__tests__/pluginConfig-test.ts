@@ -34,9 +34,9 @@ describe(validateConfig, () => {
       `"\`android.targetSdkVersion\` needs to be at least version 31."`
     );
     expect(() =>
-      validateConfig({ android: { kotlinVersion: '1.3.0' } })
+      validateConfig({ android: { kotlinVersion: '2.3.20' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`android.kotlinVersion\` needs to be at least version 1.6.10."`
+      `"\`android.kotlinVersion\` needs to be at least version 2.3.21."`
     );
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })

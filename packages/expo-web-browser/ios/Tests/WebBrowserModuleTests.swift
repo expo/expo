@@ -83,6 +83,30 @@ struct WebBrowserModuleTests {
   // MARK: - Auth session
 
   @Test
+  func `authentication headers are applied before the session opens`() throws {
+    var options = AuthSessionOptions()
+    options.additionalHeaderFields = ["X-Test": "example"]
+
+    if #available(iOS 17.4, macOS 14.4, *) {
+      let session = try WebAuthSession(
+        authUrl: URL(string: "https://auth.example")!,
+        redirectUrl: URL(string: "example://callback"),
+        options: options
+      )
+      #expect(session.authSession?.additionalHeaderFields == options.additionalHeaderFields)
+      #expect(session.isOpen == false)
+    } else {
+      #expect(throws: WebAuthSessionHeadersUnsupportedException.self) {
+        try WebAuthSession(
+          authUrl: URL(string: "https://auth.example")!,
+          redirectUrl: URL(string: "example://callback"),
+          options: options
+        )
+      }
+    }
+  }
+
+  @Test
   func `dismissAuthSession resolves when no session is open`() async throws {
     let result = try await runtime.evalAsync(
       "WebBrowser.dismissAuthSession().then(function (value) { return value === undefined; })"

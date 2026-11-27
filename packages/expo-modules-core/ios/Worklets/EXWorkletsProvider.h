@@ -29,6 +29,21 @@ NS_SWIFT_NAME(WorkletsProvider)
                                          holderPointer:(const void *)holderPointer
     NS_SWIFT_NAME(uiRuntimePointer(runtimePointer:holderPointer:));
 
+// Returns an opaque handle to the worklet runtime of a holder of `react-native-worklets`, which belongs to the runtime
+// at `runtimePointer`. It makes JSI calls only on that runtime, so it doesn't wait for the lock of the worklet runtime.
+// Returns nil when the holder has no worklet runtime.
+- (nullable id)workletRuntimeHandleWithRuntimePointer:(void *)runtimePointer
+                                        holderPointer:(const void *)holderPointer
+    NS_SWIFT_NAME(workletRuntimeHandle(runtimePointer:holderPointer:));
+
+// Returns an opaque scheduler handle for the worklet runtime with the given `jsi::Runtime` pointer and sets
+// `dispatch` to a `void (*)(void *scheduler, int priority, void (^callback)())` function that runs the callback
+// on the thread of that runtime. Both go to `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)`. The
+// handle stays valid for the lifetime of the process. Returns NULL when the pointer isn't a live worklet runtime.
+- (void * _Nullable)schedulerWithRuntimePointer:(void *)runtimePointer
+                                       dispatch:(const void * _Nullable * _Nonnull)dispatch
+    NS_SWIFT_NAME(scheduler(runtimePointer:dispatch:));
+
 - (void)scheduleWorkletWithRuntimeHandle:(id)runtimeHandle
                             serializable:(EXJavaScriptSerializable *)serializable
                                arguments:(NSArray *)arguments
@@ -38,6 +53,11 @@ NS_SWIFT_NAME(WorkletsProvider)
                            serializable:(EXJavaScriptSerializable *)serializable
                               arguments:(NSArray *)arguments
     NS_SWIFT_NAME(executeWorklet(runtimeHandle:serializable:arguments:));
+
+// Runs `block` on the calling thread with the raw `jsi::Runtime *` of the worklet runtime, while holding its lock as
+// the runtime's own synchronous jobs do, and returns YES. Returns NO without running `block` when the runtime is gone.
+- (BOOL)runSyncWithRuntimeHandle:(id)runtimeHandle block:(NS_NOESCAPE void (^)(void *runtimePointer))block
+    NS_SWIFT_NAME(runSync(runtimeHandle:block:));
 
 @end
 

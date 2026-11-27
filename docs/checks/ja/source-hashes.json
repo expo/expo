@@ -1,5 +1,5 @@
 {
-  "tutorial/add-navigation.mdx": "900522f4fd3b2b81",
+  "tutorial/add-navigation.mdx": "df211b19b6553772",
   "tutorial/build-a-screen.mdx": "38c99a70becf07a6",
   "tutorial/build-with-ai/add-stickers.mdx": "87cd2e5809bcb409",
   "tutorial/build-with-ai/build-the-home-screen.mdx": "2c75de1855d01c37",
@@ -7,7 +7,7 @@
   "tutorial/build-with-ai/finishing-touches.mdx": "9ce61c4eea1b1f8f",
   "tutorial/build-with-ai/introduction.mdx": "1d0548805bfc5e6c",
   "tutorial/build-with-ai/save-your-creation.mdx": "151b6283fa9b4b65",
-  "tutorial/build-with-ai/set-up-your-tools.mdx": "3142c14ba2aeb490",
+  "tutorial/build-with-ai/set-up-your-tools.mdx": "bbf8b3ab23b78491",
   "tutorial/cicd/development-builds.mdx": "32bafabb40b63362",
   "tutorial/cicd/e2e-tests.mdx": "5506148c6801f4b0",
   "tutorial/cicd/first-workflow.mdx": "9b5b40601f04d771",
@@ -38,5 +38,5 @@
   "tutorial/image-picker.mdx": "df641e2403c6c9e4",
   "tutorial/introduction.mdx": "825e5122cfc70200",
   "tutorial/overview.mdx": "3c512f68ad5f3d09",
-  "tutorial/screenshot.mdx": "f2cf5728950d187b"
+  "tutorial/screenshot.mdx": "edaeffcd9dae168e"
 }

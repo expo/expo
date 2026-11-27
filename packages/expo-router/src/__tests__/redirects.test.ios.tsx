@@ -550,3 +550,78 @@ it('not existing nested route redirects correctly', async () => {
     type: 'stack',
   });
 });
+
+it('guard fallback skips a redirect route and renders the first unguarded screen', async () => {
+  // The app config has no `destinationContextKey`. Route generation adds it.
+  mockRedirects.mockReturnValue([{ source: '/old', destination: '/secret' } as RedirectConfig]);
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="(auth)" />
+          </Stack.Protected>
+          <Stack.Protected guard>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      '(auth)/_layout': () => <Stack />,
+      '(auth)/index': () => <Text testID="index" />,
+      '(auth)/secret': () => <Text testID="secret" />,
+      login: () => <Text testID="login" />,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+});
+
+it('does not redirect a child path of the redirect source', async () => {
+  mockRedirects.mockReturnValue([{ source: '/old', destination: '/new' } as RedirectConfig]);
+
+  await renderRouter(
+    {
+      index: () => null,
+      new: () => <Text testID="new" />,
+      'old/[id]': () => <Text testID="old-detail" />,
+    },
+    { initialUrl: '/old/123' }
+  );
+
+  expect(screen.getByTestId('old-detail')).toBeVisible();
+});
+
+it('redirects to a destination nested under the redirect source', async () => {
+  mockRedirects.mockReturnValue([
+    { source: '/invoices', destination: '/invoices/list' } as RedirectConfig,
+  ]);
+
+  await renderRouter(
+    {
+      index: () => null,
+      'invoices/list': () => <Text testID="invoices-list" />,
+    },
+    { initialUrl: '/invoices' }
+  );
+
+  expect(screen.getByTestId('invoices-list')).toBeVisible();
+});
+
+it('redirects a catch-all source', async () => {
+  mockRedirects.mockReturnValue([
+    { source: '/docs/[...path]', destination: '/guides/[...path]' } as RedirectConfig,
+  ]);
+
+  await renderRouter(
+    {
+      index: () => null,
+      'guides/[...path]': () => <Text testID="guides" />,
+    },
+    { initialUrl: '/docs/a/b' }
+  );
+
+  expect(screen.getByTestId('guides')).toBeVisible();
+  expect(screen).toHavePathname('/guides/a/b');
+});

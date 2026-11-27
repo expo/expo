@@ -7,7 +7,7 @@ import Testing
 @testable import ExpoModulesCore
 @testable import ExpoNetwork
 
-@Suite("NetworkModule")
+@Suite("NetworkModule", .serialized)
 @JavaScriptActor
 struct NetworkModuleTests {
   let appContext: AppContext
@@ -38,8 +38,9 @@ struct NetworkModuleTests {
         isInternetReachable: state.isInternetReachable,
       }))
       """
-    )
-    let state = try decodeState(result.asString())
+    ).ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    let state = try decodeState(try await runtime.execute { try result.take().asString() })
 
     #expect(state.keys == ["isConnected", "isInternetReachable", "type"])
     #expect(["NONE", "UNKNOWN", "CELLULAR", "WIFI", "ETHERNET"].contains(state.type))
@@ -49,25 +50,29 @@ struct NetworkModuleTests {
 
   @Test
   func `getIpAddressAsync resolves to an IPv4 address`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.ExpoNetwork.getIpAddressAsync()")
-    let address = try result.asString()
+    let result = try await runtime.evalAsync("expo.modules.ExpoNetwork.getIpAddressAsync()").ref()
+    let address = try await runtime.execute { try result.take().asString() }
 
     #expect(address.split(separator: ".").compactMap { UInt8($0) }.count == 4)
   }
 
   @Test
-  func `a listener for another event does not stop the network monitoring`() throws {
-    try runtime.eval(
-      """
-      globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', () => {})
-      expo.modules.ExpoNetwork.addListener('onOtherEvent', () => {}).remove()
-      """
-    )
-    defer {
-      _ = try? runtime.eval("globalThis.subscription.remove()")
+  func `a listener for another event does not stop the network monitoring`() async throws {
+    // The monitor emits the network state on the JavaScript thread, so the test runs JavaScript
+    // on that thread too.
+    try await runtime.execute {
+      _ = try runtime.eval(
+        """
+        globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', () => {})
+        expo.modules.ExpoNetwork.addListener('onOtherEvent', () => {}).remove()
+        """
+      )
     }
-
-    #expect(module.monitor.withLock { $0 != nil })
+    let isMonitoring = module.monitor.withLock { $0 != nil }
+    try await runtime.execute {
+      _ = try runtime.eval("globalThis.subscription.remove()")
+    }
+    #expect(isMonitoring)
   }
 
   private struct DecodedState: Decodable {

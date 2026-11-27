@@ -1,7 +1,6 @@
 import { Link, usePathname, type Href } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeIndex = () => {
   const pathname = usePathname();
@@ -17,7 +16,7 @@ const HomeIndex = () => {
     <ScrollView
       style={{ flex: 1, backgroundColor: '#fff' }}
       contentInsetAdjustmentBehavior="automatic">
-      <SafeAreaView edges={['left', 'right']} style={{ alignItems: 'center', gap: 16 }}>
+      <View style={{ alignItems: 'center', gap: 16 }}>
         <View>
           <Text>Params</Text>
           <Text>Current Path: {pathname}</Text>
@@ -40,7 +39,7 @@ const HomeIndex = () => {
           text="/params/123?a=x&b=0 object"
         />
         <CaseLink href="/params/456/aaa?x=1&y=2" text="/params/456/aaa?x=1&y=2" />
-      </SafeAreaView>
+      </View>
     </ScrollView>
   );
 };

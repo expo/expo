@@ -5,17 +5,32 @@ import { createContext, use, useMemo, type ReactNode } from 'react';
 import type { RouteNode } from '../Route';
 import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
+import { type NavigationProp, type ParamListBase, StackActions } from '../react-navigation/native';
 import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
 
 export type GuardedRedirects = Map<string, Href | undefined>;
-// `Href` = guarded with a redirect, `null` = guarded with no available destination.
-export type GuardRedirect = Href | null;
+// The route that replaces a guarded route without `redirectTo`.
+export type GuardFallback = {
+  name: string;
+  params: object | undefined;
+  // Id of the navigator that owns the route.
+  navigatorId: string;
+  targetRouteContextKey: string;
+};
+export type ResolvedGuard =
+  | { type: 'redirect'; href: Href }
+  // The fallback is a route in the same navigator.
+  | { type: 'ownFallback'; name: string; params: object | undefined }
+  // The fallback is a route in an ancestor navigator.
+  | { type: 'parentFallback'; fallback: GuardFallback }
+  // Guarded with no available destination.
+  | { type: 'noDestination' };
 // Per route name; a missing entry means the route is unguarded.
-export type ResolvedGuards = Map<string, GuardRedirect>;
+export type ResolvedGuards = Map<string, ResolvedGuard>;
 
 export const GuardContext = createContext<ResolvedGuards | null>(null);
-const GuardRedirectFallbackContext = createContext<GuardRedirectFallback[]>([]);
+const GuardFallbackContext = createContext<GuardFallback[]>([]);
 
 export function GuardContextProvider({
   node,
@@ -26,7 +41,7 @@ export function GuardContextProvider({
   guardedRedirects: GuardedRedirects;
   children: ReactNode;
 }) {
-  const parentFallbacks = use(GuardRedirectFallbackContext);
+  const parentFallbacks = use(GuardFallbackContext);
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
   const { fallbacks, resolvedGuards } = useMemo(
@@ -35,9 +50,9 @@ export function GuardContextProvider({
   );
 
   return (
-    <GuardRedirectFallbackContext value={fallbacks}>
+    <GuardFallbackContext value={fallbacks}>
       <GuardContext value={resolvedGuards}>{children}</GuardContext>
-    </GuardRedirectFallbackContext>
+    </GuardFallbackContext>
   );
 }
 
@@ -45,8 +60,15 @@ function computeGuardState(
   node: RouteNode | null,
   guardedRedirects: GuardedRedirects,
   params: object | undefined,
-  parentFallbacks: GuardRedirectFallback[]
+  parentFallbacks: GuardFallback[]
 ) {
+  if (!node) {
+    throw new Error(
+      'Expo Router could not find the route of this navigator, so it cannot choose a fallback for protected routes. ' +
+        'Render the navigator in a `_layout` file. If it is already in a `_layout` file, report this as a bug in Expo Router.'
+    );
+  }
+
   const navigatorFallback = getNavigatorFallback(node, guardedRedirects, params);
   const inheritedFallbacks = removeFallbacksTargetingNavigator(parentFallbacks, node);
   const fallbacks = navigatorFallback
@@ -55,60 +77,94 @@ function computeGuardState(
 
   return {
     fallbacks,
-    resolvedGuards: resolveGuardRedirects(guardedRedirects, fallbacks[0]?.href),
+    resolvedGuards: resolveGuardRedirects(
+      guardedRedirects,
+      getFallbackGuard(navigatorFallback, inheritedFallbacks[0])
+    ),
   };
 }
 
-export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
+function getFallbackGuard(
+  navigatorFallback: GuardFallback | undefined,
+  inheritedFallback: GuardFallback | undefined
+): ResolvedGuard {
+  if (navigatorFallback) {
+    return { type: 'ownFallback', name: navigatorFallback.name, params: navigatorFallback.params };
+  }
+  if (inheritedFallback) {
+    return { type: 'parentFallback', fallback: inheritedFallback };
+  }
+  return { type: 'noDestination' };
+}
+
+export function useResolvedGuard({
+  routeName,
+}: {
+  routeName: string | undefined;
+}): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  if (!guards) {
+  if (!guards || routeName === undefined) {
     return undefined;
   }
 
   if (guards.has(routeName)) {
-    return guards.get(routeName) ?? null;
+    return guards.get(routeName);
   }
 
   const normalizedRouteName = normalizeRouteName(routeName);
-  return guards.has(normalizedRouteName) ? (guards.get(normalizedRouteName) ?? null) : undefined;
+  return guards.get(normalizedRouteName);
+}
+
+// Replaces by route name, not by URL, because a guarded group can share its URL with the fallback.
+export function dispatchReplaceWithGuardFallback(
+  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>,
+  fallback: GuardFallback
+) {
+  const owner = navigation.getParent(fallback.navigatorId);
+  if (owner) {
+    dispatchReplaceInNavigator(owner, owner.getState().key, fallback.name, fallback.params);
+  }
+}
+
+export function dispatchReplaceInNavigator(
+  navigation: Pick<NavigationProp<ParamListBase>, 'dispatch'>,
+  navigatorKey: string,
+  name: string,
+  params: object | undefined
+) {
+  // Stack, tab, and drawer routers handle `REPLACE`. The target stops other navigators that have
+  // a route with the same name from handling it.
+  navigation.dispatch({ ...StackActions.replace(name, params), target: navigatorKey });
 }
 
 export function normalizeRouteName(routeName: string): string {
   return routeName.replace(/\/index$/, '');
 }
 
-type GuardRedirectFallback = {
-  href: Href;
-  targetRouteContextKey: string | null;
-};
-
 function getNavigatorFallback(
-  node: RouteNode | null,
+  node: RouteNode,
   guardedRedirects: GuardedRedirects,
   params: object | undefined
-): GuardRedirectFallback | undefined {
-  if (!node) {
-    return { href: '/' as Href, targetRouteContextKey: null };
-  }
-
+): GuardFallback | undefined {
   const route = findDefaultRedirectRouteInNavigator(node, guardedRedirects);
   if (!route) {
     return undefined;
   }
 
-  const pathname = normalizeRouteName(getContextKey(route.contextKey)) || '/';
   return {
-    href: Object.keys(params ?? {}).length ? ({ pathname, params } as Href) : (pathname as Href),
+    name: route.route,
+    params: Object.keys(params ?? {}).length ? params : undefined,
+    navigatorId: getContextKey(node.contextKey),
     targetRouteContextKey: route.contextKey,
   };
 }
 
 function removeFallbacksTargetingNavigator(
-  fallbacks: GuardRedirectFallback[],
-  node: RouteNode | null
-): GuardRedirectFallback[] {
+  fallbacks: GuardFallback[],
+  node: RouteNode
+): GuardFallback[] {
   // Route identity is required because pathless groups can share the same visible URL.
-  return fallbacks.filter((fallback) => fallback.targetRouteContextKey !== node?.contextKey);
+  return fallbacks.filter((fallback) => fallback.targetRouteContextKey !== node.contextKey);
 }
 
 function findDefaultRedirectRouteInNavigator(
@@ -122,7 +178,10 @@ function findDefaultRedirectRouteInNavigator(
     return anchor;
   }
 
-  return children.find((child) => !isRouteGuarded(child.route, guardedRedirects));
+  // A redirect route has no screen to show, so it cannot be the fallback.
+  return children.find(
+    (child) => child.type !== 'redirect' && !isRouteGuarded(child.route, guardedRedirects)
+  );
 }
 
 export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, unknown>): boolean {
@@ -131,13 +190,13 @@ export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, un
 
 function resolveGuardRedirects(
   guardedRedirects: GuardedRedirects,
-  fallbackHref: Href | undefined
+  fallbackGuard: ResolvedGuard
 ): ResolvedGuards {
-  return new Map<string, GuardRedirect>(
-    Array.from(
-      guardedRedirects,
-      ([name, redirectTo]) => [name, redirectTo ?? fallbackHref ?? null] as const
-    )
+  return new Map(
+    Array.from(guardedRedirects, ([name, redirectTo]): [string, ResolvedGuard] => [
+      name,
+      redirectTo !== undefined ? { type: 'redirect', href: redirectTo } : fallbackGuard,
+    ])
   );
 }
 

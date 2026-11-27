@@ -1,0 +1,162 @@
+---
+title: Devin and Expo
+sidebar_title: Devin
+description: Use Devin to build, upgrade, debug, and deploy your Expo and React Native projects.
+---
+
+import { Button } from '@expo/styleguide';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { DevinLogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Devin is Cognition's AI software engineer. It runs as cloud sessions in the Devin web app, in your terminal with the Devin CLI, and in Devin Desktop. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Devin reads directly. It can also check Expo Services and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your Expo Services deployment workflow, and more.
+
+## Quick start
+
+<Step label="1">
+
+### Set up Devin
+
+Sign in to the [Devin web app](https://app.devin.ai) to use cloud sessions. To use Devin in your terminal, install the Devin CLI and sign in to your Devin account. For other install methods, see the [Devin CLI documentation](https://docs.devin.ai/cli/index).
+
+<Terminal cmd={['$ curl -fsSL https://cli.devin.ai/install.sh | bash', '', '$ devin auth login']} />
+
+</Step>
+
+<Step label="2">
+
+### Create a new Expo project
+
+Create a project with the following command or ensure your existing project has the latest expo package installed.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Install the Expo plugin
+
+Install the official Expo plugin so Devin knows Expo conventions and can work with your Expo Services projects. The plugin installs Expo Skills and registers the Expo MCP Server. The Devin CLI installs the plugin to your personal scope, and the web app installs it to the scope you are viewing. A personal install applies to cloud sessions, the Devin CLI, and Devin Desktop.
+
+<Tabs>
+
+<Tab label="Devin web app">
+
+{/* vale off */}
+
+Click the following button to open the Expo plugin on the **Customize** page of the Devin web app, then select **Install for me**:
+
+{/* vale on */}
+
+<Button
+  theme="secondary"
+  href="https://app.devin.ai/customize?details=https://github.com/expo/skills%23plugins/expo"
+  openInNewTab
+  className="mb-4"
+  leftSlot={<DevinLogoIcon className="icon-md text-button-secondary-icon" />}>
+  {'Add Expo plugin to Devin'}
+</Button>
+
+You can also add the plugin manually. On the **Plugins** tab of the **Customize** page, select **Add plugin** > **From repository**, enter `expo/skills`, and set the subdirectory to `plugins/expo`.
+
+After the install, the plugin page shows **Connect your expo account**. Select **Sign in with expo** to give Devin access through your Expo account.
+
+</Tab>
+
+<Tab label="Devin CLI">
+
+Run the following command to install the plugin from the `expo/skills` repository:
+
+<Terminal cmd={["$ devin plugins install 'expo/skills#plugins/expo'"]} />
+
+Enter `y` when the command asks you to confirm. Then sign in to your Expo account:
+
+<Terminal cmd={['$ devin mcp login expo']} />
+
+The Devin web app has a separate connection. After a CLI sign-in, the plugin page in the web app can still show **Connect your expo account**. Select **Sign in with expo** there too.
+
+</Tab>
+
+</Tabs>
+
+The guides below cover the available skills and everything else the MCP Server can do:
+
+<BoxLink
+  title="Expo Skills"
+  description="Browse the full list of skills the plugin provides, and see install options for other agents."
+  href="/skills/#install-expo-skills"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and Expo Services."
+  href="/mcp/#installation-and-setup"
+  Icon={Star06Icon}
+/>
+
+</Step>
+
+<Step label="4">
+
+### Open your project and start prompting
+
+Run the Devin CLI from your project root, then describe what you want to do. A plugin change applies to new sessions, so start a new session after you install the plugin.
+
+<Terminal cmd={['$ cd my-app', '', '$ devin']} />
+
+To use a cloud session instead, select **New session** in the Devin web app and describe your task.
+
+</Step>
+
+<Step label="5">
+
+### Verify setup
+
+Paste the following prompt in your Devin session to confirm it can read your project:
+
+```text Example prompt
+Open package.json and tell me which Expo SDK version this project targets.
+```
+
+If the agent replies with the SDK version from **package.json**, the agent is reading your project correctly.
+
+</Step>
+
+## How Devin reads your Expo project
+
+When you start Devin in your project, it reads the scaffolded **AGENTS.md** file. This file points Devin to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
+
+**AGENTS.md** is committed to your project, so a developer's Devin session starts from the same context.
+
+The skills from the Expo plugin are also available as `/expo:<skill>` commands, for example `/expo:expo-router`.
+
+## Example prompts
+
+After setup, describe Expo tasks in plain language. For example:
+
+| Task              | Example prompt                                                                    |
+| ----------------- | --------------------------------------------------------------------------------- |
+| Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
+| Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
+| Automate builds   | Create a workflow with Expo Workflows that builds the app on every pull request.  |
+| Debug a build     | My latest iOS build failed. Read the Expo Build logs and tell me what went wrong. |
+| Add notifications | Configure expo-notifications and show a local notification when the app launches. |
+| Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
+| Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |
+| Check feedback    | Show TestFlight feedback for my app.                                              |
+| Verify the UI     | Take a screenshot and verify the blue circle view.                                |
+
+For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).

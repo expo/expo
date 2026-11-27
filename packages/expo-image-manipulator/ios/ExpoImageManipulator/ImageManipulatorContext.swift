@@ -1,0 +1,98 @@
+// Copyright 2024-present 650 Industries. All rights reserved.
+
+import ExpoModulesCore
+import UIKit
+
+/// A context of the image manipulation.
+@SharedObject("Context")
+public final class ImageManipulatorContext: SharedObject {
+  internal typealias Loader = () async throws -> UIImage
+
+  /**
+   The last task added to the rendering pipeline.
+   */
+  private var currentTask: Task<UIImage, Error>
+
+  /**
+   A function that was used to load the original image.
+   Can be used to reset context's state to the original image.
+   */
+  private let loader: Loader
+
+  /**
+   Initializes a manipulation context with the given loader that returns the original image.
+   */
+  init(loader: @escaping Loader) {
+    self.loader = loader
+    currentTask = Task(priority: .background) {
+      return try await loader()
+    }
+    super.init()
+  }
+
+  /**
+   Adds an image transformer to run on the rendering context in the background.
+   */
+  @discardableResult
+  internal func addTransformer(_ transformer: ImageTransformer) -> Self {
+    currentTask = Task(priority: .background) { [currentTask] in
+      // The task can be canceled in the meantime (e.g. by resetting to the original image).
+      // In this case there is no reason to transform the image any further.
+      try Task.checkCancellation()
+
+      let image = try await currentTask.value
+      return try await transformer.transform(image: image)
+    }
+    return self
+  }
+
+  @JS
+  func resize(_ options: ResizeOptions) -> ImageManipulatorContext {
+    return addTransformer(ImageResizeTransformer(options: options))
+  }
+
+  @JS
+  func rotate(_ rotate: Double) -> ImageManipulatorContext {
+    return addTransformer(ImageRotateTransformer(rotate: rotate))
+  }
+
+  @JS
+  func flip(_ flipType: FlipType) -> ImageManipulatorContext {
+    return addTransformer(ImageFlipTransformer(flip: flipType))
+  }
+
+  @JS
+  func crop(_ rect: CropRect) -> ImageManipulatorContext {
+    return addTransformer(ImageCropTransformer(options: rect))
+  }
+
+  @JS(.concurrent)
+  func renderAsync() async throws -> ImageRef {
+    let image = try await render()
+    return ImageRef(image)
+  }
+
+  /**
+   Awaits for the last processing task to finish and returns its result.
+   */
+  internal func render() async throws -> UIImage {
+    return try await currentTask.value
+  }
+
+  /**
+   Resets the manipulator context to the originally loaded image.
+   */
+  @JS
+  @discardableResult
+  nonisolated internal func reset() -> ImageManipulatorContext {
+    // Firstly cancel currently running manipulations.
+    currentTask.cancel()
+
+    // `nonisolated` keeps this task off `JavaScriptActor`. That actor's executor would run the loader
+    // inline, on the JavaScript thread.
+    currentTask = Task(priority: .background) {
+      return try await loader()
+    }
+    return self
+  }
+}

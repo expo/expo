@@ -49,9 +49,8 @@ export function Toggle(props: ToggleProps) {
     ...restProps,
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    onIsOnChange: ({ nativeEvent: { isOn } }: NativeSyntheticEvent<{ isOn: boolean }>) => {
-      onIsOnChange?.(isOn);
-    },
+    onIsOnChange: ({ nativeEvent: { isOn } }: NativeSyntheticEvent<{ isOn: boolean }>) =>
+      onIsOnChange?.(isOn),
   };
 
   return <ToggleNativeView {...baseProps}>{children}</ToggleNativeView>;

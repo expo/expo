@@ -4,12 +4,35 @@ import { createElement, useEffect } from 'react';
 import { cleanPath } from './fork/getStateFromPath-forks';
 import type { RedirectConfig } from './getRoutesCore';
 import type { StoreRedirects } from './global-state/types';
-import { matchDynamicName } from './matchers';
+import { matchDynamicName, matchGroupName } from './matchers';
+import { escapeStringRegexp } from './utils/escapeStringRegexp';
 import { shouldLinkExternally } from './utils/url';
+
+// Matches the whole path, like the server. `cleanPath` output has no leading slash and one trailing slash.
+export function getRedirectSourceRegex(source: string) {
+  const pattern = source
+    .split('/')
+    .filter((segment) => segment && segment !== 'index')
+    .map((segment) => {
+      const dynamicName = matchDynamicName(segment);
+      if (dynamicName?.deep) {
+        return '.+\\/';
+      } else if (dynamicName) {
+        return '[^/]+\\/';
+      } else if (matchGroupName(segment)) {
+        return `(?:${escapeStringRegexp(segment)}\\/)?`;
+      }
+      return `${escapeStringRegexp(segment)}\\/`;
+    })
+    .join('');
+  // `cleanPath('/')` returns `/`, so the root source needs a slash.
+  return new RegExp(`^${pattern || '\\/'}$`);
+}
 
 export function applyRedirects(
   url: string | null | undefined,
-  redirects: StoreRedirects[] | undefined
+  redirects: StoreRedirects[] | undefined,
+  visitedPaths = new Set<string>()
 ): string | undefined | null {
   if (typeof url !== 'string' || !redirects) {
     return url;
@@ -21,6 +44,13 @@ export function applyRedirects(
   if (!redirect) {
     return url;
   }
+
+  if (visitedPaths.has(nextUrl)) {
+    throw new Error(
+      `Redirect loop: "${url}" redirects back to itself through the redirects and rewrites. Change a "source" or "destination" in the "expo-router" config plugin options so that the redirects end on a route.`
+    );
+  }
+  visitedPaths.add(nextUrl);
 
   // If the redirect is external, open the URL
   if (redirect[2]) {
@@ -35,7 +65,7 @@ export function applyRedirects(
     return href;
   }
 
-  return applyRedirects(convertRedirect(url, redirect[1]), redirects);
+  return applyRedirects(convertRedirect(url, redirect[1]), redirects, visitedPaths);
 }
 
 export function getRedirectModule(redirectConfig: RedirectConfig) {
@@ -104,7 +134,7 @@ export function mergeVariablesWithPath(path: string, params: Record<string, stri
       } else {
         const param = params[dynamicName.name];
         delete params[dynamicName.name];
-        return param;
+        return Array.isArray(param) ? param.join('/') : param;
       }
     })
     .filter(Boolean)

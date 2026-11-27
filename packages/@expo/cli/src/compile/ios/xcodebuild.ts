@@ -16,6 +16,7 @@ export function getXcodeBuildArgs(
     props.scheme,
     '-destination',
     'generic/platform=iOS Simulator',
+    '-hideShellScriptEnvironment',
     'COCOAPODS_PARALLEL_CODE_SIGN=true',
     'COMPILER_INDEX_STORE_ENABLE=NO',
   ];
@@ -32,6 +33,16 @@ export async function buildAsync(
       env: { ...process.env, RCT_NO_LAUNCH_PACKAGER: 'true' },
     });
   } catch (error: any) {
+    if (error.signal) {
+      throw new CommandError(
+        `Failed to build iOS project. "xcodebuild" was stopped by ${error.signal}.`
+      );
+    }
+    if (error.code) {
+      throw new CommandError(
+        `Failed to build iOS project. Could not run "xcodebuild" (${error.code}).`
+      );
+    }
     throw new CommandError(
       `Failed to build iOS project. "xcodebuild" exited with error code ${error.status}.`
     );

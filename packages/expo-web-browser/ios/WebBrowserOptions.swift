@@ -22,6 +22,8 @@ struct WebBrowserOptions {
 
 @Record
 struct AuthSessionOptions {
+  var additionalHeaderFields: [String: String]?
+
   var preferEphemeralSession: Bool = false
 
   var preferUniversalLinks: Bool = false

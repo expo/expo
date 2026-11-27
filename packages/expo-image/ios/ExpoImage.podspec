@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImageAVIFCoder', '~> 0.11.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.7.0'
   s.dependency 'SDWebImageWebPCoder', '~> 0.14.6'
+  s.dependency 'libwebp', '>= 1.3.2'
   s.dependency 'libavif/libdav1d' unless disable_libdav1d
 
   # Swift/Objective-C compatibility
@@ -39,12 +40,11 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
   }
 
-  s.source_files = "**/*.{h,m,swift}"
-  s.exclude_files = 'Tests/'
+  s.source_files = "ExpoImage/**/*.{h,m,swift}"
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ExpoImageTests/**/*.{m,swift}'
   end
 end

@@ -1,15 +1,20 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/ExpoNativeViewObjC.h>
+#import <ExpoModulesCore/ExpoSwiftUIViewObjC.h>
 #import <ExpoModulesCore/NewComponentDescriptor.h>
+#import <ExpoModulesCore/NewComponentRegistry.h>
 #import <ExpoModulesCore/ObjCPropsDecoder.h>
+#import <ExpoModulesCore/ViewEventDispatch.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTLog.h>
 
+#include <mutex>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace react = facebook::react;
 namespace jsi = facebook::jsi;
@@ -28,7 +33,25 @@ public:
     return previous;
   }
 
-  void didSkipProps(const std::vector<std::string_view> &) const override {}
+  std::vector<std::string> propNames() const override
+  {
+    return {};
+  }
+
+  views::DecodedProps decodeValues(
+    jsi::Runtime &,
+    const std::vector<std::pair<size_t, jsi::Value>> &,
+    const views::DecodedProps &previous) const override
+  {
+    return previous;
+  }
+
+  views::DecodedProps decodeDynamicValues(
+    const std::vector<std::pair<size_t, const folly::dynamic *>> &,
+    const views::DecodedProps &previous) const override
+  {
+    return previous;
+  }
 };
 
 /**
@@ -41,9 +64,49 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return flavors;
 }
 
+std::shared_ptr<const views::NewComponentFlavor> makeComponentFlavor(
+  Class viewClass,
+  std::string name,
+  std::shared_ptr<const views::NewPropsDecoder> decoder
+)
+{
+  // SwiftUI renders the children of these views and places the views.
+  const bool isSwiftUIView = [viewClass isSubclassOfClass:[ExpoSwiftUIViewObjC class]];
+  return std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
+    .name = std::move(name),
+    .decoder = std::move(decoder),
+    .keepsDirectChildren = isSwiftUIView,
+    .hasZeroContentOrigin = isSwiftUIView,
+  });
+}
+
 } // namespace
 
-@implementation ExpoNativeViewObjC
+namespace expo::views {
+
+react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
+{
+  std::string className([NSStringFromClass(viewClass) UTF8String]);
+  auto &flavor = componentFlavors()[className];
+
+  if (!flavor) {
+    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
+    flavor = makeComponentFlavor(viewClass, className, std::make_shared<NoPropsDecoder>());
+  }
+  return NewComponentDescriptor::provider(flavor);
+}
+
+} // namespace expo::views
+
+// The header adopts the protocol in a category without an implementation, which doesn't register the conformance at
+// runtime. This class extension registers it, so `conformsToProtocol:` and Swift's dynamic casts find it.
+@interface ExpoNativeViewObjC () <EXViewEventEmitting>
+@end
+
+@implementation ExpoNativeViewObjC {
+  // Guards `_eventEmitter`: Fabric sets it on the main thread, and events can be dispatched from any thread.
+  std::mutex _eventEmitterMutex;
+}
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -58,17 +121,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
 
 + (react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  std::string className([NSStringFromClass(self) UTF8String]);
-  auto &flavor = componentFlavors()[className];
-
-  if (!flavor) {
-    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
-    flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<NoPropsDecoder>(),
-    });
-  }
-  return views::NewComponentDescriptor::provider(flavor);
+  return views::componentDescriptorProvider(self);
 }
 
 + (BOOL)shouldBeRecycled
@@ -77,21 +130,39 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   return NO;
 }
 
+- (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
+{
+  std::lock_guard<std::mutex> lock(_eventEmitterMutex);
+  [super updateEventEmitter:eventEmitter];
+}
+
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
 {
   [super finalizeUpdates:updateMask];
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &props = static_cast<const views::NewViewProps &>(*_props);
-    [self updateDecodedProps:(__bridge id)props.decodedProps.get()];
+    [self updateDecodedProps:props.decodedProps.get()];
   }
 }
 
 #pragma mark - Methods to override in Swift
 
-- (void)updateDecodedProps:(nullable id)decodedProps
+- (void)updateDecodedProps:(nullable const void *)decodedProps
 {
   // Implemented in `ExpoNativeView.swift`
+}
+
+#pragma mark - EXViewEventEmitting
+
+- (void)dispatchEvent:(NSString *)name encodePayload:(nullable EXViewEventPayloadEncoder)encodePayload
+{
+  react::SharedViewEventEmitter eventEmitter;
+  {
+    std::lock_guard<std::mutex> lock(_eventEmitterMutex);
+    eventEmitter = _eventEmitter;
+  }
+  views::dispatchViewEvent(eventEmitter, name, encodePayload);
 }
 
 #pragma mark - Component registration
@@ -104,10 +175,7 @@ std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>
   auto &flavor = componentFlavors()[className];
 
   if (!flavor) {
-    flavor = std::make_shared<const views::NewComponentFlavor>(views::NewComponentFlavor{
-      .name = className,
-      .decoder = std::make_shared<views::ObjCPropsDecoder>(propsDecoder),
-    });
+    flavor = makeComponentFlavor(viewClass, className, std::make_shared<views::ObjCPropsDecoder>(propsDecoder));
   }
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
 }

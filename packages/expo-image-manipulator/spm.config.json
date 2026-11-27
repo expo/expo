@@ -26,21 +26,28 @@
           "version": {
             "exact": "0.15.0"
           }
+        },
+        {
+          "url": "https://github.com/SDWebImage/libwebp-Xcode.git",
+          "productName": "libwebp",
+          "version": {
+            "exact": "1.6.0"
+          }
         }
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoImageManipulator",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
             "Hermes",
             "expo-modules-core/ExpoModulesCore",
             "SDWebImage",
-            "SDWebImageWebPCoder"
+            "SDWebImageWebPCoder",
+            "libwebp"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }

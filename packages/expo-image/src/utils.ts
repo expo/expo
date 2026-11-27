@@ -1,15 +1,78 @@
 import { SharedRef } from 'expo';
 import type { SharedRefType } from 'expo';
-import type { ImageResizeMode } from 'react-native';
+import type { ImageResizeMode, ImageStyle } from 'react-native';
 
 import type {
   ImageContentFit,
   ImageContentPosition,
   ImageContentPositionObject,
   ImageContentPositionString,
+  ImageNativeProps,
   ImageProps,
   ImageTransition,
 } from './Image.types';
+
+/**
+ * Style properties that already set or flex the layout size of the view.
+ */
+const SIZING_STYLE_PROPS = [
+  'width',
+  'height',
+  'minWidth',
+  'minHeight',
+  'aspectRatio',
+  'flex',
+  'flexGrow',
+  'flexBasis',
+] as const satisfies readonly (keyof ImageStyle)[];
+
+/**
+ * Whether the style already determines the layout size of the view.
+ */
+function isSizeDeterminedByStyle(style: ImageStyle): boolean {
+  return style.position === 'absolute' || SIZING_STYLE_PROPS.some((prop) => style[prop] != null);
+}
+
+/**
+ * Whether the value is a size that can actually give the view a visible box.
+ */
+function isUsableSize(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
+/**
+ * Returns the size declared by the image source, to be used as the default size of the view,
+ * the same way React Native's `<Image>` does. An asset loaded with `require` carries the size
+ * that the bundler read from the file and an `ImageSource` object can declare it explicitly.
+ * It is not applied when the style already sets or flexes the size of the view.
+ */
+export function resolveDefaultSize(
+  source: ImageNativeProps['source'],
+  style: ImageStyle
+): { width: number; height: number } | null {
+  // Sources in an array may have different sizes, so there is no single default size to use.
+  if (!Array.isArray(source) || source.length !== 1) {
+    return null;
+  }
+  const [resolvedSource] = source;
+  // For image hashes, the source size is the resolution to decode the hash at, not a layout size.
+  if (
+    resolvedSource?.uri?.startsWith('blurhash:/') ||
+    resolvedSource?.uri?.startsWith('thumbhash:/')
+  ) {
+    return null;
+  }
+  const { width, height } = resolvedSource ?? {};
+
+  // A source declaring a zero, negative or non-finite size has no usable size to fall back to.
+  if (!isUsableSize(width) || !isUsableSize(height)) {
+    return null;
+  }
+  if (isSizeDeterminedByStyle(style)) {
+    return null;
+  }
+  return { width, height };
+}
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;

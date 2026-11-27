@@ -12,7 +12,6 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { searchIcon, sendIcon, deleteIcon } from './icons';
 
@@ -418,7 +417,7 @@ export default function HeaderItemsScreen() {
       </Stack.Screen>
 
       <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
-        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+        <View style={styles.contentContainer}>
           <Text style={styles.title}>Stack Header Items E2E Test Screen</Text>
 
           <View style={styles.section}>
@@ -635,7 +634,7 @@ export default function HeaderItemsScreen() {
             <Text style={styles.instruction}>6. Test palette menu and destructive actions</Text>
             <Text style={styles.instruction}>7. Observe state changes reflected in menu items</Text>
           </View>
-        </SafeAreaView>
+        </View>
       </ScrollView>
     </>
   );
