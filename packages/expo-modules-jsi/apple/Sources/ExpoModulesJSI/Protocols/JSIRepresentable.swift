@@ -150,10 +150,11 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     let propertyNames = object.getPropertyNames(runtime)
     let size = propertyNames.size(runtime)
     var result: Self = [:]
+    result.reserveCapacity(size)
 
     for index in 0..<size {
       // Look the value up by the key string the engine handed back, so any name round-trips exactly.
-      let jsiKey = propertyNames.getValueAtIndex(runtime, index).getString(runtime)
+      let jsiKey = expo.stringAtIndex(runtime, propertyNames, index)
       let jsiValue = object.getProperty(runtime, jsiKey)
       result[String(jsiString: jsiKey, in: runtime)] = Value.fromJSIValue(jsiValue, in: runtime)
     }
@@ -161,11 +162,11 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
-    let object = facebook.jsi.Object(runtime)
+    var object = facebook.jsi.Object(runtime)
 
     for (key, value) in self {
       expo.setProperty(runtime, object, key.toJSIPropNameID(in: runtime), value.toJSIValue(in: runtime))
     }
-    return facebook.jsi.Value(runtime, object)
+    return expo.takeValueFromObject(&object)
   }
 }

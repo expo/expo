@@ -1,3 +1,4 @@
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 // MARK: - JavaScriptRepresentable
@@ -55,7 +56,7 @@ extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaSc
     for index in 0..<size {
       // Look the value up by the key string the engine handed back instead of re-encoding the Swift
       // key: it skips one engine string allocation per entry and round-trips any name exactly.
-      let jsiKey = propertyNames.getValueAtIndex(jsiRuntime, index).getString(jsiRuntime)
+      let jsiKey = expo.stringAtIndex(jsiRuntime, propertyNames, index)
       let jsiValue = JavaScriptValue(runtimeHandle, object.getProperty(jsiRuntime, jsiKey))
       result[String(jsiString: jsiKey, in: jsiRuntime)] = Value.fromJavaScriptValue(jsiValue)
     }
@@ -68,6 +69,6 @@ extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaSc
     for (key, value) in self {
       object.setProperty(key, value: value.toJavaScriptValue(in: runtime))
     }
-    return object.asValue()
+    return object.takeValue()
   }
 }

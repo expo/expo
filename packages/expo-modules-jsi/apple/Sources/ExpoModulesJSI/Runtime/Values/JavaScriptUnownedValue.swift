@@ -288,6 +288,37 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
   }
 
+  /// Iterates over each enumerable property of this object, borrowing the underlying `jsi::Object`
+  /// without cloning its handle or retaining `JavaScriptRuntimeHandle`.
+  /// Throws `JavaScriptValue.TypeError` when this value is not an object.
+  @usableFromInline
+  internal func forEachProperty(
+    in runtime: borrowing JavaScriptRuntime,
+    reserveCapacity: (Int) -> Void,
+    body: (String, borrowing JavaScriptUnownedValue) throws -> Void
+  ) throws {
+    guard pointer.pointee.isObject() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptObject.self)
+    }
+    assert(
+      belongs(to: runtime),
+      "`forEachProperty` must be passed the runtime that owns the borrowed value"
+    )
+    let jsiRuntime = self.runtime
+    let propertyNames = expo.getPropertyNamesOfObjectValue(jsiRuntime, pointer.pointee)
+    let count = propertyNames.size(jsiRuntime)
+    reserveCapacity(count)
+
+    for i in 0..<count {
+      let name = expo.stringAtIndex(jsiRuntime, propertyNames, i)
+      let property = expo.getPropertyOfObjectValue(jsiRuntime, pointer.pointee, name)
+      let swiftName = String(jsiString: name, in: jsiRuntime)
+      try withUnowned(property, in: jsiRuntime) { value in
+        try body(swiftName, value)
+      }
+    }
+  }
+
   // MARK: - Pointer access
 
   /// Provides scoped access to a raw pointer to the borrowed `facebook.jsi.Value`, like
@@ -405,5 +436,23 @@ public struct JavaScriptUnownedValue: ~Copyable {
       throw JavaScriptValue.TypeError(type: JavaScriptSymbol.self)
     }
     return getSymbol(in: runtime)
+  }
+}
+
+/// Lends a local `jsi::Value` as a `JavaScriptUnownedValue` for the duration of `body`.
+internal func withUnowned<R>(
+  _ value: borrowing facebook.jsi.Value,
+  in jsiRuntime: facebook.jsi.IRuntime,
+  _ body: (borrowing JavaScriptUnownedValue) throws -> R
+) rethrows -> R {
+  // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+  return try withUnsafeBytes(of: value) { bytes in
+    guard let baseAddress = bytes.baseAddress else {
+      preconditionFailure(
+        "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+      )
+    }
+    let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+    return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
   }
 }

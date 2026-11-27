@@ -437,16 +437,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     }
     for index in 0..<count {
       let element = pointee.getValueAtIndex(jsiRuntime, index)
-      // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
-      try withUnsafeBytes(of: element) { bytes in
-        guard let baseAddress = bytes.baseAddress else {
-          preconditionFailure(
-            "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
-          )
-        }
-        let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
-        try body(JavaScriptUnownedValue(jsiRuntime, pointer))
-      }
+      try withUnowned(element, in: jsiRuntime, body)
     }
   }
 
