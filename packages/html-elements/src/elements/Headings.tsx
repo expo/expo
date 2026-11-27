@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
-import { em } from '../css/units';
+import { em, rem } from '../css/units';
 import type { TextProps } from '../primitives/Text';
 import Text from '../primitives/Text';
 
@@ -39,42 +39,42 @@ export const H6 = createHeadingComponent(6);
 const styles = StyleSheet.create({
   h1: {
     // @ts-ignore
-    fontSize: em(2),
+    fontSize: rem(2),
     // @ts-ignore
     marginVertical: em(0.67),
     fontWeight: 'bold',
   },
   h2: {
     // @ts-ignore
-    fontSize: em(1.5),
+    fontSize: rem(1.5),
     // @ts-ignore
     marginVertical: em(0.83),
     fontWeight: 'bold',
   },
   h3: {
     // @ts-ignore
-    fontSize: em(1.17),
+    fontSize: rem(1.17),
     // @ts-ignore
     marginVertical: em(1),
     fontWeight: 'bold',
   },
   h4: {
     // @ts-ignore
-    fontSize: em(1),
+    fontSize: rem(1),
     // @ts-ignore
     marginVertical: em(1.33),
     fontWeight: 'bold',
   },
   h5: {
     // @ts-ignore
-    fontSize: em(0.83),
+    fontSize: rem(0.83),
     // @ts-ignore
     marginVertical: em(1.67),
     fontWeight: 'bold',
   },
   h6: {
     // @ts-ignore
-    fontSize: em(0.67),
+    fontSize: rem(0.67),
     // @ts-ignore
     marginVertical: em(2.33),
     fontWeight: 'bold',
