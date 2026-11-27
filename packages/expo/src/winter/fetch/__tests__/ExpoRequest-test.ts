@@ -239,6 +239,25 @@ describe('Request', () => {
       const request = new Request('https://example.test/', { method: 'POST', body: stream });
       expect(request.body).toBe(stream);
     });
+
+    it('closes without enqueuing an empty chunk for an empty string body', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: '' });
+      const result = await request.body!.getReader().read();
+      expect(result).toEqual({ done: true, value: undefined });
+    });
+
+    it('locks a ReadableStream body when formData() rejects on an unsupported Content-Type', async () => {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('data'));
+          controller.close();
+        },
+      });
+      const request = new Request('https://example.test/', { method: 'POST', body: stream });
+      await expect(request.formData()).rejects.toThrow(TypeError);
+      expect(request.bodyUsed).toBe(true);
+      expect(request.body!.locked).toBe(true);
+    });
   });
 
   describe('construction from another request', () => {
@@ -577,6 +596,15 @@ describe('Request', () => {
         const copy = new Request(original, { signal: null });
         controller.abort();
         expect(copy.signal.aborted).toBe(false);
+      });
+
+      it('throws for an invalid init signal', () => {
+        expect(() => new Request('https://example.test/', { signal: {} as any })).toThrow(
+          TypeError
+        );
+        expect(() => new Request('https://example.test/', { signal: 'bad' as any })).toThrow(
+          TypeError
+        );
       });
     });
 

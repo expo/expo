@@ -198,4 +198,18 @@ describe('fetch', () => {
     expect(request.bodyUsed).toBe(true);
     expect(() => request.clone()).toThrow('Request body is already used');
   });
+
+  it('rejects sending a Request with an already-disturbed or locked stream body', async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new TextEncoder().encode('streamed'));
+        controller.close();
+      },
+    });
+    const request = new Request('https://example.test/', { method: 'POST', body });
+    // Simulate a disturbed-but-unlocked stream (as with web-streams-polyfill after read + releaseLock).
+    (body as unknown as { _disturbed: boolean })._disturbed = true;
+    await expect(fetch(request)).rejects.toThrow(TypeError);
+    expect(mockStart).not.toHaveBeenCalled();
+  });
 });

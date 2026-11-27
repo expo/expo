@@ -130,11 +130,23 @@ export function getRequestFormDataBoundary(request: object): string | undefined 
 }
 
 /**
- * Marks a `Request`'s stream body as consumed when `fetch()` reads it directly, so `bodyUsed`
- * stays accurate even on runtimes whose `ReadableStream` doesn't expose a `_disturbed` flag.
+ * Validates and marks a `ReadableStream` body as consumed when `fetch()` reads it directly.
+ * Throws a `TypeError` if the stream or its owning `Request` is already locked or disturbed, and
+ * sets `consumed` so `bodyUsed` stays accurate even without a `_disturbed` flag.
  */
-export function markRequestStreamBodyUsed(request: object): void {
-  const state = requestStates.get(request as Request);
+export function consumeRequestStreamBody(
+  request: object | null | undefined,
+  stream: ReadableStream
+): void {
+  const state = request != null ? requestStates.get(request as Request) : undefined;
+  if (
+    isStreamUnusable(stream) ||
+    (state != null
+      ? isStateBodyUnusable(state)
+      : (request as { bodyUsed?: boolean } | null | undefined)?.bodyUsed === true)
+  ) {
+    throw new TypeError("Failed to execute 'fetch': Request body is already used.");
+  }
   if (state != null) {
     state.consumed = true;
   }
@@ -233,21 +245,28 @@ function createProxyReadableStream(
   source: ReadableStream
 ): ReadableStream<Uint8Array<ArrayBuffer>> {
   const reader = source.getReader();
+  let canceled = false;
   return new ReadableStream<Uint8Array<ArrayBuffer>>(
     {
       async pull(controller) {
         try {
           const { done, value } = await reader.read();
+          if (canceled) {
+            return;
+          }
           if (done) {
             controller.close();
           } else {
             controller.enqueue(value);
           }
         } catch (error) {
-          controller.error(error);
+          if (!canceled) {
+            controller.error(error);
+          }
         }
       },
       cancel(reason) {
+        canceled = true;
         return reader.cancel(reason);
       },
     },
@@ -283,16 +302,24 @@ function isRequestBodyUnusable(request: object, body: BodyInit | null): boolean 
   return body instanceof ReadableStream && isStreamUnusable(body);
 }
 
-function markStateConsumed(state: RequestInternalState, method: string): void {
+function markStateConsumed(
+  state: RequestInternalState,
+  method: string,
+  { lockStream = true }: { lockStream?: boolean } = {}
+): void {
   if (isStateBodyUnusable(state)) {
     throw new TypeError(
       `Failed to execute '${method}' on 'Request': Request body is already used.`
     );
   }
   state.consumed = true;
-  // Lock a `.body` stream that was already created, so it can't read the body again. A stream
-  // body is skipped, because `consumeStateAsBytes()` must still get a reader for it.
-  if (state.bodyStream != null && state.bodyStream !== state.bodyInit) {
+  // Lock the body stream so it can't be read again. `consumeStateAsBytes()` passes
+  // `lockStream: false` because it immediately acquires a reader on a stream body itself.
+  if (state.bodyInit instanceof ReadableStream) {
+    if (lockStream) {
+      state.bodyInit.getReader();
+    }
+  } else if (state.bodyStream != null) {
     state.bodyStream.getReader();
   }
 }
@@ -306,7 +333,7 @@ async function consumeStateAsBytes(
   if (body == null) {
     return new Uint8Array(0);
   }
-  markStateConsumed(state, method);
+  markStateConsumed(state, method, { lockStream: false });
   if (body instanceof FormData) {
     const { body: bytes } = await convertFormDataAsync(body, state.formDataBoundary);
     return bytes as Uint8Array<ArrayBuffer>;
@@ -409,6 +436,11 @@ export class Request implements Body {
 
     if (init?.window != null) {
       throw new TypeError("Failed to construct 'Request': 'window' can only be null.");
+    }
+    if (signal != null && (typeof signal !== 'object' || !('aborted' in signal))) {
+      throw new TypeError(
+        "Failed to construct 'Request': 'signal' must be an AbortSignal or null."
+      );
     }
     if (init?.duplex !== undefined && (init.duplex as string) !== 'half') {
       throw new TypeError(
@@ -649,6 +681,7 @@ export class Request implements Body {
       return state.bodyStream;
     }
     const bodyInit = state.bodyInit;
+    let canceled = false;
     const stream = new ReadableStream<Uint8Array<ArrayBuffer>>(
       {
         pull: async (controller) => {
@@ -660,15 +693,21 @@ export class Request implements Body {
             const { body } = await normalizeBodyInitAsync(bodyInit, {
               formDataBoundary: state.formDataBoundary,
             });
-            if (body != null) {
+            if (canceled) {
+              return;
+            }
+            if (body != null && body.byteLength > 0) {
               controller.enqueue(new Uint8Array(body));
             }
             controller.close();
           } catch (error) {
-            controller.error(error);
+            if (!canceled) {
+              controller.error(error);
+            }
           }
         },
         cancel: () => {
+          canceled = true;
           state.consumed = true;
         },
       },
