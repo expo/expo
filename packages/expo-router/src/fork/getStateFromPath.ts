@@ -150,40 +150,64 @@ export function getStateFromPath<ParamList extends object>(
   return result;
 }
 
+type BaseConfigResources = Omit<ConfigResources, 'configs'>;
+
 /**
- * Reference to the most recently computed config resources.
+ * The normalized configs and their regexes depend only on the options, so they are cached per
+ * options object. Only the sort order depends on the previous segments.
  */
-let cachedConfigResources: [Options<object> | undefined, ConfigResources] = [
-  undefined,
-  prepareConfigResources(),
-];
+const baseConfigResourcesCache = new WeakMap<Options<object>, BaseConfigResources>();
+let baseConfigResourcesWithoutOptions: BaseConfigResources | undefined;
 
-function getConfigResources<ParamList extends object>(
-  options: Options<ParamList> | undefined,
+function getConfigResources(
+  options: Options<object> | undefined,
   previousSegments?: string[]
-) {
-  // Recompute every time because config resources depend on the current state.
-  cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
+): ConfigResources {
+  const base = getBaseConfigResources(options);
 
-  return cachedConfigResources[1];
+  // The cached order must not depend on the segments of an earlier call.
+  const configWithRegexes = [...base.configWithRegexes].sort(
+    expo.getRouteConfigSorter(previousSegments)
+  );
+
+  return {
+    initialRoutes: base.initialRoutes,
+    configs: configWithRegexes,
+    configWithRegexes,
+  };
 }
 
-function prepareConfigResources(options?: Options<object>, previousSegments?: string[]) {
+function getBaseConfigResources(options: Options<object> | undefined): BaseConfigResources {
+  if (!options) {
+    baseConfigResourcesWithoutOptions ??= prepareBaseConfigResources();
+    return baseConfigResourcesWithoutOptions;
+  }
+
+  let base = baseConfigResourcesCache.get(options);
+  if (!base) {
+    base = prepareBaseConfigResources(options);
+    baseConfigResourcesCache.set(options, base);
+  }
+  return base;
+}
+
+function prepareBaseConfigResources(options?: Options<object>): BaseConfigResources {
   if (options) {
     validatePathConfig(options);
   }
 
   const initialRoutes = getInitialRoutes(options);
 
-  const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
+  const configs = getNormalizedConfigs(initialRoutes, options?.screens);
 
-  checkForDuplicatedConfigs(configs);
+  // The sorter orders configs with the same pattern without the segments, so the error message
+  // stays the same for every call.
+  checkForDuplicatedConfigs([...configs].sort(expo.getRouteConfigSorter()));
 
   const configWithRegexes = getConfigsWithRegexes(configs);
 
   return {
     initialRoutes,
-    configs,
     configWithRegexes,
   };
 }
@@ -203,18 +227,16 @@ function getInitialRoutes(options?: Options<object>) {
 
 function getNormalizedConfigs(
   initialRoutes: InitialRouteConfig[],
-  screens: PathConfigMap<object> = {},
-  previousSegments?: string[]
+  screens: PathConfigMap<object> = {}
 ) {
-  // Create a normalized configs array which will be easier to use
+  // Create a normalized configs array which will be easier to use. The caller sorts it.
   return ([] as RouteConfig[])
     .concat(
       ...Object.keys(screens).map((key) =>
         createNormalizedConfigs(key, screens as PathConfigMap<object>, [], initialRoutes, [])
       )
     )
-    .map(expo.appendIsInitial(initialRoutes))
-    .sort(expo.getRouteConfigSorter(previousSegments));
+    .map(expo.appendIsInitial(initialRoutes));
 }
 
 function checkForDuplicatedConfigs(configs: RouteConfig[]) {
