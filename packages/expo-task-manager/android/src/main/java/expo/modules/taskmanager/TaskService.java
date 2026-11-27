@@ -427,7 +427,16 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
-    getAppLoader().loadApp(mContextRef.get(),
+    // getAppLoader() returns null when the service has no context or the
+    // "react-native-headless" loader is not registered. Keep the event queued:
+    // it is executed once the app's task manager registers.
+    HeadlessAppLoader appLoader = getAppLoader();
+    if (appLoader == null) {
+      Log.w(TAG, "Headless app loader is not available, the task event for '" + appScopeKey + "' stays queued.");
+      return;
+    }
+
+    appLoader.loadApp(mContextRef.get(),
       new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
       () -> {
       },
