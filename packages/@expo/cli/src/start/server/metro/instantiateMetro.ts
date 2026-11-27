@@ -5,7 +5,6 @@ import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@e
 import { loadUserConfig } from '@expo/metro-config';
 import type { Reporter } from '@expo/metro/metro';
 import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
-import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -31,6 +30,7 @@ import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { ExpoMetroConfig } from './ExpoMetroConfig';
+import { LiveLineTerminal } from './LiveLineTerminal';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { replaceMetroFileMap } from './createFileMap-fork';
@@ -107,9 +107,10 @@ function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
  * Without this, unmanaged stderr writes shift the cursor and cause
  * progress bars to get stuck as permanent output.
  */
-class LogRespectingTerminal extends Terminal {
+export class LogRespectingTerminal extends LiveLineTerminal {
   #stderrQueue: string[] = [];
   #drainingStderr = false;
+  #writeStderr = (text: string) => process.stderr.write(text);
 
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
@@ -143,21 +144,41 @@ class LogRespectingTerminal extends Terminal {
     console.warn = (...msg) => sendStderr('warn', ...msg);
     console.error = (...msg) => sendStderr('error', ...msg);
 
+    if ((process.stdout as any).isTTY) {
+      this.#routeStderrLines();
+    }
+
     // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
     process.on('exit', () => {
       if (!this.#drainingStderr && this.#stderrQueue.length) {
         this.#drainingStderr = true;
         this.status('');
         const lines = this.#stderrQueue.splice(0);
-        process.stderr.write(lines.join('\n') + '\n');
+        this.#writeStderr(lines.join('\n') + '\n');
       }
     });
   }
 
+  // `2g` writes `LOG_DEBUG` events straight to stderr, which moves the cursor under a status.
+  #routeStderrLines(): void {
+    const write = process.stderr.write;
+    this.#writeStderr = (text) => Reflect.apply(write, process.stderr, [text]);
+    process.stderr.write = ((chunk: unknown, ...rest: unknown[]) => {
+      if (typeof chunk !== 'string' || !chunk.endsWith('\n')) {
+        return Reflect.apply(write, process.stderr, [chunk, ...rest]);
+      }
+      this.logStderr(chunk.slice(0, -1));
+      const callback = rest.find((arg) => typeof arg === 'function') as (() => void) | undefined;
+      callback?.();
+      return true;
+    }) as typeof process.stderr.write;
+  }
+
   /** Write to stderr without corrupting Terminal's cursor tracking. */
   logStderr(line: string): void {
+    this.commitLiveLine();
     if (!(process.stdout as any).isTTY) {
-      process.stderr.write(line + '\n');
+      this.#writeStderr(line + '\n');
       return;
     }
     this.#stderrQueue.push(line);
@@ -171,11 +192,14 @@ class LogRespectingTerminal extends Terminal {
     while (this.#stderrQueue.length > 0) {
       // Clear status, flush to ensure it's removed from screen
       const prev = this.status('');
-      await this.flush();
+      do {
+        this.commitLiveLine();
+        await this.flush();
+      } while (this.hasLiveLine);
 
       // Write to stderr while status is cleared
       const lines = this.#stderrQueue.splice(0);
-      process.stderr.write(lines.join('\n') + '\n');
+      this.#writeStderr(lines.join('\n') + '\n');
 
       // Restore status
       this.status(prev);
