@@ -21,25 +21,58 @@ extension Data: JavaScriptCodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Data
   {
-    guard value.isTypedArray() else {
-      throw DataNotUint8ArrayException()
-    }
-    let typedArray = value.getTypedArray(in: runtime)
-    guard typedArray.kind == .Uint8Array else {
-      throw DataNotUint8ArrayException()
-    }
-    return typedArray.withUnsafeBytes { bytes in
-      guard typedArray.byteLength > 0, let baseAddress = bytes.baseAddress else {
-        return Data()
-      }
-      return Data(bytes: baseAddress, count: typedArray.byteLength)
-    }
+    return try decodeJavaScriptUint8Array(value, in: runtime)
   }
 
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Data, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try makeJavaScriptUint8Array(copying: value, in: runtime)
+  }
+}
+
+/// Decodes a `Uint8Array` into `Data`, using JSI's native TypedArray accessors on RN 0.86+ to skip
+/// `JavaScriptTypedArray` construction and JS property lookups.
+@usableFromInline
+@JavaScriptActor
+internal func decodeJavaScriptUint8Array(
+  _ value: borrowing JavaScriptUnownedValue,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> Data {
+  if expo.hasNativeTypedArraySupport() {
+    assert(
+      value.belongs(to: runtime),
+      "`decodeJavaScriptUint8Array` must be passed the runtime that owns the borrowed value"
+    )
+    var result = Data()
+    let matched = withUnsafeMutablePointer(to: &result) { resultPtr in
+      expo.withUint8ArrayBytes(runtime.pointee, value.pointer.pointee, UnsafeMutableRawPointer(resultPtr)) {
+        ctx,
+        data,
+        byteLength in
+        guard byteLength > 0, let data else {
+          return
+        }
+        ctx.assumingMemoryBound(to: Data.self).pointee = Data(bytes: data, count: byteLength)
+      }
+    }
+    guard matched else {
+      throw DataNotUint8ArrayException()
+    }
+    return result
+  }
+  guard value.isTypedArray() else {
+    throw DataNotUint8ArrayException()
+  }
+  let typedArray = value.getTypedArray(in: runtime)
+  guard typedArray.kind == .Uint8Array else {
+    throw DataNotUint8ArrayException()
+  }
+  return typedArray.withUnsafeBytes { bytes in
+    guard typedArray.byteLength > 0, let baseAddress = bytes.baseAddress else {
+      return Data()
+    }
+    return Data(bytes: baseAddress, count: typedArray.byteLength)
   }
 }
 
@@ -53,18 +86,27 @@ internal func makeJavaScriptUint8Array(
   let runtimeHandle = runtime.handle
   let jsiRuntime = runtime.pointee
   var memory: UnsafeMutablePointer<UInt8>?
-  let uint8Array = try runtime.withCached(
-    JavaScriptRuntime.CacheKeys.uint8ArrayConstructor,
-    { try runtime.global().getPropertyAsFunction("Uint8Array") },
-    { (constructor: borrowing JavaScriptFunction) in
-      return try capturingCppErrors {
-        return JavaScriptValue(
-          runtimeHandle,
-          expo.createUint8Array(jsiRuntime, constructor.pointee, data.count, &memory)
-        )
-      }
+  let uint8Array: JavaScriptValue
+  // Up to 8 KB, an array that the runtime allocates is faster: it needs no native buffer, finalizer, or
+  // memory report. The runtime zeroes the memory first, though, and above that size this costs more.
+  if expo.hasNativeTypedArraySupport() && data.count <= 8 * 1024 {
+    uint8Array = try capturingCppErrors {
+      return JavaScriptValue(runtimeHandle, expo.createNativeSmallUint8Array(jsiRuntime, data.count, &memory))
     }
-  )
+  } else {
+    uint8Array = try runtime.withCached(
+      JavaScriptRuntime.CacheKeys.uint8ArrayConstructor,
+      { try runtime.global().getPropertyAsFunction("Uint8Array") },
+      { (constructor: borrowing JavaScriptFunction) in
+        return try capturingCppErrors {
+          return JavaScriptValue(
+            runtimeHandle,
+            expo.createUint8Array(jsiRuntime, constructor.pointee, data.count, &memory)
+          )
+        }
+      }
+    )
+  }
   // The memory can be uninitialized, so every byte is written before JavaScript gets the array.
   if let memory {
     data.copyBytes(to: memory, count: data.count)

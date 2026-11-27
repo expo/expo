@@ -207,7 +207,16 @@ public struct JavaScriptUnownedValue: ~Copyable {
 
   /// Whether the value is a typed array. The zero-copy counterpart of ``JavaScriptValue/isTypedArray()``.
   public func isTypedArray() -> Bool {
-    return pointer.pointee.isObject() && expo.isTypedArray(runtime, pointer.pointee.getObject(runtime))
+    guard pointer.pointee.isObject() else {
+      return false
+    }
+    if expo.hasNativeTypedArraySupport() {
+      return expo.isTypedArrayValue(runtime, pointer.pointee)
+    }
+    guard let runtime = JavaScriptRuntime.for(unsafePointer: rawRuntime) else {
+      return expo.isTypedArray(runtime, pointer.pointee.getObject(runtime))
+    }
+    return JavaScriptTypedArray.isTypedArrayFallback(pointer.pointee.getObject(runtime.pointee), in: runtime)
   }
 
   /// Whether the value is an `ArrayBuffer`. The zero-copy counterpart of ``JavaScriptValue/isArrayBuffer()``.
@@ -275,7 +284,7 @@ public struct JavaScriptUnownedValue: ~Copyable {
   }
 
   /// Whether the borrowed value belongs to `runtime`: the runtime that owns the value it borrows.
-  private func belongs(to runtime: JavaScriptRuntime) -> Bool {
+  internal func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
     return unsafeBitCast(runtime.pointee, to: UnsafeRawPointer.self) == rawRuntime
   }
 

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <cstdlib>
+
 #include "IRuntimeCompat.h"
 
 namespace jsi = facebook::jsi;
@@ -26,7 +28,36 @@ enum class TypedArrayKind {
   BigUint64Array = 11,
 };
 
+// Returns whether the JSI runtime supports native TypedArray predicates and accessors (RN 0.86+).
+inline bool hasNativeTypedArraySupport() noexcept {
+  return EXPO_JSI_HAS_RN_086 != 0;
+}
+
 bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj);
+
+/**
+ * Checks `object instanceof ctor` without propagating JSI exceptions across the C++/Swift boundary
+ * (for example, when a `Proxy` has a throwing `getPrototypeOf` trap).
+ */
+inline bool safeInstanceOf(
+  jsi::IRuntime &runtime,
+  const jsi::Object &object,
+  const jsi::Function &ctor
+) noexcept {
+  try {
+    return object.instanceOf(runtime, ctor);
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
+}
+
+inline bool isUint8Array([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Object &jsObj) {
+#if EXPO_JSI_HAS_RN_086
+  return runtime.isUint8Array(jsObj);
+#else
+  std::abort();
+#endif
+}
 
 /**
  * Returns the `TypedArrayKind` of the given typed-array object, derived from its
@@ -48,6 +79,31 @@ jsi::ArrayBuffer getTypedArrayBuffer(
   jsi::IRuntime &runtime,
   const jsi::Object &jsObj,
   const jsi::PropNameID &bufferPropName
+);
+
+struct TypedArrayProperties {
+  size_t byteLength;
+  size_t byteOffset;
+  size_t length;
+};
+
+/**
+ * Reads `byteLength`, `byteOffset`, and `length` from a TypedArray object using JSI's native
+ * RN 0.86+ `IRuntime` TypedArray accessors (no JS property lookups). Only call when
+ * `hasNativeTypedArraySupport()` is `true`.
+ */
+TypedArrayProperties getNativeTypedArrayProperties(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj
+);
+
+/**
+ * Returns the backing `ArrayBuffer` of a TypedArray using JSI's native RN 0.86+ accessor.
+ * Only call when `hasNativeTypedArraySupport()` is `true`.
+ */
+jsi::ArrayBuffer getNativeTypedArrayBuffer(
+  jsi::IRuntime &runtime,
+  const jsi::Object &jsObj
 );
 
 } // namespace expo

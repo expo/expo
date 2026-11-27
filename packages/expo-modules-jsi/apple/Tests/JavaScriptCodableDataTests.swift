@@ -68,6 +68,17 @@ struct JavaScriptCodableDataTests {
     }
   }
 
+  @Test
+  func `decodes Data from a Uint8Array sub-view with non-zero byteOffset`() throws {
+    let value = try runtime.eval("new Uint8Array(new Uint8Array([10, 20, 30, 40, 50]).buffer, 1, 3)")
+    let decoded = try Data.decode(value, in: runtime)
+    #expect(Array(decoded) == [20, 30, 40])
+
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
+    let unownedDecoded = try Data.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(Array(unownedDecoded) == [20, 30, 40])
+  }
+
   // MARK: - Error paths
 
   @Test
@@ -77,6 +88,9 @@ struct JavaScriptCodableDataTests {
     }
     #expect(throws: DataNotUint8ArrayException.self) {
       _ = try Data.decode(runtime.eval("new Float64Array([1, 2])"), in: runtime)
+    }
+    #expect(throws: DataNotUint8ArrayException.self) {
+      _ = try Data.decode(runtime.eval("new DataView(new ArrayBuffer(4))"), in: runtime)
     }
   }
 }

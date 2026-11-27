@@ -334,8 +334,9 @@ struct JavaScriptTypedArrayTests {
 
   @Test
   func `decoding rejects a value that is not a typed array`() throws {
-    for source in ["new ArrayBuffer(4)", "[1, 2]", "42"] {
+    for source in ["new ArrayBuffer(4)", "new DataView(new ArrayBuffer(4))", "[1, 2]", "42"] {
       let value = try runtime.eval(source)
+      #expect(value.isTypedArray() == false)
       #expect(throws: JavaScriptValue.TypeError.self) {
         _ = try JavaScriptTypedArray.decode(value, in: runtime)
       }

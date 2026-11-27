@@ -17,8 +17,11 @@
 #include <cxxreact/ReactNativeVersion.h>
 #endif
 
-#if !defined(REACT_NATIVE_VERSION_MAJOR) || \
-    (REACT_NATIVE_VERSION_MAJOR == 0 && REACT_NATIVE_VERSION_MINOR < 86)
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+#define EXPO_JSI_HAS_RN_086 1
+#else
+#define EXPO_JSI_HAS_RN_086 0
 namespace facebook::jsi {
 using IRuntime = Runtime;
 } // namespace facebook::jsi

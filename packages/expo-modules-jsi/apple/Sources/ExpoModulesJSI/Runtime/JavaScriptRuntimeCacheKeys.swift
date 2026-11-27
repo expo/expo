@@ -28,6 +28,10 @@ extension JavaScriptRuntime {
     /// The global `Uint8Array` constructor.
     static let uint8ArrayConstructor = Cache.Key<JavaScriptFunction.Ref>()
 
+    /// The intrinsic `TypedArray` constructor (`Object.getPrototypeOf(Uint8Array)`), used on
+    /// React Native versions before 0.86 where `jsi::IRuntime::isTypedArray` is unavailable.
+    static let typedArrayConstructor = Cache.Key<JavaScriptFunction.Ref>()
+
     // MARK: - Functions evaluated from source
 
     /// The factory of the classes created with `createClass`.
