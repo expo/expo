@@ -58,14 +58,18 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-function tabSelectedEvent(selectedScreenKey: string): NativeSyntheticEvent<TabSelectedEvent> {
+function tabSelectedEvent(
+  selectedScreenKey: string,
+  actionOrigin: TabSelectedEvent['actionOrigin'] | 'programmaticJs' = 'user'
+): NativeSyntheticEvent<TabSelectedEvent> {
+  // Screens 4 types exclude the JavaScript selection origin that Screens 5 sends.
   return {
     nativeEvent: {
       selectedScreenKey,
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      actionOrigin: 'user',
+      actionOrigin,
     },
   } as NativeSyntheticEvent<TabSelectedEvent>;
 }
@@ -91,6 +95,23 @@ describe('NativeTabs.Trigger listeners prop', () => {
     await act(() => jest.runAllTimers());
 
     expect(tabPressListener).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not call tabPress for a Screens 5 JavaScript selection echo', async () => {
+    const tabPressListener = jest.fn();
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" listeners={{ tabPress: tabPressListener }} />
+        </NativeTabs>
+      ),
+      index: () => <View />,
+    });
+
+    await triggerTabSelected(tabSelectedEvent('index', 'programmaticJs'));
+    await act(() => jest.runAllTimers());
+
+    expect(tabPressListener).not.toHaveBeenCalled();
   });
 
   it('calls functional listeners with route', async () => {

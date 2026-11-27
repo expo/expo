@@ -43,9 +43,9 @@ export function useOnTabSelectedHandler(
 ): NonNullable<TabsHostProps['onTabSelected']> {
   return useCallback<NonNullable<TabsHostProps['onTabSelected']>>(
     ({ nativeEvent: { selectedScreenKey, provenance, actionOrigin } }) => {
-      // Treat anything other than a JS-driven echo as a native action so the
-      // navigator emits `tabPress` and dispatches `JUMP_TO`.
-      const isNativeAction = actionOrigin !== 'programmatic-js';
+      // Screens 5 uses camelCase for the JavaScript echo. The Screens 4 types only include kebab-case.
+      const origin: string = actionOrigin;
+      const isNativeAction = origin !== 'programmatic-js' && origin !== 'programmaticJs';
       onTabChange({ selectedKey: selectedScreenKey, provenance, isNativeAction });
     },
     [onTabChange]

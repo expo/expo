@@ -1,6 +1,10 @@
 import React, { use, useState, type ReactNode } from 'react';
 
-import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
+import {
+  Split,
+  splitColumnProps,
+  type SplitHostProps,
+} from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { useWarnOnce } from '../useDeprecated';
 import { isChildOfType } from '../utils/children';
@@ -101,7 +105,7 @@ function SplitViewNavigator({
 
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
-    <Split.Column key={child.key}>
+    <Split.Column key={child.key} {...splitColumnProps}>
       {getSplitColumnChildren(child.props, applyHorizontalInsets)}
     </Split.Column>
   ));
@@ -127,7 +131,7 @@ function SplitViewNavigator({
           onExpand?.(event);
         }}>
         {columns}
-        <Split.Column>
+        <Split.Column {...splitColumnProps}>
           {getSplitColumnChildren(
             { children: <Slot activityEnabled={activityEnabled} />, header: contentHeader },
             applyHorizontalInsets

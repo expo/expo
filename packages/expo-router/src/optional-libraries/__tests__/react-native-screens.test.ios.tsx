@@ -16,6 +16,7 @@ describe('react-native-screens', () => {
 
       expect(shim.StackV5).toBe(Stack);
       expect(shim.Split).toBe(Split);
+      expect(shim.splitColumnProps).toEqual({ disableStackIntegration: true });
     });
   });
 
@@ -28,6 +29,7 @@ describe('react-native-screens', () => {
 
       expect(shim.StackV5).toBe(Stack);
       expect(shim.Split).toBe(Split);
+      expect(shim.splitColumnProps).toEqual({});
     });
   });
 });

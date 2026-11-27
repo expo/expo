@@ -13,6 +13,11 @@ import { SplitViewColumnHeader } from '../header';
 import { SplitViewNativeHeader } from '../native';
 import { SplitView } from '../split-view';
 
+jest.mock('react-native-screens', () => ({
+  ...jest.requireActual('react-native-screens'),
+  Stack: jest.requireActual('react-native-screens/experimental').Stack,
+}));
+
 jest.mock('../../optional-libraries/react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actual = jest.requireActual(
@@ -174,6 +179,27 @@ it('passes each SplitView.Column to Split.Host as a direct Split.Column', async 
   expect(
     Children.toArray(hostProps.children).map((child) => isValidElement(child) && child.type)
   ).toEqual([Split.Column, Split.Column]);
+});
+
+it('opts each Screens 5 split column out of stack integration', async () => {
+  await renderRouter({
+    _layout: () => (
+      <SplitView>
+        <SplitView.Column />
+        <SplitView.Content />
+      </SplitView>
+    ),
+    index: () => <Text>Index</Text>,
+  });
+
+  const hostProps = jest.mocked(Split.Host).mock.lastCall![0];
+  expect(
+    Children.toArray(hostProps.children).map(
+      (child) =>
+        isValidElement<{ disableStackIntegration?: boolean }>(child) &&
+        child.props.disableStackIntegration
+    )
+  ).toEqual([true, true]);
 });
 
 it('renders a Split.Stack as the only direct child of its Split.Column', async () => {

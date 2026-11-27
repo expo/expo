@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentProps, ComponentType, ReactNode } from 'react';
 import * as Screens from 'react-native-screens';
 import * as ScreensExperimental from 'react-native-screens/experimental';
 
@@ -9,13 +9,18 @@ type ScreensV5Exports = Pick<typeof ScreensExperimental, 'Stack' | 'Split'>;
 const screensV5 = Screens as unknown as Partial<ScreensV5Exports>;
 
 export const isScreens5 = screensV5.Stack !== undefined;
+// A Screens 5 stack must be a direct child to navigate a column. Router wraps it in safe area views.
+export const splitColumnProps = isScreens5 ? { disableStackIntegration: true } : {};
 export const StackV5 = screensV5.Stack ?? ScreensExperimental.Stack;
 // react-native-screens 5 adds column stacks and header configs to `Split`. 4.x doesn't have them.
 type SplitV5Components = {
+  Column: ComponentType<
+    ComponentProps<typeof ScreensExperimental.Split.Column> & { disableStackIntegration?: boolean }
+  >;
   Stack?: ComponentType<{ children?: ReactNode }>;
   HeaderConfig?: ComponentType<object>;
 };
-export const Split: typeof ScreensExperimental.Split & SplitV5Components =
+export const Split: Omit<typeof ScreensExperimental.Split, 'Column'> & SplitV5Components =
   screensV5.Split ?? ScreensExperimental.Split;
 // react-native-screens 4.x and 5 export `SafeAreaView` only from `experimental`.
 export { SafeAreaView, type SplitHostProps } from 'react-native-screens/experimental';
