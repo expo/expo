@@ -70,7 +70,7 @@ export default defineConfig({
   rules: {
     // fbjs is a Facebook-internal package not intended to be a public API.
     'no-restricted-imports': ['warn', { patterns: ['fbjs/*', 'fbjs'] }],
-    'expo/metro/no-platform-variant-exports': 'error',
+    'expo/metro/no-ignored-platform-variants': 'error',
 
     // -----------------------------
     // --- Intentional patterns  ---

@@ -1,16 +1,16 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { after, describe, it } from 'node:test';
+import { after, describe, it, mock } from 'node:test';
 import { RuleTester } from 'oxlint/plugins-dev';
 
-import rule from './no-platform-variant-exports.js';
+import rule from './no-ignored-platform-variants.js';
 
 RuleTester.describe = describe;
 RuleTester.it = it;
 
 const root = fs.realpathSync(
-  fs.mkdtempSync(path.join(os.tmpdir(), 'no-platform-variant-exports-'))
+  fs.mkdtempSync(path.join(os.tmpdir(), 'no-ignored-platform-variants-'))
 );
 after(() => fs.rmSync(root, { recursive: true, force: true }));
 
@@ -62,13 +62,17 @@ write({
   'app/node_modules/platform-main/package.json': { name: 'platform-main', main: './index' },
   'app/node_modules/platform-main/index.js': '',
   'app/node_modules/platform-main/index.native.js': '',
+
+  // A test adds the platform file after the first lint run.
+  'app/node_modules/late-variant/package.json': { name: 'late-variant', main: './index.js' },
+  'app/node_modules/late-variant/index.js': '',
 });
 
 const filename = path.join(root, 'app/index.tsx');
 const cwd = path.join(root, 'app');
 const exportsPath = path.join('node_modules', 'exact-export', 'src');
 
-new RuleTester({ cwd }).run('metro/no-platform-variant-exports', rule, {
+new RuleTester({ cwd }).run('metro/no-ignored-platform-variants', rule, {
   valid: [
     { filename, code: `import './Image';` },
     { filename, code: `import 'barrel-export';` },
@@ -77,6 +81,7 @@ new RuleTester({ cwd }).run('metro/no-platform-variant-exports', rule, {
     { filename, code: `import type { Image } from 'exact-export';` },
     { filename, code: `import 'not-installed';` },
     { filename, code: `import 'node:fs';` },
+    { filename, code: `import 'late-variant';` },
   ],
   invalid: [
     {
@@ -135,6 +140,19 @@ new RuleTester({ cwd }).run('metro/no-platform-variant-exports', rule, {
           data: { specifier: './Image.tsx', variants: '"Image.web.tsx"' },
         },
       ],
+    },
+    {
+      name: 'a platform file that was added after the caches expired',
+      filename,
+      code: `import 'late-variant';`,
+      before() {
+        write({ 'app/node_modules/late-variant/index.native.js': '' });
+        mock.timers.enable({ apis: ['Date'], now: Date.now() + 60_000 });
+      },
+      after() {
+        mock.timers.reset();
+      },
+      errors: 1,
     },
   ],
 });

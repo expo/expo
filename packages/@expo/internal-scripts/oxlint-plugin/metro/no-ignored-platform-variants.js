@@ -47,6 +47,21 @@ const packageCache = new Map();
 const directoryCache = new Map();
 const resultCache = new Map();
 
+// An editor keeps this module loaded between lint runs, so the caches must expire.
+const CACHE_LIFETIME_MS = 5000;
+let cacheExpiryTime = 0;
+
+function clearExpiredCaches() {
+  const now = Date.now();
+  if (now >= cacheExpiryTime) {
+    lookupCache.clear();
+    packageCache.clear();
+    directoryCache.clear();
+    resultCache.clear();
+    cacheExpiryTime = now + CACHE_LIFETIME_MS;
+  }
+}
+
 function fileSystemLookup(filePath) {
   let result = lookupCache.get(filePath);
   if (!result) {
@@ -233,6 +248,7 @@ export default {
     schema: [],
   },
   create(context) {
+    clearExpiredCaches();
     const filename = context.physicalFilename;
 
     function check(source, isESMImport) {

@@ -1,8 +1,8 @@
-import noPlatformVariantExports from './metro/no-platform-variant-exports.js';
+import noIgnoredPlatformVariants from './metro/no-ignored-platform-variants.js';
 
 export default {
   meta: { name: 'expo' },
   rules: {
-    'metro/no-platform-variant-exports': noPlatformVariantExports,
+    'metro/no-ignored-platform-variants': noIgnoredPlatformVariants,
   },
 };
