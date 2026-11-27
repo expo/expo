@@ -8,6 +8,7 @@ import android.os.Build
 import android.view.accessibility.CaptioningManager
 import android.view.LayoutInflater
 import android.view.MotionEvent
+import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
@@ -199,6 +200,7 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
 
     // Start with the SurfaceView being transparent to avoid any flickers when the prop value is delivered.
     this.playerView.setShutterBackgroundColor(Color.TRANSPARENT)
+    (this.playerView.videoSurfaceView as? TextureView)?.isOpaque = false
     this.playerView.videoSurfaceView?.alpha = 0f
 
     // Configure subtitle view to fix sizing issues with embedded styles
