@@ -433,6 +433,11 @@ export class AudioPlaylistWeb
     let lastEmitTime = 0;
     const intervalSec = this._updateInterval / 1000;
 
+    // A preloaded track can fire `loadeddata` before it gets these handlers.
+    if (media.readyState >= 2) {
+      this._isLoaded = true;
+      this._isBuffering = false;
+    }
     if (media.readyState >= 1) {
       const duration = media.duration;
       if (!isNaN(duration) && isFinite(duration)) {
