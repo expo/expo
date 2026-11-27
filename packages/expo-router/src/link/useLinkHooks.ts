@@ -230,7 +230,10 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
 }
 
 // Mutate the style prop to add the className on web.
-export function useInteropClassName(props: { style?: TextProps['style']; className?: string }) {
+export function useInteropClassName(props: {
+  style?: TextProps['style'];
+  className?: string;
+}): TextProps['style'] {
   if (Platform.OS !== 'web') {
     return props.style;
   }

@@ -1,6 +1,7 @@
 {
   "extends": "@expo/internal-scripts/tsconfig.base",
   "compilerOptions": {
+    "customConditions": ["expo-source", "react-native-unstable-internals"],
     "noEmit": true,
     "composite": true,
     "rootDir": "./src",

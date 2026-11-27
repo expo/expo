@@ -147,7 +147,7 @@ describe(appendStackHeaderPropsToOptions, () => {
     it('maps style.backgroundColor to headerStyle.backgroundColor', () => {
       const result = appendStackHeaderPropsToOptions({}, { style: { backgroundColor: 'white' } });
       const flattenedStyle = StyleSheet.flatten(result.headerStyle || {});
-      expect(flattenedStyle.backgroundColor).toBe('white');
+      expect(flattenedStyle?.backgroundColor).toBe('white');
     });
 
     it('maps shadowColor transparent to headerShadowVisible false', () => {
@@ -168,7 +168,7 @@ describe(appendStackHeaderPropsToOptions, () => {
         { largeStyle: { backgroundColor: 'blue' } }
       );
       const flattenedStyle = StyleSheet.flatten(result.headerLargeStyle || {});
-      expect(flattenedStyle.backgroundColor).toBe('blue');
+      expect(flattenedStyle?.backgroundColor).toBe('blue');
     });
 
     it('maps largeStyle.shadowColor transparent to headerLargeTitleShadowVisible false', () => {
@@ -197,7 +197,7 @@ describe(appendStackHeaderPropsToOptions, () => {
       expect(result.title).toBe('Page Title');
       expect(result.headerBackTitle).toBe('Back');
       const flattenedStyle = StyleSheet.flatten(result.headerStyle || {});
-      expect(flattenedStyle.backgroundColor).toBe('white');
+      expect(flattenedStyle?.backgroundColor).toBe('white');
     });
 
     it('overwrites conflicting options', () => {

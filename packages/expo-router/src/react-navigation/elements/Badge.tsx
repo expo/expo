@@ -65,9 +65,12 @@ export function Badge({ children, style, visible = true, size = 18, ...rest }: P
     }
   }
 
-  // @ts-expect-error: backgroundColor definitely exists
   const { backgroundColor = colors.notification, ...restStyle } = StyleSheet.flatten(style) || {};
-  const textColor = isLight(backgroundColor) ? 'black' : 'white';
+  const textColor =
+    (typeof backgroundColor === 'string' || typeof backgroundColor === 'number') &&
+    isLight(backgroundColor)
+      ? 'black'
+      : 'white';
 
   const borderRadius = size / 2;
   const fontSize = Math.floor((size * 3) / 4);

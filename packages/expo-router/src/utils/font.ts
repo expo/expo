@@ -4,10 +4,13 @@ type NumericFontWeight = 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900;
 
 type ConvertedFontWeightType = Exclude<TextStyle['fontWeight'], number> | `${NumericFontWeight}`;
 
-export function convertTextStyleToRNTextStyle<BaseStyleType extends Pick<TextStyle, 'fontWeight'>>(
+export function convertTextStyleToRNTextStyle<
+  BaseStyleType extends Pick<TextStyle, 'fontSize' | 'fontWeight'>,
+>(
   style: StyleProp<BaseStyleType | undefined>
 ):
-  | (Omit<BaseStyleType, 'fontWeight'> & {
+  | (Omit<BaseStyleType, 'fontSize' | 'fontWeight'> & {
+      fontSize?: number;
       fontWeight?: ConvertedFontWeightType;
     })
   | undefined {
@@ -15,16 +18,19 @@ export function convertTextStyleToRNTextStyle<BaseStyleType extends Pick<TextSty
   if (!flattenedStyle) {
     return undefined;
   }
-  if ('fontWeight' in flattenedStyle) {
-    return {
-      ...flattenedStyle,
-      fontWeight:
-        typeof flattenedStyle.fontWeight === 'number'
-          ? (String(flattenedStyle.fontWeight) as `${NumericFontWeight}`)
-          : flattenedStyle.fontWeight,
-    };
-  }
-  return flattenedStyle as Omit<BaseStyleType, 'fontWeight'>;
+  const { fontSize, fontWeight, ...rest } = flattenedStyle;
+  return {
+    ...rest,
+    ...(typeof fontSize === 'number' ? { fontSize } : null),
+    ...('fontWeight' in flattenedStyle
+      ? {
+          fontWeight:
+            typeof fontWeight === 'number'
+              ? (String(fontWeight) as `${NumericFontWeight}`)
+              : fontWeight,
+        }
+      : null),
+  };
 }
 
 export type BasicTextStyle = Pick<TextStyle, 'fontSize' | 'fontWeight' | 'fontFamily' | 'color'>;
