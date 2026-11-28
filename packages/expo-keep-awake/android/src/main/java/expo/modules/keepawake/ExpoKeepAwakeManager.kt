@@ -1,31 +1,42 @@
 package expo.modules.keepawake
 
-import android.app.Activity
 import android.view.WindowManager
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.bridge.ReactContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ExpoKeepAwakeManager(
-  private val activityProvider: () -> Activity
-) {
+  private val reactContextProvider: () -> ReactContext?
+) : LifecycleEventListener {
   private val tags = mutableSetOf<String>()
 
   val isActivated: Boolean
     get() = tags.isNotEmpty()
 
   suspend fun activate(tag: String): Unit = withContext(Dispatchers.Main) {
-    val activity = activityProvider()
-    if (!isActivated) {
-      activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
     tags.add(tag)
+    reactContextProvider()?.addLifecycleEventListener(this@ExpoKeepAwakeManager)
+    syncKeepScreenOnFlag()
   }
 
   suspend fun deactivate(tag: String): Unit = withContext(Dispatchers.Main) {
-    val activity = activityProvider()
-    if (tags.size == 1 && tags.contains(tag)) {
-      activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
     tags.remove(tag)
+    syncKeepScreenOnFlag()
+  }
+
+  override fun onHostResume() = syncKeepScreenOnFlag()
+
+  override fun onHostPause() = Unit
+
+  override fun onHostDestroy() = Unit
+
+  private fun syncKeepScreenOnFlag() {
+    val window = reactContextProvider()?.currentActivity?.window ?: return
+    if (isActivated) {
+      window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    } else {
+      window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
   }
 }

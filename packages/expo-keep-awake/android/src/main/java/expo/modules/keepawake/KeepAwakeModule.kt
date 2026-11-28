@@ -1,17 +1,18 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.keepawake
 
-import expo.modules.kotlin.exception.Exceptions
 import io.github.expo.modules.v2.ExpoModule
 import io.github.expo.modules.v2.JS
 import io.github.expo.modules.v2.Module
 import io.github.expo.modules.v2.async.Promise
-import io.github.expo.modules.v2.react.currentActivity
+import io.github.expo.modules.v2.react.reactContextOrNull
 
 @ExpoModule("ExpoKeepAwake")
 class KeepAwakeModule : Module() {
-  private val keepAwakeManager = ExpoKeepAwakeManager {
-    currentActivity ?: throw Exceptions.MissingActivity()
+  private val keepAwakeManager = ExpoKeepAwakeManager { reactContextOrNull }
+
+  override fun onDestroy() {
+    reactContextOrNull?.removeLifecycleEventListener(keepAwakeManager)
   }
 
   @JS
