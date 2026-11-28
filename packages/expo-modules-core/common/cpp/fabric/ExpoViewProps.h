@@ -7,6 +7,7 @@
 #include <folly/dynamic.h>
 #include <react/renderer/components/view/ViewProps.h>
 #include <react/renderer/core/PropsParserContext.h>
+#include <react/renderer/core/RawPropsParser.h>
 
 #ifdef __APPLE__
 #include <TargetConditionals.h>
@@ -41,5 +42,31 @@ public:
 };
 
 } // namespace expo
+
+namespace facebook::react {
+
+/**
+ `ConcreteComponentDescriptor` prepares a `RawPropsParser` for each descriptor. It collects the keys of all base
+ view props, which is O(n^2) in the number of keys and costs more than the rest of registering a view. On iOS, every
+ view of Expo Modules v1 has the same props type, so the parser is prepared once and each descriptor gets a copy.
+ Android descriptors use `AndroidExpoViewProps`, so they don't use this specialization.
+ */
+template <>
+inline void RawPropsParser::prepare<expo::ExpoViewProps>() noexcept
+{
+  static const RawPropsParser preparedParser = [] {
+    RawPropsParser parser;
+    RawProps emptyRawProps{};
+    ContextContainer contextContainer{};
+    PropsParserContext parserContext{-1, contextContainer};
+    emptyRawProps.parse(parser);
+    expo::ExpoViewProps(parserContext, {}, emptyRawProps);
+    parser.postPrepare();
+    return parser;
+  }();
+  *this = preparedParser;
+}
+
+} // namespace facebook::react
 
 #endif // __cplusplus

@@ -361,9 +361,10 @@ NSString *joined(const std::vector<std::string> &names) {
 
 - (void)testBaseViewPropsMatchTheClassicParser
 {
-  // What `ConcreteComponentDescriptor` prepares for the classic path, which parses with `RawPropsParser`.
+  // What `ConcreteComponentDescriptor` prepares for the classic path, which parses with `RawPropsParser`. The parser
+  // of `NewViewProps` isn't prepared, see `NewViewProps.h`, and `NewViewProps` parses the base view props only.
   react::RawPropsParser parser;
-  parser.prepare<views::NewViewProps>();
+  parser.prepare<react::ViewProps>();
   react::PropsParserContext context{-1, *_contextContainer};
 
   auto classicClone = [&](const views::NewViewProps &sourceProps, const jsi::Value &value) {
