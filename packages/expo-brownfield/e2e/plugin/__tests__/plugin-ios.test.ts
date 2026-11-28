@@ -79,6 +79,8 @@ describe('plugin for ios', () => {
   it('should create all brownfield files', async () => {
     const files = [
       'ExpoAppDelegate.swift',
+      'ExpoHost.swift',
+      'ExpoScene.swift',
       'Info.plist',
       'Messaging.swift',
       'ReactNativeDelegate.swift',
