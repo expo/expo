@@ -16,7 +16,7 @@ open class ServerRegistrationModule: Module {
       return try getRegistrationInfo()
     }
 
-    AsyncFunction("setRegistrationInfoAsync") { (registrationInfo: String) in
+    AsyncFunction("setRegistrationInfoAsync") { (registrationInfo: String?) in
       try setRegistrationInfo(registrationInfo: registrationInfo)
     }
   }
@@ -89,8 +89,12 @@ open class ServerRegistrationModule: Module {
     return try fetchStringWithQuery(registrationGetQuery())
   }
 
-  private func setRegistrationInfo(registrationInfo: String) throws {
-    return try storeStringWithQueries(search: registrationSearchQuery(), set: registrationSetQuery(registrationInfo))
+  private func setRegistrationInfo(registrationInfo: String?) throws {
+    guard let registrationInfo else {
+      try deleteItemWithQuery(registrationSearchQuery())
+      return
+    }
+    try storeStringWithQueries(search: registrationSearchQuery(), set: registrationSetQuery(registrationInfo))
   }
 
   open func registrationSearchQueryMerging(_ dictionaryToMerge: [AnyHashable: Any]) -> CFDictionary {
@@ -152,6 +156,13 @@ open class ServerRegistrationModule: Module {
     SecItemDelete(search)
     let status = SecItemAdd(set, nil)
     if status != errSecSuccess {
+      throw keychainException(status)
+    }
+  }
+
+  private func deleteItemWithQuery(_ query: CFDictionary) throws {
+    let status = SecItemDelete(query)
+    if status != errSecSuccess && status != errSecItemNotFound {
       throw keychainException(status)
     }
   }
