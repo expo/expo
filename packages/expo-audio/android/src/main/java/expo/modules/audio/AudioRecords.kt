@@ -13,7 +13,8 @@ import expo.modules.kotlin.types.OptimizedRecord
 class AudioSource(
   @Field val uri: String?,
   @Field val headers: Map<String, String>?,
-  @Field val name: String? = null
+  @Field val name: String? = null,
+  @Field val mimeType: String? = null
 ) : Record
 
 enum class LoopMode(val value: String) : Enumerable {

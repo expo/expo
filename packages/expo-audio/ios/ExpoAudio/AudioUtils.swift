@@ -86,12 +86,17 @@ struct AudioUtils {
       url
     }
 
-    var options: [String: Any]?
+    var options: [String: Any] = [:]
     if let headers = source.headers {
-      options = ["AVURLAssetHTTPHeaderFieldsKey": headers]
+      options["AVURLAssetHTTPHeaderFieldsKey"] = headers
+    }
+    if #available(iOS 17.0, tvOS 17.0, *),
+      let mimeType = source.mimeType?.trimmingCharacters(in: .whitespacesAndNewlines),
+      !mimeType.isEmpty {
+      options[AVURLAssetOverrideMIMETypeKey] = mimeType
     }
 
-    let asset = AVURLAsset(url: finalUrl, options: options)
+    let asset = AVURLAsset(url: finalUrl, options: options.isEmpty ? nil : options)
     return AVPlayerItem(asset: asset, automaticallyLoadedAssetKeys: [.tracks, .duration])
   }
 

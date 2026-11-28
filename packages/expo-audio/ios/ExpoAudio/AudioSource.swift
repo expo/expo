@@ -10,4 +10,7 @@ struct AudioSource: Record {
 
   @Field
   var name: String?
+
+  @Field
+  var mimeType: String?
 }

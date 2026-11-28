@@ -41,6 +41,14 @@ export type AudioSource =
        * Useful for showing track names in a queue or playlist UI.
        */
       name?: string;
+      /**
+       * The MIME type to use when the URI has a missing or incorrect file extension.
+       * For example, use `audio/mpeg` for MP3 or `application/x-mpegURL` for an HLS playlist.
+       * @platform android
+       * @platform ios 17+
+       * @platform tvos 17+
+       */
+      mimeType?: string;
     };
 
 /**
