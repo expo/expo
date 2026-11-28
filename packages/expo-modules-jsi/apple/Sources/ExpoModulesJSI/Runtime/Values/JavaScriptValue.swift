@@ -222,7 +222,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.isArrayValue(jsiRuntime, pointee)
+    return pointee.withBorrowedObject { $0.isArray(jsiRuntime) }
   }
 
   public func isFunction() -> Bool {
@@ -233,7 +233,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.isFunctionValue(jsiRuntime, pointee)
+    return pointee.withBorrowedObject { $0.isFunction(jsiRuntime) }
   }
 
   /// Whether the value is a thenable: an object with a callable `then`, such as a promise.
@@ -278,7 +278,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.isArrayBufferValue(jsiRuntime, pointee)
+    return pointee.withBorrowedObject { $0.isArrayBuffer(jsiRuntime) }
   }
 
   /// Checks whether the value is an instance of a global class of the given name.

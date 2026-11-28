@@ -4,8 +4,11 @@
 
 #ifdef __cplusplus
 
+#include <cassert>
 #include <cstring>
 #include <new>
+#include <swift/bridging>
+#include <type_traits>
 #include <TargetConditionals.h>
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
@@ -470,53 +473,117 @@ inline void getPropNameIdData(
 #endif
 }
 
+template <typename T>
+class Borrowed;
+
 /**
  Reaches the protected `jsi::Runtime` statics that let a derived class wrap a `PointerValue` in a
  `jsi::Pointer` subclass. Never instantiated: it derives from `jsi::Runtime` only for that access.
+ Restricted to `Borrowed<T>` so callers can't accidentally construct a non-owning `T` whose
+ destructor would release the borrowed handle.
  */
 class PointerValueAccess : public jsi::Runtime {
  public:
   PointerValueAccess() = delete;
 
-  /**
-   A `jsi::String` holding the pointer of the given string value without cloning it. The string
-   shares the pointer with `value`, so it must never be destroyed: its destructor would release a
-   reference it doesn't own.
-   */
-  static jsi::String borrowString(const jsi::Value &value) noexcept {
-    return make<jsi::String>(const_cast<PointerValue *>(getPointerValue(value)));
-  }
+ private:
+  template <typename T>
+  friend class Borrowed;
 
-  /**
-   A `jsi::BigInt` holding the pointer of the given bigint value without cloning it. Must live in
-   raw storage that is never destroyed, like `borrowString`.
-   */
-  static jsi::BigInt borrowBigInt(const jsi::Value &value) noexcept {
-    return make<jsi::BigInt>(const_cast<PointerValue *>(getPointerValue(value)));
-  }
-
-  /**
-   A `jsi::Object` holding the pointer of the given object value without cloning it. Must live in
-   raw storage that is never destroyed, like `borrowString`.
-   */
-  static jsi::Object borrowObject(const jsi::Value &value) noexcept {
-    return make<jsi::Object>(const_cast<PointerValue *>(getPointerValue(value)));
-  }
-
-#if EXPO_JSI_HAS_RN_086
-  static jsi::TypedArray borrowTypedArray(const jsi::Object &object) noexcept {
-    return make<jsi::TypedArray>(const_cast<PointerValue *>(getPointerValue(object)));
-  }
+  template <typename T>
+  static T borrow(const jsi::Value &value) noexcept {
+    static_assert(
+      std::is_same_v<jsi::Object, T> ||
+        std::is_same_v<jsi::String, T> ||
+        std::is_same_v<jsi::BigInt, T> ||
+        std::is_same_v<jsi::Symbol, T>,
+      "jsi::Value cannot hold this jsi::Pointer subclass"
+    );
+    // Gate on `DEBUG` as well as `!NDEBUG`: Swift's Clang importer does not define `NDEBUG` in
+    // Release builds, so bare `assert(...)` would compile into Release and block inlining.
+#if defined(DEBUG) && !defined(NDEBUG)
+    if constexpr (std::is_same_v<jsi::Object, T>) {
+      assert(value.isObject() && "Borrowed<jsi::Object> requires an object jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::String, T>) {
+      assert(value.isString() && "Borrowed<jsi::String> requires a string jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::BigInt, T>) {
+      assert(value.isBigInt() && "Borrowed<jsi::BigInt> requires a BigInt jsi::Value");
+    } else if constexpr (std::is_same_v<jsi::Symbol, T>) {
+      assert(value.isSymbol() && "Borrowed<jsi::Symbol> requires a Symbol jsi::Value");
+    }
 #endif
+    return make<T>(const_cast<PointerValue *>(getPointerValue(value)));
+  }
+
+  template <typename T>
+  static T borrow(const jsi::Pointer &pointer) noexcept {
+    static_assert(std::is_base_of_v<jsi::Pointer, T>, "T must derive from jsi::Pointer");
+    return make<T>(const_cast<PointerValue *>(getPointerValue(pointer)));
+  }
 } __attribute__((availability(swift, unavailable)));
+
+/**
+ Non-owning view of a `jsi::Pointer` subclass (`jsi::Object`, `jsi::String`, `jsi::BigInt`,
+ `jsi::TypedArray`) borrowed from an existing `jsi::Value` or `jsi::Object` without cloning its
+ handle. `value_` is a variant member of an anonymous union, so `~Borrowed() noexcept {}` skips
+ calling `~T()` and leaves the underlying `PointerValue` owned by the source. The source must
+ outlive the `Borrowed<T>`.
+ */
+template <typename T>
+class Borrowed {
+  static_assert(std::is_base_of_v<jsi::Pointer, T>, "Borrowed<T> requires a jsi::Pointer subclass");
+
+ public:
+  explicit Borrowed(const jsi::Value &value) noexcept
+    : value_(PointerValueAccess::borrow<T>(value)) {}
+
+  template <typename U = T, std::enable_if_t<std::is_base_of_v<jsi::Object, U>, int> = 0>
+  explicit Borrowed(const jsi::Object &object) noexcept
+    : value_(PointerValueAccess::borrow<T>(object)) {}
+
+  Borrowed(const jsi::Value &&) = delete;
+  Borrowed(const jsi::Object &&) = delete;
+
+  ~Borrowed() noexcept {}
+
+  Borrowed(const Borrowed &) = delete;
+  Borrowed &operator=(const Borrowed &) = delete;
+  // Swift's `SWIFT_NONCOPYABLE` C++ interop requires a move constructor to import a non-copyable
+  // value type. Moving only copies the non-owning `PointerValue*` and leaves `other` inert (`~Borrowed()` is empty).
+  Borrowed(Borrowed &&other) noexcept
+    : value_(PointerValueAccess::borrow<T>(other.value_)) {}
+  Borrowed &operator=(Borrowed &&) = delete;
+
+  const T &operator*() const noexcept {
+    return value_;
+  }
+
+  const T *_Nonnull operator->() const noexcept {
+    return &value_;
+  }
+
+  // Takes a pointer to a pinned `Borrowed` (e.g. from Swift's `withUnsafeBytes(of:)`), so Swift
+  // callers cannot obtain a raw pointer into an unpinned temporary `Borrowed`.
+  static const T *_Nonnull unsafePointer(const Borrowed *_Nonnull borrowed) noexcept {
+    return &borrowed->value_;
+  }
+
+ private:
+  union {
+    T value_;
+  };
+} SWIFT_NONCOPYABLE;
+
+using BorrowedObject = Borrowed<jsi::Object>;
+using BorrowedBigInt = Borrowed<jsi::BigInt>;
+using BorrowedString = Borrowed<jsi::String>;
 
 inline bool isTypedArrayValue([[maybe_unused]] jsi::IRuntime &runtime, [[maybe_unused]] const jsi::Value &value) noexcept {
 #if EXPO_JSI_HAS_RN_086
   if (!value.isObject()) {
     return false;
   }
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
+  Borrowed<jsi::Object> object(value);
   try {
     return runtime.isTypedArray(*object);
   } catch (const jsi::JSIException &) {
@@ -537,8 +604,7 @@ inline TypedArrayProperties getNativeTypedArrayProperties(
   [[maybe_unused]] const jsi::Object &jsObj
 ) {
 #if EXPO_JSI_HAS_RN_086
-  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
-  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(jsObj));
+  Borrowed<jsi::TypedArray> ta(jsObj);
   return {
     runtime.byteLength(*ta),
     runtime.byteOffset(*ta),
@@ -558,9 +624,7 @@ inline jsi::ArrayBuffer getNativeTypedArrayBuffer(
   [[maybe_unused]] const jsi::Object &jsObj
 ) {
 #if EXPO_JSI_HAS_RN_086
-  alignas(jsi::TypedArray) unsigned char storage[sizeof(jsi::TypedArray)];
-  const jsi::TypedArray *ta = new (storage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(jsObj));
-  return runtime.buffer(*ta);
+  return runtime.buffer(*Borrowed<jsi::TypedArray>(jsObj));
 #else
   abortUnsupportedRNVersion(__func__);
 #endif
@@ -582,14 +646,12 @@ inline bool withUint8ArrayBytes(
   if (!value.isObject()) {
     return false;
   }
-  alignas(jsi::Object) unsigned char objStorage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (objStorage) jsi::Object(PointerValueAccess::borrowObject(value));
+  Borrowed<jsi::Object> object(value);
   try {
     if (!runtime.isUint8Array(*object)) {
       return false;
     }
-    alignas(jsi::TypedArray) unsigned char taStorage[sizeof(jsi::TypedArray)];
-    const jsi::TypedArray *ta = new (taStorage) jsi::TypedArray(PointerValueAccess::borrowTypedArray(*object));
+    Borrowed<jsi::TypedArray> ta(*object);
     size_t byteLength = runtime.byteLength(*ta);
     if (byteLength == 0) {
       callback(ctx, nullptr, 0);
@@ -606,106 +668,6 @@ inline bool withUint8ArrayBytes(
 #else
   abortUnsupportedRNVersion(__func__);
 #endif
-}
-
-/**
- Reads a signed 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
- Returns `false` when the BigInt is outside `int64_t` range.
- */
-inline bool getBigIntInt64(jsi::IRuntime &runtime, const jsi::Value &value, int64_t *_Nonnull out) {
-  alignas(jsi::BigInt) unsigned char storage[sizeof(jsi::BigInt)];
-  const jsi::BigInt *bigInt = new (storage) jsi::BigInt(PointerValueAccess::borrowBigInt(value));
-  if (!bigInt->isInt64(runtime)) {
-    return false;
-  }
-  *out = bigInt->getInt64(runtime);
-  return true;
-}
-
-/**
- Reads an unsigned 64-bit integer from a BigInt `jsi::Value` without cloning its handle.
- Returns `false` when the BigInt is outside `uint64_t` range.
- */
-inline bool getBigIntUint64(jsi::IRuntime &runtime, const jsi::Value &value, uint64_t *_Nonnull out) {
-  alignas(jsi::BigInt) unsigned char storage[sizeof(jsi::BigInt)];
-  const jsi::BigInt *bigInt = new (storage) jsi::BigInt(PointerValueAccess::borrowBigInt(value));
-  if (!bigInt->isUint64(runtime)) {
-    return false;
-  }
-  *out = bigInt->getUint64(runtime);
-  return true;
-}
-
-/**
- Checks whether `value` is a JavaScript `Array` without cloning its object handle.
- */
-inline bool isArrayValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  if (!value.isObject()) {
-    return false;
-  }
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return object->isArray(runtime);
-}
-
-/**
- Checks whether `value` is a JavaScript `Function` without cloning its object handle.
- */
-inline bool isFunctionValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  if (!value.isObject()) {
-    return false;
-  }
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return object->isFunction(runtime);
-}
-
-/**
- Checks whether `value` is a JavaScript `ArrayBuffer` without cloning its object handle.
- */
-inline bool isArrayBufferValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  if (!value.isObject()) {
-    return false;
-  }
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return object->isArrayBuffer(runtime);
-}
-
-/**
- Same as `getStringData`, but reads the string straight from a string `jsi::Value`. `value.getString(runtime)`
- clones the handle into a `jsi::String` for the call and releases it after; this lends the value's
- own pointer instead, so the read costs no reference counting.
- */
-inline void getStringDataFromValue(
-  jsi::IRuntime &runtime,
-  const jsi::Value &value,
-  void *ctx,
-  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
-) {
-  // The borrowed string lives in raw storage that is never destroyed, so it doesn't release the
-  // pointer `value` still owns. Nothing else is left behind: a `jsi::String` holds just the pointer.
-  alignas(jsi::String) unsigned char storage[sizeof(jsi::String)];
-  const jsi::String *string = new (storage) jsi::String(PointerValueAccess::borrowString(value));
-  getStringData(runtime, *string, ctx, callback);
-}
-
-/**
- Returns the enumerable property names of an object `jsi::Value` without cloning its object handle.
- */
-inline jsi::Array getPropertyNamesOfObjectValue(jsi::IRuntime &runtime, const jsi::Value &value) {
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return object->getPropertyNames(runtime);
-}
-
-/**
- Reads property `name` from an object `jsi::Value` without cloning its object handle.
- */
-inline jsi::Value getPropertyOfObjectValue(jsi::IRuntime &runtime, const jsi::Value &value, const jsi::String &name) {
-  alignas(jsi::Object) unsigned char storage[sizeof(jsi::Object)];
-  const jsi::Object *object = new (storage) jsi::Object(PointerValueAccess::borrowObject(value));
-  return object->getProperty(runtime, name);
 }
 
 // MARK: - Memory pressure
