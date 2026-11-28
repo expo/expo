@@ -19,6 +19,28 @@ const metadataEntry = (packageRoot, productName, fields = {}) => ({
 /** How an error asks the user to update the app's packages; Expo apps have no `react-native` CLI. */
 const rerunSpmUpdate = `Then run \`${spmUpdateCommand()}\` from your app directory again.`;
 
+/** The key the prebuild pipeline sets to true in the root Info.plist of every Release stub. */
+const releaseStubMarker = '\t<key>ExpoReleaseStub</key>\n\t<true/>\n';
+
+/** Writes an XCFramework root Info.plist, in the XML format `plutil` keeps, with `entries` added. */
+function writeXCFrameworkInfoPlist(xcframework, entries = '') {
+  fs.mkdirSync(xcframework, { recursive: true });
+  fs.writeFileSync(
+    path.join(xcframework, 'Info.plist'),
+    [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+      '<plist version="1.0">',
+      '<dict>',
+      `${entries}\t<key>XCFrameworkFormatVersion</key>`,
+      '\t<string>1.0</string>',
+      '</dict>',
+      '</plist>',
+      '',
+    ].join('\n')
+  );
+}
+
 const tempDirs = [];
 
 /** A new directory under the OS temp dir, removed by `removeTempDirs`. */
@@ -89,9 +111,11 @@ module.exports = {
   makeTempDir,
   metadataEntry,
   printed,
+  releaseStubMarker,
   removeTempDirs,
   rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,
+  writeXCFrameworkInfoPlist,
 };

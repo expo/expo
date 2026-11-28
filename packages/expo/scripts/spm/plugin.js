@@ -85,6 +85,7 @@ const {
   hasPrecompiledArtifact,
   headersXCFrameworkDirs,
   headersXCFrameworkSearchPaths,
+  isReleaseStub,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
@@ -530,6 +531,24 @@ function assertDebugOnlyPodsPaired(identities, records, matchBuildFromSource) {
   });
 }
 
+/** Fails the sync for the debug-only pods whose linked pair has a Release flavor that is not a stub. */
+function assertDebugOnlyReleaseStubs(identities, records) {
+  const unstubbed = [...identities.values()].filter(
+    (identity) =>
+      identity.debugOnly && !isReleaseStub(records.get(identity.podName).framework.flavors.release)
+  );
+  if (unstubbed.length === 0) return;
+  const many = unstubbed.length > 1;
+  const packages = [...new Set(unstubbed.map((identity) => identity.packageName))];
+  throw pluginError({
+    what: `The Release ${many ? 'flavors' : 'flavor'} of the debug-only Expo ${many ? 'modules' : 'module'} ${unstubbed
+      .map(({ productName, packageName }) => `${productName} (${packageName})`)
+      .join(', ')} ${many ? 'are not empty stubs' : 'is not an empty stub'}.`,
+    why: 'Swift Package Manager links a package product in every build configuration, so a Release flavor that is not a stub puts development code in Release builds.',
+    how: `From the Expo repository root, rebuild the ${many ? 'pairs' : 'pair'} with the current Expo tools so that ${many ? 'their Release flavors are stubs' : 'its Release flavor is a stub'}: \`node tools/bin/expotools.js prebuild ${packages.join(' ')}\`. Otherwise install ${many ? 'versions' : 'a version'} of ${packages.join(', ')} that ${many ? 'ship' : 'ships'} a Release stub. ${rerunSpmUpdate()}`,
+  });
+}
+
 const SOURCE_LABELS = {
   env: 'EXPO_PRECOMPILED_MODULES_PATH',
   monorepo: 'the Expo monorepo prebuild output',
@@ -902,6 +921,7 @@ function linkPasses(
     fallbackPods
   );
   assertDebugOnlyPodsPaired(identities, records, matchBuildFromSource);
+  assertDebugOnlyReleaseStubs(identities, records);
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is
   // built, so source modules compile against their headers too.

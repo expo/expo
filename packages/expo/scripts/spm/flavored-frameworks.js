@@ -18,7 +18,15 @@ const path = require('path');
 const { spmUpdateCommand } = require('./commands');
 const { pluginError, rerunSpmUpdate } = require('./diagnostics');
 
+// Not a dependency of this package; @expo/config-plugins, which is, depends on it.
+const plist = require(
+  require.resolve('@expo/plist', { paths: [path.dirname(require.resolve('@expo/config-plugins'))] })
+).default;
+
 const FLAVORS = ['debug', 'release'];
+
+/** Set to true in the root Info.plist of every Release stub the prebuild pipeline writes. */
+const RELEASE_STUB_KEY = 'ExpoReleaseStub';
 
 /** CocoaPods' byte order: it picks which contributor wins a collision, so never locale-dependent. */
 const byteOrder = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
@@ -435,6 +443,21 @@ function readXcframeworkPlist(plistPath) {
   }
 }
 
+/**
+ * Whether `xcframework` is an empty Release stub. An Info.plist that cannot be read counts as
+ * not a stub.
+ */
+function isReleaseStub(xcframework) {
+  // The pipeline writes this Info.plist as XML. It is parsed here, not with `plutil`, which
+  // exists only on macOS.
+  try {
+    const info = plist.parse(fs.readFileSync(path.join(xcframework, 'Info.plist'), 'utf8'));
+    return info?.[RELEASE_STUB_KEY] === true;
+  } catch {
+    return false;
+  }
+}
+
 /** Rejects a static library or misnamed framework here, where the error can name the dependency. */
 function assertEmbeddableFramework(depName, xcframeworkPath) {
   const plistPath = path.join(xcframeworkPath, 'Info.plist');
@@ -636,6 +659,7 @@ module.exports = {
   hasPrecompiledArtifact,
   headersXCFrameworkDirs,
   headersXCFrameworkSearchPaths,
+  isReleaseStub,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
