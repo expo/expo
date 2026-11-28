@@ -467,6 +467,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Host in Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
     name: 'Extending Expo UI',
     route: 'ui/extending',
     options: {},
