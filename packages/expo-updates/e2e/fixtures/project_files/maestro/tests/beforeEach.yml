@@ -8,13 +8,8 @@ appId: dev.expo.updatese2e
     env:
       MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
 - evalScript:
-    script: ${output.api.uninstallClient(MAESTRO_PLATFORM)}
-    label: Remove app from simulator
-    env:
-      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
-- evalScript:
-    script: ${output.api.installClient(MAESTRO_PLATFORM, MAESTRO_CONFIGURATION)}
-    label: Install app on simulator
+    script: ${output.api.resetClient(MAESTRO_PLATFORM, MAESTRO_CONFIGURATION)}
+    label: Reset app state on simulator
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
       MAESTRO_CONFIGURATION: ${MAESTRO_CONFIGURATION}
