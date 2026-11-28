@@ -5,6 +5,7 @@ import android.content.Context
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.interfaces.TaskInterface
 import expo.modules.updates.UpdatesController
 
 /**
@@ -24,10 +25,11 @@ internal fun resolveReactHostForRestart(context: Context): ReactHost? =
  *
  * @param activity For bridgeless mode if the ReactHost is destroyed, we need an Activity to resume it.
  * @param reason The restart reason. Only used on bridgeless mode.
+ * @return The task of the reload.
  */
-internal fun ReactHost.restart(activity: Activity?, reason: String) {
+internal fun ReactHost.restart(activity: Activity?, reason: String): TaskInterface<Void> {
   if (lifecycleState != LifecycleState.RESUMED && activity != null) {
     onHostResume(activity)
   }
-  reload(reason)
+  return reload(reason)
 }
