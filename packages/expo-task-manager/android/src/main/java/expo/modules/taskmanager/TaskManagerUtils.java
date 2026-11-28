@@ -43,6 +43,23 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   // Leave buffer before Android's job limit to avoid edge cases.
   private static final int JOB_LIMIT_BUFFER = 10;
 
+  // Once this many jobs for ONE task are pending, merge new data into the newest of them
+  // instead of scheduling another job. With a live process and expedited jobs a task's
+  // queue is normally 0-2 jobs, so a backlog of this size means the jobs are not being
+  // run (the device is deferring them) and more jobs would only grow the list that
+  // getAllPendingJobs() has to read back over binder. Merging only at the app-wide limit
+  // let one task queue ~140 persisted jobs; reading those back inside the broadcast
+  // receiver failed with BadParcelableException and killed the process.
+  private static final int PER_TASK_MERGE_THRESHOLD = 20;
+
+  // Upper bound on the data entries kept in a merged job, oldest dropped first. Every
+  // merge re-persists the whole job and every scheduleJob() call reads every pending
+  // job back over binder, so a merged job must not grow without bound while the queue
+  // is stuck. With location data (~600 bytes per entry) this keeps a merged job around
+  // 36 KB, so together with the per-task threshold the pending list stays inside the
+  // first 64 KB chunk of the ParceledListSlice.
+  private static final int MAX_MERGED_DATA_ENTRIES = 60;
+
   private static int getJobLimit() {
     // Android 12 (API 31+) increased limit from 100 to 150
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? 150 : 100;
@@ -117,7 +134,18 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
       return;
     }
 
-    List<JobInfo> pendingJobs = jobScheduler.getAllPendingJobs();
+    List<JobInfo> pendingJobs;
+    try {
+      pendingJobs = jobScheduler.getAllPendingJobs();
+    } catch (RuntimeException e) {
+      // The list comes back from system_server as a ParceledListSlice, fetched in chunks
+      // over binder. The read fails with BadParcelableException ("Failure retrieving
+      // array; only received N of M") when a later chunk's retriever is gone, and this
+      // method runs inside TaskBroadcastReceiver.onReceive, so an escaped exception
+      // kills the app. Drop this batch instead: the next delivery tries again.
+      Log.e(TAG, "Unable to read pending jobs; dropping data for task '" + task.getName() + "': " + e.getMessage());
+      return;
+    }
     if (pendingJobs == null) {
       // There is a mismatch between documentation and implementation. In the reference implementation null is returned in case of RemoteException:
       // https://android.googlesource.com/platform//frameworks/base/+/980636f0a5440a12f5d8896d8738c6fcf2430553/apex/jobscheduler/framework/java/android/app/JobSchedulerImpl.java#137
@@ -126,6 +154,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     // Find newest job for this task (for merging if needed) and next available ID
     int newJobId = 0;
+    int relatedJobs = 0;
     JobInfo newestJob = null;
 
     for (JobInfo jobInfo : pendingJobs) {
@@ -134,20 +163,27 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
         newJobId = jobId + 1;
       }
       if (isJobInfoRelatedToTask(jobInfo, task)) {
+        relatedJobs++;
         if (newestJob == null || jobId > newestJob.getId()) {
           newestJob = jobInfo;
         }
       }
     }
 
-    // At Android's job limit? Merge into newest job for this task.
-    if (pendingJobs.size() >= getJobLimit() - JOB_LIMIT_BUFFER && newestJob != null) {
-      Log.i(TAG, "Approaching job limit (" + pendingJobs.size() + "). Merging data for task '" + task.getName() + "'.");
+    // At Android's job limit, or is this task's queue already backed up? Merge into the
+    // newest job for this task. Older queued jobs are left alone, so nothing starves.
+    boolean atAppLimit = pendingJobs.size() >= getJobLimit() - JOB_LIMIT_BUFFER;
+    boolean taskBackedUp = relatedJobs >= PER_TASK_MERGE_THRESHOLD;
+    if ((atAppLimit || taskBackedUp) && newestJob != null) {
+      Log.i(TAG, "Pending jobs: " + pendingJobs.size() + " total, " + relatedJobs + " for task '" + task.getName() + "'. Merging data into job " + newestJob.getId() + ".");
       try {
         JobInfo mergedJobInfo = createJobInfoByAddingData(newestJob, data, canPersistJobs);
         jobScheduler.cancel(newestJob.getId());
         jobScheduler.schedule(mergedJobInfo);
-      } catch (IllegalArgumentException | IllegalStateException e) {
+      } catch (RuntimeException e) {
+        // IllegalArgumentException and IllegalStateException as before, plus a binder
+        // failure (RemoteException rethrown as RuntimeException), which must not escape
+        // the broadcast receiver either.
         Log.e(this.getClass().getName(), "Unable to merge job: " + e.getMessage());
       }
       return;
@@ -157,21 +193,43 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     try {
       JobInfo jobInfo = createJobInfo(context, task, newJobId, data, canPersistJobs);
       jobScheduler.schedule(jobInfo);
-    } catch (IllegalArgumentException | IllegalStateException e) {
+    } catch (RuntimeException e) {
+      // See above.
       Log.e(this.getClass().getName(), "Unable to schedule job: " + e.getMessage());
     }
   }
 
   private JobInfo createJobInfoByAddingData(JobInfo jobInfo, List<PersistableBundle> data, boolean persisted) {
-    PersistableBundle mergedExtras = jobInfo.getExtras();
-    int dataSize = mergedExtras.getInt("dataSize", 0);
+    // Rebuilt rather than appended to: the merged job is capped at MAX_MERGED_DATA_ENTRIES,
+    // oldest entries dropped first, and the data keys are renumbered from 0 so that
+    // extractDataFromJobParams still reads them. Other extras (task identity) are kept.
+    PersistableBundle oldExtras = jobInfo.getExtras();
+    int oldSize = oldExtras.getInt("dataSize", 0);
 
-    if (data != null) {
-      mergedExtras.putInt("dataSize", dataSize + data.size());
-
-      for (int i = 0; i < data.size(); i++) {
-        mergedExtras.putPersistableBundle(String.valueOf(dataSize + i), data.get(i));
+    List<PersistableBundle> merged = new ArrayList<>(oldSize + (data != null ? data.size() : 0));
+    for (int i = 0; i < oldSize; i++) {
+      PersistableBundle entry = oldExtras.getPersistableBundle(String.valueOf(i));
+      if (entry != null) {
+        merged.add(entry);
       }
+    }
+    if (data != null) {
+      merged.addAll(data);
+    }
+
+    int dropped = merged.size() - MAX_MERGED_DATA_ENTRIES;
+    if (dropped > 0) {
+      Log.w(TAG, "Merged job " + jobInfo.getId() + " would hold " + merged.size() + " entries; dropping the oldest " + dropped + ".");
+      merged = new ArrayList<>(merged.subList(dropped, merged.size()));
+    }
+
+    PersistableBundle mergedExtras = new PersistableBundle(oldExtras);
+    for (int i = 0; i < oldSize; i++) {
+      mergedExtras.remove(String.valueOf(i));
+    }
+    mergedExtras.putInt("dataSize", merged.size());
+    for (int i = 0; i < merged.size(); i++) {
+      mergedExtras.putPersistableBundle(String.valueOf(i), merged.get(i));
     }
     return createJobInfo(jobInfo.getId(), jobInfo.getService(), mergedExtras, persisted);
   }
