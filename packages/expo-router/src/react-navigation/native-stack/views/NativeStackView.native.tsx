@@ -1,4 +1,5 @@
 'use client';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { use } from 'react';
 import { Animated, Platform, StatusBar, StyleSheet, useAnimatedValue, View } from 'react-native';
@@ -35,7 +36,7 @@ import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
 import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
-import { getPlatformHeaderTransparent } from './headerAppearance';
+import { getPlatformHeaderTransparent, isLegacyHeaderAppearanceEnabled } from './headerAppearance';
 import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
@@ -208,7 +209,12 @@ const SceneView = ({
       // So our `getDefaultHeaderHeight` doesn't return the correct value
       // So we hardcode the value here for now until screens is updated
       android: ANDROID_DEFAULT_HEADER_HEIGHT + topInset,
-      default: getDefaultHeaderHeight(frame, isModal, topInset),
+      default: getDefaultHeaderHeight(
+        frame,
+        isModal,
+        topInset,
+        isLiquidGlassAvailable() && !isLegacyHeaderAppearanceEnabled()
+      ),
     })
   );
 
