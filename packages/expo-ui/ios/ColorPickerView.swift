@@ -3,19 +3,31 @@
 import SwiftUI
 import ExpoModulesCore
 
-final class ColorPickerProps: UIBaseViewProps {
-  @Field var selection: Color = .clear
-  @Field var label: String?
-  @Field var supportsOpacity: Bool = true
-  var onSelectionChange = EventDispatcher()
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct ColorPickerProps {
+  var selection: Color = .clear
+  var label: String?
+  var supportsOpacity: Bool = true
+  var onSelectionChange: (ColorPickerChangeEvent) -> Void
 }
 
-struct ColorPickerView: ExpoSwiftUI.View {
-  @ObservedObject var props: ColorPickerProps
+@Record
+struct ColorPickerChangeEvent {
+  var value: String = ""
+}
+
+@ExpoView<ColorPickerProps>
+public struct ColorPickerView: View {
   @State private var previousHex: String = ""
   @State private var selection: Color = .clear
 
-  var body: some View {
+  public var body: some View {
+    colorPicker
+      .applyExpoUIViewProps(props.base, appContext: appContext)
+  }
+
+  @ViewBuilder
+  private var colorPicker: some View {
 #if !os(tvOS)
     ColorPicker(props.label ?? "", selection: $selection, supportsOpacity: props.supportsOpacity)
       .onAppear {
@@ -30,7 +42,7 @@ struct ColorPickerView: ExpoSwiftUI.View {
         let newHex = Self.colorToHex(newValue, supportsOpacity: props.supportsOpacity)
         if newHex != previousHex {
           previousHex = newHex
-          props.onSelectionChange(["value": newHex])
+          props.onSelectionChange(ColorPickerChangeEvent(value: newHex))
         }
       }
 #else
