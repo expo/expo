@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["AppMetricsModule", "ObserveModule"],
+    "modules": ["AppMetricsModule", "ObserveModule", "ObserveIntegrationsModule"],
     "appDelegateSubscribers": ["AppMetricsAppDelegateSubscriber", "ObserveAppDelegateSubscriber"]
   },
   "android": {

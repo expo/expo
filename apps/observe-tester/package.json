@@ -33,6 +33,7 @@
     "expo-image": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-observe": "workspace:*",
+    "expo-observe-interface": "workspace:*",
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-status-bar": "workspace:*",

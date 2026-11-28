@@ -1,4 +1,5 @@
 import type { NativeModule } from 'expo';
+import type { ObserveIntegrationsConfig as ObserveLibraryIntegrationsConfig } from 'expo-observe-interface';
 
 import type {
   LogAttributeValue,
@@ -229,7 +230,12 @@ export type ObserveNavigationIntegrationConfig = {
   filteredParams?: string[];
 };
 
-export interface ObserveIntegrationsConfig {
+/**
+ * The `integrations` option of `configure`. A library that registers its integration with
+ * `expo-observe-interface` adds its key to `ObserveIntegrationsConfig` of `expo-observe-interface`,
+ * and the key is also available here.
+ */
+export interface ObserveIntegrationsConfig extends ObserveLibraryIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
    * (`cold_ttr`, `warm_ttr`, `tti`, `tbt`) from router state changes.

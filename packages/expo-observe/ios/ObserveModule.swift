@@ -50,9 +50,10 @@ public final class ObserveModule: Module {
       EASClientID.uuid().uuidString.lowercased()
     }
 
-    AsyncFunction("setConsent") { (consent: ConsentValue) in
+    AsyncFunction("setConsent") { [weak appContext = self.appContext] (consent: ConsentValue) in
       await applyConsent(consent, toAppMetrics: AppMetrics.setConsent(granted:))
       IntegrationHost.shared.consentDidChange()
+      appContext?.moduleRegistry.getModule(implementing: ObserveIntegrationsModule.self)?.consentDidChange()
     }
 
     AsyncFunction("dispatchEvents") {
@@ -81,6 +82,7 @@ public final class ObserveModule: Module {
       let integrationConfigs = IntegrationHost.configs(from: config.integrations)
       ObserveUserDefaults.integrations = integrationConfigs
       IntegrationHost.shared.apply(integrationConfigs)
+      self.appContext?.moduleRegistry.getModule(implementing: ObserveIntegrationsModule.self)?.apply(integrationConfigs)
 
       // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
       self.lastIntegrations = config.integrations ?? [:]

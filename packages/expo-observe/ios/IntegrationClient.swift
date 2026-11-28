@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoObserveInterface
 import Foundation
 
 /// Records what integration clients report. Tests replace it.
@@ -111,6 +112,23 @@ internal final class IntegrationClient: ObserveClient, @unchecked Sendable {
         body: report.message,
         attributes: attributes,
         severity: .warn,
+        integration: integration
+      )
+    }
+  }
+
+  @discardableResult
+  func logEvent(_ event: ObserveEvent) -> Bool {
+    return lock.withLock {
+      guard isValid, recorder.isConsentGranted else {
+        return false
+      }
+      return recorder.logEvent(
+        event.name,
+        displayName: event.displayName,
+        body: event.body,
+        attributes: event.attributes.mapValues { $0.anyValue },
+        severity: Severity(rawValue: event.severity.rawValue) ?? .info,
         integration: integration
       )
     }

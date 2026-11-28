@@ -19,6 +19,7 @@ export default function ExamplesLayout() {
       <Stack.Screen name="event-flood" options={{ title: 'Event flood' }} />
       <Stack.Screen name="reanimated" options={{ title: 'Reanimated' }} />
       <Stack.Screen name="traces" options={{ title: 'Trace spans' }} />
+      <Stack.Screen name="observe-integration" options={{ title: 'Library integration' }} />
     </Stack>
   );
 }
