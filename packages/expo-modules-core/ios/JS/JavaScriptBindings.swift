@@ -13,14 +13,21 @@ internal enum JavaScriptBindings {
   @JavaScriptActor
   static func buildClass(_ type: any AnyJavaScriptClass.Type, appContext: AppContext) throws -> JavaScriptObject {
     let name = type._jsName
+    let isSharedObject = type is AnySharedObject.Type
     let constructor: JavaScriptRuntime.SyncFunctionClosure = { [weak appContext] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
+      let runtime = try appContext.runtime
+      // A second call on the same object, for example `Point.call(point)`, would replace its native instance, and the
+      // listeners of an event emitter.
+      if !isSharedObject, try this.asObject().hasNativeState() {
+        throw JavaScriptClassNativeState.AlreadyAttachedException(name)
+      }
       // Pair the native instance with `this` (returning a different object would drop the prototype
       // chain `new` set up). Without a `@JS init`, only the native side can create a shared object.
-      guard let instance = try type._constructInstance(this: this, arguments: arguments, in: appContext.runtime) else {
-        if type is AnySharedObject.Type {
+      guard let instance = try type._constructInstance(this: this, arguments: arguments, in: runtime) else {
+        if isSharedObject {
           throw Exceptions.ConstructorUnavailable(name)
         }
         throw JavaScriptClassNativeState.ConstructorUnavailableException(name)
@@ -28,7 +35,7 @@ internal enum JavaScriptBindings {
       if let sharedObject = instance as? SharedObject {
         appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       } else {
-        guard try this.asObject().trySetNativeState(JavaScriptClassNativeState(native: instance)) else {
+        guard try attachNativeState(of: instance, to: this.asObject(), in: runtime) else {
           throw JavaScriptClassNativeState.NotAttachableException(name)
         }
       }
@@ -47,10 +54,22 @@ internal enum JavaScriptBindings {
     return klass
   }
 
+  /// Attaches the native state that the class of `instance` creates to `object`. Returns `false` when the engine
+  /// doesn't allow a native state on the object. Generic, so that a call with an existential opens it and reaches the
+  /// `makeNativeState(for:object:in:)` of the class of the instance.
+  @JavaScriptActor
+  private static func attachNativeState<Instance: AnyJavaScriptClass>(
+    of instance: Instance,
+    to object: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) -> Bool {
+    return object.trySetNativeState(Instance.makeNativeState(for: instance, object: object, in: runtime))
+  }
+
   /// Creates the JavaScript class of a native class, without its members. The class extends the JavaScript class of
   /// `resolvedJSSuperclassType`, which is built first when it isn't built yet. Without that superclass, the class of a
-  /// shared object extends the base `SharedObject` or `SharedRef` class, and the class of a `@JSClass` class extends
-  /// no class.
+  /// shared object extends the base `SharedObject` or `SharedRef` class, the class of a `BaseEventEmitter` subclass
+  /// extends `expo.EventEmitter`, and the class of any other `@JSClass` class extends no class.
   @JavaScriptActor
   static func createClass(
     _ type: any AnyJavaScriptClass.Type,
@@ -68,6 +87,9 @@ internal enum JavaScriptBindings {
     }
     if type is AnySharedObject.Type {
       return try runtime.createSharedObjectClass(name, constructor)
+    }
+    if type is BaseEventEmitter.Type {
+      return try runtime.createClass(name: name, inheriting: runtime.getEventEmitterClass(), constructor)
     }
     return try runtime.createClass(name: name, constructor)
   }

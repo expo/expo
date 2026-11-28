@@ -13,6 +13,11 @@ public class ExpoRuntime: JavaScriptRuntime, @unchecked Sendable {
   }
 
   @JavaScriptActor
+  internal func getEventEmitterClass() throws -> JavaScriptFunction {
+    return try getCoreObject().getPropertyAsFunction("EventEmitter")
+  }
+
+  @JavaScriptActor
   internal func getSharedObjectClass() throws -> JavaScriptFunction {
     return try getCoreObject().getPropertyAsFunction("SharedObject")
   }

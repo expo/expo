@@ -6,12 +6,13 @@
 /// the JS object, in a field that only the thread of that runtime uses, so emitting there takes no lock.
 ///
 /// A JS object of `expo.EventEmitter` gets one when JS adds its first listener. A module object gets a subclass when
-/// it is built, and a shared object gets a subclass when it is paired. The JS objects of a shared object in all
-/// runtimes share one native state. Its primary runtime is the main runtime, and the subclass keeps the listeners of
-/// the other runtimes (see `listeners(inOtherRuntime:creatingIfNeeded:)`).
+/// it is built, and a shared object gets a subclass when it is paired. The JS object of a `BaseEventEmitter` subclass
+/// gets a subclass from its constructor. The JS objects of a shared object in all runtimes share one native state. Its
+/// primary runtime is the main runtime, and the subclass keeps the listeners of the other runtimes (see
+/// `listeners(inOtherRuntime:creatingIfNeeded:)`).
 ///
 /// `@unchecked Sendable`: the listeners of a runtime are used only on the thread of that runtime.
-internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendable {
+public class EventEmitterNativeState: JavaScriptClassNativeState, @unchecked Sendable {
   /// The runtime whose listeners are in `primaryListeners`.
   private let primaryRuntimeId: JavaScriptRuntime.ID?
 
@@ -19,10 +20,11 @@ internal class EventEmitterNativeState: JavaScriptNativeState, @unchecked Sendab
   @exclusivity(unchecked)
   private var primaryListeners: EventListeners?
 
-  /// Creates a native state with a plain C++ state, for a JS object in the given runtime.
-  internal init(primaryRuntimeId: JavaScriptRuntime.ID?) {
+  /// Creates a native state with a plain C++ state, for a JS object in the given runtime. `instance` is the native
+  /// instance of the JS object, or `nil` when the JS object has none.
+  internal init(primaryRuntimeId: JavaScriptRuntime.ID?, instance: (any AnyJavaScriptClass)? = nil) {
     self.primaryRuntimeId = primaryRuntimeId
-    super.init()
+    super.init(instance: instance)
   }
 
   /// Returns the listeners of the given runtime, or `nil` when the runtime has no listeners. Call it on the thread of

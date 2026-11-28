@@ -315,9 +315,10 @@ extension SharedObjectNativeState {
   }
 }
 
-/// The locks of the `nativeState` property of shared objects, picked by the address of the object. A lock of its own
-/// would cost an allocation for every shared object. A lock is never held while another one is taken, so two objects
-/// that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native object.
+/// The locks of the native state of shared objects and `BaseEventEmitter` objects, picked by the address of the object.
+/// A lock of its own would cost an allocation for every object. A lock is never held while another one is taken, so two
+/// objects that share a lock can't deadlock. The listening runtimes of a native state are behind the lock of its native
+/// object.
 internal enum SharedObjectLock {
   private static let count = 64
 
@@ -328,7 +329,7 @@ internal enum SharedObjectLock {
     return locks
   }()
 
-  static func withLock<R>(for object: SharedObject, _ body: () -> R) -> R {
+  static func withLock<R>(for object: AnyObject, _ body: () -> R) -> R {
     // Objects are aligned to 16 bytes, so the low bits of the address are always zero.
     let index = Int(truncatingIfNeeded: UInt(bitPattern: ObjectIdentifier(object)) >> 4) & (count - 1)
     let lock = locks + index

@@ -4,6 +4,24 @@ import ExpoModulesJSI
 
 /// A native class with a JavaScript class: a `SharedObject` subclass, or a class with the `@JSClass` macro.
 public protocol AnyJavaScriptClass: AnyObject {
+  /// The type of the native state that the JavaScript constructor of a `@JSClass` class attaches to the JavaScript
+  /// object of an instance. A root class can set it to a subclass of `JavaScriptClassNativeState` that keeps more state
+  /// with the JavaScript object, and then implements `makeNativeState(for:object:in:)`. Its subclasses use the same
+  /// type.
+  associatedtype NativeState: JavaScriptClassNativeState = JavaScriptClassNativeState
+
+  /// Creates the native state that the JavaScript constructor of a `@JSClass` class attaches to `object`, the
+  /// JavaScript object of `instance`. Core calls it before it attaches the native state. When the engine doesn't allow a
+  /// native state on the object, for example a frozen one, the constructor throws and the deallocator of the native
+  /// state runs. Core doesn't call it for a shared object, which the shared object registry pairs with its JavaScript
+  /// object.
+  ///
+  /// The default implementation creates a `JavaScriptClassNativeState`, for a class that keeps the default
+  /// `NativeState`.
+  @JavaScriptActor
+  static func makeNativeState(for instance: Self, object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime)
+    -> NativeState
+
   // The hooks that the `@SharedObject` and `@JSClass` macros implement, which core calls when it builds the JavaScript
   // class. `SharedObject` and the root class of a `@JSClass` chain implement them with `class` members, so a call
   // through this protocol reaches the override of the subclass.
@@ -35,6 +53,17 @@ public protocol AnyJavaScriptClass: AnyObject {
     arguments: borrowing JavaScriptValuesBuffer,
     in runtime: JavaScriptRuntime
   ) throws -> (any AnyJavaScriptClass)?
+}
+
+extension AnyJavaScriptClass where NativeState == JavaScriptClassNativeState {
+  @JavaScriptActor
+  public static func makeNativeState(
+    for instance: Self,
+    object: borrowing JavaScriptObject,
+    in runtime: JavaScriptRuntime
+  ) -> NativeState {
+    return JavaScriptClassNativeState(instance: instance)
+  }
 }
 
 // MARK: - JavaScript class chain
@@ -76,18 +105,25 @@ extension AnyJavaScriptClass {
   /// `SharedObject.native(from:as:)` instead.
   ///
   /// Throws when the object has no native instance, or when its native instance isn't `Self`. `@inlinable`, so the
-  /// cast specializes in the caller's module as a plain class cast.
+  /// casts to `NativeState` and `Self` specialize in the caller's module as plain class casts.
   @JavaScriptActor
   @inlinable
   public static func _native(from object: borrowing JavaScriptObject) throws -> Self {
-    guard let nativeState = object.getNativeState(as: JavaScriptClassNativeState.self) else {
-      throw JavaScriptClassNativeState.NotFoundException(_jsName)
-    }
-    guard let instance = nativeState.native as? Self else {
-      let actual = Swift.type(of: nativeState.native)._jsName
-      throw JavaScriptClassNativeState.TypeMismatchException((expected: _jsName, actual: actual))
+    guard let instance = object.getNativeState(as: NativeState.self)?.instance as? Self else {
+      throw nativeInstanceError(for: object)
     }
     return instance
+  }
+
+  /// The error for an object without a native instance of this class: a type mismatch when the object has a native
+  /// instance of another class, otherwise not found.
+  @JavaScriptActor
+  @usableFromInline
+  internal static func nativeInstanceError(for object: borrowing JavaScriptObject) -> any Error {
+    guard let native = object.getNativeState(as: JavaScriptClassNativeState.self)?.instance else {
+      return JavaScriptClassNativeState.NotFoundException(_jsName)
+    }
+    return JavaScriptClassNativeState.TypeMismatchException((expected: _jsName, actual: Swift.type(of: native)._jsName))
   }
 }
 
@@ -108,24 +144,26 @@ extension JavaScriptDecodable where Self: AnyJavaScriptClass {
   }
 }
 
-/// The native state that pairs the JavaScript object of a `@JSClass` class with its native instance. The JavaScript
-/// constructor attaches it. It holds the instance strongly, so the instance lives at least as long as the object.
-@usableFromInline
-internal final class JavaScriptClassNativeState: JavaScriptNativeState {
-  @usableFromInline
-  let native: any AnyJavaScriptClass
+/// The native state that pairs a JavaScript object with its native instance. The JavaScript constructor of a `@JSClass`
+/// class attaches it. It holds the instance strongly, so the instance lives at least as long as the object.
+///
+/// A root class can use a subclass of it as its `NativeState`. The native state of an event emitter is a subclass too,
+/// so `_native(from:)` reads the instance of any object with one cast. The native state of a shared object holds the
+/// shared object. A module object and a plain `expo.EventEmitter` object have no instance.
+open class JavaScriptClassNativeState: JavaScriptNativeState {
+  /// The native instance, or `nil` for an object that has no native instance.
+  public let instance: (any AnyJavaScriptClass)?
 
-  init(native: any AnyJavaScriptClass) {
-    self.native = native
+  /// Creates a native state for a JavaScript object whose native instance is `instance`.
+  public init(instance: (any AnyJavaScriptClass)?) {
+    self.instance = instance
     super.init()
   }
 
-  // `NotFoundException` and `TypeMismatchException` are `@usableFromInline`, so the inlinable `_native(from:)` can
-  // throw them. Their parameters are JavaScript class names.
+  // The parameters of the exceptions are JavaScript class names.
 
   /// Thrown when a JavaScript object has no native instance, for example an object that the constructor of the
   /// expected class didn't create.
-  @usableFromInline
   internal final class NotFoundException: GenericException<String>, @unchecked Sendable {
     override var code: String {
       "ERR_NATIVE_INSTANCE_NOT_FOUND"
@@ -140,7 +178,6 @@ internal final class JavaScriptClassNativeState: JavaScriptNativeState {
   }
 
   /// Thrown when the native instance of a JavaScript object isn't the expected class.
-  @usableFromInline
   internal final class TypeMismatchException:
     GenericException<(expected: String, actual: String)>, @unchecked Sendable
   {
@@ -152,6 +189,21 @@ internal final class JavaScriptClassNativeState: JavaScriptNativeState {
       """
       Expected an instance of '\(param.expected)', but got an instance of '\(param.actual)'. Pass an instance of \
       '\(param.expected)' or of a subclass of it.
+      """
+    }
+  }
+
+  /// Thrown when the JavaScript constructor is called on an object that has a native state already, for example with
+  /// `Point.call(point)`.
+  internal final class AlreadyAttachedException: GenericException<String>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_INSTANCE_ALREADY_ATTACHED"
+    }
+
+    override var reason: String {
+      """
+      The constructor of '\(param)' was called on an object that has a native instance already, so it didn't create \
+      another one. Create a new object with `new \(param)`.
       """
     }
   }
