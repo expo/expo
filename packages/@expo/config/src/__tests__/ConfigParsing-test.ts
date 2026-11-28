@@ -210,6 +210,95 @@ describe(getConfig, () => {
       expect(exp.name).toBe('cool+export-json_app.config');
       expect(exp.plugins).toBeUndefined();
     });
+    it('inspects dynamic plugin declarations without loading or applying them', () => {
+      vol.fromJSON(
+        {
+          'app.config.js': `module.exports = () => ({
+            plugins: [
+              ['__missing-plugin', { nested: { root: 'src/routes' }, barStyle: null }],
+              function withFailure() { throw new Error('plugin ran'); }
+            ]
+          });`,
+          'package.json': '{}',
+        },
+        '/inspect-plugins/'
+      );
+      const { exp } = getConfig('/inspect-plugins/', {
+        skipSDKVersionRequirement: true,
+        isPublicConfig: true,
+        pluginMode: 'inspect',
+      });
+      expect(exp.plugins).toEqual([
+        ['__missing-plugin', { nested: { root: 'src/routes' }, barStyle: null }],
+        'withFailure',
+      ]);
+    });
+    describe('symbol values in plugin options', () => {
+      const projectRoot = '/symbol-plugin-options/';
+      beforeEach(() => {
+        vol.fromJSON(
+          {
+            'app.config.js': `module.exports = {
+              plugins: [[config => config, { nested: Symbol('example') }]]
+            };`,
+            'package.json': '{}',
+          },
+          projectRoot
+        );
+      });
+
+      it.each([{ skipPlugins: true }, { pluginMode: 'skip' }] as const)(
+        'omits plugins with %j',
+        (options) => {
+          const { exp } = getConfig(projectRoot, { ...options, skipSDKVersionRequirement: true });
+          expect(exp.plugins).toBeUndefined();
+        }
+      );
+
+      it.each(['inspect', 'apply'] as const)('rejects the symbol in %s mode', (pluginMode) => {
+        expect(() =>
+          getConfig(projectRoot, { pluginMode, skipSDKVersionRequirement: true })
+        ).toThrow(
+          expect.objectContaining({
+            name: 'ConfigError',
+            code: 'INVALID_CONFIG',
+            message: expect.stringContaining('Symbol(example)'),
+          })
+        );
+      });
+    });
+    it.each(['Inspect', null])('rejects an unknown pluginMode %p', (pluginMode) => {
+      vol.fromJSON({ 'package.json': '{}' }, '/invalid-mode/');
+      expect(() =>
+        getConfig('/invalid-mode/', {
+          // @ts-expect-error JavaScript callers can pass unsupported values.
+          pluginMode,
+          skipSDKVersionRequirement: true,
+        })
+      ).toThrow(
+        expect.objectContaining({
+          code: 'INVALID_CONFIG',
+          message: expect.stringContaining("Use 'apply', 'skip', or 'inspect'"),
+        })
+      );
+    });
+    it('rejects a non-array plugin declaration during inspection', () => {
+      vol.fromJSON(
+        {
+          'app.config.js': "module.exports = { plugins() { throw new Error('plugin ran'); } };",
+          'package.json': '{}',
+        },
+        '/invalid-plugins/'
+      );
+      expect(() =>
+        getConfig('/invalid-plugins/', { pluginMode: 'inspect', skipSDKVersionRequirement: true })
+      ).toThrow(
+        expect.objectContaining({
+          code: 'INVALID_CONFIG',
+          message: expect.stringContaining('Expected the plugins field to be an array'),
+        })
+      );
+    });
     it(`applies JS plugins`, () => {
       vol.fromJSON(
         {

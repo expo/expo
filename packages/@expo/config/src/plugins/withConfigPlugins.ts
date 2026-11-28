@@ -1,25 +1,31 @@
 import type { ConfigPlugin } from '@expo/config-plugins';
 import { withPlugins } from '@expo/config-plugins';
 
+import type { GetConfigOptions } from '../Config.types';
+import { ConfigError } from '../Errors';
 import { serializeAfterStaticPlugins } from '../Serialize';
 
-/**
- * Resolves static plugins array as config plugin functions.
- *
- * @param config
- * @param projectRoot
- */
-export const withConfigPlugins: ConfigPlugin<boolean> = (config, skipPlugins) => {
-  // @ts-ignore: plugins not on config type yet -- TODO
-  if (!Array.isArray(config.plugins) || !config.plugins?.length) {
+export const withConfigPlugins: ConfigPlugin<NonNullable<GetConfigOptions['pluginMode']>> = (
+  config,
+  mode
+) => {
+  if (!Array.isArray(config.plugins)) {
+    if (mode === 'inspect' && config.plugins != null) {
+      throw new ConfigError(
+        'Expected the plugins field to be an array. Wrap plugin entries in an array.',
+        'INVALID_CONFIG'
+      );
+    }
     return config;
   }
-  if (!skipPlugins) {
+  if (!config.plugins.length) {
+    return config;
+  }
+  if (mode === 'apply') {
     // Resolve and evaluate plugins
     // @ts-ignore: TODO: add plugins to the config schema
     config = withPlugins(config, config.plugins);
-  } else {
-    // Delete the plugins array in case someone added functions or other values which cannot be automatically serialized.
+  } else if (mode === 'skip') {
     delete config.plugins;
   }
   // plugins aren't serialized by default, serialize the plugins after resolving them.

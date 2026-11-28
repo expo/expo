@@ -176,9 +176,16 @@ export type GetConfigOptions = {
   isModdedConfig?: boolean;
   skipSDKVersionRequirement?: boolean;
   /**
-   * Dangerously skip resolving plugins.
+   * Skip plugin resolution and execution. The returned config omits changes made by plugins.
    */
   skipPlugins?: boolean;
+  /**
+   * Apply plugins (default), skip them, or inspect the serialized declarations without
+   * resolving or running the plugins. In `skip` and `inspect` modes, plugins do not run,
+   * so fields they would add or update keep their pre-plugin values.
+   * This option takes precedence over `skipPlugins`.
+   */
+  pluginMode?: 'apply' | 'skip' | 'inspect';
   strict?: boolean;
 };
 

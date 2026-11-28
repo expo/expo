@@ -20,6 +20,7 @@ import type {
   ProjectTarget,
   WriteConfigOptions,
 } from './Config.types';
+import { ConfigError } from './Errors';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
 import { mergeConfig } from './mergeConfig';
@@ -137,6 +138,14 @@ export function getPlatformsFromConfig(projectRoot: string, exp: Partial<ExpoCon
  * @param options enforce criteria for a project config
  */
 export function getConfig(projectRoot: string, options: GetConfigOptions = {}): ProjectConfig {
+  const { pluginMode = options.skipPlugins ? 'skip' : 'apply' } = options;
+  if (pluginMode !== 'apply' && pluginMode !== 'skip' && pluginMode !== 'inspect') {
+    throw new ConfigError(
+      "Invalid pluginMode. Use 'apply', 'skip', or 'inspect'.",
+      'INVALID_CONFIG'
+    );
+  }
+
   const paths = getConfigFilePaths(projectRoot);
 
   const rawStaticConfig = paths.staticConfigPath ? getStaticConfig(paths.staticConfigPath) : null;
@@ -176,10 +185,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     }
 
     // Apply static json plugins, should be done after _internal
-    configWithDefaultValues.exp = withConfigPlugins(
-      configWithDefaultValues.exp,
-      !!options.skipPlugins
-    );
+    configWithDefaultValues.exp = withConfigPlugins(configWithDefaultValues.exp, pluginMode);
 
     if (!options.isModdedConfig) {
       // @ts-ignore: Delete mods added by static plugins when they won't have a chance to be evaluated
