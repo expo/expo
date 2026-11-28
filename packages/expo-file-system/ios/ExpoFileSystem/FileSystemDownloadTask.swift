@@ -66,9 +66,9 @@ final class NetworkTaskSessionDispatcher: NSObject, URLSessionDataDelegate, URLS
 
   private var delegates: [String: NetworkTaskDelegate] = [:]
   private let lock = NSLock()
-  private lazy var sessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(
-    FileSystemBackgroundSessionHandler.self
-  )
+  private var sessionHandler: FileSystemBackgroundSessionHandler? {
+    FileSystemBackgroundSessionHandler.current
+  }
 
   func register(
     delegate: NetworkTaskDelegate,
@@ -219,8 +219,7 @@ final class NetworkTaskSessionManager {
     configuration.sessionSendsLaunchEvents = true
     configuration.isDiscretionary = false
     let session = URLSession(configuration: configuration, delegate: dispatcher, delegateQueue: .main)
-    ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-      .registerSession(Self.backgroundSessionIdentifier)
+    FileSystemBackgroundSessionHandler.current?.registerSession(Self.backgroundSessionIdentifier)
     return session
   }
 
@@ -280,7 +279,7 @@ class FileSystemDownloadTask: SharedObject {
   private func registerBackgroundCompletion(in session: URLSession, options: DownloadTaskOptions?) {
     guard options?.deferBackgroundSessionCompletion == true,
       let identifier = session.configuration.identifier else { return }
-    backgroundSessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+    backgroundSessionHandler = FileSystemBackgroundSessionHandler.current
     backgroundSessionHandler?.registerDownload(self, forSessionIdentifier: identifier)
   }
 

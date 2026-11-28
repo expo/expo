@@ -52,6 +52,18 @@ struct FileSystemBackgroundSessionHandlerTests {
 
   @Test
   @MainActor
+  func testRegisteredHandlerIsReadableOffTheMainThread() async {
+    let handler = FileSystemBackgroundSessionHandler()
+    handler.subscriberDidRegister()
+    // Session setup reads the handler from module queues; this must not trap.
+    let current = await Task.detached {
+      FileSystemBackgroundSessionHandler.current.map(ObjectIdentifier.init)
+    }.value
+    #expect(current == ObjectIdentifier(handler))
+  }
+
+  @Test
+  @MainActor
   func testLegacySingletonCompletesAtOnce() {
     let handler: UIApplicationDelegate = EXSessionHandler()
     var calls = 0
