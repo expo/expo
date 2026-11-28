@@ -10,6 +10,7 @@ import expo.modules.imagepicker.FailedToWriteFileException
 import expo.modules.imagepicker.MissingModuleException
 import expo.modules.imagepicker.copyExifData
 import expo.modules.imagepicker.toBitmapCompressFormat
+import expo.modules.imagepicker.toMimeType
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runInterruptible
@@ -26,6 +27,12 @@ class CompressionImageExporter(
   quality: Double
 ) : ImageExporter {
   private val compressQuality = (quality * 100).toInt()
+
+  override fun outputMimeType(sourceMimeType: String): String = if (sourceMimeType.endsWith("png", ignoreCase = true)) {
+    Bitmap.CompressFormat.PNG.toMimeType()
+  } else {
+    Bitmap.CompressFormat.JPEG.toMimeType()
+  }
 
   override suspend fun exportAsync(
     source: Uri,
