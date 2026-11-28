@@ -228,6 +228,13 @@ if (Platform.OS === 'ios') {
       getComponent() {
         return optionalRequire(() => require('./ImageNewViewComparisonScreen'));
       },
+    },
+    {
+      name: 'View benchmark',
+      route: 'image/benchmark',
+      getComponent() {
+        return optionalRequire(() => require('./ImageViewBenchmarkScreen'));
+      },
     }
   );
 }
