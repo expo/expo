@@ -126,9 +126,8 @@ extension JavaScriptRuntime {
       guard mayBeAlive else {
         throw JavaScriptCallback.RuntimeLostError()
       }
-      let result = NonisolatedUnsafeVar<Result<R, any Error>>()
-      let waiter = ThreadWaiter()
-      pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(result, waiter)] in
+      let waiter = ThreadWaiter<R>()
+      pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(waiter)] in
         completion.finish(
           Result {
             try JavaScriptActor.assumeIsolated {
@@ -138,10 +137,7 @@ extension JavaScriptRuntime {
           }
         )
       }
-      waiter.wait(until: {
-        result.value != nil
-      })
-      return try result.value.get()
+      return try waiter.wait().get()
     }
 
     @inline(__always)
@@ -176,9 +172,8 @@ extension JavaScriptRuntime {
       guard mayBeAlive else {
         throw JavaScriptCallback.RuntimeLostError()
       }
-      let result = NonisolatedUnsafeVar<Result<R, any Error>>()
       let runInline = isOnJavaScriptThread()
-      let waiter = ThreadWaiter()
+      let waiter = ThreadWaiter<R>()
 
       func run(_ completion: BlockingCompletion<R>) {
         Task.immediate_polyfill(priority: .high) { @JavaScriptActor in
@@ -191,16 +186,13 @@ extension JavaScriptRuntime {
         }
       }
       if runInline {
-        run(BlockingCompletion(result, waiter))
+        run(BlockingCompletion(waiter))
       } else {
-        pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(result, waiter)] in
+        pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(waiter)] in
           run(completion)
         }
       }
-      waiter.wait(until: {
-        result.value != nil
-      })
-      return try result.value.get()
+      return try waiter.wait().get()
     }
 
     internal func execute<R: Sendable>(_ closure: @escaping @JavaScriptActor () async throws -> R) async throws
@@ -320,15 +312,11 @@ extension JavaScriptRuntime {
       guard mayBeAlive else {
         throw JavaScriptCallback.RuntimeLostError()
       }
-      let result = NonisolatedUnsafeVar<Result<R, any Error>>()
-      let waiter = ThreadWaiter()
-      pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(result, waiter)] in
+      let waiter = ThreadWaiter<R>()
+      pointee.scheduleTask(.ImmediatePriority) { [completion = BlockingCompletion(waiter)] in
         completion.finish(Result { try JavaScriptActor.assumeIsolated { try body(try self.liveRuntime()) } })
       }
-      waiter.wait(until: {
-        result.value != nil
-      })
-      return try result.value.get()
+      return try waiter.wait().get()
     }
 
     @inline(__always)
@@ -390,19 +378,16 @@ extension JavaScriptRuntime {
 /// scheduler is gone), `deinit` delivers ``JavaScriptCallback/RuntimeLostError`` and the caller does
 /// not wait forever.
 private final class BlockingCompletion<R: Sendable>: @unchecked Sendable {
-  private let result: NonisolatedUnsafeVar<Result<R, any Error>>
-  private let waiter: ThreadWaiter
+  private let waiter: ThreadWaiter<R>
   private var isFinished = false
 
-  init(_ result: NonisolatedUnsafeVar<Result<R, any Error>>, _ waiter: ThreadWaiter) {
-    self.result = result
+  init(_ waiter: ThreadWaiter<R>) {
     self.waiter = waiter
   }
 
   func finish(_ value: Result<R, any Error>) {
     isFinished = true
-    result.value = value
-    waiter.wake()
+    waiter.wake(with: value)
   }
 
   deinit {
@@ -430,22 +415,22 @@ private final class ContinuationCompletion<R: Sendable>: @unchecked Sendable {
   }
 }
 
-/// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
-private final class ThreadWaiter: @unchecked Sendable {
+/// Blocks the thread that creates it in ``wait()`` until another thread delivers a result with ``wake(with:)``.
+private final class ThreadWaiter<R: Sendable>: @unchecked Sendable {
   private enum Sleep {
     case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
     case semaphore(DispatchSemaphore)
   }
 
-  private static let spinNanoseconds: UInt64 = 20_000
+  private static var spinNanoseconds: UInt64 { 20_000 }
 
-  private let isWoken = OSAllocatedUnfairLock(initialState: false)
+  private let result = OSAllocatedUnfairLock<Result<R, any Error>?>(initialState: nil)
   private let sleep: Sleep
 
   init() {
     // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
     // it during the wait, in the same mode: the work the caller waits for may be delivered through
-    // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
+    // it. A source signaled by `wake(with:)` makes the run loop return when the task is done. Other
     // threads, such as dispatch workers, have nothing to run, so they wait on a semaphore.
     let runLoop: CFRunLoop = CFRunLoopGetCurrent()
     guard let mode = CFRunLoopCopyCurrentMode(runLoop) else {
@@ -459,9 +444,9 @@ private final class ThreadWaiter: @unchecked Sendable {
     sleep = .runLoop(runLoop, source, mode)
   }
 
-  func wake() {
-    isWoken.withLock { isWoken in
-      isWoken = true
+  func wake(with value: Result<R, any Error>) {
+    result.withLock { state in
+      state = value
     }
     switch sleep {
     case .runLoop(let runLoop, let source, _):
@@ -473,24 +458,52 @@ private final class ThreadWaiter: @unchecked Sendable {
     }
   }
 
-  func wait(until isFinished: () -> Bool) {
-    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
-    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
-      // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
-      // thread wakes up. After the deadline, the thread sleeps below.
+  private func takeResult() -> Result<R, any Error>? {
+    return result.withLock { state in
+      if state == nil {
+        return nil
+      }
+      return state.take()
+    }
+  }
+
+  func wait() -> Result<R, any Error> {
+    var finished = takeResult()
+    if finished == nil {
+      let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
+      while clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
+        // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
+        // thread wakes up. After the deadline, the thread sleeps below.
+        if let value = takeResult() {
+          finished = value
+          break
+        }
+      }
     }
     switch sleep {
     case .runLoop(_, let source, let mode):
       defer {
-        // Also removes the source from the run loop. A later `wake()` does nothing.
+        // Also removes the source from the run loop. A later `wake(with:)` does nothing.
         CFRunLoopSourceInvalidate(source)
       }
+      if let finished {
+        return finished
+      }
       // The timeout is a backstop for a missed wake-up.
-      while !isFinished() {
+      while true {
+        if let value = takeResult() {
+          return value
+        }
         CFRunLoopRunInMode(mode, 0.1, true)
       }
     case .semaphore(let semaphore):
-      if !isFinished() {
+      if let finished {
+        return finished
+      }
+      while true {
+        if let value = takeResult() {
+          return value
+        }
         semaphore.wait()
       }
     }
