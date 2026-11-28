@@ -27,6 +27,7 @@ import expo.modules.notifications.notifications.interfaces.INotificationContent;
 import expo.modules.notifications.notifications.interfaces.NotificationTrigger;
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger;
 import expo.modules.notifications.notifications.model.Notification;
+import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.notifications.model.TextInputNotificationResponse;
@@ -130,6 +131,9 @@ public class NotificationSerializer {
     }
     serializedContent.putBoolean("sticky", content.isSticky());
     serializedContent.putString("threadIdentifier", content.getGroup());
+    if (content instanceof NotificationContent localContent && localContent.getImageUri() != null) {
+      serializedContent.putString("image", localContent.getImageUri().toString());
+    }
     return serializedContent;
   }
 
