@@ -15,6 +15,7 @@ const projectRoot = path.resolve(__dirname, '../..');
 import type { Request, Response } from 'express';
 import type { Server as HttpServer } from 'http';
 
+const APP_ID = 'dev.expo.updatese2e';
 const supportedPlatforms = new Set(['android', 'ios']);
 const supportedConfigurations = new Set(['debug', 'release']);
 const supportedManifestRequests = new Set([
@@ -435,7 +436,6 @@ app.get('/uninstall-client', async (req: Request, res: Response) => {
   }
   try {
     await uninstallClient(req.query.platform as string);
-    await setTimeout(2000);
     res.status(200).send('OK');
   } catch (e) {
     console.error('Error uninstalling client:', e);
@@ -457,13 +457,53 @@ app.get('/install-client', async (req: Request, res: Response) => {
   }
   try {
     await installClient(req.query.platform as string, req.query.configuration as string);
-    await setTimeout(5000);
     res.status(200).send('OK');
   } catch (e) {
     console.error('Error installing client:', e);
     res.status(500).send(`Error installing client: ${e}`);
   }
 });
+
+app.get('/reset-client', async (req: Request, res: Response) => {
+  const platform = req.query.platform as string;
+  const configuration = req.query.configuration as string;
+  if (!supportedPlatforms.has(platform)) {
+    res.status(400).send(`Missing or unknown platform: ${platform}`);
+    return;
+  }
+  if (!supportedConfigurations.has(configuration)) {
+    res.status(400).send(`Missing or unknown configuration: ${configuration}`);
+    return;
+  }
+  try {
+    await resetClient(platform, configuration);
+    res.status(200).send('OK');
+  } catch (e) {
+    console.error('Error resetting client:', e);
+    res.status(500).send(`Error resetting client: ${e}`);
+  }
+});
+
+async function resetClient(platform: string, configuration: string) {
+  if (platform === 'android') {
+    try {
+      const result = await spawnAsync('adb', ['shell', 'pm', 'clear', APP_ID], {
+        cwd: projectRoot,
+      });
+      if (!result.stdout.includes('Success')) {
+        throw new Error(`pm clear did not succeed: ${result.stdout.trim()}`);
+      }
+      return;
+    } catch {
+      await installClient(platform, configuration);
+      return;
+    }
+  }
+
+  // Reinstall on iOS so cfprefsd drops cached UserDefaults alongside sandboxed containers.
+  await uninstallClient(platform);
+  await installClient(platform, configuration);
+}
 
 async function uninstallClient(platform: string) {
   console.log(`pnpm maestro:${platform}:uninstall`);
@@ -762,8 +802,7 @@ async function serveTestUpdate1(platform: string): Promise<string> {
 
 async function serveTestUpdateInvalidHash(platform: string): Promise<string> {
   const bundleFilename = 'bundle-invalid-hash.js';
-  const newNotifyString = 'test-update-invalid-hash';
-  await Update.copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
+  await Update.copyBundleToStaticFolder(projectRoot, bundleFilename, 'test-update-1', platform);
   const hash = 'invalid-hash';
   const manifest = Update.getUpdateManifestForBundleFilename(
     new Date(),
@@ -905,7 +944,7 @@ async function serveTestUpdateWithOlderCommitTime(platform: string): Promise<str
   const hash = await Update.copyBundleToStaticFolder(
     projectRoot,
     bundleFilename,
-    'test-update-older',
+    'test-update-1',
     platform
   );
   const manifest = Update.getUpdateManifestForBundleFilename(

@@ -5,22 +5,17 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const projectRoot = path.resolve(__dirname, '..');
-let notifyStrings = [
+const defaultNotifyStrings = [
   'test-update-1',
   'test-update-2',
   'test-update-3',
-  'test-update-invalid-hash',
-  'test-update-older',
   'test-assets-1',
-  'test-update-crashing',
 ];
 
 const platform = process.argv[2];
-
-// If a specific test update is specified, only generate that one
-if (process.argv.length > 3) {
-  notifyStrings = notifyStrings.filter((s) => s === process.argv[3]);
-}
+const requestedNotifyStrings = process.argv.slice(3);
+const notifyStrings =
+  requestedNotifyStrings.length > 0 ? requestedNotifyStrings : defaultNotifyStrings;
 
 createTestUpdateBundles(projectRoot, notifyStrings, platform);
 
@@ -38,57 +33,56 @@ async function createTestUpdateBundles(
   notifyStrings: string[],
   platform?: string
 ) {
-  // export update for test server to host
-  await createUpdateBundleAsync(projectRoot, platform);
-
-  // move exported update to "updates" directory for EAS testing
-  await fs.rm(path.join(projectRoot, 'updates'), { recursive: true, force: true });
-  await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
-
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });
   await fs.mkdir(testUpdateBundlesPath);
   const appJsPath = path.join(projectRoot, 'App.tsx');
   const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
   const testUpdateJson: { [k: string]: any } = {};
-  for (const notifyString of ['test', ...notifyStrings]) {
-    console.log(`Creating bundle for string '${notifyString}'...`);
-    let modifiedAppJs = originalAppJs.replace(
-      /testID="updateString" value="test"/g,
-      `testID="updateString" value="${notifyString}"`
-    );
+  try {
+    for (const notifyString of notifyStrings) {
+      console.log(`Creating bundle for string '${notifyString}'...`);
+      let modifiedAppJs = originalAppJs.replace(
+        /testID="updateString" value="test"/g,
+        `testID="updateString" value="${notifyString}"`
+      );
 
-    if (notifyString === 'test-update-crashing') {
-      modifiedAppJs = modifiedAppJs.replace('// REPLACE_WITH_CRASHING_CODE', 'blah.blah;');
+      if (notifyString === 'test-update-crashing') {
+        modifiedAppJs = modifiedAppJs.replace('// REPLACE_WITH_CRASHING_CODE', 'blah.blah;');
+      }
+
+      await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
+      await createUpdateBundleAsync(projectRoot, platform);
+      const manifestJsonString = await fs.readFile(
+        path.join(projectRoot, 'dist', 'metadata.json'),
+        'utf-8'
+      );
+      const manifest = JSON.parse(manifestJsonString);
+
+      const platforms = platform ? [platform] : ['ios', 'android'];
+
+      if (!testUpdateJson[notifyString]) {
+        testUpdateJson[notifyString] = {};
+      }
+
+      for (const p of platforms) {
+        const bundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata[p].bundle);
+        const bundleDestPath = path.join(testUpdateBundlesPath, path.basename(bundlePath));
+        await fs.copyFile(bundlePath, bundleDestPath);
+        testUpdateJson[notifyString][p] = path.basename(bundlePath);
+      }
+
+      if (notifyString === 'test-assets-1') {
+        await fs.rm(path.join(projectRoot, 'updates'), { recursive: true, force: true });
+        await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
+      }
     }
-
-    await fs.rm(appJsPath);
-    await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
-    await createUpdateBundleAsync(projectRoot, platform);
-    const manifestJsonString = await fs.readFile(
-      path.join(projectRoot, 'dist', 'metadata.json'),
-      'utf-8'
-    );
-    const manifest = JSON.parse(manifestJsonString);
-
-    const platforms = platform ? [platform] : ['ios', 'android'];
-
-    if (!testUpdateJson[notifyString]) {
-      testUpdateJson[notifyString] = {};
-    }
-
-    for (const platform of platforms) {
-      const bundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata[platform].bundle);
-      const bundleDestPath = path.join(testUpdateBundlesPath, path.basename(bundlePath));
-      await fs.copyFile(bundlePath, bundleDestPath);
-      testUpdateJson[notifyString][platform] = path.basename(bundlePath);
-    }
+    const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
+    await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
+    console.log('Done creating test bundles');
+  } finally {
+    await fs.writeFile(appJsPath, originalAppJs, 'utf-8');
   }
-  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
-  await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
-  await fs.rm(appJsPath);
-  await fs.writeFile(appJsPath, originalAppJs, 'utf-8');
-  console.log('Done creating test bundles');
 }
 
 async function createUpdateBundleAsync(projectRoot: string, platform?: string) {

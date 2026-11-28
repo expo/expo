@@ -79,6 +79,12 @@ function uninstallClient(platform) {
   requestOrThrow(`${serverBaseUrl}/uninstall-client?platform=${platform}`);
 }
 
+function resetClient(platform, configuration) {
+  requestOrThrow(
+    `${serverBaseUrl}/reset-client?platform=${platform}&configuration=${configuration}`
+  );
+}
+
 function delay(ms) {
   requestOrThrow(`${serverBaseUrl}/delay?ms=${ms}`);
 }
@@ -129,6 +135,7 @@ output.api = {
   delay: delay,
   installClient: installClient,
   uninstallClient: uninstallClient,
+  resetClient: resetClient,
   lastRequestHeaders: lastRequestHeaders,
   waitForUpdateRequest: waitForUpdateRequest,
   lastAssetRequestHeaders: lastAssetRequestHeaders,

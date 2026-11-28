@@ -112,6 +112,8 @@ function beforeAll() {
     adb reverse tcp:$MAESTRO_UPDATES_SERVER_PORT tcp:$MAESTRO_UPDATES_SERVER_PORT
     adb reverse tcp:8081 tcp:8081
   fi
+  pnpm maestro:$MAESTRO_PLATFORM:uninstall || true
+  pnpm maestro:$MAESTRO_PLATFORM:$MAESTRO_CONFIGURATION:install
 }
 
 beforeAll
