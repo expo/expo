@@ -18,4 +18,4 @@ To run the E2E tests, navigate to `packages/@expo/cli` and run `pnpm test:e2e <N
 ### Web
 
 - Start any project and open it in a web browser, e.g. `pnpm start:01-rsc`.
-- For production, use an export script like `pnpm export:web-workers` and then serve it with `npx expo serve`.
+- For production, use an export script like `pnpm export:helmet` and then serve it with `npx expo serve`.

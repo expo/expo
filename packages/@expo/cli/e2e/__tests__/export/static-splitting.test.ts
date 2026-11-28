@@ -99,8 +99,8 @@ describe('exports static with granular bundle splitting', () => {
         // The root layout and the `rendering`, `loaders` and `loaders/groups/(group)` layouts.
         ...Array(4).fill('_layout'),
         '\\+not-found',
-        // Every index route: `/`, `headers`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware`, `redirects` and `routing/(alpha)`.
-        ...Array(8).fill('index'),
+        // Every index route: `/`, `headers`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware`, `redirects`, `routing/(alpha)` and `workers`.
+        ...Array(9).fill('index'),
         // api
         'get-dynamic',
         'get-methods',
@@ -149,6 +149,10 @@ describe('exports static with granular bundle splitting', () => {
         'beta',
         'multi-group',
         ...Array(3).fill('\\[postId\\]'),
+        // workers
+        'other',
+        'worker-client',
+        'worker-one',
       ]
         .sort()
         .map((file) =>

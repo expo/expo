@@ -143,32 +143,36 @@ describe('exports server', () => {
         ])
       );
 
-      // Check client bundle source maps
-      const clientMapFiles = mapFiles.filter((file) => file?.includes('client/'));
-      for (const file of clientMapFiles) {
-        const sourceMap = JSON.parse(fs.readFileSync(path.join(server.outputDir, file!), 'utf8'));
-        expect(sourceMap.version).toBe(3);
-        expect(sourceMap.sections).toEqual(
-          expect.arrayContaining([
-            expectSourceMapSection('__prelude__'),
-            // NOTE: No `/Users/evanbacon/`...
-            // NOTE(@kitten): We can slot in our own runtime here
-            expectSourceMapSection(
-              expect.pathMatching(
-                new RegExp(
-                  [
-                    '/node_modules/metro-runtime/src/polyfills/require.js',
-                    '/@expo/cli/build/metro-require/require.js',
-                  ].join('|')
-                )
+      // The `workers` route has async imports, so the Metro runtime is a separate chunk.
+      const sections = mapFiles
+        .filter((file) =>
+          /client\/_expo\/static\/js\/web\/(__expo-metro-runtime|entry)-/.test(file!)
+        )
+        .flatMap((file) => {
+          const sourceMap = JSON.parse(fs.readFileSync(path.join(server.outputDir, file!), 'utf8'));
+          expect(sourceMap.version).toBe(3);
+          return sourceMap.sections;
+        });
+      expect(sections).toEqual(
+        expect.arrayContaining([
+          expectSourceMapSection('__prelude__'),
+          // NOTE: No `/Users/evanbacon/`...
+          // NOTE(@kitten): We can slot in our own runtime here
+          expectSourceMapSection(
+            expect.pathMatching(
+              new RegExp(
+                [
+                  '/node_modules/metro-runtime/src/polyfills/require.js',
+                  '/@expo/cli/build/metro-require/require.js',
+                ].join('|')
               )
-            ),
+            )
+          ),
 
-            // NOTE: relative to the server root for optimal source map support
-            expectSourceMapSection(expect.pathMatching(/\/apps\/server-tester\/app\/index\.tsx/)),
-          ])
-        );
-      }
+          // NOTE: relative to the server root for optimal source map support
+          expectSourceMapSection(expect.pathMatching(/\/apps\/server-tester\/app\/index\.tsx/)),
+        ])
+      );
 
       // Check client bundle JS files have sourceMappingURL
       const clientJsFiles = files.filter(
@@ -178,10 +182,10 @@ describe('exports server', () => {
       for (const file of clientJsFiles) {
         const jsBundle = fs.readFileSync(path.join(server.outputDir, file!), 'utf8');
         expect(jsBundle).toMatch(
-          /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/entry-.*\.map$/gm
+          /^\/\/\# sourceMappingURL=\/_expo\/static\/js\/web\/.*\.js\.map$/gm
         );
         const mapFile = jsBundle.match(
-          /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/entry-.*\.map)$/m
+          /^\/\/\# sourceMappingURL=(\/_expo\/static\/js\/web\/.*\.js\.map)$/m
         )?.[1];
 
         // The mapFile path is relative to the web root (e.g., /_expo/...), but files are under client/
@@ -222,20 +226,22 @@ describe('exports server', () => {
       // non-public env vars are injected during SSR
       expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-      indexHtml
+      const jsBundles = indexHtml
         .querySelectorAll('script')
         .filter((script) => !!script.attributes.src)
-        .forEach((script) => {
-          const jsBundle = fs.readFileSync(
+        .map((script) =>
+          fs.readFileSync(
             path.join(server.outputDir, 'client', script.attributes.src ?? ''),
             'utf8'
-          );
+          )
+        );
 
-          // Ensure the bundle is valid
-          expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
-          // Ensure the non-public env var is not included in the bundle
-          expect(jsBundle).not.toMatch('not-public-value');
-        });
+      // Ensure the bundle is valid
+      expect(jsBundles[0]).toMatch('__BUNDLE_START_TIME__');
+      for (const jsBundle of jsBundles) {
+        // Ensure the non-public env var is not included in the bundle
+        expect(jsBundle).not.toMatch('not-public-value');
+      }
     });
 
     it('injects hydration assets into SSR response', async () => {

@@ -9,6 +9,7 @@ This app does not cover React Server Components. Use `apps/router-e2e` for those
 - `app/` holds every route. Each server feature has a parent directory, for example `app/api/` for API routes and `app/routing/` for route matching. A feature repeats the common routing cases that it touches: dynamic segments, catch-all segments, and groups.
 - `components/` holds the shared screen components. Use them in every route so the pages look the same on web and on native.
 - `servers/` holds the Express and workerd adapters that the E2E tests start against an exported `dist` directory.
+- `workers/` holds the web worker modules that the `app/workers/` routes start. Web workers only run on web.
 
 When you add an API route or loader, add its exported module to `servers/workerd/config.capnp` for workerd E2E tests.
 

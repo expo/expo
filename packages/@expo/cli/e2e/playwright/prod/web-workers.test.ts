@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 const testName = 'web-workers';
 
 const inputDir = `dist-${testName}`;
@@ -29,8 +29,7 @@ test.describe(inputDir, () => {
     console.time('expo export');
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
       env: {
-        EXPO_USE_STATIC: 'single',
-        E2E_ROUTER_SRC: testName,
+        E2E_ROUTER_WEB_OUTPUT: 'single',
         E2E_ROUTER_ASYNC: 'true',
         CI: '1',
       },
@@ -54,6 +53,9 @@ test.describe(inputDir, () => {
     // Navigate to the app
     await page.goto(expoServe.url.href);
     console.timeEnd('Open page');
+
+    // A single-page export has no HTML file for the route.
+    await page.getByRole('link', { name: '/workers', exact: true }).click();
 
     console.time('button');
     // Wait for the app to load
