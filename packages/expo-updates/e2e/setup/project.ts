@@ -14,10 +14,10 @@ export const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 /**
  * Repository root directory
  */
-export const repoRoot = nullthrows(
-  process.env.EXPO_REPO_ROOT || process.env.EAS_BUILD_WORKINGDIR,
-  'EXPO_REPO_ROOT is not defined'
-);
+export const repoRoot =
+  process.env.EXPO_REPO_ROOT ||
+  process.env.EAS_BUILD_WORKINGDIR ||
+  path.resolve(__dirname, '../../../..');
 
 const dirName = __dirname; /* eslint-disable-line */
 
@@ -296,12 +296,13 @@ async function preparePackageJson(
   const extraScripts = configureE2E
     ? {
         start: 'expo start --private-key-path ./keys/private-key.pem',
-        'ios:pod-install-old-arch': 'npx pod-install',
-        'ios:pod-install': 'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 npx pod-install',
-        'maestro:android:debug:build': 'cd android; ./gradlew :app:assembleDebug; cd ..',
+        'ios:pod-install-old-arch': 'npx -y pod-install',
+        'ios:pod-install':
+          'RCT_USE_PREBUILT_RNCORE=1 RCT_USE_RN_DEP=1 pod install --project-directory=ios',
+        'maestro:android:debug:build': 'cd android && ./gradlew :app:assembleDebug',
         'maestro:android:debug:install':
           'adb install android/app/build/outputs/apk/debug/app-debug.apk',
-        'maestro:android:release:build': 'cd android; ./gradlew :app:assembleRelease; cd ..',
+        'maestro:android:release:build': 'cd android && ./gradlew :app:assembleRelease',
         'maestro:android:release:install':
           'adb install android/app/build/outputs/apk/release/app-release.apk',
         'maestro:android:uninstall': 'adb uninstall dev.expo.updatese2e',
@@ -403,72 +404,154 @@ async function preparePackageJson(
 }
 
 /**
- * Adds our E2E test native modules to both iOS and Android expo-updates code.
- * Returns a function that cleans up these changes to the repo once E2E setup is complete
+ * Creates a local Expo module inside `<projectRoot>/modules/expo-updates-e2e-test` containing the
+ * E2E native test helpers so `packages/expo-updates` in the repo stays untouched.
  */
-async function prepareLocalUpdatesModule(repoRoot: string) {
-  // copy UpdatesE2ETest exported module into the local package
-  const iosE2ETestModuleSwiftPath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'ios',
-    'EXUpdates',
-    'E2ETestModule.swift'
-  );
-  const androidE2ETestModuleKTPath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
+export async function createLocalE2ETestModuleAsync(projectRoot: string) {
+  const moduleRoot = path.join(projectRoot, 'modules', 'expo-updates-e2e-test');
+  const iosDir = path.join(moduleRoot, 'ios');
+  const androidSrcDir = path.join(
+    moduleRoot,
     'android',
     'src',
     'main',
     'java',
     'expo',
     'modules',
-    'updates',
-    'UpdatesE2ETestModule.kt'
+    'updates'
   );
+  await fs.mkdir(iosDir, { recursive: true });
+  await fs.mkdir(androidSrcDir, { recursive: true });
+
+  await fs.writeFile(
+    path.join(moduleRoot, 'package.json'),
+    JSON.stringify({ name: 'expo-updates-e2e-test', version: '1.0.0' }, null, 2),
+    'utf-8'
+  );
+  await fs.writeFile(
+    path.join(moduleRoot, 'expo-module.config.json'),
+    JSON.stringify(
+      {
+        platforms: ['apple', 'android'],
+        apple: { modules: ['E2ETestModule'] },
+        android: { modules: ['expo.modules.updates.UpdatesE2ETestModule'] },
+      },
+      null,
+      2
+    ),
+    'utf-8'
+  );
+  await fs.writeFile(
+    path.join(iosDir, 'ExpoUpdatesE2ETest.podspec'),
+    [
+      'Pod::Spec.new do |s|',
+      "  s.name           = 'ExpoUpdatesE2ETest'",
+      "  s.version        = '1.0.0'",
+      "  s.summary        = 'E2E test helper module for expo-updates'",
+      "  s.homepage       = 'https://expo.dev'",
+      "  s.license        = 'MIT'",
+      "  s.author         = 'Expo'",
+      "  s.source         = { :git => '' }",
+      "  s.platforms      = { :ios => '15.1', :tvos => '15.1' }",
+      "  s.swift_version  = '5.9'",
+      "  s.source_files   = '**/*.swift'",
+      "  s.dependency 'ExpoModulesCore'",
+      "  s.dependency 'EXUpdates'",
+      "  s.dependency 'EXUpdatesInterface'",
+      'end',
+      '',
+    ].join('\n'),
+    'utf-8'
+  );
+  await fs.writeFile(
+    path.join(moduleRoot, 'android', 'build.gradle'),
+    [
+      "apply plugin: 'com.android.library'",
+      "apply plugin: 'expo-module-gradle-plugin'",
+      '',
+      "group = 'expo.modules.updates.e2etest'",
+      "version = '1.0.0'",
+      '',
+      'expoModule {',
+      '  canBePublished false',
+      '}',
+      '',
+      'android {',
+      '  namespace "expo.modules.updates.e2etest"',
+      '  defaultConfig {',
+      '    versionCode 1',
+      '    versionName "1.0.0"',
+      '  }',
+      '}',
+      '',
+      'dependencies {',
+      "  implementation project(':expo-updates')",
+      "  implementation project(':expo-updates-interface')",
+      "  implementation 'androidx.room:room-runtime:2.6.1'",
+      '}',
+      '',
+    ].join('\n'),
+    'utf-8'
+  );
+
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'E2ETestModule.swift'),
-    iosE2ETestModuleSwiftPath
+    path.join(iosDir, 'E2ETestModule.swift')
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
-    androidE2ETestModuleKTPath
+    path.join(androidSrcDir, 'UpdatesE2ETestModule.kt')
   );
+}
 
-  // Add E2ETestModule to expo-module.config.json
-  const expoModuleConfigFilePath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'expo-module.config.json'
-  );
-  const originalExpoModuleConfigJsonString = await fs.readFile(expoModuleConfigFilePath, 'utf-8');
-  const originalExpoModuleConfig = JSON.parse(originalExpoModuleConfigJsonString);
-  const expoModuleConfig = {
-    ...originalExpoModuleConfig,
-    apple: {
-      ...originalExpoModuleConfig.apple,
-      modules: [...originalExpoModuleConfig.apple.modules, 'E2ETestModule'],
-    },
-    android: {
-      ...originalExpoModuleConfig.android,
-      modules: [
-        ...originalExpoModuleConfig.android.modules,
-        'expo.modules.updates.UpdatesE2ETestModule',
-      ],
-    },
-  };
-  await fs.writeFile(expoModuleConfigFilePath, JSON.stringify(expoModuleConfig, null, 2), 'utf-8');
+/**
+ * Syncs E2E fixtures (`App.tsx`, Maestro flows/server, scripts, local E2E module sources) into an
+ * existing test project without wiping `node_modules`, `Pods`, DerivedData, or Gradle caches.
+ */
+export async function syncE2EFixturesAsync(
+  projectRoot: string,
+  {
+    appJsFileName = 'App.tsx',
+    configureE2E = true,
+    includeFingerprintIgnore = false,
+  }: {
+    appJsFileName?: string;
+    configureE2E?: boolean;
+    includeFingerprintIgnore?: boolean;
+  } = {}
+) {
+  const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
+  const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
+  let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
+  appJsFileContents = appJsFileContents
+    .replace('UPDATES_HOST', nullthrows(process.env.UPDATES_HOST))
+    .replace('UPDATES_PORT', nullthrows(process.env.UPDATES_PORT));
+  await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
 
-  // Return cleanup function
-  return async () => {
-    await fs.writeFile(expoModuleConfigFilePath, originalExpoModuleConfigJsonString, 'utf-8');
-    await fs.rm(iosE2ETestModuleSwiftPath, { force: true });
-    await fs.rm(androidE2ETestModuleKTPath, { force: true });
-  };
+  const fileList = [
+    ...(includeFingerprintIgnore ? ['.fingerprintignore'] : []),
+    'tsconfig.json',
+    '.env',
+    'eas.json',
+    'maestro',
+    'includedAssets',
+    'scripts',
+  ];
+  const projectFilesSourcePath = path.join(dirName, '..', 'fixtures', 'project_files');
+  const projectFilesTarballPath = path.join(projectRoot, 'project_files.tgz');
+  await spawnAsync('tar', ['zcf', projectFilesTarballPath, ...fileList], {
+    cwd: projectFilesSourcePath,
+    stdio: 'inherit',
+  });
+  await spawnAsync('tar', ['zxf', projectFilesTarballPath], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+  await fs.rm(projectFilesTarballPath);
+
+  if (configureE2E) {
+    await createLocalE2ETestModuleAsync(projectRoot);
+  }
 }
 
 /**
@@ -819,9 +902,8 @@ export async function initAsync(
   // We are done with template tarball
   await fs.rm(localTSTemplatePathName);
 
-  let cleanupLocalUpdatesModule: (() => Promise<void>) | undefined;
   if (configureE2E) {
-    cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
+    await createLocalE2ETestModuleAsync(projectRoot);
   }
 
   await preparePackageJson(
@@ -992,14 +1074,6 @@ export async function initAsync(
     for (const fileToCopy of filesToCopyForCustomInit) {
       await fs.copyFile(fileToCopy.sourcePath, fileToCopy.destPath);
     }
-  }
-
-  // Cleanup local updates module if needed
-  if (cleanupLocalUpdatesModule) {
-    // NOTE(@kitten): Modifying the repo root is dangerous
-    // This previously relied on the tarball packing, but we should optimally just create a local module
-    // We can't clean up the changes, since otherwise the modifications will be discarded before the native build
-    // await cleanupLocalUpdatesModule();
   }
 
   return projectRoot;
