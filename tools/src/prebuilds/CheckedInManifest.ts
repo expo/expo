@@ -23,6 +23,9 @@ export interface CheckedInResolvedTarget extends ResolvedTarget {
   sources: string[];
   exclude: string[];
   productMember: boolean;
+  /** The entries of `dependencies` that link the prebuilt binary of another product of the
+   * package. */
+  siblingProducts?: string[];
 }
 
 export function isCheckedInResolvedTarget(
@@ -35,6 +38,9 @@ type DumpedDependency = {
   byName?: [string, unknown?];
   target?: [string, unknown?];
   product?: [name: string, packageName: string, moduleAliases: unknown, condition: unknown];
+  /** Marks the by-name dependency that replaces a stand-in product. It names an spm.config.json
+   * dependency, never a target of the manifest. */
+  standIn?: true;
 };
 
 type DumpedResource = { path: string; rule: Record<string, unknown> };
@@ -216,7 +222,7 @@ function substituteDirectBuildStandIns(dumped: DumpedManifest): {
     const [productName, packageName, moduleAliases, condition] = dependency.product;
     const standIns = directBuildStandIns(packageName, localStandInPackages);
     return standIns && Object.hasOwn(standIns, productName) && moduleAliases == null
-      ? { byName: [standIns[productName], condition] }
+      ? { byName: [standIns[productName], condition], standIn: true }
       : dependency;
   };
   // Shapes other than lists pass through untouched, so the later checks still report them.
@@ -238,6 +244,16 @@ function substituteDirectBuildStandIns(dumped: DumpedManifest): {
 
 function dependencyName(dependency: DumpedDependency): string | null {
   return dependency.byName?.[0] ?? dependency.target?.[0] ?? dependency.product?.[0] ?? null;
+}
+
+/** The manifest target that `dependency` names, as SwiftPM resolves it. A product of another
+ * package, which a stand-in also is, names none. */
+function dependencyTarget(
+  dependency: DumpedDependency,
+  targets: ReadonlyMap<string, DumpedTarget>
+): DumpedTarget | undefined {
+  const name = dependency.product || dependency.standIn ? null : dependencyName(dependency);
+  return name == null ? undefined : targets.get(name);
 }
 
 type ManifestError = (what: string, how: string) => Error;
@@ -954,6 +970,121 @@ export function getSiblingProductNames(pkg: SPMPackageSource, product: SPMProduc
   );
 }
 
+const PRODUCT_DEPENDENCY =
+  'A product can use another product of this package only through a dependency on the target named after that product, which that product lists, and et prebuild links the prebuilt binary of that product for it.';
+
+/**
+ * et prebuild builds each product in spm.config.json into a binary that exposes only the module
+ * named after the product, and links that binary into another product for a dependency on the
+ * product's product-named target. Rejects a manifest whose products, built that way, would compile
+ * a target twice, lose a module, or confuse a binary with an external dependency of the same name.
+ */
+function assertProductLayout(
+  manifest: DumpedManifest,
+  productName: string,
+  siblingProductNames: ReadonlySet<string>,
+  externalNames: ReadonlySet<string>
+): void {
+  const fail = (target: string, what: string, how: string) =>
+    manifestError(productName, target, what, how);
+  const layout = (manifest.products ?? []).filter(
+    (candidate) => candidate.name === productName || siblingProductNames.has(candidate.name)
+  );
+  const targets = new Map((manifest.targets ?? []).map((target) => [target.name, target]));
+
+  const nonLibrary = layout.find((candidate) => !('library' in (candidate.type ?? {})));
+  if (nonLibrary) {
+    const { name } = nonLibrary;
+    throw fail(
+      nonLibrary.targets?.[0] ?? name,
+      `the manifest declares .${Object.keys(nonLibrary.type ?? {})[0]}(name: "${name}"), but spm.config.json lists "${name}" as a product of this package, and et prebuild builds every such product as a library binary.`,
+      `Update Package.swift so that "${name}" is a .library product.`
+    );
+  }
+  for (const { name, targets: members } of layout) {
+    if (targets.get(name)?.type === 'regular' && !members?.includes(name)) {
+      throw fail(
+        name,
+        `it has the name of product "${name}", but .library(name: "${name}") does not list it, and et prebuild gives that name to the prebuilt binary of "${name}", which it links for every dependency on "${name}".`,
+        `Update Package.swift so that target "${name}" is listed by .library(name: "${name}") and built by no other product, or so that no target has the name "${name}". ${PRODUCT_DEPENDENCY}`
+      );
+    }
+  }
+
+  const layoutNames = new Set(layout.map((candidate) => candidate.name));
+  const builders = new Map<string, string[]>();
+  const links = new Map<string, { target: string; product: string }[]>();
+  const externalUses = new Map<string, { product: string; target: string }>();
+  for (const candidate of layout) {
+    const closure = new Set<string>();
+    const candidateLinks: { target: string; product: string }[] = [];
+    const queue = [...(candidate.targets ?? [])];
+    while (queue.length > 0) {
+      const target = targets.get(queue.shift()!);
+      if (target?.type !== 'regular' || closure.has(target.name)) continue;
+      closure.add(target.name);
+      for (const dependency of target.dependencies ?? []) {
+        const name = dependencyName(dependency);
+        const resolved = dependencyTarget(dependency, targets);
+        if (
+          resolved?.type === 'regular' &&
+          resolved.name !== candidate.name &&
+          layoutNames.has(resolved.name)
+        ) {
+          candidateLinks.push({ target: target.name, product: resolved.name });
+        } else if (resolved) {
+          queue.push(resolved.name);
+        } else if (name != null && !dependency.target && !externalUses.has(name)) {
+          externalUses.set(name, { product: candidate.name, target: target.name });
+        }
+      }
+    }
+    for (const name of closure) builders.set(name, [...(builders.get(name) ?? []), candidate.name]);
+    links.set(candidate.name, candidateLinks);
+  }
+
+  const configUse = {
+    product: productName,
+    target: layout.find((candidate) => candidate.name === productName)?.targets?.[0] ?? productName,
+  };
+  for (const name of externalNames) {
+    if (!externalUses.has(name)) externalUses.set(name, configUse);
+  }
+  for (const name of siblingProductNames) {
+    const use = externalUses.get(name);
+    if (use) {
+      throw fail(
+        use.target,
+        `product "${use.product}" uses external dependency "${name}", which has the name of sibling product "${name}", so et prebuild cannot tell that dependency from the prebuilt binary of "${name}", and an app that uses both would get two modules named "${name}".`,
+        'Update Package.swift and spm.config.json so that no product of this package has the name of an external dependency that one of its products uses.'
+      );
+    }
+  }
+
+  for (const [consumer, consumerLinks] of links) {
+    for (const link of consumerLinks) {
+      const [next] = links.get(link.product) ?? [];
+      if (next) {
+        throw fail(
+          next.target,
+          `it depends on "${next.product}", so the prebuilt binary of product "${link.product}" links the binary of product "${next.product}", while product "${consumer}" links the binary of "${link.product}" through target "${link.target}". et prebuild supports only one level of such links, so a product whose binary another product links cannot link a binary itself.`,
+          `Update Package.swift so that product "${link.product}" uses no other product, or so that no other product uses "${link.product}". ${PRODUCT_DEPENDENCY}`
+        );
+      }
+    }
+  }
+
+  for (const [target, products] of builders) {
+    if (products.length < 2) continue;
+    const builder = layoutNames.has(target) ? `product "${target}"` : 'one product';
+    throw fail(
+      target,
+      `products "${products[0]}" and "${products[1]}" both build it, through the targets they list and the dependencies of those targets, so an app that uses both prebuilt binaries would get duplicate symbols.`,
+      `Update Package.swift so that only ${builder} builds target "${target}". ${PRODUCT_DEPENDENCY}`
+    );
+  }
+}
+
 /** Keep regular-target filtering and path inference aligned with parseDumpedManifest and
  * resolveTargetPaths in expo/scripts/spm/manifests.js; environment settings belong to config. */
 export async function resolveCheckedInManifestAsync(
@@ -1037,6 +1168,20 @@ export async function resolveCheckedInManifestAsync(
     ...(product.externalDependencies ?? []),
     ...(product.spmPackages ?? []).map((dependency) => dependency.productName),
   ]);
+  const declaredSiblings = new Set(
+    (manifest.products ?? [])
+      .map((candidate) => candidate.name)
+      .filter((name) => siblingProductNames.has(name))
+  );
+  if (declaredSiblings.size > 0) {
+    assertProductLayout(manifest, product.name, siblingProductNames, externalNames);
+  }
+  const siblingBinary = (dependency: DumpedDependency) => {
+    const target = dependencyTarget(dependency, declaredByName);
+    return target?.type === 'regular' && declaredSiblings.has(target.name)
+      ? target.name
+      : undefined;
+  };
   const reachable = new Set<string>();
   const queue = [...(libraryProduct.targets ?? [])];
   while (queue.length > 0) {
@@ -1054,10 +1199,10 @@ export async function resolveCheckedInManifestAsync(
     }
     reachable.add(name);
     for (const dependency of target.dependencies ?? []) {
-      if (dependency.product) continue;
+      if (dependency.product || siblingBinary(dependency)) continue;
       const dependencyTargetName = dependencyName(dependency);
-      if (dependencyTargetName && declaredByName.has(dependencyTargetName)) {
-        const declared = declaredByName.get(dependencyTargetName)!;
+      const declared = dependencyTarget(dependency, declaredByName);
+      if (declared) {
         if (declared.type !== 'regular') {
           throw manifestError(
             product.name,
@@ -1066,7 +1211,7 @@ export async function resolveCheckedInManifestAsync(
             'Remove that dependency or move its implementation into a regular target.'
           );
         }
-        queue.push(dependencyTargetName);
+        queue.push(declared.name);
       } else if (!dependencyTargetName || !externalNames.has(dependencyTargetName)) {
         throw manifestError(
           product.name,
@@ -1269,6 +1414,12 @@ export async function resolveCheckedInManifestAsync(
         ...externalDependencies,
       ])
     );
+    const siblingProducts = new Set([
+      ...(target.dependencies ?? []).flatMap((dependency) => siblingBinary(dependency) ?? []),
+      ...configDependencies.filter(
+        (dependency) => siblingProductNames.has(dependency) && !externalNames.has(dependency)
+      ),
+    ]);
     const resources = (target.resources ?? []).map((resource) => {
       const rule = Object.keys(resource.rule ?? {})[0];
       const options = resource.rule[rule] as { localization?: string } | undefined;
@@ -1316,6 +1467,7 @@ export async function resolveCheckedInManifestAsync(
       sources,
       exclude: prefixedExcludes,
       dependencies,
+      siblingProducts: [...siblingProducts],
       linkedFrameworks,
       resources,
       publicHeadersPath:
