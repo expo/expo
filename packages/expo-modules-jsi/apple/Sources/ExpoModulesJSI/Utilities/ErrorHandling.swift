@@ -3,8 +3,8 @@ internal import jsi
 
 /// Gets the recently thrown `expo.CppError` that was not handled by Swift yet.
 private func getCurrentCppError() -> expo.CppError? {
-  if let current = expo.CppError.getCurrent() {
-    return current.move()
+  if expo.CppError.hasCurrent() {
+    return expo.CppError.takeCurrent()
   }
   return nil
 }

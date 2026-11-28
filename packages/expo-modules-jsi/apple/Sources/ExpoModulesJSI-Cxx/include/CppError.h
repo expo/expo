@@ -1,7 +1,8 @@
 #pragma once
 
+#include <cassert>
 #include <exception>
-#include <memory>
+#include <optional>
 #include <swift/bridging>
 
 #include "IRuntimeCompat.h"
@@ -38,17 +39,6 @@ public:
   jsi::JSError jsError;
 
   /**
-   Moves the wrapped `jsi::JSError` out of this `CppError` and deletes `this`.
-   The caller takes ownership of the returned error. After this call, the
-   `CppError` pointer is invalid and must not be used.
-   */
-  jsi::JSError release() {
-    jsi::JSError error = std::move(jsError);
-    delete this;
-    return error;
-  }
-
-  /**
    Returns the error message of the wrapped `jsi::JSError`.
    Renamed to `_message` in Swift so that an extension can expose a clean
    `message: String` accessor that wraps the underlying `std::string`.
@@ -69,8 +59,9 @@ public:
 
   /**
    Executes a C++ callable and catches any C++ exceptions that are thrown.
-   Caught exceptions are stored in thread-local storage and can be retrieved
-   using `getCurrent()`. The function returns `nullptr` when an exception occurs.
+   Caught exceptions are stored in thread-local storage and can be checked with
+   `hasCurrent()` and retrieved using `takeCurrent()`. The function returns
+   `nullptr` when an exception occurs.
 
    Takes a forwarding reference to a C++ callable (e.g. a lambda) rather than an
    Objective-C block. Every caller passes a pure C++ body, so no Swift closure
@@ -104,12 +95,32 @@ public:
   }
 
   /**
-   Retrieves the current thread's error and transfers ownership to the caller.
-   After calling this method, the thread-local error state is reset to `nullptr`,
-   and the caller becomes responsible for deleting the returned pointer.
+   Returns whether the current thread has a pending error.
    */
-  inline static CppError* getCurrent() {
-    return _current.release();
+  inline static bool hasCurrent() noexcept {
+    return _current.has_value();
+  }
+
+  /**
+   Moves the current thread's pending error out and clears the thread-local slot.
+   Must only be called when `hasCurrent()` is `true`.
+   */
+  inline static CppError takeCurrent() {
+    assert(_current.has_value());
+    CppError error(std::move(*_current));
+    _current.reset();
+    return error;
+  }
+
+  /**
+   Drains the current thread's pending error (if any) and rethrows its `jsi::JSError`.
+   */
+  inline static void rethrowCurrent() {
+    if (_current.has_value()) {
+      jsi::JSError error = std::move(*_current);
+      _current.reset();
+      throw std::move(error);
+    }
   }
 
   /**
@@ -117,17 +128,17 @@ public:
    Called from Swift when a host function closure throws a JavaScriptThrowable error.
    */
   inline static void setCurrent(jsi::JSError jsError) {
-    _current = std::make_unique<CppError>(std::move(jsError));
+    _current.emplace(std::move(jsError));
   }
 
   /**
    Re-publishes an existing `CppError` into the current thread's slot. Used from Swift
    to relay a `CppError` that was caught from a `throw` (and thus already drained from
-   the slot by `getCurrent`) so the original `jsi::JSError` — including its stack, code
+   the slot by `takeCurrent`) so the original `jsi::JSError` — including its stack, code
    and custom properties — can be rethrown into JavaScript.
    */
   inline static void setCurrent(CppError cppError) {
-    _current = std::make_unique<CppError>(std::move(cppError));
+    _current.emplace(std::move(cppError.jsError));
   }
 
   /**
@@ -135,7 +146,7 @@ public:
    Called from Swift when a host function closure throws a plain error.
    */
   inline static void setCurrent(jsi::IRuntime &runtime, const std::string &message) {
-    _current = std::make_unique<CppError>(jsi::JSError(runtime, message));
+    _current.emplace(runtime, message);
   }
 
 private:
@@ -146,21 +157,21 @@ private:
   inline static void storeCaughtException(jsi::IRuntime &runtime) {
     try {
       throw;
-    } catch (jsi::JSError e) {
-      _current = std::make_unique<CppError>(std::move(e));
+    } catch (jsi::JSError &e) {
+      _current.emplace(std::move(e));
     } catch (const std::exception &e) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, e.what()));
+      _current.emplace(runtime, e.what());
     } catch (...) {
-      _current = std::make_unique<CppError>(jsi::JSError(runtime, "Unknown C++ error"));
+      _current.emplace(runtime, "Unknown C++ error");
     }
   }
 
   /**
-   Pointer to the last thrown and caught error. Each thread maintains its own
-   error pointer, eliminating the need for synchronization and preventing errors
-   from one thread affecting another.
+   The last thrown and caught error. Each thread maintains its own slot,
+   eliminating the need for synchronization and preventing errors from one
+   thread affecting another.
    */
-  inline static thread_local std::unique_ptr<CppError> _current;
+  inline static thread_local std::optional<jsi::JSError> _current;
 
 }; // class CppError
 

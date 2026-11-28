@@ -226,9 +226,7 @@ inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropN
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
     if (closurePtr->call(thisValue, args, count, result)) {
-      if (auto *error = CppError::getCurrent()) {
-        throw error->release();
-      }
+      CppError::rethrowCurrent();
     }
     return result;
   });
@@ -358,7 +356,7 @@ inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &func
 
 /**
  Calls `function` and moves its result into `result`. Returns `false` when the call throws, so the caller reads
- the error from `CppError::getCurrent()` only then.
+ the error from `CppError::takeCurrent()` only then.
  */
 inline bool callFunctionInto(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count, jsi::Value *_Nonnull result) {
   return expo::CppError::tryCatchSucceeded(runtime, [&] {
