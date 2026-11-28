@@ -6,9 +6,16 @@
 
 #import <ExpoModulesCore/EXViewPropsDecoding.h>
 
+#include <mutex>
+
 #include "NewPropsDecoder.h"
 
 namespace expo::views {
+
+/**
+ Creates the Objective-C decoder of a view type. Called once, on any thread.
+ */
+using MakeObjCPropsDecoder = id<EXViewPropsDecoding> _Nonnull (^)(void);
 
 /**
  A `NewPropsDecoder` that decodes through an Objective-C object, which Swift's `ViewPropsDecoderAdapter`
@@ -16,7 +23,13 @@ namespace expo::views {
  */
 class ObjCPropsDecoder final : public NewPropsDecoder {
 public:
-  explicit ObjCPropsDecoder(id<EXViewPropsDecoding> decoder);
+  explicit ObjCPropsDecoder(id<EXViewPropsDecoding> _Nonnull decoder);
+
+  /**
+   Creates the Objective-C decoder with `makeDecoder` when the props of the view type are first decoded, so
+   registering a view type that the app doesn't render doesn't create its decoder.
+   */
+  explicit ObjCPropsDecoder(MakeObjCPropsDecoder _Nonnull makeDecoder);
 
   DecodedProps decode(
     facebook::jsi::Runtime &runtime,
@@ -38,7 +51,11 @@ public:
   ) const override;
 
 private:
-  id<EXViewPropsDecoding> decoder_;
+  id<EXViewPropsDecoding> _Nonnull objcDecoder() const;
+
+  mutable std::once_flag decoderOnce_;
+  mutable MakeObjCPropsDecoder _Nullable makeDecoder_;
+  mutable id<EXViewPropsDecoding> _Nullable decoder_;
 };
 
 } // namespace expo::views

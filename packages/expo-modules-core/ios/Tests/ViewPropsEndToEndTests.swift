@@ -12,6 +12,17 @@ private struct EndToEndProps {
   var radius = 4.0
 }
 
+/// Records the name of the thread on which each of its props decoders was created.
+@ExpoView<EndToEndProps>
+private final class LazyDecoderView: ExpoNativeView {
+  nonisolated static let decoderThreadNames = Mutex<[String?]>([])
+
+  nonisolated static func _makePropsDecoder(viewName: String) -> ViewPropsDecoderAdapter {
+    decoderThreadNames.withLock { $0.append(Thread.current.name) }
+    return ViewPropsDecoderAdapter(ViewPropsDecoder<EndToEndProps>(viewName: viewName))
+  }
+}
+
 /// Runs props through the whole path that Fabric takes: `NewComponentDescriptor::cloneProps` in C++,
 /// `ObjCPropsDecoder`, `ViewPropsDecoderAdapter` and `ViewPropsDecoder` in Swift.
 @Suite
@@ -187,5 +198,58 @@ private final class LockingTestRuntime: JavaScriptRuntime, JavaScriptRuntimeLock
     lockCount += 1
     body()
     return true
+  }
+}
+
+/// A registered view creates its props decoder at the first decode, on the thread that decodes. Fabric decodes the
+/// props from React on the JavaScript thread.
+@Suite
+@MainActor
+struct RegisteredViewDecodingTests {
+  // The name of the JavaScript thread in `RCTJSThreadManager.mm`.
+  nonisolated static let javaScriptThreadName = "com.facebook.react.runtime.JavaScript"
+
+  @Test
+  func `registered view creates its props decoder once, at the first decode on the JavaScript thread`() async throws {
+    let componentName = ExpoNativeView.packageComponentName(packageName: "view-props-end-to-end-tests", viewName: "LazyDecoderView")
+    ExpoNativeView.registerComponent(LazyDecoderView.self, componentName: componentName)
+    #expect(LazyDecoderView.decoderThreadNames.withLock { $0 }.isEmpty)
+
+    // The component flavors are read on the main thread only, like Fabric does when it registers the component.
+    let viewClass: AnyClass = try #require(NSClassFromString(componentName))
+    let descriptor = EXTestNewComponentDescriptor(viewClass: viewClass)
+    let titles = await decodeTitlesOnJavaScriptThread(descriptor, sources: ["({ title: 'Card' })", "({ title: 'New card' })"])
+
+    #expect(titles == ["Card", "New card"])
+    #expect(LazyDecoderView.decoderThreadNames.withLock { $0 } == [Self.javaScriptThreadName])
+  }
+
+  /// Decodes each props object on a thread with the name of React Native's JavaScript thread, and returns the titles.
+  private func decodeTitlesOnJavaScriptThread(
+    _ descriptor: EXTestNewComponentDescriptor,
+    sources: [String]
+  ) async -> [String?] {
+    nonisolated(unsafe) let descriptor = descriptor
+    return await withCheckedContinuation { continuation in
+      let thread = Thread {
+        let titles = JavaScriptActor.assumeIsolated { () -> [String?] in
+          let runtime = JavaScriptRuntime()
+          return sources.map { source in
+            guard let props = try? runtime.eval(source) else {
+              return nil
+            }
+            let decoded = runtime.withUnsafePointee { runtimePointer in
+              props.withUnsafePointee { propsPointer in
+                descriptor.update(runtime: runtimePointer, props: propsPointer)
+              }
+            }
+            return (decoded as? DecodedViewProps<EndToEndProps>)?.props.title
+          }
+        }
+        continuation.resume(returning: titles)
+      }
+      thread.name = Self.javaScriptThreadName
+      thread.start()
+    }
   }
 }

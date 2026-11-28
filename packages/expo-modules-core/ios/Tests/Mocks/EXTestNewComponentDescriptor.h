@@ -16,6 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDecoder:(id<EXViewPropsDecoding>)decoder;
 
+/**
+ Owns the descriptor of the component that `ExpoNativeView.registerComponent` registered for the given class.
+ */
+- (instancetype)initWithViewClass:(Class)viewClass;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 /**

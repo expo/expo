@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -82,14 +83,23 @@ private:
   std::optional<size_t> propIndex(facebook::react::RawPropsPropNameHash hash, std::string_view name) const;
 
   /**
+   Builds `propNames_` and `propIndexes_` from the decoder. It runs on the first `propIndex` call, not in the
+   constructor, because getting the names creates the decoder, and React Native constructs a descriptor for
+   every registered view type, also for the types that the app never renders.
+   */
+  void buildPropIndexes() const;
+
+  mutable std::once_flag propIndexesOnce_;
+
+  /**
    The names of the view's props, in the order of the decoder's `propNames`.
    */
-  std::vector<std::string> propNames_;
+  mutable std::vector<std::string> propNames_;
 
   /**
    The hash of each name in `propNames_` with its index, sorted by the hash.
    */
-  std::vector<std::pair<facebook::react::RawPropsPropNameHash, size_t>> propIndexes_;
+  mutable std::vector<std::pair<facebook::react::RawPropsPropNameHash, size_t>> propIndexes_;
 };
 
 } // namespace expo::views

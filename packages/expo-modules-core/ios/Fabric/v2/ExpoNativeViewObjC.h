@@ -65,4 +65,12 @@
 + (void)registerComponentViewClass:(nonnull Class)viewClass
                       propsDecoder:(nonnull id<EXViewPropsDecoding>)propsDecoder NS_SWIFT_UI_ACTOR;
 
+/**
+ Like `registerComponentViewClass:propsDecoder:`, but the decoder is created with `makePropsDecoder` when the
+ props of the view type are first decoded, on the thread that decodes them.
+ */
++ (void)registerComponentViewClass:(nonnull Class)viewClass
+                  makePropsDecoder:(id<EXViewPropsDecoding> _Nonnull (^ _Nonnull NS_SWIFT_SENDABLE)(void))makePropsDecoder
+    NS_SWIFT_UI_ACTOR;
+
 @end

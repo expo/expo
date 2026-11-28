@@ -45,17 +45,20 @@ namespace {
 class RecordingDecoder final : public views::NewPropsDecoder {
 public:
   mutable int decodeCount = 0;
+  // How many times `propNames` was called. The decode methods read the names with `ownPropNames`, which isn't counted.
+  mutable int propNamesCount = 0;
   // When set, a decode returns no decoded props, as a decoder that has nothing to decode may.
   bool returnsNothing = false;
 
   std::vector<std::string> propNames() const override {
-    return {"title", "opacity"};
+    propNamesCount++;
+    return ownPropNames();
   }
 
   views::DecodedProps decode(jsi::Runtime &runtime, const jsi::Value &props, const views::DecodedProps &previous)
     const override {
     // Like the Swift decoder, it decodes only its own props and skips the other keys.
-    const auto ownNames = propNames();
+    const auto ownNames = ownPropNames();
     std::vector<std::string> keys;
     auto names = props.getObject(runtime).getPropertyNames(runtime);
     for (size_t i = 0; i < names.size(runtime); i++) {
@@ -72,7 +75,7 @@ public:
     const std::vector<std::pair<size_t, jsi::Value>> &values,
     const views::DecodedProps &previous
   ) const override {
-    const auto ownNames = propNames();
+    const auto ownNames = ownPropNames();
     std::vector<std::string> keys;
     for (const auto &[index, value] : values) {
       keys.push_back(ownNames.at(index));
@@ -85,7 +88,7 @@ public:
     const views::DecodedProps &previous
   ) const override {
     // Sorted, because a `folly::dynamic` object doesn't keep the order of its keys.
-    const auto ownNames = propNames();
+    const auto ownNames = ownPropNames();
     std::vector<std::string> keys;
     for (const auto &[index, value] : values) {
       keys.push_back(ownNames.at(index));
@@ -95,6 +98,10 @@ public:
   }
 
 private:
+  static std::vector<std::string> ownPropNames() {
+    return {"title", "opacity"};
+  }
+
   views::DecodedProps record(const std::vector<std::string> &keys, const views::DecodedProps &previous) const {
     decodeCount++;
     if (returnsNothing) {
@@ -260,6 +267,22 @@ NSString *joined(const std::vector<std::string> &names) {
   XCTAssertEqual(_decoder->decodeCount, 1);
   XCTAssertTrue((decode->keys == std::vector<std::string>{"title", "opacity"}));
   XCTAssertFalse(decode->previous);
+}
+
+- (void)testPropNamesAreReadOnceAtTheFirstClone
+{
+  // React Native constructs a descriptor for every registered view, also for the views that the app never renders,
+  // so the constructor doesn't read the names. Reading them creates the decoder. The props are `folly::dynamic`,
+  // because they use the prop index on every React Native version, while JSI props skip it before React Native 0.87.
+  XCTAssertEqual(_decoder->propNamesCount, 0);
+
+  auto createdRawProps = react::RawProps(folly::dynamic::object("title", "Title"));
+  auto created = [self cloneProps:nullptr rawProps:&createdRawProps];
+  XCTAssertEqual(_decoder->propNamesCount, 1);
+
+  auto updatedRawProps = react::RawProps(folly::dynamic::object("title", "New title"));
+  [self cloneProps:created rawProps:&updatedRawProps];
+  XCTAssertEqual(_decoder->propNamesCount, 1);
 }
 
 - (void)testBaseViewPropsAreStillParsed
