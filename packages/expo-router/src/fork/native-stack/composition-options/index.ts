@@ -1,5 +1,6 @@
 export { mergeOptions } from './mergeOptions';
 export {
+  CompositionActivityScope,
   CompositionContext,
   useCompositionRegistry,
   useCompositionOption,
