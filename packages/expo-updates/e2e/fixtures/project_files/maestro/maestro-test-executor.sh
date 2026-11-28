@@ -12,28 +12,63 @@ export MAESTRO_TEST_SUITE=$1
 export MAESTRO_PLATFORM=$2
 export MAESTRO_CONFIGURATION=$3
 export MAESTRO_UPDATES_SERVER_PORT=$EXPO_PUBLIC_UPDATES_SERVER_PORT
+UPDATES_SERVER_LOG="${MAESTRO_UPDATES_SERVER_LOG:-/tmp/updates-server-$MAESTRO_UPDATES_SERVER_PORT.log}"
+STARTED_UPDATES_SERVER_PID=""
 
 function killUpdatesServerIfNeeded() {
-  UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT || true)
-  if [[ -n "$UPDATES_SERVER_PID" ]]; then
-    echo "Killing updates server with PID $UPDATES_SERVER_PID"
-    kill -9 $UPDATES_SERVER_PID
+  if [[ -n "$STARTED_UPDATES_SERVER_PID" ]]; then
+    echo "Killing updates server with PID $STARTED_UPDATES_SERVER_PID"
+    kill "$STARTED_UPDATES_SERVER_PID" 2>/dev/null || true
+    for _ in 1 2 3 4 5; do
+      if ! kill -0 "$STARTED_UPDATES_SERVER_PID" 2>/dev/null; then
+        return
+      fi
+      sleep 0.2
+    done
+    kill -9 "$STARTED_UPDATES_SERVER_PID" 2>/dev/null || true
   fi
 }
 
 function startUpdatesServerIfNeeded() {
-  UPDATES_SERVER_PID=$(lsof -t -i:$MAESTRO_UPDATES_SERVER_PORT || true)
-  if [[ -n "$UPDATES_SERVER_PID" ]]; then
-    echo "Updates server already running with PID $UPDATES_SERVER_PID"
-  else
-    echo "Starting updates server"
-    pnpm ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
+  local existing_pid
+  existing_pid=$(lsof -t -iTCP:"$MAESTRO_UPDATES_SERVER_PORT" -sTCP:LISTEN || true)
+  if [[ -n "$existing_pid" ]]; then
+    echo "Updates server already running with PID $existing_pid"
+    return
   fi
+
+  echo "Starting updates server (logs: $UPDATES_SERVER_LOG)"
+  : > "$UPDATES_SERVER_LOG"
+  pnpm --silent ts-node --transpile-only ./maestro/updates-server/start.ts >"$UPDATES_SERVER_LOG" 2>&1 &
+  STARTED_UPDATES_SERVER_PID=$!
+
+  local health_url="http://localhost:$MAESTRO_UPDATES_SERVER_PORT/health"
+  for _ in $(seq 1 150); do
+    if curl -sf "$health_url" >/dev/null 2>&1; then
+      echo "Updates server ready (PID $STARTED_UPDATES_SERVER_PID)"
+      return
+    fi
+    if ! kill -0 "$STARTED_UPDATES_SERVER_PID" 2>/dev/null; then
+      echo "Updates server exited before becoming healthy. Logs:"
+      cat "$UPDATES_SERVER_LOG"
+      exit 1
+    fi
+    sleep 0.2
+  done
+
+  echo "Timed out waiting for updates server at $health_url. Logs:"
+  cat "$UPDATES_SERVER_LOG"
+  exit 1
 }
 
 function cleanup()
 {
   local exit_code=$?
+  if [[ $exit_code -ne 0 && -f "$UPDATES_SERVER_LOG" ]]; then
+    echo "===== updates server log (last 200 lines) ====="
+    tail -200 "$UPDATES_SERVER_LOG" || true
+    echo "===== end updates server log ====="
+  fi
   # Maestro only reports which element it could not find, which is indistinguishable between a
   # missing test ID and an app that crashed on launch. Dump the device log on failure — to stdout,
   # so it lands in the CI job log without needing artifact upload.
@@ -49,6 +84,13 @@ function cleanup()
       | grep -vE "(Maestro|QueryController|AccessibilityNodeInfo) *:" \
       | tail -300 || true
     echo "===== end adb logcat ====="
+  fi
+  if [[ $exit_code -ne 0 && "$MAESTRO_PLATFORM" == "ios" ]]; then
+    echo "===== iOS simulator logs ($MAESTRO_CONFIGURATION, last 200 lines) ====="
+    xcrun simctl spawn booted log show --last 2m --style compact \
+      --predicate 'process == "updatese2e" OR subsystem CONTAINS "expo"' 2>/dev/null \
+      | tail -200 || true
+    echo "===== end iOS simulator logs ====="
   fi
   echo 'Cleaning up...'
   killUpdatesServerIfNeeded

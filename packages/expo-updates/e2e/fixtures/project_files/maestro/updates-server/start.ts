@@ -1,11 +1,10 @@
 #!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 const Server = require('./server').Server;
-const Update = require('./update').Update;
 const delay = require('timers/promises').setTimeout;
 
 const runAsync = async () => {
-  Server.start(Update.serverPort);
+  Server.start(1);
   console.log('Updates server started');
   while (Server.isStarted()) {
     await delay(1000);

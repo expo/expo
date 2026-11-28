@@ -13,6 +13,7 @@ const Update = require('./update').Update;
 const projectRoot = path.resolve(__dirname, '../..');
 
 import type { Request, Response } from 'express';
+import type { Server as HttpServer } from 'http';
 
 const supportedPlatforms = new Set(['android', 'ios']);
 const supportedConfigurations = new Set(['debug', 'release']);
@@ -33,7 +34,8 @@ const supportedManifestRequests = new Set([
 
 const app = express();
 
-let server: { close: () => void } | null;
+let server: HttpServer | null = null;
+const pendingTimers = new Set<ReturnType<typeof setTimeoutNormal>>();
 
 let messages: any[] = [];
 let responsesToServe: any[] = [];
@@ -46,6 +48,7 @@ let manifestHeadersToServe: { [x: string]: any } | null = null;
 let serveChannel: string | null = null;
 
 let logEntries: UpdatesLogEntry[] = [];
+let logEntriesUploaded: boolean = false;
 
 let multipartResponseToServe: any = null;
 let requestedStaticFiles: string[] = [];
@@ -54,6 +57,26 @@ let protocolVersion: number = 1;
 let artificialDelay: number = 0;
 let serveOverriddenUrl: boolean = false;
 let isRunning: boolean = false;
+
+function resetState(newArtificialDelay: number = 0, newServeOverriddenUrl: boolean = false) {
+  for (const timer of pendingTimers) {
+    clearTimeout(timer);
+  }
+  pendingTimers.clear();
+  messages = [];
+  responsesToServe = [];
+  updateRequest = null;
+  assetRequest = null;
+  manifestToServe = null;
+  manifestHeadersToServe = null;
+  serveChannel = null;
+  multipartResponseToServe = null;
+  requestedStaticFiles = [];
+  logEntries = [];
+  logEntriesUploaded = false;
+  artificialDelay = newArtificialDelay;
+  serveOverriddenUrl = newServeOverriddenUrl;
+}
 
 function start(
   protocol: number = 1,
@@ -64,7 +87,12 @@ function start(
   console.log(`Starting server on port ${port}...`);
   isRunning = true;
   if (!server) {
-    server = app.listen(port);
+    const httpServer: HttpServer = app.listen(port);
+    httpServer.on('error', (error: Error) => {
+      console.error(`Updates server error on port ${port}:`, error);
+      process.exit(1);
+    });
+    server = httpServer;
     protocolVersion = protocol;
     artificialDelay = artificialDelayMs;
     serveOverriddenUrl = shouldServeOverriddenUrl;
@@ -76,21 +104,13 @@ function isStarted() {
 }
 
 function stop() {
+  resetState();
   if (server) {
+    server.closeAllConnections?.();
     server.close();
     server = null;
     isRunning = false;
   }
-  messages = [];
-  responsesToServe = [];
-  updateRequest = null;
-  assetRequest = null;
-  manifestToServe = null;
-  manifestHeadersToServe = null;
-  serveChannel = null;
-  multipartResponseToServe = null;
-  requestedStaticFiles = [];
-  logEntries = [];
 }
 
 function getRequestedStaticFilesLength() {
@@ -219,9 +239,18 @@ const updateRequestHandler = (req: any, res: any) => {
     };
 
     if (artificialDelay > 0) {
-      setTimeoutNormal(() => {
-        sendResponse();
+      const timer = setTimeoutNormal(() => {
+        pendingTimers.delete(timer);
+        if (!res.writableEnded && !res.destroyed) {
+          sendResponse();
+        }
       }, artificialDelay);
+      pendingTimers.add(timer);
+      res.on('close', () => {
+        if (pendingTimers.delete(timer)) {
+          clearTimeout(timer);
+        }
+      });
     } else {
       sendResponse();
     }
@@ -248,22 +277,63 @@ function isChannelMatched(req: any): boolean {
   return channel === serveChannel;
 }
 
-async function waitForUpdateRequest(timeout: number): Promise<{ headers: any }> {
-  const finishTime = new Date().getTime() + timeout;
+async function waitForUpdateRequest(
+  timeout: number,
+  consume: boolean = true
+): Promise<{ headers: any }> {
+  const finishTime = Date.now() + timeout;
   while (!updateRequest && server) {
-    const currentTime = new Date().getTime();
-    if (currentTime >= finishTime) {
-      throw new Error('Timed out waiting for update request');
-    }
-    if (!server) {
-      throw new Error('Server killed while waiting for update');
+    if (Date.now() >= finishTime) {
+      throw new Error(`Timed out after ${timeout}ms waiting for update request`);
     }
     await setTimeout(50);
   }
+  if (!server) {
+    throw new Error('Server killed while waiting for update');
+  }
 
   const request: { headers: any } = updateRequest || { headers: {} };
-  updateRequest = null;
+  if (consume) {
+    updateRequest = null;
+  }
   return request;
+}
+
+async function waitForStaticFiles(expectedCount: number, timeout: number): Promise<number> {
+  const finishTime = Date.now() + timeout;
+  while (requestedStaticFiles.length < expectedCount && server) {
+    if (Date.now() >= finishTime) {
+      throw new Error(
+        `Timed out after ${timeout}ms waiting for ${expectedCount} static files (got ${requestedStaticFiles.length})`
+      );
+    }
+    await setTimeout(50);
+  }
+  if (!server) {
+    throw new Error('Server killed while waiting for static files');
+  }
+  return requestedStaticFiles.length;
+}
+
+async function waitForLogEntries(
+  timeout: number,
+  consume: boolean = true
+): Promise<UpdatesLogEntry[]> {
+  const finishTime = Date.now() + timeout;
+  while (!logEntriesUploaded && server) {
+    if (Date.now() >= finishTime) {
+      throw new Error(`Timed out after ${timeout}ms waiting for log entries upload`);
+    }
+    await setTimeout(50);
+  }
+  if (!server) {
+    throw new Error('Server killed while waiting for log entries');
+  }
+  const entries = logEntries;
+  if (consume) {
+    logEntriesUploaded = false;
+  }
+  return entries;
 }
 
 async function getPrivateKeyAsync(projectRoot: string) {
@@ -299,9 +369,9 @@ function serveManifest(manifest: any, headers: any = null) {
 
 async function serveSignedManifest(manifest: any, projectRoot: any) {
   if (protocolVersion === 0) {
-    serveSignedManifest0(manifest, projectRoot);
+    await serveSignedManifest0(manifest, projectRoot);
   } else {
-    serveSignedManifest1(manifest, projectRoot);
+    await serveSignedManifest1(manifest, projectRoot);
   }
 }
 
@@ -353,15 +423,24 @@ async function serveSignedDirective(directive: any, projectRoot: string) {
 // Endpoints for use by Maestro to control the server and get info
 // on recent requests
 
+app.get('/health', (_: Request, res: Response) => {
+  res.status(200).send('OK');
+});
+
 app.get('/uninstall-client', async (req: Request, res: Response) => {
   console.log(`Received request to remove client on platform ${req.query.platform}`);
   if (!supportedPlatforms.has(req.query.platform as string)) {
     res.status(400).send(`Missing or unknown platform: ${req.query.platform}`);
     return;
   }
-  await uninstallClient(req.query.platform as string);
-  await setTimeout(2000);
-  res.status(200).send('OK');
+  try {
+    await uninstallClient(req.query.platform as string);
+    await setTimeout(2000);
+    res.status(200).send('OK');
+  } catch (e) {
+    console.error('Error uninstalling client:', e);
+    res.status(500).send(`Error uninstalling client: ${e}`);
+  }
 });
 
 app.get('/install-client', async (req: Request, res: Response) => {
@@ -376,9 +455,14 @@ app.get('/install-client', async (req: Request, res: Response) => {
     res.status(400).send(`Missing or unknown platform: ${req.query.platform}`);
     return;
   }
-  await installClient(req.query.platform as string, req.query.configuration as string);
-  await setTimeout(5000);
-  res.status(200).send('OK');
+  try {
+    await installClient(req.query.platform as string, req.query.configuration as string);
+    await setTimeout(5000);
+    res.status(200).send('OK');
+  } catch (e) {
+    console.error('Error installing client:', e);
+    res.status(500).send(`Error installing client: ${e}`);
+  }
 });
 
 async function uninstallClient(platform: string) {
@@ -400,28 +484,26 @@ async function installClient(platform: string, configuration: string) {
   });
 }
 
-app.get('/restart-server', (req: Request, res: Response) => {
-  console.log('Received request to restart server');
+function handleResetRequest(req: Request, res: Response) {
   let newArtificialDelay = 0;
   let newServeOverriddenUrl = false;
   if (req.query.ms) {
     newArtificialDelay = parseInt(req.query.ms as string, 10);
-    console.log(`Setting artificial delay to ${artificialDelay} ms`);
+    if (Number.isNaN(newArtificialDelay) || newArtificialDelay < 0) {
+      res.status(400).send(`Invalid delay: ${req.query.ms}`);
+      return;
+    }
+    console.log(`Setting artificial delay to ${newArtificialDelay} ms`);
   }
   if (req.query.serveOverriddenUrl) {
     newServeOverriddenUrl = true;
   }
+  resetState(newArtificialDelay, newServeOverriddenUrl);
   res.status(200).send('OK');
-  restartServer(newArtificialDelay, newServeOverriddenUrl);
-});
-
-async function restartServer(newArtificialDelay: number, newServeOverriddenUrl: boolean) {
-  console.log('Restarting server');
-  await setTimeout(100);
-  Server.stop();
-  Server.start(protocolVersion, newArtificialDelay, newServeOverriddenUrl);
-  console.log('Server restarted');
 }
+
+app.get('/reset', handleResetRequest);
+app.get('/restart-server', handleResetRequest);
 
 app.get('/stop-server', (_: Request, res: Response) => {
   console.log('Received request to stop server');
@@ -444,9 +526,25 @@ app.get('/static-file-count', (_: Request, res: Response) => {
   });
 });
 
+app.get('/wait-for-static-files', async (req: Request, res: Response) => {
+  const count = req.query.count ? parseInt(req.query.count as string, 10) : 1;
+  const timeout = req.query.timeout ? parseInt(req.query.timeout as string, 10) : 15000;
+  if (Number.isNaN(count) || count < 0 || Number.isNaN(timeout) || timeout <= 0) {
+    res.status(400).send(`Invalid count (${req.query.count}) or timeout (${req.query.timeout})`);
+    return;
+  }
+  try {
+    const actualCount = await waitForStaticFiles(count, timeout);
+    res.status(200).json({ count: actualCount });
+  } catch (e: any) {
+    res.status(408).send(e?.message ?? String(e));
+  }
+});
+
 app.post('/upload-log-entries', (req: Request, res: Response) => {
   console.log('Received request to upload logs');
   logEntries = req.body as unknown as UpdatesLogEntry[];
+  logEntriesUploaded = true;
   console.log(`Received ${logEntries.length} log entries`);
   res.status(200).send('OK');
 });
@@ -454,6 +552,21 @@ app.post('/upload-log-entries', (req: Request, res: Response) => {
 app.get('/log-entries', (_: Request, res: Response) => {
   console.log('Received request for log entries');
   res.status(200).json(logEntries).end();
+});
+
+app.get('/wait-for-log-entries', async (req: Request, res: Response) => {
+  const timeout = req.query.timeout ? parseInt(req.query.timeout as string, 10) : 15000;
+  const consume = req.query.consume !== 'false';
+  if (Number.isNaN(timeout) || timeout <= 0) {
+    res.status(400).send(`Invalid timeout: ${req.query.timeout}`);
+    return;
+  }
+  try {
+    const entries = await waitForLogEntries(timeout, consume);
+    res.status(200).json(entries);
+  } catch (e: any) {
+    res.status(408).send(e?.message ?? String(e));
+  }
 });
 
 app.get('/delay', async (req: Request, res: Response) => {
@@ -475,6 +588,21 @@ app.get('/last-request-headers', (_: Request, res: Response) => {
   }
   res.status(200).json(updateRequest.headers).end();
   return;
+});
+
+app.get('/wait-for-update-request', async (req: Request, res: Response) => {
+  const timeout = req.query.timeout ? parseInt(req.query.timeout as string, 10) : 15000;
+  const consume = req.query.consume !== 'false';
+  if (Number.isNaN(timeout) || timeout <= 0) {
+    res.status(400).send(`Invalid timeout: ${req.query.timeout}`);
+    return;
+  }
+  try {
+    const request = await waitForUpdateRequest(timeout, consume);
+    res.status(200).json(request.headers);
+  } catch (e: any) {
+    res.status(408).send(e?.message ?? String(e));
+  }
 });
 
 app.get('/last-asset-request-headers', (_: Request, res: Response) => {
@@ -882,8 +1010,11 @@ async function serveTestUpdateForAssetDeletion(platform: string): Promise<string
 const Server = {
   start,
   stop,
+  reset: resetState,
   isStarted,
   waitForUpdateRequest,
+  waitForStaticFiles,
+  waitForLogEntries,
   serveManifest,
   serveSignedManifest,
   serveSignedDirective,
