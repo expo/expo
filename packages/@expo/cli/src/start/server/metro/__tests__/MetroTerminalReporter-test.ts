@@ -1036,6 +1036,14 @@ describe('EXPO_UNSTABLE_CDP_LOGS', () => {
     expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(' '))).toBe(' LOG  100%s done');
   });
 
+  it('prefixes a console call with its device', () => {
+    reporter.logDeviceConsole({ level: 'log', data: ['hello'], device: 'iPhone 18 Pro' });
+
+    expect(stripVTControlCharacters(terminal.log.mock.calls[0].join(' '))).toBe(
+      'iPhone 18 Pro  LOG  hello'
+    );
+  });
+
   it('drops the same log sent by a native app over the HMR socket', () => {
     reporter._log({ type: 'client_log', level: 'log', data: ['hello'], mode: 'NOBRIDGE' } as any);
 
