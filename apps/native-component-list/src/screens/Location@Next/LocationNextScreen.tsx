@@ -824,7 +824,7 @@ export default function LocationNextScreen() {
 
         <Section
           title="Geofencing"
-          note="iOS only. Durable region monitoring; events arrive through the geofencing task. Needs the background permission. Simulator: Features > Location > Apple or City Run flips the state of one of the two regions.">
+          note="Durable region monitoring; events arrive through the geofencing task. Needs the background permission, and precise location on Android. iOS Simulator: Features > Location > Apple or City Run flips the state of one of the two regions.">
           <GridButton
             label="geofence start"
             onPress={run(
