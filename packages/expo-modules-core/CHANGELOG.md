@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.2.1
+
+### Patch Changes
+
+- [Android] Fix `LazyColumn` and `LazyRow` content disappearing before a navigation pop transition finishes. `ExpoComposeView` now has an `onComposableChildrenChanged()` hook that is not called while a removed child is still animating out, and the lazy list views update their child state from it. ([#54361](https://github.com/expo/expo/pull/54361) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.2.0
 
 ### Minor Changes

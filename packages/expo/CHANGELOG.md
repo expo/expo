@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.1.1
+
+### Patch Changes
+
+- Updated dependencies. ([#54361](https://github.com/expo/expo/pull/54361), [#54441](https://github.com/expo/expo/pull/54441))
+  - expo-modules-core@58.2.1
+  - expo-file-system@58.0.16
+  - babel-preset-expo@58.0.28
+
 ## 58.1.0
 
 ### Minor Changes
