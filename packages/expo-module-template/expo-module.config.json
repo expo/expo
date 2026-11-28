@@ -1,10 +1,15 @@
+<% const list = (items) => items.map((item) => JSON.stringify(item)).join(', '); -%>
+<% const viewsModules = (platform) => project.viewsModule?.platforms.includes(platform) ? [project.viewsModule.moduleName] : []; -%>
+<%# Expo Modules API 2.0 modules need no config entry on Android since `expo-modules-autolinking` 58.0.2, and on Apple platforms since 58.0.12. The Apple modules are listed for older SDK 58 projects. -%>
+<% const appleModules = [project.moduleName, ...viewsModules('apple')]; -%>
+<% const androidModules = (project.modulesApi === 'v2' ? viewsModules('android') : [project.moduleName]).map((name) => `${project.package}.${name}`); -%>
 {
-  "platforms": [<%- project.platforms.map(p => JSON.stringify(p)).join(', ') %>]<% if (project.platforms.includes('apple')) { %>,
+  "platforms": [<%- list(project.platforms) %>]<% if (project.platforms.includes('apple')) { %>,
   "apple": {
-    "modules": ["<%- project.moduleName %>"]
+    "modules": [<%- list(appleModules) %>]
   }<% } -%>
-<% if (project.platforms.includes('android')) { %>,
+<% if (project.platforms.includes('android') && androidModules.length > 0) { %>,
   "android": {
-    "modules": ["<%- project.package %>.<%- project.moduleName %>"]
+    "modules": [<%- list(androidModules) %>]
   }<% } %>
 }

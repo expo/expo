@@ -1,0 +1,7 @@
+  @Event("onChange")
+  var onChange: (ChangeEventPayload) -> Void
+
+  @Record
+  struct ChangeEventPayload {
+    var value: String
+  }

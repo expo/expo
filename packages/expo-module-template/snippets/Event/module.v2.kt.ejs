@@ -1,0 +1,5 @@
+  @Event(name = "onChange")
+  private val onChange = event<ChangeEventPayload>()
+
+  @Record
+  data class ChangeEventPayload(val value: String)
