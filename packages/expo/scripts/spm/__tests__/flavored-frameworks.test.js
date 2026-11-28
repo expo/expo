@@ -11,6 +11,7 @@ const {
   byteOrder,
   hasPrecompiledArtifact,
   headersXCFrameworkDirs,
+  isReleaseStub,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
@@ -18,7 +19,7 @@ const {
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
-const { thrownBy } = require('./helpers');
+const { releaseStubMarker, thrownBy, writeXCFrameworkInfoPlist } = require('./helpers');
 
 // GNU tar reads the `C:` in a Windows path as a remote hostname and fails to connect.
 const itNotWindows = process.platform === 'win32' ? it.skip : it;
@@ -112,6 +113,48 @@ describe('byteOrder', () => {
   // and a locale-aware comparison would order these the other way around.
   it('orders every uppercase letter before every lowercase one, as CocoaPods does', () => {
     expect(['expo-a', 'expo-B'].sort(byteOrder)).toEqual(['expo-B', 'expo-a']);
+  });
+});
+
+describe('isReleaseStub', () => {
+  let xcframework;
+
+  beforeEach(() => {
+    xcframework = path.join(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-stub-')),
+      'ExpoPair.xcframework'
+    );
+  });
+
+  afterEach(() => {
+    fs.rmSync(path.dirname(xcframework), { recursive: true, force: true });
+  });
+
+  it('is true when the Info.plist sets ExpoReleaseStub to true', () => {
+    writeXCFrameworkInfoPlist(xcframework, releaseStubMarker);
+    expect(isReleaseStub(xcframework)).toBe(true);
+  });
+
+  it.each([
+    ['has no ExpoReleaseStub key', ''],
+    ['sets ExpoReleaseStub to false', '\t<key>ExpoReleaseStub</key>\n\t<false/>\n'],
+    [
+      'sets ExpoReleaseStub to the string "true"',
+      '\t<key>ExpoReleaseStub</key>\n\t<string>true</string>\n',
+    ],
+  ])('is false when the Info.plist %s', (_, entries) => {
+    writeXCFrameworkInfoPlist(xcframework, entries);
+    expect(isReleaseStub(xcframework)).toBe(false);
+  });
+
+  it('is false when the Info.plist is not a property list', () => {
+    fs.mkdirSync(xcframework);
+    fs.writeFileSync(path.join(xcframework, 'Info.plist'), 'not a plist');
+    expect(isReleaseStub(xcframework)).toBe(false);
+  });
+
+  it('is false when the XCFramework has no Info.plist', () => {
+    expect(isReleaseStub(xcframework)).toBe(false);
   });
 });
 
@@ -232,6 +275,49 @@ describe('artifact preparation', () => {
     });
     expect(fs.existsSync(path.join(result.flavors.debug, 'Info.plist'))).toBe(true);
     expect(fs.existsSync(path.join(result.flavors.release, 'Info.plist'))).toBe(true);
+  });
+
+  it('returns a folder Release flavor whose stub marker it can read', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      makeXcframework(path.join(output, flavor), 'ExpoPair', 'xcframeworks');
+    }
+    writeXCFrameworkInfoPlist(
+      path.join(output, 'release', 'xcframeworks', 'ExpoPair.xcframework'),
+      releaseStubMarker
+    );
+
+    const result = resolveFlavoredFramework({
+      packageName: 'test-package',
+      moduleRoot: path.join(root, 'module'),
+      frameworkName: 'ExpoPair',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(isReleaseStub(result.flavors.release)).toBe(true);
+    expect(isReleaseStub(result.flavors.debug)).toBe(false);
+  });
+
+  itNotWindows('returns an extracted Release flavor whose stub marker it can read', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      const xcframework = makeXcframework(source, 'ExpoPair', flavor);
+      writeXCFrameworkInfoPlist(xcframework, flavor === 'release' ? releaseStubMarker : '');
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['ExpoPair.xcframework']
+      );
+    }
+
+    const result = resolveFlavoredFramework({
+      packageName: 'test-package',
+      moduleRoot: path.join(root, 'module'),
+      frameworkName: 'ExpoPair',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(isReleaseStub(result.flavors.release)).toBe(true);
+    expect(isReleaseStub(result.flavors.debug)).toBe(false);
   });
 
   it('accepts a tarball that also bundles a SwiftPM dependency xcframework', () => {

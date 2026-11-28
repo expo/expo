@@ -86,21 +86,27 @@ const {
   makeTempDir,
   metadataEntry,
   printed,
+  releaseStubMarker,
   removeTempDirs,
   rerunSpmUpdate,
   runPlugin,
   spec,
   thrownBy,
+  writeXCFrameworkInfoPlist,
 } = require('./helpers');
 
 afterAll(removeTempDirs);
 
-/** A `resolve` result from `[packageName, [[podName, podspecDir], …]]` per module. */
+/**
+ * A `resolve` result from `[packageName, [[podName, podspecDir], …], fields]` per module, where
+ * the optional `fields`, such as `{ debugOnly: true }`, are added to the module.
+ */
 function modulesOf(modules, extraDependencies = []) {
   return {
-    modules: modules.map(([packageName, pods]) => ({
+    modules: modules.map(([packageName, pods, fields]) => ({
       packageName,
       pods: pods.map(([podName, podspecDir]) => ({ podName, podspecDir })),
+      ...fields,
     })),
     extraDependencies,
   };
@@ -1601,6 +1607,158 @@ describe('modules linked precompiled because a buildFromSource pattern matched t
     ]);
     expect(printed(logs.error)).toContain(
       'error: The buildFromSource entry ".*" matches Expo module "expo-mixed" (pod ExpoMixed), which Swift Package Manager cannot build from source, and its precompiled XCFramework is incomplete, so it cannot be linked precompiled either.'
+    );
+  });
+});
+
+describe('a debug-only module', () => {
+  captureConsole({ each: true });
+
+  afterEach(() => {
+    runDumpPackage.mockReset();
+    emitPureSwiftSourcePackage.mockClear();
+    restoreModuleMocks();
+  });
+
+  /**
+   * Syncs debug-only pure-Swift `packages` (`[packageName, podName]` each) with a checked-in
+   * manifest when `manifest`, a prebuilt pair each when `paired`, a precompiled ExpoModulesCore
+   * when `coreAvailable`, and the app's `buildFromSource` entries.
+   * Each debug-only Release flavor's Info.plist holds `releaseEntries`; ExpoModulesCore's is
+   * never a stub.
+   */
+  function sync({
+    packages = [['expo-dev-tool', 'ExpoDevTool']],
+    paired = false,
+    releaseEntries = releaseStubMarker,
+    coreAvailable = true,
+    manifest = false,
+    buildFromSource = [],
+  }) {
+    const tmp = makeTempDir('expo-spm-debug-only-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const debugOnlyModules = packages.map(([packageName, podName]) => {
+      const moduleRoot = path.join(tmp, packageName);
+      const podspecDir = pureSwiftModule(moduleRoot, podName, spec());
+      if (manifest) {
+        fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+        runDumpPackage.mockReturnValue(
+          dumpedManifest(packageName, podName, { onCoreHeaders: false })
+        );
+      }
+      return [packageName, [[podName, podspecDir]], { debugOnly: true }];
+    });
+    resolveExpoModules.mockReturnValue({
+      ...modulesOf([coreAt(core), ...debugOnlyModules]),
+      buildFromSource,
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) => {
+      const isCore = frameworkName === 'ExpoModulesCore';
+      if (!(isCore ? coreAvailable : paired)) return null;
+      const release = path.join(tmp, 'release', `${frameworkName}.xcframework`);
+      writeXCFrameworkInfoPlist(release, isCore ? '' : releaseEntries);
+      return { id: frameworkName, frameworkName, flavors: { release } };
+    });
+    const outDir = path.join(tmp, 'out');
+    providerWrittenTo(outDir);
+    let result = null;
+    const thrown = thrownBy(() => {
+      result = runPlugin(tmp);
+    });
+    return { thrown, result, outDir };
+  }
+
+  const noPairError = (how) =>
+    '[expo-spm-plugin] No prebuilt Debug/Release pair was found for the debug-only Expo module ExpoDevTool (expo-dev-tool). ' +
+    'Swift Package Manager links a package product in every build configuration, so a debug-only module is linked only as a prebuilt pair whose Release flavor is an empty stub, to keep development code out of Release builds. ' +
+    `From the Expo repository root, build the pair with \`node tools/bin/expotools.js prebuild expo-dev-tool\`, or install a version of expo-dev-tool that ships prebuilds.${how} ${rerunSpmUpdate}`;
+
+  it.each([
+    ['an exact', 'expo-dev-tool'],
+    ['a pattern', 'expo-dev-.*'],
+  ])('links its prebuilt pair though %s buildFromSource entry matches it', (_, entry) => {
+    const { thrown, result } = sync({ paired: true, buildFromSource: [entry] });
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual([
+      'ExpoDevTool',
+      'ExpoModulesCore',
+    ]);
+    expect(result.productDependencies).toEqual([]);
+    expect(result.packageDependencies).toEqual([]);
+    expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['with ExpoModulesCore precompiled', {}],
+    ['when ExpoModulesCore is not precompiled', { coreAvailable: false }],
+    ['though it has a checked-in manifest', { manifest: true }],
+  ])('fails the sync without a prebuilt pair %s, before any source package', (_, options) => {
+    const { thrown, outDir } = sync(options);
+    expect(thrown?.message).toBe(noPairError(''));
+    expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
+    expect(runDumpPackage).not.toHaveBeenCalled();
+    expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source'))).toBe(false);
+  });
+
+  it('says a buildFromSource entry matching it cannot build it from source', () => {
+    const { thrown } = sync({ buildFromSource: ['expo-dev-.*'] });
+    expect(thrown?.message).toBe(
+      noPairError(
+        ' The buildFromSource entry "expo-dev-.*" cannot build a debug-only module from source.'
+      )
+    );
+  });
+
+  it('names every debug-only module without a prebuilt pair in one error', () => {
+    const { thrown } = sync({
+      packages: [
+        ['expo-dev-tool', 'ExpoDevTool'],
+        ['expo-dev-other', 'ExpoDevOther'],
+      ],
+    });
+    expect(thrown?.message).toContain(
+      'No prebuilt Debug/Release pair was found for the debug-only Expo modules ExpoDevTool (expo-dev-tool), ExpoDevOther (expo-dev-other).'
+    );
+    expect(thrown?.message).toContain(
+      'build the pairs with `node tools/bin/expotools.js prebuild expo-dev-tool expo-dev-other`'
+    );
+  });
+  it.each([
+    ['has no ExpoReleaseStub key', ''],
+    ['sets ExpoReleaseStub to false', '\t<key>ExpoReleaseStub</key>\n\t<false/>\n'],
+    [
+      'sets ExpoReleaseStub to the string "true"',
+      '\t<key>ExpoReleaseStub</key>\n\t<string>true</string>\n',
+    ],
+  ])('fails the sync when its Release Info.plist %s', (_, releaseEntries) => {
+    const { thrown, outDir } = sync({ paired: true, releaseEntries });
+    const checked = path.join(path.dirname(outDir), 'release', 'ExpoDevTool.xcframework');
+    expect(thrown?.message).toBe(
+      `[expo-spm-plugin] The Release flavor of the debug-only Expo module ExpoDevTool (expo-dev-tool) is not an empty stub. Checked: ${checked}/Info.plist. ` +
+        'Swift Package Manager links a package product in every build configuration, so a Release flavor that is not a stub puts development code in Release builds. ' +
+        `Install a version of expo-dev-tool that ships a Release stub. Otherwise, from the Expo repository root, rebuild the pair with the current Expo tools so that its Release flavor is a stub: \`node tools/bin/expotools.js prebuild expo-dev-tool\`. ${rerunSpmUpdate}`
+    );
+    expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
+    expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source'))).toBe(false);
+  });
+
+  it('names every debug-only module whose Release flavor is not a stub in one error', () => {
+    const { thrown, outDir } = sync({
+      packages: [
+        ['expo-dev-tool', 'ExpoDevTool'],
+        ['expo-dev-other', 'ExpoDevOther'],
+      ],
+      paired: true,
+      releaseEntries: '',
+    });
+    const checked = (productName) =>
+      path.join(path.dirname(outDir), 'release', `${productName}.xcframework`, 'Info.plist');
+    expect(thrown?.message).toContain(
+      'The Release flavors of the debug-only Expo modules ExpoDevTool (expo-dev-tool), ExpoDevOther (expo-dev-other) are not empty stubs. ' +
+        `Checked: ${checked('ExpoDevTool')}, ${checked('ExpoDevOther')}.`
+    );
+    expect(thrown?.message).toContain(
+      'Install versions of expo-dev-tool, expo-dev-other that ship a Release stub. Otherwise, from the Expo repository root, rebuild the pairs with the current Expo tools so that their Release flavors are stubs: `node tools/bin/expotools.js prebuild expo-dev-tool expo-dev-other`.'
     );
   });
 });
@@ -4874,11 +5032,12 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
       buildFromSource,
     });
     prebuiltMetadata.mockReturnValue(metadata);
-    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
-      frameworkName === 'ExpoModulesCore' || precompiled.includes(frameworkName)
-        ? { id: frameworkName.toLowerCase(), frameworkName }
-        : null
-    );
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) => {
+      if (frameworkName !== 'ExpoModulesCore' && !precompiled.includes(frameworkName)) return null;
+      const release = path.join(tmp, 'release', `${frameworkName}.xcframework`);
+      writeXCFrameworkInfoPlist(release, releaseStubMarker);
+      return { id: frameworkName.toLowerCase(), frameworkName, flavors: { release } };
+    });
     providerWrittenTo(path.join(tmp, 'out'));
     let result = null;
     const thrown = thrownBy(() => {
@@ -5245,6 +5404,20 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
           package: 'ExpoModulesWorkletsAdapter',
         });
         expect(printed(logs.warn)).not.toContain('ExpoModulesWorkletsAdapter');
+      });
+
+      it('is left out with the reason where its module is debug-only', () => {
+        modules['expo-modules-core'].debugOnly = true;
+        const { result, thrown } = runWithAdapter();
+
+        expect(thrown).toBeNull();
+        expect(emitCompanionPackage).not.toHaveBeenCalled();
+        expect(result.productDependencies).not.toContainEqual(
+          expect.objectContaining({ name: 'ExpoModulesWorkletsAdapter' })
+        );
+        expect(leftOutWarning()).toContain(
+          'ExpoModulesWorkletsAdapter belongs to the debug-only module expo-modules-core'
+        );
       });
 
       it('is generated where its documented root reaches expo-modules-core through a link', () => {

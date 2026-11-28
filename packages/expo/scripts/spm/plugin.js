@@ -85,6 +85,7 @@ const {
   hasPrecompiledArtifact,
   headersXCFrameworkDirs,
   headersXCFrameworkSearchPaths,
+  isReleaseStub,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
@@ -177,16 +178,16 @@ function resolvePodIdentities(modules, metadata, autolinkedRoots) {
   const identities = new Map();
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
-      identities.set(
-        pod,
-        podIdentity(
+      identities.set(pod, {
+        ...podIdentity(
           metadata.get(pod.podName),
           pod,
           mod.packageName,
           autolinkedRoots.get(mod.packageName),
           readModuleRoot
-        )
-      );
+        ),
+        debugOnly: mod.debugOnly === true,
+      });
     }
   }
   return identities;
@@ -454,8 +455,8 @@ function buildFromSourceMatcher(patterns) {
  * linked precompiled, unless it is one of `fallbackPods`; when it has an artifact, its
  * record keeps the `buildFromSource` match, so a pattern can fall back and an exact entry
  * be reported should no source route take it. A fallback pod whose artifact does not resolve
- * keeps its match too, marked `precompiledIncomplete`. Returns the records it linked, in that
- * order.
+ * keeps its match too, marked `precompiledIncomplete`. No buildFromSource entry applies to a
+ * debug-only pod. Returns the records it linked, in that order.
  *
  * @param matchBuildFromSource `buildFromSourceMatcher`'s result.
  * @param fallbackPods the matching pattern by pod name, for each pod linked precompiled though
@@ -464,7 +465,7 @@ function buildFromSourceMatcher(patterns) {
 function linkPrecompiledPods(identities, records, cacheDir, matchBuildFromSource, fallbackPods) {
   const matchesByPod = new Map();
   for (const identity of identities.values()) {
-    if (fallbackPods.has(identity.podName)) continue;
+    if (fallbackPods.has(identity.podName) || identity.debugOnly) continue;
     const match = matchBuildFromSource(identity);
     const known = matchesByPod.get(identity.podName);
     if (match != null && (known == null || (match.exact && !known.exact))) {
@@ -499,6 +500,58 @@ function linkPrecompiledPods(identities, records, cacheDir, matchBuildFromSource
     linked.push(record);
   }
   return linked;
+}
+
+/**
+ * Fails the sync for the debug-only pods pass 1 did not link precompiled. Only a prebuilt
+ * pair keeps a debug-only module out of Release builds, so no other route may take them.
+ */
+function assertDebugOnlyPodsPaired(identities, records, matchBuildFromSource) {
+  const unpaired = [...identities.values()].filter(
+    (identity) => identity.debugOnly && records.get(identity.podName).linkedAs == null
+  );
+  if (unpaired.length === 0) return;
+  const many = unpaired.length > 1;
+  const packages = [...new Set(unpaired.map((identity) => identity.packageName))];
+  const entries = [
+    ...new Set(unpaired.map((identity) => matchBuildFromSource(identity)?.entry)),
+  ].filter((entry) => entry != null);
+  const entriesNote =
+    entries.length > 0
+      ? ` The buildFromSource ${entries.length > 1 ? 'entries' : 'entry'} ${entries
+          .map((entry) => `"${entry}"`)
+          .join(', ')} cannot build a debug-only module from source.`
+      : '';
+  throw pluginError({
+    what: `No prebuilt Debug/Release pair was found for the debug-only Expo ${many ? 'modules' : 'module'} ${unpaired
+      .map(({ productName, packageName }) => `${productName} (${packageName})`)
+      .join(', ')}.`,
+    why: 'Swift Package Manager links a package product in every build configuration, so a debug-only module is linked only as a prebuilt pair whose Release flavor is an empty stub, to keep development code out of Release builds.',
+    how: `From the Expo repository root, build the ${many ? 'pairs' : 'pair'} with \`node tools/bin/expotools.js prebuild ${packages.join(' ')}\`, or install ${many ? 'versions' : 'a version'} of ${packages.join(', ')} that ${many ? 'ship' : 'ships'} prebuilds.${entriesNote} ${rerunSpmUpdate()}`,
+  });
+}
+
+/** Fails the sync for the debug-only pods whose linked pair has a Release flavor that is not a stub. */
+function assertDebugOnlyReleaseStubs(identities, records) {
+  const unstubbed = [...identities.values()]
+    .filter((identity) => identity.debugOnly)
+    .map((identity) => ({
+      identity,
+      release: records.get(identity.podName).framework.flavors.release,
+    }))
+    .filter(({ release }) => !isReleaseStub(release));
+  if (unstubbed.length === 0) return;
+  const many = unstubbed.length > 1;
+  const packages = [...new Set(unstubbed.map(({ identity }) => identity.packageName))];
+  throw pluginError({
+    what: `The Release ${many ? 'flavors' : 'flavor'} of the debug-only Expo ${many ? 'modules' : 'module'} ${unstubbed
+      .map(({ identity }) => `${identity.productName} (${identity.packageName})`)
+      .join(', ')} ${many ? 'are not empty stubs' : 'is not an empty stub'}. Checked: ${unstubbed
+      .map(({ release }) => path.join(release, 'Info.plist'))
+      .join(', ')}.`,
+    why: 'Swift Package Manager links a package product in every build configuration, so a Release flavor that is not a stub puts development code in Release builds.',
+    how: `Install ${many ? 'versions' : 'a version'} of ${packages.join(', ')} that ${many ? 'ship' : 'ships'} a Release stub. Otherwise, from the Expo repository root, rebuild the ${many ? 'pairs' : 'pair'} with the current Expo tools so that ${many ? 'their Release flavors are stubs' : 'its Release flavor is a stub'}: \`node tools/bin/expotools.js prebuild ${packages.join(' ')}\`. ${rerunSpmUpdate()}`,
+  });
 }
 
 const SOURCE_LABELS = {
@@ -737,8 +790,9 @@ function linkSourceModules(modules, identities, records, emitContext, dumpManife
  * Pass 3: the gated sourceOnly companions of precompiled modules, where CocoaPods would link
  * them and no Podfile property decides that. Each gets a package generated from its
  * spm.config.json entry, where `companionPackage` supports that entry; any other stays left
- * out. So does one whose headers a later round provides, and one the plugin cannot generate,
- * which never fails the sync: CocoaPods would link it, but the app builds without it.
+ * out. So does one of a debug-only module, one whose headers a later round provides, and one
+ * the plugin cannot generate, which never fails the sync: CocoaPods would link it, but the app
+ * builds without it.
  *
  * @param precompiled the records of the pods linked precompiled.
  * @param emitContext what `linkSourceModules` emits against.
@@ -767,6 +821,13 @@ function linkGeneratedCompanions(
         !autolinkConditionMet(autolinkWhen, autolinkGate) ||
         autolinkConditionKey(autolinkWhen) === 'podfileProperty'
       ) {
+        continue;
+      }
+      if (identity.debugOnly) {
+        skipped.set(
+          podName,
+          `${productName} belongs to the debug-only module ${packageName}, which links only as a prebuilt pair. A package built from source would put it in Release builds too.`
+        );
         continue;
       }
       const companion = companionPackage(spmConfigProduct(moduleRoot, productName));
@@ -864,6 +925,8 @@ function linkPasses(
     matchBuildFromSource,
     fallbackPods
   );
+  assertDebugOnlyPodsPaired(identities, records, matchBuildFromSource);
+  assertDebugOnlyReleaseStubs(identities, records);
   // The SwiftPM packages those modules link ship as their own XCFrameworks, and
   // RN takes them in the same flat array. They join before the interface tree is
   // built, so source modules compile against their headers too.
