@@ -86,46 +86,61 @@ class ExpoImageModule : Module() {
         }.build()
       } ?: Headers.DEFAULT
 
+      fun <T : Any> createListener(): RequestListener<T> =
+        object : RequestListener<T> {
+          override fun onLoadFailed(
+            e: GlideException?,
+            model: Any?,
+            target: Target<T>,
+            isFirstResource: Boolean
+          ): Boolean {
+            if (!settled) {
+              settled = true
+              promise.resolve(false)
+            }
+            return true
+          }
+
+          override fun onResourceReady(
+            resource: T,
+            model: Any,
+            target: Target<T>,
+            dataSource: DataSource,
+            isFirstResource: Boolean
+          ): Boolean {
+            imagesLoaded++
+
+            if (!settled && imagesLoaded == urls.size) {
+              settled = true
+              promise.resolve(true)
+            }
+            return true
+          }
+        }
+
       urls.forEach {
+        val model = GlideUrl(it, headers)
+        if (cachePolicy == CachePolicy.DISK || cachePolicy == CachePolicy.MEMORY_AND_DISK) {
+          // Only download the data to the disk cache. An image view loads the image with its own size and options,
+          // so it can't read an image decoded here from the memory cache. It decodes the downloaded data instead.
+          Glide
+            .with(context)
+            .download(model)
+            .listener(createListener())
+            .submit()
+          return@forEach
+        }
+
         Glide
           .with(context)
-          .load(GlideUrl(it, headers)) //  Use `load` instead of `download` to store the asset in the memory cache
+          .load(model) //  Use `load` instead of `download` to store the asset in the memory cache
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
           .downsample(NoopDownsampleStrategy)
           .customize(`when` = cachePolicy == CachePolicy.MEMORY) {
             diskCacheStrategy(DiskCacheStrategy.NONE)
           }
-          .listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-              e: GlideException?,
-              model: Any?,
-              target: Target<Drawable>,
-              isFirstResource: Boolean
-            ): Boolean {
-              if (!settled) {
-                settled = true
-                promise.resolve(false)
-              }
-              return true
-            }
-
-            override fun onResourceReady(
-              resource: Drawable,
-              model: Any,
-              target: Target<Drawable>,
-              dataSource: DataSource,
-              isFirstResource: Boolean
-            ): Boolean {
-              imagesLoaded++
-
-              if (!settled && imagesLoaded == urls.size) {
-                settled = true
-                promise.resolve(true)
-              }
-              return true
-            }
-          })
+          .listener(createListener())
           .submit()
       }
     }
