@@ -2,6 +2,7 @@ package expo.modules.audio.service
 
 import android.content.ComponentName
 import android.os.IBinder
+import android.util.Log
 import expo.modules.audio.AudioRecorder
 import expo.modules.audio.AudioRecordingServiceException
 import expo.modules.audio.getRecordingServiceErrorMessage
@@ -17,12 +18,15 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+private const val TAG = "AudioRecordingServiceConnection"
+
 class AudioRecordingServiceBinder(val service: AudioRecordingService) : android.os.Binder()
 
 class AudioRecordingServiceConnection(
   val recorder: WeakReference<AudioRecorder>,
   appContext: AppContext
 ) : BaseServiceConnection<AudioRecordingServiceBinder>(appContext) {
+  @Volatile
   var recordingServiceBinder: AudioRecordingServiceBinder? = null
     private set
   private var bindingTimeoutJob: Job? = null
@@ -34,6 +38,7 @@ class AudioRecordingServiceConnection(
   fun release() {
     isRecorderReleased = true
     cancelBindingTimeout()
+    takeBindingContinuation()?.resumeWithException(AudioRecordingServiceException("The recorder has been released"))
   }
 
   fun startBindingTimeout(timeoutMs: Long = 5000) { // 5000ms is more or less the default Android system timeout for binding
@@ -61,6 +66,19 @@ class AudioRecordingServiceConnection(
     bindingContinuation.also { bindingContinuation = null }
   }
 
+  private fun failBinding(exception: Exception) {
+    cancelBindingTimeout()
+    val continuation = takeBindingContinuation()
+    // `bindService` registers the connection even when it fails, so it must be unbound.
+    // `unbind()` throws when the app context is lost. The caller must still get the binding error.
+    try {
+      unbind()
+    } catch (e: Exception) {
+      Log.w(TAG, "Failed to unbind the recording service after a binding failure", e)
+    }
+    continuation?.resumeWithException(exception)
+  }
+
   /**
    * Binds with the recording service. If the service doesn't exist, it will create the service.
    */
@@ -85,17 +103,25 @@ class AudioRecordingServiceConnection(
           continuation.resumeWithException(AudioRecordingServiceException(message))
           return@suspendCoroutine
         }
-        val serviceRunning = startServiceAndBind(appContext, reactContext, this, AudioRecordingService::class.java, AudioRecordingService.ACTION_START_RECORDING)
+        // `onServiceConnected` runs on the main thread and can run before `bindService` returns,
+        // so the continuation must be stored before binding.
+        transitionToState(ServiceBindingState.BINDING)
+        synchronized(this) {
+          bindingContinuation = continuation
+        }
+        // Without a timeout, the promise would never settle if the system never calls back.
+        startBindingTimeout()
 
-        if (!serviceRunning) {
-          continuation.resumeWithException(AudioRecordingServiceException("Failed to start the recording service"))
+        val serviceRunning = try {
+          startServiceAndBind(appContext, reactContext, this, AudioRecordingService::class.java, AudioRecordingService.ACTION_START_RECORDING)
+        } catch (e: Exception) {
+          failBinding(e)
           return@suspendCoroutine
         }
 
-        transitionToState(ServiceBindingState.BINDING)
-        bindingContinuation = continuation
-        // Without a timeout, the promise would never settle if the system never calls back.
-        startBindingTimeout()
+        if (!serviceRunning) {
+          failBinding(AudioRecordingServiceException("Failed to start the recording service"))
+        }
       }
     }
   }
@@ -115,11 +141,11 @@ class AudioRecordingServiceConnection(
       transitionToState(ServiceBindingState.FAILED)
       return
     }
+    recordingServiceBinder = serviceBinder
+    serviceBinder.service.appContext = appContext
     transitionToState(ServiceBindingState.BOUND)
 
     takeBindingContinuation()?.resume(Unit)
-    recordingServiceBinder = serviceBinder
-    serviceBinder.service.appContext = appContext
   }
 
   override fun onServiceDisconnected(componentName: ComponentName) {
