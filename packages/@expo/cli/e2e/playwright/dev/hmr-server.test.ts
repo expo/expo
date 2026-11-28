@@ -201,17 +201,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     expect(pageErrors.all).toEqual([]);
   });
 
-  // NOTE(@hassankhan): The loader HMR path intentionally broadcasts `loader-invalidate` for any
-  // filesystem change while at least one loader graph is registered, because Metro's
-  // `DeltaCalculator` emits a `change` event globally and we don't yet filter against the
-  // per-loader graph.
-  //
-  // To fix this, we should gate the broadcast on
-  // 1. graphs whose route module is confirmed to export a loader
-  // 2. a per-graph delta showing actual added/modified/deleted modules
-  test.skip('editing a non-loader route does not broadcast `loader-invalidate`', async ({
-    page,
-  }) => {
+  test('editing a non-loader route does not broadcast `loader-invalidate`', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     const messages = trackMessageSocket(page);
 

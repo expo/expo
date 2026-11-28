@@ -80,6 +80,7 @@ import { prependMiddleware } from '../middleware/mutations';
 import { createInfoHandler, createOpen } from '../middleware/openHandlers';
 import type { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import { LoaderGraphUpdates } from './LoaderGraphUpdates';
 import {
   createServerComponentsMiddleware,
   fileURLToFilePath,
@@ -193,8 +194,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
-  private loaderGraphListeners: Map<string, () => void> = new Map();
-  private pendingLoaderInvalidationChangeIds: Set<string> = new Set();
+  private loaderGraphUpdates?: LoaderGraphUpdates;
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
@@ -1654,15 +1654,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.metro = null;
         this.hmrServer = null;
         this.ssrHmrClients = new Map();
-        for (const unlisten of this.loaderGraphListeners.values()) {
-          unlisten();
-        }
-        this.loaderGraphListeners.clear();
-        this.pendingLoaderInvalidationChangeIds.clear();
+        this.loaderGraphUpdates?.close();
+        this.loaderGraphUpdates = undefined;
         callback?.(err);
       });
     };
 
+    this.loaderGraphUpdates = new LoaderGraphUpdates(metro, () => {
+      if (typeof globalThis.__c === 'function') globalThis.__c();
+      this.broadcastMessage('sendDevCommand', {
+        name: 'loader-invalidate',
+        data: { scope: 'all' },
+      });
+    });
     this.metro = metro;
     this.hmrServer = hmrServer;
     return {
@@ -1957,9 +1961,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       debugEvent('loader_route_matched', { pathname: location.pathname, file: route.file });
 
       const appDir = path.join(this.projectRoot, routerRoot);
-      let modulePath = route.file;
-      modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
-      modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
+      const routeFile = path.isAbsolute(route.file) ? route.file : path.join(appDir, route.file);
+      const modulePath = routeFile.replace(/\.(js|ts)x?$/, '');
 
       const routeModule = await this.ssrLoadModule<any>(modulePath, {
         environment: 'node',
@@ -1967,6 +1970,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
       if (routeModule.loader) {
+        this.loaderGraphUpdates?.loaderRouteFiles.add(routeFile);
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
@@ -1993,6 +1997,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return Response.json(data ?? null, { headers });
       }
 
+      this.loaderGraphUpdates?.loaderRouteFiles.delete(routeFile);
       return undefined;
     } catch (error: any) {
       throw Object.assign(
@@ -2089,64 +2094,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
 
-  // Subscribe to a loader bundle's Metro graph so we can broadcast `loader-invalidate` and
-  // drop the SSR module eval cache when the loader's dependency graph is dirtied. This avoids
-  // the full-page reload the old stub used and keeps client state across loader edits.
-  private setupLoaderGraphListener(
-    graphId: string,
-    resolvedEntryFilePath: string,
-    graph: GraphRevision['graph']
-  ) {
-    if (this.loaderGraphListeners.has(graphId) || !this.metro) {
-      return;
-    }
-
-    const deltaBundler = this.metro.getBundler().getDeltaBundler();
-    // Metro's public type for `listen()` declares the callback as `() => Promise<void>`, but at
-    // runtime DeltaCalculator emits `{ logger, changeId }`. Cast through a narrow local type so
-    // we can dedupe shared file-change events across multiple loader graphs.
-    type DeltaChangeEvent = { changeId?: string };
-    const onChange = async (changeEvent?: DeltaChangeEvent) => {
-      debugEvent('loader_graph_changed', { path: resolvedEntryFilePath });
-
-      if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
-        return;
-      }
-
-      if (typeof globalThis.__c === 'function') {
-        globalThis.__c();
-      }
-
-      this.broadcastMessage('sendDevCommand', {
-        name: 'loader-invalidate',
-        data: { scope: 'all' },
-      });
-    };
-
-    const unlisten = deltaBundler.listen(graph, onChange as () => Promise<void>);
-    this.loaderGraphListeners.set(graphId, unlisten);
-  }
-
-  private shouldBroadcastLoaderInvalidation(changeId?: string) {
-    if (!changeId) {
-      return true;
-    }
-
-    if (this.pendingLoaderInvalidationChangeIds.has(changeId)) {
-      return false;
-    }
-
-    this.pendingLoaderInvalidationChangeIds.add(changeId);
-    // All listeners for a single filesystem change are dispatched synchronously from one
-    // DeltaCalculator EventEmitter.emit(), so dedupe collisions resolve within microseconds.
-    // The timeout exists only to bound memory: without it, this Set would accumulate one entry
-    // per change for the lifetime of the dev server.
-    setTimeout(() => {
-      this.pendingLoaderInvalidationChangeIds.delete(changeId);
-    }, 500);
-    return true;
-  }
-
   // Direct Metro access
 
   // Emulates the Metro dev server .bundle endpoint without having to go through a server.
@@ -2227,15 +2174,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       let delta: DeltaResult;
       let revision: GraphRevision;
 
+      const loaderUpdates =
+        !this.instanceMetroOptions.isExporting &&
+        transformOptions.dev !== false &&
+        transformOptions.customTransformOptions?.isLoaderBundle === 'true'
+          ? this.loaderGraphUpdates
+          : undefined;
+
       try {
         // TODO: Some bug in Metro/RSC causes this to break when changing imports in server components.
         // We should resolve the bug because it results in ~6x faster bundling to reuse the graph revision.
-        if (environment === 'react-server') {
+        if (environment === 'react-server' || !revPromise) {
           const props = await this.metro.getBundler().initializeGraph(
             // NOTE: Using absolute path instead of relative input path is a breaking change.
-            // entryFile,
             resolvedEntryFilePath,
-
             transformOptions,
             resolverOptions,
             {
@@ -2246,37 +2198,20 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           );
           delta = props.delta;
           revision = props.revision;
+          loaderUpdates?.watch(revision, resolvedEntryFilePath);
         } else {
-          const props = await (revPromise != null
-            ? this.metro.getBundler().updateGraph(await revPromise, false)
-            : this.metro.getBundler().initializeGraph(
-                // NOTE: Using absolute path instead of relative input path is a breaking change.
-                // entryFile,
-                resolvedEntryFilePath,
-
-                transformOptions,
-                resolverOptions,
-                {
-                  onProgress,
-                  shallow: graphOptions.shallow,
-                  lazy: graphOptions.lazy,
-                }
-              ));
-          delta = props.delta;
-          revision = props.revision;
+          revision = await revPromise;
+          const updateLoader = loaderUpdates?.watch(revision, resolvedEntryFilePath);
+          const updated = updateLoader
+            ? await updateLoader()
+            : await this.metro.getBundler().updateGraph(revision, false);
+          delta = updated.delta;
+          revision = updated.revision;
         }
       } catch (error) {
         attachImportStackToRootMessage(error);
         dropStackIfContainsCodeFrame(error);
         throw error;
-      }
-
-      if (
-        !this.instanceMetroOptions.isExporting &&
-        transformOptions.dev !== false &&
-        transformOptions.customTransformOptions?.isLoaderBundle === 'true'
-      ) {
-        this.setupLoaderGraphListener(revision.graphId, resolvedEntryFilePath, revision.graph);
       }
 
       bundlePerfLogger?.annotate({
