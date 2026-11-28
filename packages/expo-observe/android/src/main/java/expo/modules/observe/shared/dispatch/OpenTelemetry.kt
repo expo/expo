@@ -285,7 +285,12 @@ private val metricNameMap = mapOf(
 )
 
 internal fun exportedMetricName(category: String, name: String): String =
-  metricNameMap[category to name] ?: "expo.unknown.$name"
+  // `recordMetric` validated the name and keeps it out of the reserved `expo.` namespace.
+  if (category == MetricCategory.Custom.categoryName) {
+    name
+  } else {
+    metricNameMap[category to name] ?: "expo.unknown.$name"
+  }
 
 internal fun EASMetric.toOTMetric(): OTMetric {
   val attributes = mutableListOf(
@@ -301,8 +306,15 @@ internal fun EASMetric.toOTMetric(): OTMetric {
     attributes.add(OTAttribute.of(key = "expo.custom_params", rawValue = it.toString()))
   }
 
+  // The SDK's own metrics are in seconds. An empty unit means an unknown unit in OpenTelemetry.
+  val defaultUnit = if (category == MetricCategory.Custom.categoryName) {
+    ""
+  } else {
+    "s"
+  }
+
   return OTMetric(
-    unit = "s",
+    unit = unit ?: defaultUnit,
     name = exportedMetricName(category, name),
     gauge = OTGauge(
       dataPoints = listOf(

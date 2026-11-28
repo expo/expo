@@ -11,7 +11,7 @@ final class MetricsDatabase: Sendable {
   /// semantics change in a way that an older or newer build can't operate on; on a mismatch the
   /// database is wiped and recreated (see `openConnection`). We don't ship migrations yet — the data
   /// is local-only and short-lived, so wiping is preferable to maintaining migration code.
-  static let currentSchemaVersion = 4
+  static let currentSchemaVersion = 5
 
   /// How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
   static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
@@ -332,7 +332,7 @@ final class MetricsDatabase: Sendable {
   func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
     let statement = try database.prepare(
       """
-      SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
+      SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params, unit
       FROM metrics WHERE id > ?1 ORDER BY id ASC LIMIT ?2
       """
     )
@@ -421,13 +421,13 @@ final class MetricsDatabase: Sendable {
   func insert(metric: MetricRow) throws -> Int64 {
     let statement = try database.prepare(
       """
-      INSERT INTO metrics (sessionId, timestamp, category, name, value, routeName, updateId, params)
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+      INSERT INTO metrics (sessionId, timestamp, category, name, value, routeName, updateId, params, unit)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
       """
     )
     try statement.bindAll([
       metric.sessionId, metric.timestamp, metric.category, metric.name,
-      metric.value, metric.routeName, metric.updateId, metric.params,
+      metric.value, metric.routeName, metric.updateId, metric.params, metric.unit,
     ])
     try statement.run()
     return database.lastInsertRowid()
@@ -449,7 +449,7 @@ final class MetricsDatabase: Sendable {
   func getMetrics(sessionId: String) throws -> [MetricRow] {
     let statement = try database.prepare(
       """
-      SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
+      SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params, unit
       FROM metrics WHERE sessionId = ?1 ORDER BY id ASC
       """
     )
@@ -737,7 +737,8 @@ final class MetricsDatabase: Sendable {
         value REAL NOT NULL,
         routeName TEXT,
         updateId TEXT,
-        params TEXT
+        params TEXT,
+        unit TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_metrics_sessionId ON metrics(sessionId);
 

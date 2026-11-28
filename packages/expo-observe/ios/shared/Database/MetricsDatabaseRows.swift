@@ -139,6 +139,9 @@ struct MetricRow: Sendable {
   let updateId: String?
   /// JSON-encoded blob for free-form parameters. The persistence layer doesn't interpret the contents.
   let params: String?
+  /// UCUM unit of `value`. `nil` means seconds for the SDK's own metrics and no unit for a custom
+  /// metric.
+  let unit: String?
 
   init(
     id: Int64? = nil,
@@ -149,7 +152,8 @@ struct MetricRow: Sendable {
     value: Double,
     routeName: String? = nil,
     updateId: String? = nil,
-    params: String? = nil
+    params: String? = nil,
+    unit: String? = nil
   ) {
     self.id = id
     self.sessionId = sessionId
@@ -160,6 +164,7 @@ struct MetricRow: Sendable {
     self.routeName = routeName
     self.updateId = updateId
     self.params = params
+    self.unit = unit
   }
 }
 
@@ -174,7 +179,8 @@ extension MetricRow {
       value: row.double(at: 5) ?? 0,
       routeName: row.string(at: 6),
       updateId: row.string(at: 7),
-      params: row.string(at: 8)
+      params: row.string(at: 8),
+      unit: row.string(at: 9)
     )
   }
 }

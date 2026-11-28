@@ -64,6 +64,17 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       GlobalAttributes.set(attributes)
     }
 
+    Function("recordMetric") { (name: String, value: Double, options: RecordMetricOptions?) in
+      guard isConsentGranted(),
+        let metric = customMetric(name: name, value: value, unit: options?.unit, attributes: options?.attributes)
+      else {
+        return
+      }
+      AppMetricsActor.isolated {
+        AppMetrics.mainSession.receiveMetric(metric)
+      }
+    }
+
     Function("setNetworkTracesConfig") { (config: NetworkTracesConfigParam) in
       let configuration = NetworkTracesConfiguration(
         enabled: config.enabled,
@@ -366,6 +377,14 @@ internal struct SpanEndOptions: Record {
   /// Unix-epoch milliseconds overriding "now" as the span end.
   @Field
   var endTime: Double?
+}
+
+internal struct RecordMetricOptions: Record {
+  @Field
+  var unit: String?
+
+  @Field
+  var attributes: [String: Any]?
 }
 
 internal struct RecordSpanOptions: Record {

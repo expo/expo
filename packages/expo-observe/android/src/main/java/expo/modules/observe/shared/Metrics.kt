@@ -32,5 +32,8 @@ internal enum class MetricCategory(
   AppStartup("appStartup"),
   Memory("memory"),
   Updates("updates"),
-  Navigation("navigation")
+  Navigation("navigation"),
+
+  /** A metric recorded with `recordMetric` from JS. Its name is exported as it is. */
+  Custom("custom")
 }

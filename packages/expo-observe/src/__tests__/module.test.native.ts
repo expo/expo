@@ -28,6 +28,7 @@ const mockAppMetrics = {
 const mockStartSpan = jest.fn();
 const mockWithSpan = jest.fn();
 const mockRecordSpan = jest.fn();
+const mockRecordMetric = jest.fn();
 
 const mockSetErrorHandlerEnabled = jest.fn();
 
@@ -42,6 +43,7 @@ jest.mock('../app-metrics', () => ({
   startSpan: mockStartSpan,
   withSpan: mockWithSpan,
   recordSpan: mockRecordSpan,
+  recordMetric: mockRecordMetric,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -86,6 +88,7 @@ beforeEach(() => {
     startSpan: mockStartSpan,
     withSpan: mockWithSpan,
     recordSpan: mockRecordSpan,
+    recordMetric: mockRecordMetric,
   }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -229,13 +232,14 @@ describe('module Proxy', () => {
     expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
   });
 
-  it('forwards the span wrappers instead of the raw native functions', () => {
-    // The wrappers fold `parent` into the options and implement withSpan's auto-end; reaching
-    // the native members with the same names would silently lose that behavior.
+  it('forwards the span and metric wrappers instead of the raw native functions', () => {
+    // The wrappers fold `parent` into the options, implement withSpan's auto-end, and never throw;
+    // reaching the native members with the same names would silently lose that behavior.
     const Observe = loadModule();
     expect(Observe.startSpan).toBe(mockStartSpan);
     expect(Observe.withSpan).toBe(mockWithSpan);
     expect(Observe.recordSpan).toBe(mockRecordSpan);
+    expect(Observe.recordMetric).toBe(mockRecordMetric);
   });
 
   it('records no network traces when configure omits networkTraces', () => {

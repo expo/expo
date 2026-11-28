@@ -141,6 +141,28 @@ class OpenTelemetryTest {
   }
 
   @Test
+  fun `toOTMetric keeps the name and unit of a custom metric`() {
+    val otMetric = makeCustomMetric(unit = "ms").toOTMetric()
+    assertEquals("checkout.payment_time", otMetric.name)
+    assertEquals("ms", otMetric.unit)
+  }
+
+  @Test
+  fun `toOTMetric sends an empty unit for a custom metric without a unit`() {
+    assertEquals("", makeCustomMetric(unit = null).toOTMetric().unit)
+  }
+
+  private fun makeCustomMetric(unit: String?) =
+    EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = MetricCategory.Custom.categoryName,
+      name = "checkout.payment_time",
+      value = 120.0,
+      unit = unit
+    )
+
+  @Test
   fun `toOTMetric falls back to expo_unknown for the updates category with an unmapped name`() {
     // `updates` is in the map only for `updateDownloadTime`; anything else under it falls back.
     assertEquals(

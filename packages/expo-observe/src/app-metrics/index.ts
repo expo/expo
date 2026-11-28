@@ -12,6 +12,7 @@ export type {
 export type { Session } from './Session';
 export type { Span } from './Span';
 export { startSpan, withSpan, recordSpan } from './spans';
+export { recordMetric } from './metrics';
 export * from './types';
 export * from './useNetworkRequestObserver';
 

@@ -57,7 +57,8 @@ internal data class JsMetric(
   @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
   @Field val routeName: String? = null,
   @Field val updateId: String? = null,
-  @Field val params: Map<String, Any?>? = null
+  @Field val params: Map<String, Any?>? = null,
+  @Field val unit: String? = null
 ) : Record {
   fun toMetric(): Metric =
     Metric(
@@ -68,7 +69,8 @@ internal data class JsMetric(
       value = value,
       routeName = routeName,
       updateId = updateId,
-      params = params?.let { JsonAny.encodeMapToJsonString(it) }
+      params = params?.let { JsonAny.encodeMapToJsonString(it) },
+      unit = unit
     )
 
   companion object {
@@ -81,7 +83,8 @@ internal data class JsMetric(
         value = metric.value,
         routeName = metric.routeName,
         updateId = metric.updateId,
-        params = decodeJsonObject(metric.params)
+        params = decodeJsonObject(metric.params),
+        unit = metric.unit
       )
   }
 }

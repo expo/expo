@@ -5,6 +5,7 @@ import type {
   LogEventOptions,
   MetricAttributes,
   NetworkRequestFilter,
+  RecordMetricOptions,
   RecordSpanOptions,
   Span,
   StartSpanOptions,
@@ -25,7 +26,8 @@ export type ObserveAttributes = Record<string, ObserveAttribute>;
 
 // Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
 /**
- * Name of a metric that Expo Observe sends
+ * Name of a metric that Expo Observe sends. A custom metric from `recordMetric` has the name that
+ * you pass.
  */
 export type ObserveMetricName =
   | 'expo.app_startup.tti'
@@ -37,7 +39,8 @@ export type ObserveMetricName =
   | 'expo.navigation.cold_ttr'
   | 'expo.navigation.warm_ttr'
   | 'expo.navigation.tti'
-  | 'expo.navigation.tbt';
+  | 'expo.navigation.tbt'
+  | (string & {});
 
 /**
  * Name of an event that Expo Observe sends. You can also pass a custom name to `logEvent`.
@@ -471,6 +474,39 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * ```
    */
   recordSpan(name: string, options: RecordSpanOptions): void;
+  /**
+   * Records one value of a custom metric, such as the duration of a checkout or the number of items
+   * in a feed. Observe saves the value and sends it with the next dispatch as part of the current
+   * session. Each call records one value.
+   *
+   * Observe adds the global attributes from `setGlobalAttributes` to the metric. To stop sending a
+   * metric, add its name to `ignoredMetrics`.
+   *
+   * This method never throws. When it cannot record the metric, it logs a warning.
+   *
+   * @param name A short, stable name for the metric, for example, `'checkout.payment_time'`. The
+   * name must start with a letter and have only letters, digits, `_`, `.`, `-`, and `/`. Observe
+   * does not record the metric when the name is not valid, starts with the reserved `expo.` prefix,
+   * or is longer than 255 characters.
+   * @param value The measured value. Observe does not record the metric when the value is not a
+   * finite number.
+   * @param options The unit of the value and optional attributes
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * const startTime = Date.now();
+   * await submitPayment();
+   * Observe.recordMetric('checkout.payment_time', Date.now() - startTime, { unit: 'ms' });
+   *
+   * Observe.recordMetric('feed.items_loaded', items.length, {
+   *   unit: '{item}',
+   *   attributes: { 'feed.source': 'home' },
+   * });
+   * ```
+   */
+  recordMetric(name: string, value: number, options?: RecordMetricOptions): void;
   /**
    * Configures how observability events are collected and dispatched at runtime, such as
    * the environment label, dispatching behavior, sampling, and integrations.

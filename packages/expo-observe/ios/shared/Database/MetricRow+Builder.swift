@@ -19,7 +19,8 @@ extension MetricRow {
       value: metric.value,
       routeName: metric.routeName,
       updateId: metric.updateId,
-      params: mergedParams.flatMap { encodeAsJSONString(AnyCodable($0)) }
+      params: mergedParams.flatMap { encodeAsJSONString(AnyCodable($0)) },
+      unit: metric.unit
     )
   }
 }

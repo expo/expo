@@ -1,6 +1,12 @@
 import { requireNativeModule } from 'expo';
 
-import AppMetrics, { recordSpan, setErrorHandlerEnabled, startSpan, withSpan } from './app-metrics';
+import AppMetrics, {
+  recordMetric,
+  recordSpan,
+  setErrorHandlerEnabled,
+  startSpan,
+  withSpan,
+} from './app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import {
@@ -138,9 +144,9 @@ const Observe: ObserveModule = new Proxy(native, {
       return (feedback: ObserveFeedback) => reportFeedback(feedback, target);
     }
 
-    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
-    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
-    // reach the native members with the same names.
+    // The span and metric wrappers add JS-side behavior over the raw native functions (`parent`
+    // folding, `withSpan`'s auto-end, never throwing), so forward them explicitly instead of
+    // letting the fallback below reach the native members with the same names.
     if (prop === 'startSpan') {
       return startSpan;
     }
@@ -149,6 +155,9 @@ const Observe: ObserveModule = new Proxy(native, {
     }
     if (prop === 'recordSpan') {
       return recordSpan;
+    }
+    if (prop === 'recordMetric') {
+      return recordMetric;
     }
 
     if (prop === 'registerIntegration') {

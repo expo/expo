@@ -237,6 +237,10 @@ let metricNameMap = [
 ]
 
 func exportedMetricName(category: String?, name: String) -> String {
+  // `recordMetric` validated the name and keeps it out of the reserved `expo.` namespace.
+  if category == Metric.Category.custom.rawValue {
+    return name
+  }
   return metricNameMap["\(category ?? "unknown")/\(name)"] ?? "expo.unknown.\(name)"
 }
 
@@ -269,7 +273,8 @@ extension Event.Metric {
     }
 
     return OTMetric(
-      unit: "s",
+      // The SDK's own metrics are in seconds. An empty unit means an unknown unit in OpenTelemetry.
+      unit: unit ?? (category == Metric.Category.custom.rawValue ? "" : "s"),
       name: exportedMetricName(category: category, name: name),
       gauge: OTGauge(dataPoints: [
         OTDataPoint(

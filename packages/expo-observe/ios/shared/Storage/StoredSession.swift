@@ -71,6 +71,7 @@ func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
       routeName: metric.routeName,
       updateId: metric.updateId,
       params: decodeJSONDictionary(metric.params),
+      unit: metric.unit,
       sessionId: metric.sessionId
     )
   }

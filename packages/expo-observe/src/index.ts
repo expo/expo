@@ -13,6 +13,8 @@ export type {
   LogEventOptions,
   LogSeverity,
   MetricAttributes,
+  MetricUnit,
+  RecordMetricOptions,
   RecordSpanOptions,
   Span,
   SpanEndOptions,
