@@ -24,6 +24,7 @@ public final class WidgetsModule: Module {
         name: onUserInteractionNotification,
         object: nil
       )
+      startObservingWidgetExtensionEvents()
     }
 
     OnStopObserving(onUserInteraction) {
@@ -32,6 +33,11 @@ public final class WidgetsModule: Module {
         name: onUserInteractionNotification,
         object: nil
       )
+      stopObservingWidgetExtensionEvents()
+    }
+
+    OnDestroy {
+      stopObservingWidgetExtensionEvents()
     }
 
     OnStartObserving(onPushToStartTokenReceived) {
@@ -131,6 +137,43 @@ public final class WidgetsModule: Module {
           let eventData = userInfo["eventData"] as? [String: Any]
     else { return }
     self.sendEvent(onUserInteraction, eventData)
+  }
+
+  // Interactions from widget buttons are sent by the widget extension process through a Darwin notification.
+  private func startObservingWidgetExtensionEvents() {
+    guard let name = WidgetsEvents.darwinNotificationName else {
+      return
+    }
+    // Drop interactions queued while nothing was listening.
+    _ = WidgetsEvents.shared.takePendingEvents()
+    CFNotificationCenterAddObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      { _, observer, _, _, _ in
+        guard let observer else {
+          return
+        }
+        let module = Unmanaged<WidgetsModule>.fromOpaque(observer).takeUnretainedValue()
+        for eventData in WidgetsEvents.shared.takePendingEvents() {
+          module.sendEvent(onUserInteraction, eventData)
+        }
+      },
+      name.rawValue,
+      nil,
+      .deliverImmediately
+    )
+  }
+
+  private func stopObservingWidgetExtensionEvents() {
+    guard let name = WidgetsEvents.darwinNotificationName else {
+      return
+    }
+    CFNotificationCenterRemoveObserver(
+      CFNotificationCenterGetDarwinNotifyCenter(),
+      Unmanaged.passUnretained(self).toOpaque(),
+      name,
+      nil
+    )
   }
 
   private func sendPushToStartToken(activityPushToStartToken: String) {
