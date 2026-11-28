@@ -9,7 +9,8 @@ import { scaffoldExpoProject } from './scaffold';
 export async function prepareExpoProject(
   root: string,
   command: 'init' | 'install',
-  frozen: boolean
+  frozen: boolean,
+  platform: 'ios' | 'android' = 'ios'
 ): Promise<boolean> {
   const isNewExpoProject = !(await exists(join(root, 'expo/package.json')));
   if (isNewExpoProject) {
@@ -27,10 +28,10 @@ export async function prepareExpoProject(
       react: '19.3.0',
       'react-native': '0.88.0',
     };
-    await scaffoldExpoProject(root, versions);
+    await scaffoldExpoProject(root, versions, platform);
     process.stdout.write('Created expo/ with a Main scene.\n');
   } else if (command === 'init') {
-    await scaffoldExpoProject(root, {});
+    await scaffoldExpoProject(root, {}, platform);
   }
   return isNewExpoProject;
 }
