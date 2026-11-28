@@ -45,6 +45,8 @@ async function runAsync(programName: string, args: string[] = []) {
     const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
     config = await getConfig(projectRoot, {
       skipSDKVersionRequirement: true,
+      pluginMode: skipPlugins ? 'skip' : 'apply',
+      // Older versions of the project's expo/config only recognize skipPlugins.
       skipPlugins,
     });
   } finally {

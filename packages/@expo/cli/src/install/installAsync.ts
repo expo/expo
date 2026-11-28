@@ -75,7 +75,7 @@ export async function installAsync(
   const { exp } = getConfig(projectRoot, {
     // Sometimes users will add a plugin to the config before installing the library,
     // this wouldn't work unless we dangerously disable plugin serialization.
-    skipPlugins: true,
+    pluginMode: 'skip',
   });
 
   // Resolve the versioned packages, then install them.

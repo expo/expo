@@ -726,7 +726,12 @@ async function writeFileIfMissing(
  * exactly the state `init` exists to repair, so plugins are never evaluated here. The SDK version
  * is not needed either, and requiring it would break projects that have not installed `expo` yet.
  */
-const CONFIG_READ_OPTIONS = { skipPlugins: true, skipSDKVersionRequirement: true } as const;
+const CONFIG_READ_OPTIONS = {
+  pluginMode: 'skip',
+  // Older versions of the project's expo/config only recognize skipPlugins.
+  skipPlugins: true,
+  skipSDKVersionRequirement: true,
+} as const;
 
 /**
  * The config file to blame for `error`.

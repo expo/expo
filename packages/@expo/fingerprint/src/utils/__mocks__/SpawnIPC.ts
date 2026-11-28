@@ -13,7 +13,10 @@ export const spawnWithIpcAsync = jest
       // Rather than that, we just call `getConfig` directly.
       const projectRoot = args[1]!;
       const skipPlugins = args.includes('--skipPlugins');
-      const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins });
+      const config = await getConfig(projectRoot, {
+        skipSDKVersionRequirement: true,
+        pluginMode: skipPlugins ? 'skip' : 'apply',
+      });
       const message = JSON.stringify({ config: skipPlugins ? null : config, loadedModules: [] });
       return {
         message,

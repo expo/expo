@@ -293,7 +293,7 @@ export function getProjectMetadata(projectRoot: string): CliFeedbackProjectMetad
 
   try {
     const { exp, pkg: configPkg } = getConfig(projectRoot, {
-      skipPlugins: true,
+      pluginMode: 'skip',
       skipSDKVersionRequirement: true,
     });
     const expoPackageVersion =

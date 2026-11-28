@@ -75,7 +75,7 @@ export async function resolveCertificateSigningIdentityAsync(
   const { exp } = getConfig(projectRoot, {
     // We don't need very many fields here, just use the lightest possible read.
     skipSDKVersionRequirement: true,
-    skipPlugins: true,
+    pluginMode: 'skip',
   });
   const configuredTeamId = exp.ios?.appleTeamId;
 

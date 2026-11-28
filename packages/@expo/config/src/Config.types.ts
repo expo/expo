@@ -177,6 +177,7 @@ export type GetConfigOptions = {
   skipSDKVersionRequirement?: boolean;
   /**
    * Skip plugin resolution and execution. The returned config omits changes made by plugins.
+   * @deprecated Use `pluginMode: 'skip'` for `true` or `pluginMode: 'apply'` for `false`.
    */
   skipPlugins?: boolean;
   /**

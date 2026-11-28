@@ -81,7 +81,7 @@ export function resolvePlatformOption(
 }
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
-  const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
+  const { exp } = getConfig(projectRoot, { pluginMode: 'skip', skipSDKVersionRequirement: true });
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
   const platformsFromConfig = getPlatformsFromConfig(projectRoot, exp);

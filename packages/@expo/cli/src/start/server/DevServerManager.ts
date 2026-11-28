@@ -146,7 +146,7 @@ export class DevServerManager {
       return;
     }
     const { exp } = getConfig(this.projectRoot, {
-      skipPlugins: true,
+      pluginMode: 'skip',
       skipSDKVersionRequirement: true,
     });
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;

@@ -43,7 +43,7 @@ export async function startBundlerAsync(
     const { exp } = getConfig(projectRoot, {
       // We don't need very many fields here, just use the lightest possible read.
       skipSDKVersionRequirement: true,
-      skipPlugins: true,
+      pluginMode: 'skip',
     });
     await startInterfaceAsync(devServerManager, {
       platforms: exp.platforms ?? [],

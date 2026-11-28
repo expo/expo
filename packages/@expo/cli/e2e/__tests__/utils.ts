@@ -161,7 +161,7 @@ export async function createFromFixtureAsync(
       const { rootConfig, staticConfigPath } = getConfig(projectRoot, {
         // pkgs not installed yet
         skipSDKVersionRequirement: true,
-        skipPlugins: true,
+        pluginMode: 'skip',
       });
 
       const modifiedConfig = {
