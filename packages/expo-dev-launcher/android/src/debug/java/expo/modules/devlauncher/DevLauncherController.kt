@@ -48,9 +48,12 @@ import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterface
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
@@ -131,7 +134,7 @@ class DevLauncherController private constructor(
     }
 
     try {
-      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { awaitHostDestroyed(it) }
       (updatesInterface as UpdatesDevLauncherInterface?)?.reset()
 
       val result = createAppLoader(url, projectUrl, context, appHost, updatesInterface, this, installationIDHelper)
@@ -229,7 +232,7 @@ class DevLauncherController private constructor(
     }
 
     try {
-      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)?.let { awaitHostDestroyed(it) }
 
       val appIntent = createAppIntent()
       val appLoader = DevLauncherEmbeddedAppLoader(appHost, context, this)
@@ -396,19 +399,29 @@ class DevLauncherController private constructor(
     return false
   }
 
-  private fun ensureHostWasCleared(host: ReactHost, activityToBeInvalidated: ReactActivity? = null) {
-    if (host.currentReactContext?.hasActiveReactInstance() == true) {
-      runBlockingOnMainThread {
-        networkInterceptor?.close()
-        networkInterceptor = null
-        clearHost(host, activityToBeInvalidated)
-      }
+  private suspend fun awaitHostDestroyed(destroyed: Deferred<Unit>) {
+    if (withTimeoutOrNull(5_000) { destroyed.await() } == null) {
+      Log.w("DevLauncherController", "The previous React host was not destroyed within 5 seconds. Launching the app anyway.")
     }
   }
 
+  // Returns a deferred that completes when the old host is destroyed, or null when there was nothing to destroy.
+  private fun ensureHostWasCleared(host: ReactHost, activityToBeInvalidated: ReactActivity? = null): Deferred<Unit>? {
+    if (host.currentReactContext?.hasActiveReactInstance() != true) {
+      return null
+    }
+    val destroyed = CompletableDeferred<Unit>()
+    runBlockingOnMainThread {
+      networkInterceptor?.close()
+      networkInterceptor = null
+      clearHost(host, activityToBeInvalidated) { destroyed.complete(Unit) }
+    }
+    return destroyed
+  }
+
   @UiThread
-  private fun clearHost(host: ReactHost, activityToBeInvalidated: ReactActivity?) {
-    host.destroy("DevLauncher reloading app", null)
+  private fun clearHost(host: ReactHost, activityToBeInvalidated: ReactActivity?, onDestroyFinished: () -> Unit) {
+    host.destroy("DevLauncher reloading app", null) { onDestroyFinished() }
     activityToBeInvalidated?.let {
       invalidateActivity(it)
     }
