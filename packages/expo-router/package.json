@@ -259,6 +259,7 @@
     "./_ctx-shared": "./_ctx-shared.js",
     "./_ctx": {
       "types": "./_ctx/index.d.ts",
+      "browser": "./_ctx/_ctx.web.js",
       "default": "./_ctx/index.js"
     },
     "./_error.js": "./_error.js",
