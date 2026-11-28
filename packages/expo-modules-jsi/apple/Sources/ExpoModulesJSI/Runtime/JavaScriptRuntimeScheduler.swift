@@ -30,6 +30,10 @@ extension JavaScriptRuntime {
       uncheckedState: []
     )
 
+    /// Shared lock for cross-thread promise state (`JavaScriptPromise.LongLivedState`), kept on the
+    /// scheduler rather than per promise so creating a promise avoids an extra lock allocation.
+    internal let promiseStateLock = OSAllocatedUnfairLock()
+
     /// Captured at construction time, which runs on the JavaScript thread.
     private let jsThreadID: UInt64 = {
       var id: UInt64 = 0
@@ -56,6 +60,21 @@ extension JavaScriptRuntime {
 
     internal var supportsAsyncScheduling: Bool {
       return pointee.supportsAsyncScheduling()
+    }
+
+    /// Runs `body` inline when the scheduler has no host queue (standalone runtimes), returning
+    /// `true`. Returns `false` when the host schedules tasks asynchronously.
+    @inline(__always)
+    internal func runIfSync(_ body: @JavaScriptActor (JavaScriptRuntime) -> Void) -> Bool {
+      guard !supportsAsyncScheduling else {
+        return false
+      }
+      JavaScriptActor.assumeIsolated {
+        if let runtime = handle.runtime {
+          body(runtime)
+        }
+      }
+      return true
     }
 
     @inline(__always)
