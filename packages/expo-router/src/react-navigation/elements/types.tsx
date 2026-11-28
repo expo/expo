@@ -47,6 +47,22 @@ export type HeaderSearchBarOptions = {
    */
   cancelButtonText?: string;
   /**
+   * The accessibility label for the button that opens the search bar. Defaults to `Search`.
+   *
+   * @platform android, web
+   */
+  openButtonAccessibilityLabel?: string;
+  /**
+   * The accessibility label for the button that closes the search bar. Defaults to `Close`.
+   *
+   * @platform android, web
+   */
+  cancelButtonAccessibilityLabel?: string;
+  /**
+   * The accessibility label for the button that clears the search text. Defaults to `Clear text`.
+   */
+  clearButtonAccessibilityLabel?: string;
+  /**
    * Sets type of the input. Defaults to `text`.
    */
   inputType?: 'text' | 'phone' | 'number' | 'email';
