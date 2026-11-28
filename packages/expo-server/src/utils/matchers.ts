@@ -57,6 +57,37 @@ export function resolveLoaderContextKey(
   return `/${resolved}`;
 }
 
+const STATIC_SEGMENT = 0;
+const DYNAMIC_SEGMENT = 1;
+const CATCH_ALL_SEGMENT = 2;
+
+function getSegmentRanks(page: string): number[] {
+  return page
+    .split('/')
+    .filter((segment) => segment && !/^\(.*\)$/.test(segment))
+    .map((segment) =>
+      matchDeepDynamicRouteName(segment)
+        ? CATCH_ALL_SEGMENT
+        : /^\[.*\]$/.test(segment)
+          ? DYNAMIC_SEGMENT
+          : STATIC_SEGMENT
+    );
+}
+
+export function isMoreSpecificRoute(route: Route, other: Route): boolean {
+  const ranks = getSegmentRanks(route.page);
+  const otherRanks = getSegmentRanks(other.page);
+  for (let index = 0; index < Math.min(ranks.length, otherRanks.length); index++) {
+    if (ranks[index] !== otherRanks[index]) {
+      return ranks[index]! < otherRanks[index]!;
+    }
+    if (ranks[index] === CATCH_ALL_SEGMENT) {
+      return false;
+    }
+  }
+  return false;
+}
+
 export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): string {
   const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);

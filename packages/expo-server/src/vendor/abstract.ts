@@ -1,7 +1,12 @@
 import { ImmutableRequest } from '../ImmutableRequest';
 import type { Manifest, MiddlewareInfo, Route } from '../manifest';
 import { isForbiddenOrigin } from '../utils/checkOrigin';
-import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
+import {
+  getRedirectRewriteLocation,
+  isMoreSpecificRoute,
+  isResponse,
+  parseParams,
+} from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 import { appendHeadersRecord, mergeHeaderInputs } from '../utils/headers';
 
@@ -170,6 +175,8 @@ export function createRequestHandler({
       }
     }
 
+    const apiRoute = manifest.apiRoutes.find((route) => route.namedRegex.test(url.pathname));
+
     // First, test static routes and loader data requests
     if (request.method === 'GET' || request.method === 'HEAD') {
       const isLoaderRequest = url.pathname.startsWith(LOADER_PREFIX + '/');
@@ -199,18 +206,19 @@ export function createRequestHandler({
           );
         }
 
+        if (apiRoute && isMoreSpecificRoute(apiRoute, route)) {
+          continue;
+        }
+
         const html = await getHtml(request, route);
         return respondHTML(html, route, pageOverrides);
       }
     }
 
     // Next, test API routes
-    for (const route of manifest.apiRoutes) {
-      if (!route.namedRegex.test(url.pathname)) {
-        continue;
-      }
-      const mod = await getApiRoute(route);
-      return await respondAPI(mod, request, route, globalOverrides);
+    if (apiRoute) {
+      const mod = await getApiRoute(apiRoute);
+      return await respondAPI(mod, request, apiRoute, globalOverrides);
     }
 
     // Finally, test 404 routes
