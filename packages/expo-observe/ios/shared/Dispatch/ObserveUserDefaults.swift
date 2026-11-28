@@ -23,8 +23,9 @@ internal struct PersistedBundleDefaults: Codable {
 internal final class ObserveUserDefaults: UserDefaults {
   private nonisolated static let suiteName = "dev.expo.observe"
 
-  /// Singleton instance of the user defaults for EAS Observe.
-  private static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
+  /// Singleton instance of the user defaults for EAS Observe. It is not isolated to `AppMetricsActor`, so the
+  /// `nonisolated` members can use it. `ConsentGatedDefaults` is thread-safe.
+  private nonisolated static let defaults = ConsentGatedDefaults(ObserveUserDefaults())
 
   /// Enum with keys used within this user defaults database.
   private enum Keys: String {
@@ -33,9 +34,10 @@ internal final class ObserveUserDefaults: UserDefaults {
     case lastDispatchDate
     case config
     case bundleDefaults
+    case integrations
   }
 
-  private init() {
+  private nonisolated init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
     super.init(suiteName: Self.suiteName)!
@@ -97,6 +99,17 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// The config JSON of each integration that the last `configure(...)` enabled, by integration name. The integration
+  /// host reads it synchronously at launch, so it is not isolated to `AppMetricsActor`.
+  nonisolated static var integrations: [String: String]? {
+    get {
+      return defaults.object(forKey: Keys.integrations.rawValue) as? [String: String]
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.integrations.rawValue)
+    }
   }
 
   /// Deletes every saved value. Runs at a launch without consent and at a revoke.

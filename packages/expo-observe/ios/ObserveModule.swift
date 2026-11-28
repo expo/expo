@@ -52,6 +52,7 @@ public final class ObserveModule: Module {
 
     AsyncFunction("setConsent") { (consent: ConsentValue) in
       await applyConsent(consent, toAppMetrics: AppMetrics.setConsent(granted:))
+      IntegrationHost.shared.consentDidChange()
     }
 
     AsyncFunction("dispatchEvents") {
@@ -76,6 +77,10 @@ public final class ObserveModule: Module {
           AppMetrics.setEnvironment(resolvedEnvironment)
         }
       }
+
+      let integrationConfigs = IntegrationHost.configs(from: config.integrations)
+      ObserveUserDefaults.integrations = integrationConfigs
+      IntegrationHost.shared.apply(integrationConfigs)
 
       // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
       self.lastIntegrations = config.integrations ?? [:]
