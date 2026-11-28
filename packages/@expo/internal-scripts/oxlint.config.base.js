@@ -1,8 +1,11 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'oxlint';
 import native from 'oxlint-config-universe/native';
 
 export default defineConfig({
   extends: [native],
+  // Packages re-export this config from their own directory, so a relative path does not resolve.
+  jsPlugins: [fileURLToPath(new URL('./oxlint-plugin/index.js', import.meta.url))],
   // NOTE: oxlint does not inherit `ignorePatterns` through `extends` (see https://github.com/oxc-project/oxc/issues/10223),
   // so configs that extend this base must re-apply them via `ignorePatterns: base.ignorePatterns`.
   ignorePatterns: [
@@ -67,6 +70,7 @@ export default defineConfig({
   rules: {
     // fbjs is a Facebook-internal package not intended to be a public API.
     'no-restricted-imports': ['warn', { patterns: ['fbjs/*', 'fbjs'] }],
+    'expo/metro/no-ignored-platform-variants': 'error',
 
     // -----------------------------
     // --- Intentional patterns  ---

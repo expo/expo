@@ -18,6 +18,7 @@ The package provides:
 - `expo-module` for shared tasks such as configuration, dependency checking, formatting, cleaning, and publishing.
 - TypeScript configurations: `@expo/internal-scripts/tsconfig.base`, `tsconfig.node`, and `tsconfig.plugin`.
 - The shared lint configuration at `@expo/internal-scripts/oxlint.config.base`.
+- The `expo` Oxlint plugin in `oxlint-plugin`. The shared lint configuration loads it.
 - Jest presets and helpers for internal module, Node, and config plugin tests.
 
 For module tests, use `@expo/internal-scripts` as the Jest preset. For Node or config plugin tests, use `@expo/internal-scripts/jest-preset-cli` or `@expo/internal-scripts/jest-preset-plugin`. Packages with multiple test targets can use `@expo/internal-scripts/createCompositeJestPreset`.
