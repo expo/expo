@@ -11,6 +11,8 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTLog.h>
 
+#import <objc/runtime.h>
+
 #include <mutex>
 #include <string>
 #include <unordered_map>
@@ -55,12 +57,14 @@ public:
 };
 
 /**
- The flavors of the registered classes, keyed by the class name. A flavor must stay alive at the same
- address after reloads, because its name is the component handle. Accessed only on the main thread.
+ The flavors of the registered classes, keyed by the class. A flavor must stay alive at the same address
+ after reloads, because its name is the component handle. Classes are never unloaded, so a class is a
+ stable key. The name of a flavor is the component name, which doesn't have to be the class name.
+ Accessed only on the main thread.
  */
-std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>> &componentFlavors()
+std::unordered_map<Class, std::shared_ptr<const views::NewComponentFlavor>> &componentFlavors()
 {
-  static std::unordered_map<std::string, std::shared_ptr<const views::NewComponentFlavor>> flavors;
+  static std::unordered_map<Class, std::shared_ptr<const views::NewComponentFlavor>> flavors;
   return flavors;
 }
 
@@ -86,11 +90,11 @@ namespace expo::views {
 
 react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
 {
-  std::string className([NSStringFromClass(viewClass) UTF8String]);
-  auto &flavor = componentFlavors()[className];
+  auto &flavor = componentFlavors()[viewClass];
 
   if (!flavor) {
-    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className.c_str());
+    const char *className = class_getName(viewClass);
+    RCTLogError(@"The view class '%s' isn't registered with a props decoder, so its props aren't decoded", className);
     flavor = makeComponentFlavor(viewClass, className, std::make_shared<NoPropsDecoder>());
   }
   return NewComponentDescriptor::provider(flavor);
@@ -169,21 +173,25 @@ react::ComponentDescriptorProvider componentDescriptorProvider(Class viewClass)
 
 + (void)registerComponentViewClass:(nonnull Class)viewClass propsDecoder:(nonnull id<EXViewPropsDecoding>)propsDecoder
 {
-  [self registerComponentViewClass:viewClass makePropsDecoder:^{ return propsDecoder; }];
+  [self registerComponentViewClass:viewClass
+                     componentName:NSStringFromClass(viewClass)
+                  makePropsDecoder:^{ return propsDecoder; }];
 }
 
-+ (void)registerComponentViewClass:(nonnull Class)viewClass
++ (BOOL)registerComponentViewClass:(nonnull Class)viewClass
+                     componentName:(nonnull NSString *)componentName
                   makePropsDecoder:(id<EXViewPropsDecoding> _Nonnull (^ _Nonnull)(void))makePropsDecoder
 {
   RCTAssertMainQueue();
 
-  std::string className([NSStringFromClass(viewClass) UTF8String]);
-  auto &flavor = componentFlavors()[className];
+  auto &flavor = componentFlavors()[viewClass];
 
-  if (!flavor) {
-    flavor = makeComponentFlavor(viewClass, className, std::make_shared<views::ObjCPropsDecoder>(makePropsDecoder));
+  if (flavor) {
+    return flavor->name == componentName.UTF8String;
   }
+  flavor = makeComponentFlavor(viewClass, componentName.UTF8String, std::make_shared<views::ObjCPropsDecoder>(makePropsDecoder));
   [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  return YES;
 }
 
 @end

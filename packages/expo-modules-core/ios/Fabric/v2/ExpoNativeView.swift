@@ -72,9 +72,11 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   /// (`ExpoFabricView.componentName`), so `requireNativeView` finds it, and a view of a package has
   /// `packageComponentName`.
   ///
-  /// `RCTComponentViewFactory` maps each component to a class and creates the views with `+[viewClass new]`.
-  /// So the registered class is a subclass of `_componentViewBaseClass` that is named after the component, the
-  /// same way that `ExpoFabricView.viewClass` does it. The subclass adds no methods.
+  /// `RCTComponentViewFactory` maps each component to a class, asks the class for the descriptor of its component,
+  /// and creates the views with `+[viewClass new]`. So a class can be one component only. The component is
+  /// `_componentViewBaseClass` itself. When that class is already another component, the component is a subclass
+  /// named after it, which adds no methods. That happens for the default view of a module, which is also under its own
+  /// name, and when a module and a package export the same view type.
   @MainActor
   internal static func registerComponent(_ viewType: any AnyNativeView.Type, componentName: String) {
     if let registeredViewType = registeredViewTypes[componentName] {
@@ -85,24 +87,29 @@ open class ExpoNativeView: ExpoNativeViewObjC {
       }
       return
     }
-    guard let viewClass = objc_allocateClassPair(viewType._componentViewBaseClass, componentName, 0) else {
-      log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
-      return
-    }
-    objc_registerClassPair(viewClass)
-    registeredViewTypes[componentName] = ObjectIdentifier(viewType)
-
     // The decoder is created on the first decode, so registering a view that the app doesn't render doesn't create it.
     // `_makePropsDecoder` is nonisolated, because it runs on the thread that decodes.
     nonisolated(unsafe) let decodedViewType = viewType
-    ExpoNativeViewObjC.registerComponentViewClass(viewClass) {
+    let makePropsDecoder: @Sendable () -> ViewPropsDecoding = {
       return decodedViewType._makePropsDecoder(viewName: unqualifiedTypeName(decodedViewType))
     }
+    let baseClass: AnyClass = viewType._componentViewBaseClass
+
+    if !ExpoNativeViewObjC.registerComponentViewClass(baseClass, componentName: componentName, makePropsDecoder: makePropsDecoder) {
+      guard let viewClass = objc_allocateClassPair(baseClass, componentName, 0) else {
+        log.error("Cannot register the view '\(viewType)' because a class named '\(componentName)' already exists")
+        return
+      }
+      objc_registerClassPair(viewClass)
+      ExpoNativeViewObjC.registerComponentViewClass(viewClass, componentName: componentName, makePropsDecoder: makePropsDecoder)
+    }
+    registeredViewTypes[componentName] = ObjectIdentifier(viewType)
   }
 
   /// Returns the component name of a view that the package with the given name exports, for example
-  /// `expo_blur_ExpoBlurView`. It's also the name of an Objective-C class, so the characters that a class name
-  /// can't have are replaced with `_`, and the `@` of a scoped package name is left out (`@expo/ui` is `expo_ui`).
+  /// `expo_blur_ExpoBlurView`. It can also be the name of an Objective-C subclass (see `registerComponent`), so the
+  /// characters that a class name can't have are replaced with `_`, and the `@` of a scoped package name is left out
+  /// (`@expo/ui` is `expo_ui`).
   nonisolated internal static func packageComponentName(packageName: String, viewName: String) -> String {
     let unscopedName = packageName.hasPrefix("@") ? String(packageName.dropFirst()) : packageName
     let sanitizedName = String(unscopedName.map { $0.isASCII && ($0.isLetter || $0.isNumber) ? $0 : "_" })

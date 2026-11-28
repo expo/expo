@@ -216,8 +216,7 @@ struct RegisteredViewDecodingTests {
     #expect(LazyDecoderView.decoderThreadNames.withLock { $0 }.isEmpty)
 
     // The component flavors are read on the main thread only, like Fabric does when it registers the component.
-    let viewClass: AnyClass = try #require(NSClassFromString(componentName))
-    let descriptor = EXTestNewComponentDescriptor(viewClass: viewClass)
+    let descriptor = EXTestNewComponentDescriptor(viewClass: LazyDecoderView.self)
     let titles = await decodeTitlesOnJavaScriptThread(descriptor, sources: ["({ title: 'Card' })", "({ title: 'New card' })"])
 
     #expect(titles == ["Card", "New card"])

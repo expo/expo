@@ -60,16 +60,20 @@
  Registers the given view class in the global `RCTComponentViewFactory` under its class name, as a
  component whose props the given decoder decodes. The class is registered once: its component
  descriptor keeps the decoder of the first registration, so its component handle stays the same after
- reloads.
+ reloads. It does nothing when the class is already the component with another name.
  */
 + (void)registerComponentViewClass:(nonnull Class)viewClass
                       propsDecoder:(nonnull id<EXViewPropsDecoding>)propsDecoder NS_SWIFT_UI_ACTOR;
 
 /**
- Like `registerComponentViewClass:propsDecoder:`, but the decoder is created with `makePropsDecoder` when the
- props of the view type are first decoded, on the thread that decodes them.
+ Registers the given view class in the global `RCTComponentViewFactory` as the component with the given name. The
+ decoder is created with `makePropsDecoder` when the props of the view type are first decoded, on the thread that
+ decodes them. A class can be one component only, because React Native asks the class for the descriptor of its
+ component. Returns `NO` when the class is already another component, and `YES` when the class is now, or already
+ was, this component.
  */
-+ (void)registerComponentViewClass:(nonnull Class)viewClass
++ (BOOL)registerComponentViewClass:(nonnull Class)viewClass
+                     componentName:(nonnull NSString *)componentName
                   makePropsDecoder:(id<EXViewPropsDecoding> _Nonnull (^ _Nonnull NS_SWIFT_SENDABLE)(void))makePropsDecoder
     NS_SWIFT_UI_ACTOR;
 
