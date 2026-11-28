@@ -1,4 +1,8 @@
-import { mergeConfig, type ConfigT } from '@expo/metro/metro-config';
+import {
+  getDefaultConfig as getDefaultMetroConfig,
+  mergeConfig,
+  type ConfigT,
+} from '@expo/metro/metro-config';
 
 import { getDefaultConfig } from '../ExpoMetroConfig';
 import { resolveBabelrcName } from '../loadBabelConfig';
@@ -13,7 +17,12 @@ function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
 
 /** Resolves a user Metro config from the given `params.projectRoot` */
 export async function loadUserConfig(params: LoadMetroConfigParams): Promise<ConfigT> {
-  const defaultConfig = getDefaultConfig(params.projectRoot);
+  // NOTE(@robhogan): As Metro's own `loadConfig` does, this puts Metro's defaults under the config.
+  // They supply the `serializer.getRunModuleStatement` that `getDefaultConfig` leaves out.
+  const defaultConfig = mergeConfig(
+    getDefaultMetroConfig.getDefaultValues(params.projectRoot),
+    getDefaultConfig(params.projectRoot)
+  );
   const resolvedConfig = await resolveMetroUserConfig(params);
 
   let config: ConfigT = resolvedConfig.isEmpty

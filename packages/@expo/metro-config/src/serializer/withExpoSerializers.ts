@@ -244,10 +244,12 @@ function getDefaultSerializer(
           : options.sourceUrl;
 
         const url = new URL(sourceUrl, 'https://expo.dev');
-        // TODO(@kitten): Remove URL recovery once Metro forwards excludeSource to custom serializers.
+        // NOTE(@robhogan): Metro before 0.88.1 (e.g. React Native's, under `react-native start`)
+        // doesn't pass `excludeSource` to custom serializers, so this reads it from the URL.
         const excludeSource = url.searchParams.get('excludeSource');
         if (options.excludeSource == null && excludeSource != null) {
-          options.excludeSource = excludeSource === 'true' || excludeSource === '1';
+          (options as { excludeSource?: boolean }).excludeSource =
+            excludeSource === 'true' || excludeSource === '1';
         }
 
         return {

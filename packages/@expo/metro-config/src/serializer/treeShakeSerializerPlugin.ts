@@ -500,10 +500,7 @@ export async function treeShakeSerializer(
     let needsImportReindex = false;
     let shouldRecurseUnusedExports = false;
 
-    const inverseDeps = [
-      // @ts-expect-error: Type 'Iterator<string, any, undefined>' must have a '[Symbol.iterator]()' method that returns an iterator.
-      ...value.inverseDependencies.values(),
-    ].map((id) => {
+    const inverseDeps = [...value.inverseDependencies.values()].map((id) => {
       return graph.dependencies.get(id);
     });
 

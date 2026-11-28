@@ -40,8 +40,6 @@ export type Bundle = {
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
-  // TODO(@kitten): Remove this extension once Metro types and forwards excludeSource to custom serializers.
-  excludeSource?: boolean;
   /** Append a footer that records this chunk's completed module registration. */
   includeChunkCompletion?: boolean;
   serializerOptions?: {
@@ -168,7 +166,8 @@ export function baseJSBundleWithDependencies(
   let sourceMapUrl =
     options.serializerOptions?.includeSourceMaps === false ? undefined : options.sourceMapUrl;
 
-  // TODO(@kitten): Fix Metro's getAppendScripts to honor excludeSource and processModuleFilter for inline maps.
+  // The inline map is built here rather than by `getAppendScripts`, so that it uses Expo's source
+  // map options (flattening and export source URLs).
   if (options.inlineSourceMap) {
     const map = sourceMapString(
       [...preModules, ...modules],
@@ -184,6 +183,7 @@ export function baseJSBundleWithDependencies(
     getSourceUrl: options.getSourceUrl,
     globalPrefix: options.globalPrefix,
     inlineSourceMap: false,
+    processModuleFilter: options.processModuleFilter,
     runBeforeMainModule: options.runBeforeMainModule,
     runModule: options.runModule,
     shouldAddToIgnoreList: options.shouldAddToIgnoreList,

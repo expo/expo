@@ -607,6 +607,7 @@ describe('API Route output warning', () => {
         modifiedFiles: [],
         removedFiles: [],
       },
+      pluginChanges: new Map(),
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).toHaveBeenCalled();
@@ -623,6 +624,7 @@ describe('API Route output warning', () => {
         modifiedFiles: [],
         removedFiles: [['/app/foo+api.ts', { isSymlink: false }]],
       },
+      pluginChanges: new Map(),
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
@@ -636,6 +638,7 @@ describe('API Route output warning', () => {
         modifiedFiles: [],
         removedFiles: [],
       },
+      pluginChanges: new Map(),
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).toHaveBeenCalled();
@@ -652,6 +655,7 @@ describe('API Route output warning', () => {
         modifiedFiles: [],
         removedFiles: [],
       },
+      pluginChanges: new Map(),
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
@@ -668,6 +672,7 @@ describe('API Route output warning', () => {
         modifiedFiles: [],
         removedFiles: [],
       },
+      pluginChanges: new Map(),
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();

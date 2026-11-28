@@ -135,4 +135,49 @@ describe(withMetroResolvers, () => {
       'web'
     );
   });
+
+  it(`gives custom resolvers the context helpers that Metro 0.88 removed`, () => {
+    let userContext: any;
+    const modified = withMetroResolvers(
+      asMetroConfig({
+        projectRoot: '/',
+        // @ts-expect-error
+        resolver: {
+          resolveRequest(context) {
+            userContext = context;
+            return { type: 'empty' };
+          },
+        },
+      }),
+      []
+    );
+
+    modified.resolver.resolveRequest!(
+      // @ts-expect-error: a partial context
+      {
+        originModulePath: '/app/index.js',
+        mainFields: ['browser', 'main'],
+        getPackageForModule: () => ({
+          packageJson: { name: 'app', browser: { fs: false } },
+          rootPath: '/app',
+          packageRelativePath: 'index.js',
+        }),
+        fileSystemLookup: (filePath: string) =>
+          filePath === '/app/index.js'
+            ? { exists: true, type: 'f', realPath: filePath }
+            : filePath === '/app/lib'
+              ? { exists: true, type: 'd', realPath: filePath }
+              : { exists: false },
+        resolveRequest: jest.fn(),
+      },
+      'fs',
+      'web'
+    );
+
+    expect(userContext.redirectModulePath('fs')).toBe(false);
+    expect(userContext.redirectModulePath('path')).toBe('path');
+    expect(userContext.doesFileExist('/app/index.js')).toBe(true);
+    expect(userContext.doesFileExist('/app/lib')).toBe(false);
+    expect(userContext.doesFileExist('/app/missing.js')).toBe(false);
+  });
 });

@@ -23,6 +23,7 @@ function createChangeEvent({
       modifiedFiles,
       removedFiles,
     },
+    pluginChanges: new Map(),
     rootDir: '/',
   };
 }

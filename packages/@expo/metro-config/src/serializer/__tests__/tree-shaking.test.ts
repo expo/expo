@@ -633,14 +633,11 @@ describe('cjs', () => {
       },
     ]);
     expect(artifacts[0].source).toMatch('subtract');
-    expect(artifacts[0].source).toMatch('require(_dependencyMap[0]);');
+    expect(artifacts[0].source).toMatch('require(_dependencyMap[0]).add(1, 2)');
 
     expect(artifacts[0].source).toMatchInlineSnapshot(`
       "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        const {
-          add
-        } = require(_dependencyMap[0]);
-        console.log('keep', add(1, 2));
+        console.log('keep', require(_dependencyMap[0]).add(1, 2));
       },"/app/index.js",["/app/math.js"]);
       __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         "use strict";

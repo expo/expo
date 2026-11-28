@@ -55,14 +55,14 @@ function getDefaultRequestContext(): CustomResolutionContext {
   return getResolverContext();
 }
 
-function getMetroBundlerGetter() {
+function getMetroBundlerGetter({ setVirtualModule = jest.fn() } = {}) {
   return jest.fn((): Bundler => {
     const transformFile = jest.fn();
     // @ts-expect-error
     transformFile.__patched = true;
     return {
       hasVirtualModule: jest.fn((path) => false),
-      setVirtualModule: jest.fn(),
+      setVirtualModule,
       transformFile,
       _depGraph: {
         doesFileExist: jest.fn(() => false),
@@ -139,6 +139,32 @@ describe(withExtendedResolver, () => {
   }
   afterEach(() => {
     vol.reset();
+  });
+
+  it(`requires weak externals of client boundaries with the global prefix`, () => {
+    mockMinFs();
+    const setVirtualModule = jest.fn();
+    const config = asMetroConfig({ projectRoot: '/root/' });
+    const modified = withExtendedResolver(
+      { ...config, transformer: { ...config.transformer, globalPrefix: '__app' } },
+      {
+        isTsconfigPathsEnabled: false,
+        isReactServerComponentsEnabled: true,
+        getMetroBundler: getMetroBundlerGetter({ setVirtualModule }),
+      }
+    );
+
+    const result = modified.resolver.resolveRequest!(
+      getResolverContext({ customResolverOptions: { clientboundary: true } }),
+      'react',
+      'web'
+    );
+
+    expectVirtual(result, '\0weak:react');
+    expect(setVirtualModule).toHaveBeenCalledWith(
+      '\0weak:react',
+      'module.exports=/*react*/__app__r("react")'
+    );
   });
 
   it(`resolves a file for web`, async () => {
@@ -628,6 +654,8 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        doesFileExist: expect.any(Function),
+        redirectModulePath: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -669,6 +697,8 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        doesFileExist: expect.any(Function),
+        redirectModulePath: expect.any(Function),
       },
       'react-foobar',
       platform
@@ -710,6 +740,8 @@ describe(withExtendedResolver, () => {
         unstable_conditionsByPlatform: {},
         unstable_enablePackageExports: true,
         getPackage: expect.any(Function),
+        doesFileExist: expect.any(Function),
+        redirectModulePath: expect.any(Function),
       },
       'react-foobar',
       platform
