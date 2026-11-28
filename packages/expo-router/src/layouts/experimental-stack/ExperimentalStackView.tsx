@@ -18,6 +18,9 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
   'headerBackVisible',
 ]);
 
+// Internal route options injected by Expo Router (e.g. `<ExperimentalStack.Protected>`).
+const IGNORED_INTERNAL_OPTION_KEYS = new Set(['hidden']);
+
 type Props = {
   state: ExperimentalStackViewState;
   emit: ExperimentalStackViewEmit;
@@ -187,6 +190,7 @@ function useUnsupportedOptionsWarning(
     const unsupported = Object.keys(options).filter(
       (key) =>
         !SUPPORTED_OPTION_KEYS.has(key as keyof ExperimentalStackNavigationOptions) &&
+        !IGNORED_INTERNAL_OPTION_KEYS.has(key) &&
         !isNoOpOptionValue(optionsRecord[key])
     );
     if (unsupported.length === 0) return;
