@@ -379,7 +379,7 @@ Providers are registered in the `VideoAssetTransportRegistry` at module startup.
 
 This API is intended for advanced native integrations. It requires a custom native module, so it is not available in Expo Go. Use a development build instead.
 
-On Android, the counterpart is `VideoDataSourceProvider`. It returns the Media3 `DataSource.Factory` that a source is read through. The Android part is at the end of this section.
+On Android, the counterpart is `VideoDataSourceProvider`. It returns the Media3 `DataSource.Factory` that `expo-video` uses to read a source. The Android part is at the end of this section.
 
 #### Customizable properties
 
@@ -480,19 +480,19 @@ You can use the following complete examples for a better grasp of how to use thi
 
 #### Android
 
-On Android, `expo-video` reads every source through a Media3 `DataSource`. A `VideoDataSourceProvider` can supply that data source for the sources it recognizes. For example, it can serve a custom URI scheme, send authenticated or pinned requests, decrypt media, or read from storage that your module owns.
+On Android, `expo-video` plays every source through a Media3 `DataSource`. A `VideoDataSourceProvider` can supply that data source for the sources it recognizes. For example, it can serve a custom URI scheme, send authenticated or pinned requests, decrypt media, or read from storage that your module owns. `generateThumbnailsAsync` does not ask providers, so it cannot read a source that only a provider can load.
 
 Providers are registered in the `VideoDataSourceRegistry`. When `expo-video` builds a media source, it creates a `VideoDataSourceDescriptor` and asks the registered providers, in priority order, for a `DataSource.Factory`. The first factory returned is used. A source that a provider handles skips `expo-video`'s disk cache, because the provider owns its storage.
 
 `VideoDataSourceProvider` has the following properties:
 
-| Property                        | Description                                                                                                  |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `identifier`                    | A stable name for the provider. It is used when replacing or unregistering a provider.                       |
-| `priority`                      | Which provider wins if multiple providers match the same source. Higher values take precedence.              |
-| `makeDataSourceFactory(source)` | The matching entry point. Return `null` to ignore a source, or a `DataSource.Factory` to load it through it. |
+| Property                        | Description                                                                                         |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `identifier`                    | A stable name for the provider. It is used when replacing or unregistering a provider.              |
+| `priority`                      | Which provider wins if multiple providers match the same source. Higher values take precedence.     |
+| `makeDataSourceFactory(source)` | The matching entry point. Return `null` to ignore a source, or a `DataSource.Factory` to handle it. |
 
-`VideoDataSourceDescriptor` describes the source: `uri`, `headers`, `usesCaching`, `hasDRM` and `contentTypeHint`, the same fields as `VideoAssetSourceDescriptor` on iOS.
+`VideoDataSourceDescriptor` describes the source: `uri`, `headers`, `usesCaching`, `hasDRM`, and `contentTypeHint`, the same fields as `VideoAssetSourceDescriptor` on iOS.
 
 ```kotlin
 import androidx.media3.common.util.UnstableApi
@@ -537,10 +537,10 @@ class CustomVideoDataSourceModule : Module() {
 }
 ```
 
-A source for this provider is played like any other, with caching off, because the provider owns its storage:
+Play a source for this provider like any other source:
 
 ```ts
-const player = useVideoPlayer({ uri: 'example://item/42', useCaching: false });
+const player = useVideoPlayer({ uri: 'example://item/42' });
 ```
 
 </Collapsible>
