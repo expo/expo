@@ -18,16 +18,16 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-status-bar"
   },
-  "main": "build/StatusBar.js",
-  "types": "build/StatusBar.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "exports": {
     ".": {
       "types": {
-        "expo-source": "./src/StatusBar.ts",
-        "default": "./build/StatusBar.d.ts"
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
       },
-      "expo-source": "./src/StatusBar.ts",
-      "default": "./build/StatusBar.js"
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     },
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
