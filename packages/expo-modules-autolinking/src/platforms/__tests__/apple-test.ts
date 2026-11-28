@@ -783,7 +783,7 @@ describe(generateModulesProviderAsync, () => {
   }
 
   function withoutClassLookups(source: string) {
-    return source.replace(/NSClassFromString\("[^"]*"\)/g, '');
+    return source.replace(/lookUpDebugOnlyClass\(\[[^\]]*\]/g, '');
   }
 
   const devTools = {
@@ -877,57 +877,88 @@ describe(generateModulesProviderAsync, () => {
     await generateModulesProviderAsync([camera, devTools], targetPath, null, params);
 
     const { content } = readProvider();
-    expect(content).not.toContain('#if');
+    expect(content.match(/#if .*/g)).toEqual(['#if DEBUG || EXPO_CONFIGURATION_DEBUG']);
     expect(content).not.toMatch(/import DevTools/);
     expect(content).toContain('internal import ExpoCamera');
     expect(content).not.toMatch(/import Foundation/);
     expect(withoutClassLookups(content)).not.toContain('DevTools');
   });
 
-  it('lists the common modules first, then the debug-only modules found at runtime', async () => {
+  it('lists the common entries first, then the debug-only entries found at runtime', async () => {
     await generateModulesProviderAsync([camera, devTools], targetPath, null, params);
 
-    const { moduleClasses } = readProvider();
+    const { moduleClasses, appDelegateSubscribers, reactDelegateHandlers } = readProvider();
     const commonModule = moduleClasses.indexOf(
       '(module: ExpoCamera::CameraModule.self, name: nil)'
     );
     const debugOnlyModule = moduleClasses.indexOf(
-      'NSClassFromString("DevTools.DevToolsModule") as? AnyModule.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsModule"], as: AnyModule.Type.self)'
     );
     expect(commonModule).not.toBe(-1);
     expect(debugOnlyModule).toBeGreaterThan(commonModule);
     expect(moduleClasses.slice(debugOnlyModule)).toContain('name: "Inspector"');
-  });
 
-  it('lists the common app delegate subscribers first, then the debug-only ones found at runtime', async () => {
-    await generateModulesProviderAsync([camera, devTools], targetPath, null, params);
-
-    const { appDelegateSubscribers } = readProvider();
     const commonSubscriber = appDelegateSubscribers.indexOf(
       'ExpoCamera::CameraAppDelegateSubscriber.self'
     );
     const debugOnlySubscriber = appDelegateSubscribers.indexOf(
-      'NSClassFromString("DevTools.DevToolsAppDelegateSubscriber") as? ExpoAppDelegateSubscriber.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsAppDelegateSubscriber"], as: ExpoAppDelegateSubscriber.Type.self)'
     );
     expect(commonSubscriber).not.toBe(-1);
     expect(debugOnlySubscriber).toBeGreaterThan(commonSubscriber);
-  });
 
-  it('lists the common react delegate handlers first, then the debug-only ones found at runtime', async () => {
-    await generateModulesProviderAsync([camera, devTools], targetPath, null, params);
-
-    const { reactDelegateHandlers } = readProvider();
     const commonHandler = reactDelegateHandlers.indexOf(
       '(packageName: "expo-camera", handler: ExpoCamera::CameraReactDelegateHandler.self)'
     );
     const debugOnlyHandler = reactDelegateHandlers.indexOf(
-      'NSClassFromString("DevTools.DevToolsReactDelegateHandler") as? ExpoReactDelegateHandler.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsReactDelegateHandler"], as: ExpoReactDelegateHandler.Type.self)'
     );
     expect(commonHandler).not.toBe(-1);
     expect(debugOnlyHandler).toBeGreaterThan(commonHandler);
     expect(reactDelegateHandlers.slice(debugOnlyHandler)).toContain(
       'packageName: "expo-dev-tools"'
     );
+  });
+
+  it('declares the lookup helper once, only when the provider looks up a debug-only class', async () => {
+    await generateModulesProviderAsync([camera], targetPath, null, params);
+    expect(readProvider().content).not.toContain('lookUpDebugOnlyClass');
+
+    vol.reset();
+    vol.fromJSON({ [coreExpoPackagePath]: '' });
+    await generateModulesProviderAsync([camera, devTools], targetPath, null, params);
+    const { content } = readProvider();
+    expect(content.match(/func lookUpDebugOnlyClass/g)).toHaveLength(1);
+    expect(content).toContain(
+      'private func lookUpDebugOnlyClass<T>(_ names: [String], as type: T.Type) -> T? {'
+    );
+    expect(content).toContain('if let found = NSClassFromString(name) as? T {');
+    expect(content).toMatch(
+      /#if DEBUG \|\| EXPO_CONFIGURATION_DEBUG\n\s*ExpoModulesCore\.log\.warn\("[^\n]*"\)\n\s*#endif/
+    );
+  });
+
+  it('declares the lookup helper for a debug-only package that has only views', async () => {
+    await generateModulesProviderAsync(
+      [
+        {
+          ...descriptor('expo-dev-tools', 'DevToolsModule'),
+          modules: [],
+          expoModules: [],
+          expoViews: ['DevTools::DevToolsView'],
+          debugOnly: true,
+        },
+      ],
+      targetPath,
+      null,
+      params
+    );
+
+    const { content } = readProvider();
+    expect(content).toContain(
+      'lookUpDebugOnlyClass(["DevTools.DevToolsView"], as: (any AnyNativeView.Type).self)'
+    );
+    expect(content.match(/func lookUpDebugOnlyClass/g)).toHaveLength(1);
   });
 
   it('adds the debug-only packages with the classes found at runtime', async () => {
@@ -937,13 +968,13 @@ describe(generateModulesProviderAsync, () => {
     expect(packageNames(packages)).toEqual(['expo-camera']);
     const debugOnlyPackage = packages.slice(packages.indexOf('"expo-dev-tools"'));
     expect(debugOnlyPackage).toContain(
-      'NSClassFromString("DevTools.DevToolsModule") as? AnyModule.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsModule"], as: AnyModule.Type.self)'
     );
     expect(debugOnlyPackage).toContain(
-      'NSClassFromString("DevTools.DevToolsSession") as? SharedObject.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsSession"], as: SharedObject.Type.self)'
     );
     expect(debugOnlyPackage).toContain(
-      'NSClassFromString("DevTools.DevToolsView") as? any AnyNativeView.Type'
+      'lookUpDebugOnlyClass(["DevTools.DevToolsView"], as: (any AnyNativeView.Type).self)'
     );
   });
 
@@ -962,7 +993,7 @@ describe(generateModulesProviderAsync, () => {
     );
 
     expect(readProvider().moduleClasses).toContain(
-      'NSClassFromString("DevToolsCore.DevToolsModule") as? AnyModule.Type ?? NSClassFromString("DevTools.DevToolsModule") as? AnyModule.Type'
+      'lookUpDebugOnlyClass(["DevToolsCore.DevToolsModule", "DevTools.DevToolsModule"], as: AnyModule.Type.self)'
     );
   });
 
@@ -1060,7 +1091,7 @@ describe(generateModulesProviderAsync, () => {
     expect(packages).toContain('sharedObjects: [CameraSession.self]');
     const debugOnlyExports = packages.slice(packages.lastIndexOf('"expo-camera"'));
     expect(debugOnlyExports).toContain(
-      'NSClassFromString("CameraDev.CameraDevSession") as? SharedObject.Type'
+      'lookUpDebugOnlyClass(["CameraDev.CameraDevSession"], as: SharedObject.Type.self)'
     );
     expect(withoutClassLookups(packages)).not.toContain('CameraDev');
   });

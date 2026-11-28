@@ -10,7 +10,21 @@ jest.unmock('fs');
 jest.unmock('fs/promises');
 
 const packagesDir = path.resolve(__dirname, '../../../..');
-const debugOnlyPackageNames = ['expo-dev-launcher', 'expo-dev-menu', 'expo-dev-menu-interface'];
+
+async function findDebugOnlyPackageNamesAsync(): Promise<string[]> {
+  const entries = fs.readdirSync(packagesDir, { withFileTypes: true });
+  const debugOnlyFlags = await Promise.all(
+    entries.map(async (entry) => {
+      // The template's config is EJS, not JSON.
+      if (!entry.isDirectory() || entry.name === 'expo-module-template') {
+        return false;
+      }
+      const config = await discoverExpoModuleConfigAsync(path.join(packagesDir, entry.name));
+      return config?.appleDebugOnly() ?? false;
+    })
+  );
+  return entries.filter((_, index) => debugOnlyFlags[index]).map((entry) => entry.name);
+}
 
 async function resolveRealPackageAsync(packageName: string): Promise<ModuleDescriptorIos> {
   const packagePath = path.join(packagesDir, packageName);
@@ -71,6 +85,10 @@ describe('provider for the debug-only Expo packages', () => {
   });
 
   it('looks up each class by the runtime name of a top-level Swift class in its package', async () => {
+    const debugOnlyPackageNames = await findDebugOnlyPackageNamesAsync();
+    expect(debugOnlyPackageNames).toEqual(
+      expect.arrayContaining(['expo-dev-launcher', 'expo-dev-menu', 'expo-dev-menu-interface'])
+    );
     const descriptors = await Promise.all(debugOnlyPackageNames.map(resolveRealPackageAsync));
     expect(descriptors.every((descriptor) => descriptor.debugOnly)).toBe(true);
 
@@ -83,8 +101,8 @@ describe('provider for the debug-only Expo packages', () => {
       corePath: path.join(packagesDir, 'expo-modules-core'),
     });
     const provider = fs.readFileSync(targetPath, 'utf8');
-    const runtimeNames = [...provider.matchAll(/NSClassFromString\("([^"]+)"\)/g)].map(
-      (match) => match[1]!
+    const runtimeNames = [...provider.matchAll(/lookUpDebugOnlyClass\(\[([^\]]+)\]/g)].flatMap(
+      (match) => [...match[1]!.matchAll(/"([^"]+)"/g)].map((name) => name[1]!)
     );
     expect(runtimeNames).not.toHaveLength(0);
 
