@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- [iOS] Fix a crash on the first transfer that uses a background session: `UploadTask`, `File.upload()` and the legacy `downloadAsync`, `uploadAsync`, `createUploadTask` and `createDownloadResumable`. ([#54441](https://github.com/expo/expo/pull/54441) by [@apptekstudios](https://github.com/apptekstudios))
+
 ## 58.0.15
 
 ### Patch Changes

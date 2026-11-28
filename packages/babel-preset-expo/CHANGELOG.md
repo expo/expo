@@ -1,5 +1,9 @@
 # Changelog
 
+## 58.0.28
+
+No changes in this release.
+
 ## 58.0.27
 
 No changes in this release.

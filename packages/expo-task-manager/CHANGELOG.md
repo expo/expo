@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [Android] Fix a `NullPointerException` in `TaskService.executeTask` when a task event (for example a background location update delivered by `JobScheduler`) arrives while the app is not loaded and the headless app loader is unavailable. The event now stays queued instead of crashing the app. ([#54355](https://github.com/expo/expo/pull/54355) by [@ayush-jadaun](https://github.com/ayush-jadaun))
+
 ## 58.0.14
 
 ### Patch Changes

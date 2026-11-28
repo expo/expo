@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Restore the original `android` or `ios` directory and the old patch files when `patch-project` fails, instead of deleting them or leaving the generated template in their place. ([#50326](https://github.com/expo/expo/pull/50326) by [@tahakocal](https://github.com/tahakocal))
+
 ## 58.0.22
 
 ### Patch Changes
