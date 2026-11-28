@@ -374,6 +374,40 @@ struct JavaScriptRuntimeTests {
     #expect(elapsed < .milliseconds(500))
   }
 
+  @Test
+  func `execute sync from run loop thread pumps run loop while waiting`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let pumped = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, any Error>) in
+      let thread = Thread {
+        nonisolated(unsafe) let runLoop = CFRunLoopGetCurrent()!
+        let mode = CFRunLoopMode.defaultMode!
+        let didPump = InlineRunFlag()
+        CFRunLoopPerformBlock(runLoop, mode.rawValue) {
+          defer { CFRunLoopStop(runLoop) }
+          do {
+            let value: Int = try runtime.execute { @JavaScriptActor in
+              // Schedule work on the caller's run loop while the caller is blocked inside `execute`.
+              CFRunLoopPerformBlock(runLoop, CFRunLoopMode.defaultMode.rawValue) {
+                didPump.value = true
+              }
+              CFRunLoopWakeUp(runLoop)
+              _ = usleep(50_000)
+              return 42
+            }
+            #expect(value == 42)
+            continuation.resume(returning: didPump.value)
+          } catch {
+            continuation.resume(throwing: error)
+          }
+        }
+        CFRunLoopRunInMode(mode, 10, false)
+      }
+      thread.start()
+    }
+    #expect(pumped == true)
+  }
+
   // MARK: - Host objects
 
   @Test
