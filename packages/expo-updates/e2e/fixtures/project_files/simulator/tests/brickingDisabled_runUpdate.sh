@@ -5,10 +5,10 @@ before_each
 restart_updates_server serveOverriddenUrl=true
 serve_manifest test-update-basic
 launch_app
-expect_update_string test
+expect_values updateString=test
 tap setUpdateURLAndRequestHeadersOverride
 sleep 3
 stop_app
 launch_app
-expect_update_string test-update-1
+expect_values updateString=test-update-1
 stop_app

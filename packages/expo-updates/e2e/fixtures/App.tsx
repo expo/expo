@@ -228,7 +228,9 @@ export default function App() {
   });
 
   const handleReadLogEntries = runBlockAsync(async () => {
-    const logEntries = await Updates.readLogEntriesAsync(60000);
+    // basic_updateFailingAssets waits for an asset request to time out, which takes 60 s on iOS.
+    // The window must also include the entries logged before that request timed out.
+    const logEntries = await Updates.readLogEntriesAsync(120000);
     setLogs(logEntries);
     const server_port = process.env.EXPO_PUBLIC_UPDATES_SERVER_PORT;
     try {

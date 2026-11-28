@@ -1,0 +1,17 @@
+basic_startAndStop.sh
+basic_checkRequestHeaders.sh
+basic_reload.sh
+reload_update.sh
+basic_runUpdate.sh
+basic_updateRetention.sh
+basic_updateInvalidHash.sh
+basic_updateInvalidAssetHash.sh
+basic_updateMultipleAssets.sh
+basic_updateFailingAssets.sh
+basic_updateReusesEmbeddedAssets.sh
+basic_updateOldCommitTime.sh
+basic_rollback.sh
+jsapi_runUpdate.sh
+jsapi_stateMachine.sh
+jsapi_setRequestHeadersOverride.sh
+assetRecovery_restoreAssetFiles.sh
