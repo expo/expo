@@ -11,7 +11,7 @@ import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import type { BuildFlavor } from './Prebuilder.types';
 import type { SPMProduct } from './SPMConfig.types';
-import { makeStubXCFrameworkAsync } from './StubXCFramework';
+import { makeStubXCFrameworkAsync, RELEASE_STUB_INFO_PLIST_KEY } from './StubXCFramework';
 import { createContext, createRequest } from './pipeline/Context';
 import { composeStep, verifyStep } from './pipeline/ProductSteps';
 import type { UnitStatus } from './pipeline/Types';
@@ -198,16 +198,24 @@ describe('makeStubXCFrameworkAsync', () => {
     }
   );
 
-  it('drops only DebugSymbolsPath from the XCFramework Info.plist', appleToolsOnly, async () => {
-    const debugInfoPlist = await fs.readFile(path.join(debugXCFramework, 'Info.plist'), 'utf8');
-    const debugSymbolsEntry = /^\s*<key>DebugSymbolsPath<\/key>\n\s*<string>[^<]*<\/string>\n/gm;
-    assert.equal(debugInfoPlist.match(debugSymbolsEntry)?.length, SLICES.length);
+  it(
+    'drops DebugSymbolsPath from the XCFramework Info.plist and marks only the stub',
+    appleToolsOnly,
+    async () => {
+      const debugInfoPlist = await fs.readFile(path.join(debugXCFramework, 'Info.plist'), 'utf8');
+      const debugSymbolsEntry = /^\s*<key>DebugSymbolsPath<\/key>\n\s*<string>[^<]*<\/string>\n/gm;
+      assert.equal(debugInfoPlist.match(debugSymbolsEntry)?.length, SLICES.length);
+      assert.equal(plist.parse(debugInfoPlist)[RELEASE_STUB_INFO_PLIST_KEY], undefined);
 
-    assert.equal(
-      await fs.readFile(path.join(stubXCFramework, 'Info.plist'), 'utf8'),
-      debugInfoPlist.replace(debugSymbolsEntry, '')
-    );
-  });
+      assert.deepEqual(
+        { ...plist.parse(await fs.readFile(path.join(stubXCFramework, 'Info.plist'), 'utf8')) },
+        {
+          ...plist.parse(debugInfoPlist.replace(debugSymbolsEntry, '')),
+          [RELEASE_STUB_INFO_PLIST_KEY]: true,
+        }
+      );
+    }
+  );
 
   it(
     'replaces each binary with an empty dylib with the same identity',
@@ -449,6 +457,28 @@ describe('debug-only package in the product pipeline', () => {
       return true;
     });
   });
+
+  it(
+    `fails verification when the Release XCFramework has no ${RELEASE_STUB_INFO_PLIST_KEY} key`,
+    appleToolsOnly,
+    async () => {
+      const { pkg, ctx } = await makeReleaseUnitAsync({ debugUnit: composedDebugUnit });
+      await buildDebugXCFrameworkAsync(Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'));
+      await composeStep.run(ctx);
+      const releaseXCFramework = Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Release');
+      await spawnAsync('plutil', [
+        '-remove',
+        RELEASE_STUB_INFO_PLIST_KEY,
+        path.join(releaseXCFramework, 'Info.plist'),
+      ]);
+
+      await assert.rejects(verifyStep.run(ctx), (error: Error) => {
+        assert.match(error.message, new RegExp(`no ${RELEASE_STUB_INFO_PLIST_KEY} key`));
+        assert.match(error.message, /Build both flavors in one run/);
+        return true;
+      });
+    }
+  );
 });
 
 describe('Release stub setting of a monorepo package', () => {

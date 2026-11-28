@@ -152,10 +152,12 @@ Use the schema above for field-level reference.
 The Release flavor follows `debugOnly` in the package's `expo-module.config.json`, the setting
 autolinking reads. When the package sets `"apple": { "debugOnly": true }` (or the legacy
 `"ios": { "debugOnly": true }` without an `apple` section), the Release flavor of each of its
-products is not built. The pipeline makes it from the Debug XCFramework: the same slices, Info.plists, `Headers/`, `PrivateHeaders/`
-and `Modules/`, around an empty dynamic library with the real install name. It has no code, no
-resources and no dSYMs, and it is signed and packed like any Release flavor. The Debug flavor must
-be built in the same run or be on disk. Verification only checks that `Headers/` and
+products is not built. The pipeline makes it from the Debug XCFramework: the same slices,
+Info.plists, `Headers/`, `PrivateHeaders/` and `Modules/`, around an empty dynamic library with the
+real install name. It has no code, no resources and no dSYMs, and it is signed and packed like any
+Release flavor. Its XCFramework `Info.plist` has the key `ExpoReleaseStub` set to `true`; a real
+flavor never has that key. The Debug flavor must be built in the same run or be on disk.
+Verification only checks the `ExpoReleaseStub` key and that `Headers/` and
 `Modules/module.modulemap` match the Debug flavor. Versioned bundles (macOS, Mac Catalyst) are not
 supported.
 

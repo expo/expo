@@ -42,6 +42,12 @@ const COPIED_FRAMEWORK_ENTRIES = ['Info.plist', 'Headers', 'PrivateHeaders', 'Mo
 /** Swift module files that no compile step reads. Xcode embeds `Modules/` in the app. */
 const SKIPPED_MODULE_FILE = /\.(abi\.json|swiftdoc|swiftsourceinfo)$/;
 
+/**
+ * A boolean key set to true in the XCFramework Info.plist of every stub, and of nothing else, so a
+ * consumer can tell a stub from a real Release flavor without inspecting its binaries.
+ */
+export const RELEASE_STUB_INFO_PLIST_KEY = 'ExpoReleaseStub';
+
 /** The entries React Native compares between the flavors of a flavored framework pair. */
 const PAIRED_FRAMEWORK_ENTRIES = ['Headers', path.join('Modules', 'module.modulemap')];
 
@@ -107,6 +113,7 @@ export async function makeStubXCFrameworkAsync(
       ]);
     }
   }
+  await spawnAsync('plutil', ['-insert', RELEASE_STUB_INFO_PLIST_KEY, '-bool', 'true', infoPlist]);
 
   const scratch = await fs.mkdtemp(path.join(os.tmpdir(), 'stub-xcframework-'));
   try {
@@ -159,6 +166,10 @@ export async function findStubMismatchesAsync(
     }
   }
   return mismatches;
+}
+
+export async function hasReleaseStubMarkerAsync(xcframework: string): Promise<boolean> {
+  return (await readInfoPlistAsync(xcframework))[RELEASE_STUB_INFO_PLIST_KEY] === true;
 }
 
 type Entry = Buffer | string;
@@ -265,6 +276,12 @@ function readLoadCommand(
 }
 
 async function readLibrariesAsync(xcframework: string): Promise<XCFrameworkLibrary[]> {
+  return (await readInfoPlistAsync(xcframework)).AvailableLibraries;
+}
+
+async function readInfoPlistAsync(
+  xcframework: string
+): Promise<{ AvailableLibraries: XCFrameworkLibrary[]; [key: string]: unknown }> {
   const { stdout } = await spawnAsync('plutil', [
     '-convert',
     'json',
@@ -272,7 +289,7 @@ async function readLibrariesAsync(xcframework: string): Promise<XCFrameworkLibra
     '-',
     path.join(xcframework, 'Info.plist'),
   ]);
-  return JSON.parse(stdout).AvailableLibraries;
+  return JSON.parse(stdout);
 }
 
 async function xcrunAsync(args: string[]): Promise<string> {

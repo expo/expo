@@ -17,7 +17,12 @@ import {
 } from '../HeadersXCFramework';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
-import { findStubMismatchesAsync, isReleaseStub } from '../StubXCFramework';
+import {
+  findStubMismatchesAsync,
+  hasReleaseStubMarkerAsync,
+  isReleaseStub,
+  RELEASE_STUB_INFO_PLIST_KEY,
+} from '../StubXCFramework';
 import { FrameworkVerifier } from '../Verifier';
 import type { PrebuildContext } from './Context';
 import type { Step, ProductStage } from './Types';
@@ -74,13 +79,27 @@ function assertDebugUnitComposed(ctx: PrebuildContext): void {
   );
 }
 
-/** A stub has no code to check; it only has to pair with its Debug flavor. */
+/** A stub has no code to check; it only has to be marked and pair with its Debug flavor. */
 async function verifyReleaseStubAsync(ctx: PrebuildContext): Promise<void> {
   const { buildPath, outputVersionPrefix } = ctx.currentPackage!;
   const { name } = ctx.currentProduct!;
+  const releaseXCFramework = Frameworks.getFrameworkPath(
+    buildPath,
+    name,
+    'Release',
+    outputVersionPrefix
+  );
+  if (!(await hasReleaseStubMarkerAsync(releaseXCFramework))) {
+    setStage(ctx, 'verify', 'failed');
+    throw new Error(
+      `The Release XCFramework of ${name} has no ${RELEASE_STUB_INFO_PLIST_KEY} key set to true ` +
+        `in its Info.plist, so it is not a stub made by this pipeline, although its package is ` +
+        `debug-only. Build both flavors in one run to remake the stub.`
+    );
+  }
   const mismatches = await findStubMismatchesAsync(
     Frameworks.getFrameworkPath(buildPath, name, 'Debug', outputVersionPrefix),
-    Frameworks.getFrameworkPath(buildPath, name, 'Release', outputVersionPrefix)
+    releaseXCFramework
   );
   if (mismatches.length > 0) {
     setStage(ctx, 'verify', 'failed');
