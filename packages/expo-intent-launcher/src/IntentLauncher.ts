@@ -265,6 +265,13 @@ export interface IntentLauncherParams {
   className?: string;
 }
 
+export interface IntentChooserParams extends IntentLauncherParams {
+  /**
+   * Android activities to hide from the chooser.
+   */
+  excludedComponents?: { packageName: string; className: string }[];
+}
+
 // @needsAudit
 export interface IntentLauncherResult {
   /**
@@ -318,6 +325,25 @@ export async function startActivityAsync(
     throw new TypeError(`'activityAction' argument must be a non-empty string!`);
   }
   return ExpoIntentLauncher.startActivity(activityAction, params);
+}
+
+/**
+ * Opens the Android activity chooser for the given action. The promise resolves when the user
+ * returns to the app.
+ * @param activityAction The action for the activity to perform.
+ * @param params Intent parameters, with an optional list of activities to hide from the chooser.
+ */
+export async function startChooserAsync(
+  activityAction: ActivityAction | string,
+  { excludedComponents = [], ...params }: IntentChooserParams = {}
+): Promise<IntentLauncherResult> {
+  if (!ExpoIntentLauncher.startChooser) {
+    throw new UnavailabilityError('IntentLauncher', 'startChooserAsync');
+  }
+  if (!activityAction || typeof activityAction !== 'string') {
+    throw new TypeError(`'activityAction' argument must be a non-empty string!`);
+  }
+  return ExpoIntentLauncher.startChooser(activityAction, params, excludedComponents);
 }
 
 /**

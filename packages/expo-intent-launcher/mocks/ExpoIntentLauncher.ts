@@ -18,6 +18,14 @@ export async function startActivity(
   return { resultCode: -1 };
 }
 
+export async function startChooser(
+  activityAction: string,
+  params: object,
+  excludedComponents: object[]
+): Promise<IntentLauncherResult> {
+  return { resultCode: -1 };
+}
+
 export function openApplication(packageName: string): void {}
 
 export async function getApplicationIcon(packageName: string): Promise<string> {
