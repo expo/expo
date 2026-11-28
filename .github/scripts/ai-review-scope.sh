@@ -6,10 +6,13 @@
 # ecr reads routing.jsonc from the PR's base commit, so a PR into another branch can
 # get a different answer from ecr. ecr still gates the sandbox on its own.
 #
-# Env: GH_TOKEN, REPO, PR. Writes to $GITHUB_OUTPUT:
+# Env: GH_TOKEN, REPO, PR. WHOLE_PR=true puts every changed file in the scope: a
+# maintainer asked for the autonomous review of this PR with `/review autonomous`.
+# Writes to $GITHUB_OUTPUT:
 #   autonomous=true|false       some changed file is in the scope
 #   only_autonomous=true|false  every changed file is in the scope, apart from changesets
-#                               that name only packages in the scope, and none is a REVIEW.md
+#                               that name only packages in the scope, and none holds
+#                               review rules (see changes_review_rules)
 # It does not fail: if it cannot read the scope or the files, it writes false.
 set -euo pipefail
 
@@ -30,6 +33,7 @@ for glob in "${globs[@]}"; do
 done
 
 in_scope() {
+  [ "${WHOLE_PR:-}" != true ] || return 0
   local glob
   for glob in "${globs[@]}"; do
     if [[ $1 == "${glob%\*\*}"* ]]; then
@@ -39,10 +43,11 @@ in_scope() {
   return 1
 }
 
-# Reviewers read a package's REVIEW.md as their rules.
+# These files are the rules that decide a PR: a package's REVIEW.md, the workflows,
+# the review prompts, and the ecr launcher.
 # A PR must not change the rules that decide it.
 changes_review_rules() {
-  [[ ${1##*/} == REVIEW.md ]]
+  [[ ${1##*/} == REVIEW.md || $1 == .github/* || $1 == .expo-agents/* || $1 == scripts/expo-code-review ]]
 }
 
 if [ "${1:-}" = --self-test ]; then
@@ -52,6 +57,9 @@ if [ "${1:-}" = --self-test ]; then
   in_scope packages/patch-project && exit 1
   changes_review_rules packages/patch-project/REVIEW.md
   changes_review_rules packages/patch-project/PREVIEW.md && exit 1
+  changes_review_rules .github/workflows/ci.yml
+  changes_review_rules packages/expo/.github/notes.md && exit 1
+  WHOLE_PR=true in_scope packages/expo/src/index.ts
   echo "ai-review-scope self-test ok"
   exit 0
 fi
@@ -80,7 +88,7 @@ if [ -n "$files" ] && [ "${#globs[@]}" -gt 0 ] && [ "$changed" = "$listed" ]; th
 fi
 while IFS=$'\t' read -r kind file packages; do
   [ -n "$file" ] || continue
-  if [ "$kind" = changeset ]; then
+  if [ "$kind" = changeset ] && [ "${WHOLE_PR:-}" != true ]; then
     # npm names map to directories here: `patch-project` is packages/patch-project.
     [ -n "$packages" ] || only_autonomous=false
     for package in ${packages//,/ }; do
@@ -89,7 +97,7 @@ while IFS=$'\t' read -r kind file packages; do
   elif in_scope "$file"; then
     [ "$kind" = old ] || autonomous=true
     if changes_review_rules "$file"; then
-      echo "::notice::The PR changes a REVIEW.md, so expo-bot does not approve it or request changes. A maintainer must review the PR."
+      echo "::notice::The PR changes review rules (a REVIEW.md, .github, .expo-agents or scripts/expo-code-review), so expo-bot does not approve it or request changes. A maintainer must review the PR."
       only_autonomous=false
     fi
   else
