@@ -32,25 +32,15 @@ class DevMenuDevOptionsDelegate {
   }
 
   internal func openJSInspector() {
+    #if DEBUG
     guard let bundleURL = appContext?.bundleURL else {
       return
     }
-    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
-    var components = URLComponents()
-    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
-    components.host = isServed ? bundleURL.host : "localhost"
-    components.port = isServed ? bundleURL.port : Int(RCT_METRO_PORT)
-    components.path = "/_expo/debugger"
-    components.queryItems = [
-      URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
-    ]
-    guard let url = components.url else {
-      NSLog("[DevMenu] Invalid openJSInspector URL: $@", components.description)
-      return
-    }
-    let request = NSMutableURLRequest(url: url)
-    request.httpMethod = "PUT"
-    URLSession.shared.dataTask(with: request as URLRequest).resume()
+    RCTInspectorDevServerHelper.openDebugger(
+      bundleURL,
+      withErrorMessage: "Failed to open debugger. Please check that the dev server is running and reload the app."
+    )
+    #endif
   }
 
   internal func togglePerformanceMonitor() {
