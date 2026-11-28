@@ -13,6 +13,27 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
   private let sessionsLock = NSLock()
   private var sessionIdentifiers: Set<String> = []
 
+  // `ExpoAppDelegateSubscriberRepository` is `@MainActor`, but URLSession setup also runs on module
+  // queues (`UploadTask.start`, the legacy `uploadAsync` / `downloadAsync`), where looking the handler
+  // up there trips the Swift runtime's isolation check. The repository registers every subscriber on
+  // the main thread at launch, so the handler records itself then and callers on any thread read it
+  // here. What they call on it off the main thread, `registerSession`, is lock-protected.
+  private static let currentLock = NSLock()
+  private static var _current: FileSystemBackgroundSessionHandler?
+
+  static var current: FileSystemBackgroundSessionHandler? {
+    currentLock.lock()
+    defer { currentLock.unlock() }
+    return _current
+  }
+
+  @objc
+  public func subscriberDidRegister() {
+    Self.currentLock.lock()
+    defer { Self.currentLock.unlock() }
+    Self._current = self
+  }
+
   func registerSession(_ identifier: String) {
     sessionsLock.lock()
     defer { sessionsLock.unlock() }

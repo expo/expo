@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 #if os(iOS) || os(tvOS)
+import ExpoModulesCore
 import Testing
 import UIKit
 
@@ -49,6 +50,20 @@ struct FileSystemBackgroundSessionHandlerTests {
     }
     #expect(calls == 1)
   }
+
+  #if os(iOS)
+  @Test
+  @MainActor
+  func testCreatesBackgroundSessionOffTheMainThread() async {
+    // `UploadTask.start` creates the background session on the module queue. A lookup in the
+    // `@MainActor` subscriber repository there traps, but only when a subscriber is registered.
+    ExpoAppDelegateSubscriberRepository.registerSubscriber(FileSystemBackgroundSessionHandler())
+    let identifier = await Task.detached {
+      NetworkTaskSessionManager.shared.session(for: .background).configuration.identifier
+    }.value
+    #expect(identifier == NetworkTaskSessionManager.backgroundSessionIdentifier)
+  }
+  #endif
 
   @Test
   @MainActor
