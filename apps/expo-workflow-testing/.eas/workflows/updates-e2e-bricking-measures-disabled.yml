@@ -51,7 +51,6 @@ jobs:
     runs_on: macos-large
     image: latest
     steps:
-      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -75,19 +74,15 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:ios:release:build
-      - uses: eas/start_ios_simulator
-        with:
-          device_identifier: iPhone 17
-      - name: Run Maestro tests (release)
+      - name: Run tests in Expo Simulators (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-bricking-measures-disabled.yml ios release
+          ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-bricking-measures-disabled.txt ios release
   android:
     runs_on: linux-large-nested-virtualization
     image: latest
     steps:
-      - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
@@ -105,16 +100,13 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run generate-test-update-bundles android test-update-1
-      - uses: eas/start_android_emulator
-        with:
-          device_name: pixel_4
       - name: Build E2E test app (release)
         id: buildrelease
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:release:build
-      - name: Run Maestro tests (release)
+      - name: Run tests in Expo Simulators (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-bricking-measures-disabled.yml android release
+          ./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-bricking-measures-disabled.txt android release

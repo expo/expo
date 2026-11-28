@@ -1067,7 +1067,7 @@ export async function setupUpdatesBrickingMeasuresDisabledE2EAppAsync(
 ) {
   await copyCommonFixturesToProject(
     projectRoot,
-    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'includedAssets', 'scripts'],
+    ['tsconfig.json', '.env', 'eas.json', 'maestro', 'simulator', 'includedAssets', 'scripts'],
     { appJsFileName: 'App.tsx', isTV: false }
   );
 }

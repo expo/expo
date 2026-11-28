@@ -85,6 +85,21 @@ with:
 # Or use ios instead of android.
 ```
 
+### Tests in Expo Simulators
+
+The bricking measures disabled tests run on a device in Expo Simulators, not in a local simulator or emulator. You must be logged in to an Expo account with Expo Simulators access, and the account must have access to the `updates-e2e` EAS project.
+
+Create the project with `./packages/expo-updates/e2e/setup/create-bricking-measures-disabled-eas-project.ts`, and generate the bundles as above. Then build the release app and run the suite:
+
+```bash
+npx pod-install # iOS only
+pnpm maestro:ios:release:build # or pnpm maestro:android:release:build
+./simulator/simulator-test-executor.sh ./simulator/tests/updates-e2e-bricking-measures-disabled.txt ios release
+# Or use android instead of ios.
+```
+
+The executor starts the updates server, starts a session, and stops both when the suite ends. The device reaches the updates server on this machine through the local egress tunnel of the session. Logs, and a screenshot on failure, are in `simulator/output`.
+
 ## Updates API test project:
 
 This creates a test project that allows you to exercise the Updates API features manually against EAS. The project is set up to use `expo-channel-name=main` as the EAS update request header.
