@@ -102,16 +102,13 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeDoubleArray(result: DoubleArray)
 
   private inline fun checkIfValid(body: () -> Unit) {
-    try {
-      body()
-    } catch (e: Throwable) {
+    // resetNative() takes this lock before freeing the native callback.
+    synchronized(mHybridData) {
       if (!mHybridData.isValid) {
-        // We know that this particular JavaCallback was invalidated, so it shouldn't be invoked.
-        // To prevent crashes, we decided to suppress the error here.
-        logger.error("Invalidated JavaCallback was invoked", e)
+        logger.warn("Invalidated JavaCallback was invoked")
         return
       }
-      throw e
+      body()
     }
   }
 
