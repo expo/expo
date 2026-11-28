@@ -2,6 +2,9 @@ import { blobToArrayBufferAsync } from '../../utils/blobUtils';
 import type { NativeHeadersType } from './NativeRequest';
 import { convertFormDataAsync } from './convertFormData';
 
+// An HTTP token, e.g. a request method or a header parameter value that needs no quotes.
+export const HTTP_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+
 /**
  * convert a ReadableStream to a Uint8Array
  */
@@ -32,8 +35,8 @@ export async function convertReadableStreamToUint8ArrayAsync(
 }
 
 // Also accept instances that don't extend blob but have required methods (for filesystem and custom blob module)
-function isBlob(obj: any): obj is Blob {
-  if (typeof obj !== 'object') {
+export function isBlob(obj: any): obj is Blob {
+  if (obj == null || typeof obj !== 'object') {
     return false;
   }
   if (!('arrayBuffer' in obj)) {
@@ -48,7 +51,10 @@ function isBlob(obj: any): obj is Blob {
 /**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
-export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
+export async function normalizeBodyInitAsync(
+  body: BodyInit | null | undefined,
+  options: { formDataBoundary?: string } = {}
+): Promise<{
   body: Uint8Array | null;
   defaultHeaders?: NativeHeadersType;
   overriddenHeaders?: NativeHeadersType;
@@ -90,11 +96,13 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
   }
 
   if (body instanceof FormData) {
-    const { body: result, boundary } = await convertFormDataAsync(body);
+    const { body: result, boundary } = await convertFormDataAsync(body, options.formDataBoundary);
+    // A boundary that isn't an HTTP token, e.g. one with a space, needs quotes in the header.
+    const headerBoundary = HTTP_TOKEN.test(boundary) ? boundary : `"${boundary}"`;
 
     return {
       body: result,
-      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${boundary}`]],
+      overriddenHeaders: [['Content-Type', `multipart/form-data; boundary=${headerBoundary}`]],
     };
   }
 
@@ -144,7 +152,7 @@ export function overrideHeaders(
 /** Normalizes known HTTP methods to uppercase */
 export function normalizeMethod(method: string): string {
   const normalized = method.toUpperCase();
-  switch (method.toUpperCase()) {
+  switch (normalized) {
     case 'DELETE':
     case 'GET':
     case 'HEAD':

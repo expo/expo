@@ -1,4 +1,9 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
+import {
+  consumeRequestStreamBody,
+  getRequestBodyInit,
+  getRequestFormDataBoundary,
+} from './ExpoRequest';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
@@ -21,19 +26,13 @@ const isRequest = (input: any): input is FetchRequestLike => {
   if (input == null || typeof input !== 'object') {
     return false;
   } else {
-    return 'body' in input || input instanceof Request || input[Symbol.toStringTag] === 'Request';
-  }
-};
-
-const dangerouslyGetBodyFromRequest = (
-  input: FetchRequestLike | FetchRequestInit | undefined
-): BodyInit | null => {
-  if (input != null && input instanceof Request && '_bodyInit' in input) {
-    // NOTE(@kitten): whatwg-fetch has a hidden property for the body input
-    // TODO(@kitten): We should have our own Request class implementation
-    return (input as any)._noBody !== true ? (input as any)._bodyInit : null;
-  } else {
-    return input?.body ?? null;
+    // `_bodyInit` identifies a whatwg-fetch Request, which has neither `body` nor a string tag.
+    return (
+      'body' in input ||
+      '_bodyInit' in input ||
+      input instanceof Request ||
+      input[Symbol.toStringTag] === 'Request'
+    );
   }
 };
 
@@ -48,10 +47,14 @@ export async function fetch(
   ).__NETWORK_REPORTER__?.createDevToolsRequestId();
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
-  const body =
-    dangerouslyGetBodyFromRequest(init) ??
-    (initFromRequest ? dangerouslyGetBodyFromRequest(input) : null);
-  const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
+  const initBody = init != null ? getRequestBodyInit(init) : null;
+  const bodySource = initBody != null ? init : initFromRequest ? input : null;
+  const body = initBody ?? (initFromRequest ? getRequestBodyInit(input) : null);
+  // Serialize a Request's FormData body with the boundary its Content-Type header already names.
+  const formDataBoundary = bodySource != null ? getRequestFormDataBoundary(bodySource) : undefined;
+  // A `null` signal in the init replaces the Request's signal, like in the `Request` constructor.
+  const signal =
+    init?.signal !== undefined ? init.signal : initFromRequest ? input.signal : undefined;
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
 
@@ -63,6 +66,10 @@ export async function fetch(
   let headers = normalizeHeadersInit(
     init?.headers ?? (initFromRequest ? input.headers : undefined)
   );
+
+  if (body instanceof ReadableStream) {
+    consumeRequestStreamBody(bodySource, body);
+  }
 
   let abortSubscription: AbortSubscriptionCleanupFunction | null = null;
 
@@ -76,7 +83,7 @@ export async function fetch(
     body: requestBody,
     defaultHeaders,
     overriddenHeaders,
-  } = await normalizeBodyInitAsync(body);
+  } = await normalizeBodyInitAsync(body, { formDataBoundary });
   if (defaultHeaders) {
     headers = overrideHeaders(defaultHeaders, headers);
   } else if (overriddenHeaders) {
@@ -116,7 +123,7 @@ export async function fetch(
  * A wrapper of `AbortSignal.addEventListener` that returns a cleanup function.
  */
 function addAbortSignalListener(
-  signal: AbortSignal | undefined,
+  signal: AbortSignal | null | undefined,
   listener: Parameters<AbortSignal['addEventListener']>[1]
 ): AbortSubscriptionCleanupFunction {
   signal?.addEventListener('abort', listener);
