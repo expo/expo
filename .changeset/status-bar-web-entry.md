@@ -2,4 +2,4 @@
 'expo-status-bar': patch
 ---
 
-[Web] Bundle the web implementation instead of the native implementation.
+[Web] Correctly resolve `expo-status-bar` to its web implementation.
