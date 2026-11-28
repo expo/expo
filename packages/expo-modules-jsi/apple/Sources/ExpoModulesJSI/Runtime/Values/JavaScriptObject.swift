@@ -1224,7 +1224,11 @@ private func withEncodedValue(
 ) rethrows {
   try withUnsafeTemporaryAllocation(of: facebook.jsi.Value.self, capacity: 1) { buffer in
     // The isolated closure below runs synchronously on this thread.
-    nonisolated(unsafe) let slot = buffer.baseAddress!
+    let slot = buffer.baseAddress!
+    // `UncheckedSendable` and not a `nonisolated(unsafe) let`: the pointer becomes task-isolated by
+    // crossing the `_withUnsafeGuaranteedRef` closure, and a `JavaScriptActor`-isolated closure cannot
+    // capture a task-isolated pointer.
+    let slotPointer = UncheckedSendable(slot)
     expo.emplaceUndefined(slot)
     defer {
       expo.destroyValues(slot, 1)
@@ -1233,7 +1237,7 @@ private func withEncodedValue(
     // a retain.
     try runtime._withUnsafeGuaranteedRef { runtime in
       try JavaScriptActor.assumeIsolated {
-        try encode(JavaScriptValue.Slot(slot), runtime)
+        try encode(JavaScriptValue.Slot(slotPointer.value), runtime)
       }
     }
     body(slot.pointee)
