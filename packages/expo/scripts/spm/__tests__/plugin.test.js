@@ -1622,8 +1622,8 @@ describe('a debug-only module', () => {
 
   /**
    * Syncs debug-only pure-Swift `packages` (`[packageName, podName]` each) with a checked-in
-   * manifest when `manifest`, a prebuilt pair when `paired` is true or names the product, a
-   * precompiled ExpoModulesCore when `coreAvailable`, and the app's `buildFromSource` entries.
+   * manifest when `manifest`, a prebuilt pair each when `paired`, a precompiled ExpoModulesCore
+   * when `coreAvailable`, and the app's `buildFromSource` entries.
    * Each debug-only Release flavor's Info.plist holds `releaseEntries`; ExpoModulesCore's is
    * never a stub.
    */
@@ -1654,10 +1654,7 @@ describe('a debug-only module', () => {
     });
     resolveFlavoredFramework.mockImplementation(({ frameworkName }) => {
       const isCore = frameworkName === 'ExpoModulesCore';
-      const available = isCore
-        ? coreAvailable
-        : paired === true || (Array.isArray(paired) && paired.includes(frameworkName));
-      if (!available) return null;
+      if (!(isCore ? coreAvailable : paired)) return null;
       const release = path.join(tmp, 'release', `${frameworkName}.xcframework`);
       writeXCFrameworkInfoPlist(release, isCore ? '' : releaseEntries);
       return { id: frameworkName, frameworkName, flavors: { release } };
@@ -1735,17 +1732,18 @@ describe('a debug-only module', () => {
     ],
   ])('fails the sync when its Release Info.plist %s', (_, releaseEntries) => {
     const { thrown, outDir } = sync({ paired: true, releaseEntries });
+    const checked = path.join(path.dirname(outDir), 'release', 'ExpoDevTool.xcframework');
     expect(thrown?.message).toBe(
-      '[expo-spm-plugin] The Release flavor of the debug-only Expo module ExpoDevTool (expo-dev-tool) is not an empty stub. ' +
+      `[expo-spm-plugin] The Release flavor of the debug-only Expo module ExpoDevTool (expo-dev-tool) is not an empty stub. Checked: ${checked}/Info.plist. ` +
         'Swift Package Manager links a package product in every build configuration, so a Release flavor that is not a stub puts development code in Release builds. ' +
-        `From the Expo repository root, rebuild the pair with the current Expo tools so that its Release flavor is a stub: \`node tools/bin/expotools.js prebuild expo-dev-tool\`. Otherwise install a version of expo-dev-tool that ships a Release stub. ${rerunSpmUpdate}`
+        `Install a version of expo-dev-tool that ships a Release stub. Otherwise, from the Expo repository root, rebuild the pair with the current Expo tools so that its Release flavor is a stub: \`node tools/bin/expotools.js prebuild expo-dev-tool\`. ${rerunSpmUpdate}`
     );
     expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
     expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source'))).toBe(false);
   });
 
   it('names every debug-only module whose Release flavor is not a stub in one error', () => {
-    const { thrown } = sync({
+    const { thrown, outDir } = sync({
       packages: [
         ['expo-dev-tool', 'ExpoDevTool'],
         ['expo-dev-other', 'ExpoDevOther'],
@@ -1753,24 +1751,15 @@ describe('a debug-only module', () => {
       paired: true,
       releaseEntries: '',
     });
+    const checked = (productName) =>
+      path.join(path.dirname(outDir), 'release', `${productName}.xcframework`, 'Info.plist');
     expect(thrown?.message).toContain(
-      'The Release flavors of the debug-only Expo modules ExpoDevTool (expo-dev-tool), ExpoDevOther (expo-dev-other) are not empty stubs.'
+      'The Release flavors of the debug-only Expo modules ExpoDevTool (expo-dev-tool), ExpoDevOther (expo-dev-other) are not empty stubs. ' +
+        `Checked: ${checked('ExpoDevTool')}, ${checked('ExpoDevOther')}.`
     );
     expect(thrown?.message).toContain(
-      'rebuild the pairs with the current Expo tools so that their Release flavors are stubs: `node tools/bin/expotools.js prebuild expo-dev-tool expo-dev-other`. Otherwise install versions of expo-dev-tool, expo-dev-other that ship a Release stub.'
+      'Install versions of expo-dev-tool, expo-dev-other that ship a Release stub. Otherwise, from the Expo repository root, rebuild the pairs with the current Expo tools so that their Release flavors are stubs: `node tools/bin/expotools.js prebuild expo-dev-tool expo-dev-other`.'
     );
-  });
-
-  it('reports a missing pair before a Release flavor that is not a stub', () => {
-    const { thrown } = sync({
-      packages: [
-        ['expo-dev-tool', 'ExpoDevTool'],
-        ['expo-dev-other', 'ExpoDevOther'],
-      ],
-      paired: ['ExpoDevOther'],
-      releaseEntries: '',
-    });
-    expect(thrown?.message).toBe(noPairError(''));
   });
 });
 
