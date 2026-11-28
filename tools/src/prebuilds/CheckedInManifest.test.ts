@@ -14,7 +14,7 @@ import {
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync } from './Frameworks';
+import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync, Frameworks } from './Frameworks';
 import type {
   SPMConfig,
   SPMPackageDependencyConfig,
@@ -50,6 +50,7 @@ function fixture(
   options: {
     dependencies?: string;
     members?: string;
+    products?: string;
     imports?: string;
     packageName?: string;
     packageJson?: Record<string, unknown>;
@@ -65,7 +66,7 @@ ${options.imports ?? ''}
 let package = Package(
   name: "${options.packageName ?? 'fixture'}",
   platforms: [.macOS(.v13)],
-  products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])],
+  products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])${options.products ? `, ${options.products}` : ''}],
   dependencies: [${options.dependencies ?? ''}],
   targets: [${targets}]
 )
@@ -1352,6 +1353,192 @@ for (const {
   });
 }
 
+it('links the binary of a sibling product for a manifest dependency on its product-named target', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  const sibling: SPMProduct = {
+    name: 'Sibling',
+    podName: 'Sibling',
+    platforms: ['macOS(.v11)'],
+    targets: [{ type: 'swift', name: 'Sibling' }],
+  };
+  // spm.config.json does not list the Main -> Sibling edge; only the manifest declares it.
+  input.pkg.getSwiftPMConfiguration = () => ({ products: [sibling, input.product] });
+  fs.mkdirSync(Frameworks.getFrameworkPath(input.pkg.buildPath, 'Sibling', 'Debug'), {
+    recursive: true,
+  });
+
+  const output = path.join(input.pkg.buildPath, 'generated/Fixture/Package.swift');
+  await SPMPackage.writePackageSwiftAsync(
+    input.pkg,
+    input.product,
+    'Debug',
+    output,
+    path.dirname(output)
+  );
+  const manifest = fs.readFileSync(output, 'utf8');
+  assert.match(manifest, /\.binaryTarget\(\n\s+name: "Sibling",/);
+  assert.doesNotMatch(manifest, /\.target\(\n\s+name: "Sibling",/);
+  assert.match(manifest, /name: "Main",[\s\S]*?dependencies: \["Sibling"/);
+});
+
+it('keeps a by-name external dependency that a sibling product shares', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", dependencies: ["React"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling", "React"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  input.product.externalDependencies = ['React'];
+  const [main] = await resolve(input.root, input.product, new Set(['Sibling']));
+  assert.deepEqual(main.dependencies, ['Sibling', 'React']);
+});
+
+it('rejects a manifest dependency on a target that has the name of a sibling product that does not list it', async () => {
+  const input = fixture(
+    `.target(name: "SiblingCore", path: "sibling"),
+     .target(name: "Sibling", path: "local"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/SiblingCore.swift': 'public let core = 1',
+      'local/Sibling.swift': 'public let local = 1',
+    },
+    { products: '.library(name: "Sibling", targets: ["SiblingCore"])' }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: it has the name of product "Sibling", but \.library\(name: "Sibling"\) does not list it, /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
+it('rejects a target that the product and a sibling product both build', async () => {
+  const input = fixture(
+    `.target(name: "Shared", path: "shared"),
+     .target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'shared/Shared.swift': 'public let shared = 1',
+    },
+    {
+      members: '"Main", "Shared"',
+      products: '.library(name: "Sibling", targets: ["Sibling", "Shared"])',
+    }
+  );
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(error, /: products "Fixture" and "Sibling" both build it, /, 'Shared');
+    return true;
+  });
+});
+
+it("rejects a dependency on a sibling product whose binary links another sibling product's binary", async () => {
+  const input = fixture(
+    `.target(name: "Leaf", path: "leaf"),
+     .target(name: "Sibling", dependencies: ["Leaf"], path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    {
+      'ios/Main.swift': 'public let value = 1',
+      'sibling/Sibling.swift': 'public let sibling = 1',
+      'leaf/Leaf.swift': 'public let leaf = 1',
+    },
+    {
+      products:
+        '.library(name: "Sibling", targets: ["Sibling"]), .library(name: "Leaf", targets: ["Leaf"])',
+    }
+  );
+  await assert.rejects(
+    resolve(input.root, input.product, new Set(['Sibling', 'Leaf'])),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /: it depends on "Leaf", so the prebuilt binary of product "Sibling" links the binary of product "Leaf", /,
+        'Sibling'
+      );
+      return true;
+    }
+  );
+});
+
+/** spm.config.json lists `names` as sibling products, before the fixture's product. */
+function withSiblingProducts(input: ReturnType<typeof fixture>, ...names: string[]) {
+  const siblings = names.map(
+    (name): SPMProduct => ({
+      name,
+      podName: name,
+      platforms: ['macOS(.v11)'],
+      targets: [{ type: 'swift', name }],
+    })
+  );
+  input.pkg.getSwiftPMConfiguration = () => ({ products: [...siblings, input.product] });
+}
+
+async function generateManifest(input: ReturnType<typeof fixture>) {
+  const output = path.join(input.pkg.buildPath, 'generated/Fixture/Package.swift');
+  await SPMPackage.writePackageSwiftAsync(
+    input.pkg,
+    input.product,
+    'Debug',
+    output,
+    path.dirname(output)
+  );
+  return fs.readFileSync(output, 'utf8');
+}
+
+it('rejects a sibling product that spm.config.json also lists as an external dependency', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    { 'ios/Main.swift': 'public let value = 1', 'sibling/Sibling.swift': 'public let sibling = 1' },
+    { products: '.library(name: "Sibling", targets: ["Sibling"])' }
+  );
+  input.product.externalDependencies = ['Sibling'];
+  await assert.rejects(resolve(input.root, input.product, new Set(['Sibling'])), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: product "Fixture" uses external dependency "Sibling", which has the name of sibling product "Sibling", /,
+      'Main'
+    );
+    return true;
+  });
+});
+
+it('rejects a product of another type that has the name of a sibling product before it links a binary', async () => {
+  const input = fixture(
+    `.target(name: "Sibling", path: "sibling"),
+     .target(name: "Main", dependencies: ["Sibling"], path: "ios")`,
+    { 'ios/Main.swift': 'public let value = 1', 'sibling/Sibling.swift': 'public let sibling = 1' },
+    { products: '.executable(name: "Sibling", targets: ["Sibling"])' }
+  );
+  withSiblingProducts(input, 'Sibling');
+  fs.mkdirSync(Frameworks.getFrameworkPath(input.pkg.buildPath, 'Sibling', 'Debug'), {
+    recursive: true,
+  });
+  await assert.rejects(generateManifest(input), (error: Error) => {
+    assertManifestDiagnostic(
+      error,
+      /: the manifest declares \.executable\(name: "Sibling"\), but spm\.config\.json lists "Sibling" as a product of this package, /,
+      'Sibling'
+    );
+    return true;
+  });
+});
+
 it('uses manifest resources even when config resources no longer exist', async () => {
   const input = fixture('.target(name: "Main", path: "ios", resources: [.copy("asset.txt")])', {
     'ios/Thing.swift': 'public let value = 1',
@@ -2382,7 +2569,11 @@ it('pilot resolves the real expo-haptics manifest against its real sources', asy
 
 /** Resolves `productName` from the checked-in manifest of the repository package `packageName`,
  * with its real sources and its real spm.config.json. */
-async function resolveRealPackage(packageName: string, productName: string) {
+async function resolveRealPackage(
+  packageName: string,
+  productName: string,
+  siblingProductNames?: Set<string>
+) {
   const packagePath = path.join(getExpoRepositoryRootDir(), 'packages', packageName);
   const config: SPMConfig = JSON.parse(
     fs.readFileSync(path.join(packagePath, 'spm.config.json'), 'utf8')
@@ -2401,8 +2592,33 @@ async function resolveRealPackage(packageName: string, productName: string) {
     fs.realpathSync.native(packagePath),
     `${packageName} must opt into Mode B by carrying a checked-in Package.swift`
   );
-  return { packagePath, targets: await resolve(packagePath, product) };
+  return { packagePath, targets: await resolve(packagePath, product, siblingProductNames) };
 }
+
+it('expo-location links the ExpoLocation binary into ExpoLocationMotionActivity and builds each product from its own targets', async () => {
+  const location = await resolveRealPackage(
+    'expo-location',
+    'ExpoLocation',
+    new Set(['ExpoLocationMotionActivity'])
+  );
+  assert.deepEqual(location.targets.map((target) => target.name).sort(), [
+    'ExpoLocation',
+    'ExpoLocationObjC',
+  ]);
+  const motion = await resolveRealPackage(
+    'expo-location',
+    'ExpoLocationMotionActivity',
+    new Set(['ExpoLocation'])
+  );
+  assert.deepEqual(motion.targets.map((target) => target.name).sort(), [
+    'ExpoLocationMotionActivity',
+    'ExpoLocationMotionActivityObjC',
+  ]);
+  assert.deepEqual(
+    motion.targets.find((target) => target.name === 'ExpoLocationMotionActivity')?.siblingProducts,
+    ['ExpoLocation']
+  );
+});
 
 type DumpedTargetDependency = { product?: [string, ...unknown[]]; byName?: [string, unknown] };
 
