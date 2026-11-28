@@ -1,0 +1,143 @@
+---
+title: 'Expo Modules API 2.0: Types'
+sidebar_title: Types
+description: Learn which native types convert to and from JavaScript values in Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+The arguments, results, properties, and event payloads of a module convert between JavaScript values and native types. The following tables show the native types that convert. A type that doesn't convert is a build error in Swift.
+
+## Primitive types
+
+| JavaScript            | Kotlin                             | Swift                                                                               |
+| --------------------- | ---------------------------------- | ----------------------------------------------------------------------------------- |
+| `boolean`             | `Boolean`                          | `Bool`                                                                              |
+| `string`              | `String`                           | `String`                                                                            |
+| `number`              | `Int`, `Long`, `Float`, `Double`   | `Int`, `UInt`, `Int8` to `Int32`, `UInt8` to `UInt32`, `Double`, `Float`, `CGFloat` |
+| `bigint`              | Not supported                      | `Int64`, `UInt64`                                                                   |
+| `null` or `undefined` | A nullable type, such as `String?` | An optional type, such as `String?`                                                 |
+| `undefined` (result)  | `Unit`                             | `Void`, `JavaScriptUndefined`                                                       |
+
+The two languages convert large integers differently:
+
+- In Kotlin, a `Long` converts to a JavaScript `number`. A value larger than `Number.MAX_SAFE_INTEGER` loses precision.
+- In Swift, `Int` and `UInt` convert to a `number` and throw for a value outside the safe integer range of JavaScript. `Int64` and `UInt64` convert to a `bigint`, which keeps every value. All 64-bit integer types accept a `number` or a `bigint` from JavaScript.
+- In Swift, the integer types up to 32 bits round a `number` to the nearest integer, and throw for a value that doesn't fit.
+
+Both languages accept `null` and `undefined` for a nullable or optional argument. In Swift, an optional that is `nil` converts to `null`.
+
+## Collections
+
+| JavaScript | Kotlin                                                                                | Swift                           |
+| ---------- | ------------------------------------------------------------------------------------- | ------------------------------- |
+| `Array`    | `List`, `Array`, `IntArray`, `LongArray`, `FloatArray`, `DoubleArray`, `BooleanArray` | `Array`                         |
+| `Object`   | `Map` with `String` keys                                                              | `Dictionary` with `String` keys |
+| `Set`      | Not supported                                                                         | `Set`                           |
+
+In Kotlin, a `Set` converts to and from a JavaScript `Array`. In Swift, a `Set` argument also accepts an array, and an array argument also accepts a single value, which becomes an array with one element.
+
+## Other types
+
+| JavaScript                        | Kotlin                                                  | Swift                                                                                       |
+| --------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `string` or `number` of an enum   | An enum that implements `Enumerable`                    | An enum that implements `Enumerable`                                                        |
+| `Date`                            | Not supported                                           | `Date`                                                                                      |
+| `string` with a URL or a path     | `Uri`, `URL`, `File`, `Path`                            | Not supported, use `String`                                                                 |
+| `number` of seconds               | `Duration`                                              | Not supported, use `Double`                                                                 |
+| `Promise` (result)                | `Promise`                                               | `Task`                                                                                      |
+| `Object` with known properties    | [Record](/modules/v2/reference/records/)                | [Record](/modules/v2/reference/records/)                                                    |
+| One of a few types                | Not supported yet                                       | [Union](/modules/v2/reference/unions/)                                                      |
+| `Array` or `Object` of fixed size | Not supported yet                                       | [Tuple](#tuples)                                                                            |
+| `function`                        | Not supported yet                                       | [Closure](#closure-arguments)                                                               |
+| Instance of a shared object class | [`SharedObject`](/modules/v2/reference/shared-objects/) | [`SharedObject`](/modules/v2/reference/shared-objects/)                                     |
+| `ArrayBuffer`, typed arrays       | `ByteArray`, `TypedArray`                               | `Data`, `ArrayBuffer`, `TypedArray` (see [Binary data](/modules/v2/reference/binary-data/)) |
+| Any value, without a conversion   | [`JavaScriptValue`](#javascript-values)                 | [`JavaScriptValue`](#javascript-values)                                                     |
+
+In Swift, a `Date` argument also accepts a number of milliseconds since the epoch, or a string that the JavaScript `Date` constructor can parse.
+
+## Enums
+
+<LanguageSupport feature="enums" />
+
+An enum converts to and from a JavaScript string or number. Make the enum implement `Enumerable`:
+
+<CodeBlocksTable tabs={['ImageFormat.kt', 'ImageFormat.swift']}>
+
+```kotlin
+enum class ImageFormat(val value: String) : Enumerable {
+  JPG("jpeg"),
+  PNG("png")
+}
+```
+
+```swift
+enum ImageFormat: String, Enumerable {
+  case jpg = "jpeg"
+  case png
+}
+```
+
+</CodeBlocksTable>
+
+In Kotlin, the JavaScript value is the value of the one property of the enum. The property is a `String` or an `Int`. In Swift, the JavaScript value is the raw value of the case, for example a `String` or an `Int`.
+
+## Tuples
+
+<LanguageSupport feature="tuples" />
+
+In Swift, a tuple converts to a JavaScript array or object:
+
+- An unlabeled tuple, such as `(Int, String)`, converts to an array with one item for each element.
+- A labeled tuple, such as `(x: Double, y: Double)`, converts to an object with one property for each label.
+
+```swift
+@JS
+func bounds() -> (width: Double, height: Double) {
+  (width: 100, height: 50)
+}
+```
+
+A tuple can be an argument, a result, a property, a record field, a union payload, an event payload, and an argument or a result of a closure that isn't `async`. A tuple has two or more elements. All elements have labels or none have labels, and each element type converts. Tuples can be in other tuples, optionals, arrays, and dictionaries with `String` keys.
+
+You can use a type alias for a tuple, such as `typealias Span = (start: Int, end: Int)`, only when the body of the `@ExpoModule` or `@SharedObject` class declares the alias. The macro can't see an alias that you declare in another place.
+
+## Closure arguments
+
+<LanguageSupport feature="closure-arguments" />
+
+In Swift, a function or an initializer can take a closure argument. JavaScript passes a function for it. Native code can keep the closure and call it from any thread.
+
+```swift
+@JS
+func download(url: String, onProgress: @escaping (Double) -> Void) {
+  // ...
+}
+
+@JS
+func transform(_ value: String, using transformer: @escaping (String) throws -> String) throws -> String {
+  try transformer(value)
+}
+```
+
+How the call works depends on the type of the closure:
+
+- A non-throwing closure that returns `Void` returns before JavaScript reads its arguments. Don't change a class instance after you pass it to such a closure.
+- A closure that throws or returns a value blocks the caller until the JavaScript function returns. A closure that returns a value must be `throws`, so that an error from JavaScript can reach the caller.
+- An `async` closure suspends the caller instead, and waits for the promise that the JavaScript function returns.
+
+## JavaScript values
+
+<LanguageSupport feature="javascript-values" />
+
+A `@JS` function can take a JavaScript value without a conversion. In Kotlin, declare the argument as `JavaScriptValue`, or as `JavaScriptObject` for an object, from the `io.github.expo.modules.v2.jsi` package. In Swift, declare the argument as `borrowing JavaScriptValue`:
+
+```swift
+@JS
+func describe(_ value: borrowing JavaScriptValue) -> String {
+  // ...
+}
+```
+
+A JavaScript value is valid only on the JavaScript thread. For what this means for functions that run on other threads, see [JavaScript values on other threads](/modules/v2/reference/concurrency/#javascript-values-on-other-threads).

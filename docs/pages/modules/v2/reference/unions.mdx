@@ -1,0 +1,51 @@
+---
+title: 'Expo Modules API 2.0: Unions'
+sidebar_title: Unions
+description: Learn how to accept one of a few JavaScript types with unions in Expo Modules API 2.0.
+---
+
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+A union is a native type that converts from one of a few JavaScript types, the same as a union type in TypeScript. For an object with known fields, use a [record](/modules/v2/reference/records/).
+
+## Declare a union
+
+<LanguageSupport feature="unions" />
+
+Add `@Union` to an enum whose cases each have one associated value. The enum converts from any of the payload types:
+
+```swift
+@Union
+enum BinaryInput {
+  case bytes(Data)
+  case string(String)
+}
+
+@JS
+func digest(_ input: BinaryInput) -> String {
+  switch input {
+  case .bytes(let bytes):
+    // ...
+  case .string(let string):
+    // ...
+  }
+}
+```
+
+In TypeScript, `BinaryInput` is `Uint8Array | string`. A union can also be a result, an event payload, a record field, or an element of an optional, an array, or a dictionary.
+
+## Case order
+
+The conversion tries the cases in the order of the declaration and uses the first case whose payload converts. So, put the most specific case first. For example, a `Double` case before an `Int32` case also matches every integer number, so the `Int32` case is never used. The macro shows a warning for such cases: a case after a `JavaScriptValue` case, and a case whose payload decodes only numbers, such as `Float` or `Int32`, after a `Double`, `Float`, or `CGFloat` case. When no case matches, the conversion throws `Exceptions.UnionCaseMismatch`.
+
+## Get the payload
+
+To get the payload without a `switch`, use `as(_:)`. It throws `Exceptions.UnionCaseMismatch` when the union holds another case:
+
+```swift
+let text = try input.as(String.self)
+```
+
+## Rules for unions
+
+Each case has one associated value, and each payload type is used once. A generic enum, a case without a payload, a case with more than one associated value, and a default value for an associated value are build errors.

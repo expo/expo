@@ -1,0 +1,110 @@
+---
+title: 'Expo Modules API 2.0: Binary data'
+sidebar_title: Binary data
+description: Learn how to pass byte arrays, array buffers, and typed arrays between JavaScript and native code with Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+JavaScript stores binary data in an `ArrayBuffer` and reads it through views: typed arrays, such as `Uint8Array` or `Float32Array`, and `DataView`. A module can take and return binary data in two ways:
+
+- **As a copy:** a byte array in Kotlin, or `Data` and `ArrayBuffer` in Swift. Native code owns the bytes, and changes don't reach JavaScript.
+- **As the JavaScript object:** a typed array. Native code reads and writes the memory of the JavaScript array, without a copy.
+
+## Byte arrays
+
+<LanguageSupport feature="byte-arrays" />
+
+A `ByteArray` in Kotlin and `Data` in Swift hold a copy of the bytes.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+fun reverse(bytes: ByteArray): ByteArray = bytes.reversedArray()
+```
+
+```swift
+@JS
+func reverse(bytes: Data) -> Data {
+  Data(bytes.reversed())
+}
+```
+
+</CodeBlocksTable>
+
+The two languages convert byte arrays to and from different JavaScript types:
+
+| Direction       | Kotlin `ByteArray`                               | Swift `Data`   |
+| --------------- | ------------------------------------------------ | -------------- |
+| From JavaScript | An `ArrayBuffer`, a typed array, or a `DataView` | A `Uint8Array` |
+| To JavaScript   | An `ArrayBuffer`                                 | A `Uint8Array` |
+
+So, to use the same TypeScript type on both platforms, pass a `Uint8Array` to the module. For a result, wrap it with `new Uint8Array(result)`, which works for both an `ArrayBuffer` and a `Uint8Array`.
+
+## Array buffers
+
+<LanguageSupport feature="array-buffers" />
+
+In Swift, `ArrayBuffer` converts to and from a JavaScript `ArrayBuffer`. As an argument, it also accepts a typed array. An `ArrayBuffer` doesn't need a JavaScript runtime, so native code can create it on any thread.
+
+```swift
+@JS
+func makeBuffer(size: Int) -> ArrayBuffer {
+  ArrayBuffer(size: size)
+}
+
+@JS
+func checksum(_ buffer: ArrayBuffer) -> Int {
+  buffer.withUnsafeBytes { bytes in
+    bytes.reduce(0) { $0 &+ Int($1) }
+  }
+}
+```
+
+An array buffer argument holds native memory. When the JavaScript buffer is in the JavaScript heap, the conversion copies it. When the JavaScript buffer already uses native memory, the native buffer uses the same memory without a copy. The `isNativeBacked` property tells which case applies.
+
+To return `Data` without a copy, use `ArrayBuffer.wrap(dataWithoutCopy:)`. This keeps the memory of the `Data` alive for the lifetime of the buffer. JavaScript can then change the bytes of the `Data`, so don't use the `Data` in native code after you return it.
+
+```swift
+@JS
+func readFile(path: String) throws -> ArrayBuffer {
+  let data = try Data(contentsOf: URL(fileURLWithPath: path))
+  return ArrayBuffer.wrap(dataWithoutCopy: data)
+}
+```
+
+In Kotlin, use a `ByteArray` for an array buffer. It accepts an `ArrayBuffer` and returns an `ArrayBuffer`.
+
+## Typed arrays
+
+<LanguageSupport feature="typed-arrays" />
+
+A `TypedArray` argument is the JavaScript typed array, not a copy. Native code reads and writes the memory of the JavaScript array, and JavaScript sees the changes. A `TypedArray` result returns the same JavaScript object.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+fun getRandomValues(typedArray: TypedArray) {
+  val bytes = ByteArray(typedArray.byteLength)
+  secureRandom.nextBytes(bytes)
+  typedArray.write(bytes, 0, bytes.size)
+}
+```
+
+```swift
+@JS
+func fill(_ array: Float32Array, value: Float32) {
+  for index in 0..<array.length {
+    array[index] = value
+  }
+}
+```
+
+</CodeBlocksTable>
+
+In Kotlin, `TypedArray` accepts any typed array, but not a plain `ArrayBuffer`. Use `byteLength`, `read`, and `write` to access the bytes, or `toDirectBuffer()` to get a `ByteBuffer` over the same memory.
+
+In Swift, `TypedArray` accepts any typed array, and its `kind` property tells which one. A concrete class accepts only its own kind and throws for another kind: `Int8Array`, `Int16Array`, `Int32Array`, `Uint8Array`, `Uint8ClampedArray`, `Uint16Array`, `Uint32Array`, `Float32Array`, `Float64Array`, `BigInt64Array`, and `BigUint64Array`. A concrete class reads and writes elements by index, and `rawPointer` gives the address of the first byte.

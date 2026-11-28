@@ -1,0 +1,123 @@
+---
+title: 'Expo Modules API 2.0: Shared objects'
+sidebar_title: Shared objects
+description: Learn how to share native objects with JavaScript as class instances with Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+A shared object is a native object that JavaScript uses as an instance of a JavaScript class.
+
+## Declare a shared object
+
+<LanguageSupport feature="shared-objects" />
+
+A shared object is a subclass of `SharedObject`, directly or not, for example a subclass of `SharedRef<T>`. Add `@ExpoSharedObject` to the class in Kotlin, or `@SharedObject` in Swift, and add `@JS` to the members that JavaScript can use. A module exports the class in the `classes` argument of `@ExpoModule`:
+
+<CodeBlocksTable tabs={['Cache.kt', 'Cache.swift']}>
+
+```kotlin
+@ExpoSharedObject
+class Cache @JS constructor(name: String) : SharedObject() {
+  private val values = mutableMapOf<String, String>()
+
+  @JS
+  fun get(key: String): String? = values[key]
+}
+
+@ExpoModule("MyModule", classes = [Cache::class])
+class MyModule : Module()
+```
+
+```swift
+@SharedObject
+public final class Cache: SharedObject {
+  private var values: [String: String] = [:]
+
+  @JS
+  init(name: String) {
+    // ...
+  }
+
+  @JS
+  func get(_ key: String) -> String? {
+    values[key]
+  }
+}
+
+@ExpoModule("MyModule", classes: [Cache.self])
+public final class MyModule: Module {
+  // ...
+}
+```
+
+</CodeBlocksTable>
+
+In Swift, make the class `public`, the same as a [module class](/modules/v2/reference/modules/#declare-a-module). A Swift class without a superclass is a build error, and the macro shows a fix that adds `: SharedObject`.
+
+The JavaScript class is a property of the module object. Its name is the name of the native class. To use another name, pass it to the annotation or the macro, for example `@ExpoSharedObject("NativeCache")` or `@SharedObject("NativeCache")`.
+
+```ts
+const MyModule = requireNativeModule('MyModule');
+
+const cache = new MyModule.Cache('images');
+cache.get('logo');
+```
+
+A shared object can be an argument or a result of a `@JS` function, so JavaScript can pass it back to native code.
+
+## Constructor
+
+A `@JS constructor` in Kotlin or a `@JS init` in Swift is the constructor of the JavaScript class. A class can have one constructor for JavaScript.
+
+In Kotlin, when no constructor has `@JS`, the only public constructor of the class is the constructor for JavaScript. A class in the `classes` argument must have a constructor for JavaScript. In Swift, a class without a `@JS init` can't be created from JavaScript, but native functions can still return its instances.
+
+In Swift, a subclass of another `@SharedObject` class gets the `@JS` members of its superclass. A member of the subclass replaces an inherited member with the same JavaScript name. If the subclass isn't `final`, JavaScript can't create it with the `@JS init` of its superclass, so give each subclass that JavaScript creates its own `@JS init`.
+
+## Release
+
+When JavaScript no longer uses a shared object, or calls its `release()` method, the native object is released. To free native resources at that time, override `sharedObjectDidRelease()`. In Swift, `sharedObjectWillRelease()` is also called, before the object is removed.
+
+<CodeBlocksTable tabs={['Database.kt', 'Database.swift']}>
+
+```kotlin
+override fun sharedObjectDidRelease() {
+  super.sharedObjectDidRelease()
+  connection.close()
+}
+```
+
+```swift
+override public func sharedObjectDidRelease() {
+  connection.close()
+}
+```
+
+</CodeBlocksTable>
+
+## Static members
+
+<LanguageSupport feature="shared-object-static-members" />
+
+In Swift, `@JS` on a `static` or `class` member binds it to the JavaScript class, not to its instances:
+
+```swift
+@SharedObject
+public final class EncryptionKey: SharedObject {
+  @JS
+  static func generate(size: KeySize?) async -> EncryptionKey {
+    // ...
+  }
+}
+```
+
+```ts
+const key = await MyModule.EncryptionKey.generate(256);
+```
+
+Static members and instance members bind to different JavaScript objects, so they can have the same name.
+
+## Thread safety
+
+Native code can use a shared object from more than one thread, so keep state that more than one thread uses behind a lock or an actor. In Swift, `@SharedObject` adds an `@unchecked Sendable` conformance, the same as `@ExpoModule`. For the details, see [Thread safety of modules and shared objects in Swift](/modules/v2/reference/concurrency/#thread-safety-of-modules-and-shared-objects-in-swift).
