@@ -50,6 +50,8 @@ jobs:
   ios:
     runs_on: macos-large
     image: latest
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout
@@ -98,6 +100,8 @@ jobs:
   android:
     runs_on: linux-large-nested-virtualization
     image: latest
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout
