@@ -2,4 +2,4 @@
 'expo-file-system': patch
 ---
 
-[iOS] Fix a crash on the first upload or download that uses a background session, including `UploadTask`, `File.upload()` and the legacy `uploadAsync` / `downloadAsync`.
+[iOS] Fix a crash on the first transfer that uses a background session: `UploadTask`, `File.upload()` and the legacy `downloadAsync`, `uploadAsync`, `createUploadTask` and `createDownloadResumable`.
