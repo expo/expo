@@ -4,10 +4,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
+        class="text-base leading-[1.4] font-semibold text-default [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="name"
       >
@@ -68,18 +68,18 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Name of your app.
       </p>
       <details
-        class="mb-3 scroll-m-4 rounded-3xl border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-lg border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app"
       >
         <summary
-          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-3xl bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-[7px] bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="mt-1.25 mr-2 ml-1.5 self-baseline"
@@ -103,7 +103,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 leading-[1.4] group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Existing React Native app?
@@ -148,7 +148,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="px-5 py-4 [&_p]:ml-0 [&_pre>pre]:mt-0 [&>*:last-child]:mb-1!"
           >
             <p
-              class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+              class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
               data-text="true"
             >
               Edit the 'Display Name' field in Xcode
@@ -158,10 +158,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
+        class="text-base leading-[1.4] font-semibold text-default [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="splash"
       >
@@ -222,18 +222,18 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for loading and splash screen for standalone apps.
       </p>
       <details
-        class="mb-3 scroll-m-4 rounded-3xl border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-lg border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app-1"
       >
         <summary
-          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-3xl bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-[7px] bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="mt-1.25 mr-2 ml-1.5 self-baseline"
@@ -257,7 +257,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 leading-[1.4] group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Existing React Native app?
@@ -302,7 +302,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="px-5 py-4 [&_p]:ml-0 [&_pre>pre]:mt-0 [&>*:last-child]:mb-1!"
           >
             <p
-              class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+              class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
               data-text="true"
             >
               Set this property using just Xcode
@@ -311,7 +311,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -408,13 +408,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           Determines how the image will be displayed in the splash loading screen.
         </p>
         <div
-          class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -492,7 +492,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </span>
           </div>
           <p
-            class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+            class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
             data-text="true"
           >
             Test sub-sub-property
@@ -500,7 +500,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -578,7 +578,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           Color to fill the loading screen background.
@@ -586,7 +586,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           6 character long hex color string, eg: 
@@ -600,10 +600,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
-        class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
+        class="text-base leading-[1.4] font-semibold text-default [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
         data-heading="true"
         id="intentfilters"
       >
@@ -664,18 +664,18 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </div>
       <p
-        class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+        class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="mb-3 scroll-m-4 rounded-3xl border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-lg border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app-2"
       >
         <summary
-          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-3xl bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-[7px] bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
             class="mt-1.25 mr-2 ml-1.5 self-baseline"
@@ -699,7 +699,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </svg>
           </div>
           <span
-            class="leading-[1.6154] text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 group-hover:text-secondary group-hover:[&_code]:text-secondary"
+            class="text-inherit font-medium relative mr-1 inline scroll-m-5 items-center gap-1.5 leading-[1.4] group-hover:text-secondary group-hover:[&_code]:text-secondary"
             data-text="true"
           >
             Existing React Native app?
@@ -744,7 +744,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="px-5 py-4 [&_p]:ml-0 [&_pre>pre]:mt-0 [&>*:last-child]:mb-1!"
           >
             <p
-              class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+              class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
               data-text="true"
             >
               This is set in AndroidManifest.xml directly.
@@ -781,7 +781,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -859,14 +859,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <p
-          class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+          class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
         </p>
       </div>
       <div
-        class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -944,7 +944,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <div
-          class="overflow-hidden rounded-3xl border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-3xl! [&]:last-of-type:rounded-b-3xl! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-lg! [&]:last-of-type:rounded-b-lg! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"

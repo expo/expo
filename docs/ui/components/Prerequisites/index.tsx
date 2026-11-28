@@ -69,7 +69,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
       <details
         id={heading.current.slug}
         className={mergeClasses(
-          'mb-3 scroll-m-4 rounded-3xl border border-default p-0',
+          'mb-3 scroll-m-4 rounded-lg border border-default p-0',
           '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
@@ -82,7 +82,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         data-md="prerequisites">
         <summary
           className={mergeClasses(
-            'group m-0 flex cursor-pointer items-center justify-between rounded-3xl p-1.5 py-3 pr-4',
+            'group m-0 flex cursor-pointer items-center justify-between rounded-[7px] p-1.5 py-3 pr-4',
             '[details[open]>&]:rounded-b-none',
             'hocus:bg-subtle'
           )}>
@@ -101,7 +101,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               <ListIcon aria-hidden="true" className={mergeClasses('icon-sm text-icon-default')} />
               <p
                 className={mergeClasses(
-                  'relative inline scroll-m-5',
+                  'relative inline scroll-m-5 text-sm leading-[1.4] font-medium text-default',
                   'group-hover:text-secondary group-hover:[&_code]:text-secondary'
                 )}>
                 {intl.formatMessage({ id: 'prerequisitesHeading' })}
@@ -120,7 +120,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </LinkBase>
           </div>
           <div>
-            <p className="text-sm text-secondary" data-md="skip">
+            <p className="text-sm leading-[1.4] font-medium text-secondary" data-md="skip">
               {numberOfRequirements}{' '}
               {intl.formatMessage({
                 id:

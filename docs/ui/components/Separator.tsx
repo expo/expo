@@ -1,3 +1,4 @@
+import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 
 export function Separator() {
@@ -5,9 +6,5 @@ export function Separator() {
   const currentPath = router?.asPath ?? router?.pathname ?? '';
   const isSdkPage = currentPath.includes('/sdk/');
 
-  if (isSdkPage) {
-    return <hr className="mb-6 h-[0.05rem] border-0 bg-palette-gray6 max-md:hidden" />;
-  }
-
-  return <hr className="mt-4 mb-6 h-[0.05rem] border-0 bg-palette-gray6" />;
+  return <div aria-hidden="true" className={mergeClasses('h-12', isSdkPage && 'max-md:hidden')} />;
 }

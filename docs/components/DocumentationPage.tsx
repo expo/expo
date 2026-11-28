@@ -389,7 +389,12 @@ export default function DocumentationPage({
             'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
-        <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>
+        <main
+          className={mergeClasses(
+            'mx-auto',
+            pathname === '/' ? 'w-full max-w-screen-lg' : 'w-full max-w-168 pt-16',
+            'max-lg:px-4 max-lg:pt-5'
+          )}>
           <p className="sr-only">
             This documentation is available as Markdown for AI agents and LLMs. See the{' '}
             <A openInNewTab href="/llms.txt">
@@ -429,7 +434,6 @@ export default function DocumentationPage({
         </main>
         <Footer
           title={title}
-          sourceCodeUrl={sourceCodeUrl}
           packageName={packageName}
           previousPage={previousPage}
           nextPage={nextPage}

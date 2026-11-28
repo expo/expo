@@ -1,7 +1,7 @@
 import { ExpoGoLogo, mergeClasses } from '@expo/styleguide';
 import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
 import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
-import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
+import { Globe02Icon } from '@expo/styleguide-icons/outline/Globe02Icon';
 import { LayoutGrid01Icon } from '@expo/styleguide-icons/outline/LayoutGrid01Icon';
 
 import { PlatformName } from '~/types/common';
@@ -34,7 +34,7 @@ export const PlatformIcon = ({ platform }: PlatformIconProps) => {
       );
     case 'web':
       return (
-        <AtSignIcon
+        <Globe02Icon
           aria-hidden="true"
           className="icon-2xs shrink-0 text-palette-orange12 opacity-80"
         />

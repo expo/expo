@@ -1,5 +1,5 @@
-import { Button, mergeClasses } from '@expo/styleguide';
-import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+import { Button } from '@expo/styleguide';
+import { Star04Icon } from '@expo/styleguide-icons/outline/Star04Icon';
 
 import { FOOTNOTE } from '../Text';
 import * as Tooltip from '../Tooltip';
@@ -16,13 +16,14 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
         <Button
           type="button"
           theme="quaternary"
-          className="justify-center px-2.5"
+          size="2xs"
+          className="h-auto border-0 px-0 hocus:bg-transparent hocus:opacity-80"
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask AI about this page">
-          <div className="flex items-center gap-1.5">
-            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
-            <FOOTNOTE crawlable={false} className="text-palette-purple11">
+          <div className="flex items-center gap-1">
+            <Star04Icon aria-hidden="true" className="icon-xs text-icon-default" />
+            <FOOTNOTE crawlable={false} theme="secondary" className="leading-[1.6]">
               Ask AI
             </FOOTNOTE>
           </div>
@@ -42,13 +43,14 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses('min-h-9 justify-center px-2.5')}
+          size="2xs"
+          className="h-auto border-0 px-0 hocus:bg-transparent hocus:opacity-80"
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask AI about this configuration page">
-          <div className="flex items-center gap-2">
-            <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
-            <FOOTNOTE crawlable={false} className="text-palette-purple11">
+          <div className="flex items-center gap-1">
+            <Star04Icon aria-hidden="true" className="icon-xs text-icon-default" />
+            <FOOTNOTE crawlable={false} theme="secondary" className="leading-[1.6]">
               Ask AI
             </FOOTNOTE>
           </div>

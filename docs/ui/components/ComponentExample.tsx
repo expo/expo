@@ -116,7 +116,7 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
     <Snippet className="mb-4 flex flex-col [&_.code-block-wrapper]:m-0! [&_.code-block-wrapper]:rounded-none! [&_.code-block-wrapper]:border-0!">
       <div
         className={mergeClasses(
-          'flex overflow-hidden rounded-3xl border border-default max-lg:flex-col',
+          'flex overflow-hidden rounded-lg border border-default max-lg:flex-col',
           isLandscape && 'flex-col'
         )}>
         <div className="flex min-w-0 flex-1 flex-col [&>div:first-child]:rounded-none [&>div:first-child]:border-0 [&>div:first-child]:border-b [&>div:first-child]:border-default">

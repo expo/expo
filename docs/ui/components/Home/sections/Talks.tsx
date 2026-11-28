@@ -1,36 +1,50 @@
-import { Button, mergeClasses } from '@expo/styleguide';
-import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
+import { mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { AtSignIcon } from '@expo/styleguide-icons/outline/AtSignIcon';
 import { Users02Icon } from '@expo/styleguide-icons/outline/Users02Icon';
 import { type PropsWithChildren } from 'react';
 
 import { TALKS, Talk } from '~/public/static/talks';
-import { Header } from '~/ui/components/Home/components';
+import { CardText, PillButton, SectionHeader } from '~/ui/components/Home/components';
 import { CALLOUT, LABEL, A } from '~/ui/components/Text';
+
+const HOME_TALKS_COUNT = 4;
 
 export function Talks() {
   return (
     <>
-      <div className="mt-3 flex items-center gap-2">
-        <Header
-          title="Watch our latest talks"
-          description="Explore our team's presentations. Stay informed and gain expertise."
-          className="mt-0"
-        />
-        <Button
-          theme="secondary"
-          className="ml-auto"
-          rightSlot={<ArrowRightIcon aria-hidden="true" />}
-          href="/additional-resources/#talks">
-          See more talks
-        </Button>
+      <SectionHeader
+        title="Watch our latest talks"
+        className="items-center"
+        action={<PillButton href="/additional-resources/#talks">view all</PillButton>}
+      />
+      <div className="flex flex-wrap gap-6">
+        {TALKS.filter(talk => talk.home)
+          .slice(0, HOME_TALKS_COUNT)
+          .map(({ title, description, event, videoId, thumbnail, link }) => (
+            <A
+              key={videoId}
+              openInNewTab
+              isStyled
+              href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
+              className="flex w-116.75 items-start gap-4 rounded-lg p-6 outline-(--expo-theme-border-default) outline-[0.5px] outline-offset-[-0.5px] max-md:w-full">
+              <img
+                src={
+                  thumbnail
+                    ? `/static/thumbnails/${thumbnail}`
+                    : `https://i.ytimg.com/vi_webp/${videoId}/sddefault.webp`
+                }
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="h-[67.5px] w-30 shrink-0 rounded-sm object-cover"
+              />
+              <CardText title={title} className="min-w-0 flex-1">
+                {description ? `${description} @ ${event}` : event}
+              </CardText>
+            </A>
+          ))}
       </div>
-      <TalkGridWrapper>
-        {TALKS.filter(talk => talk.home).map(talk => (
-          <TalkGridCell key={talk.videoId} {...talk} />
-        ))}
-      </TalkGridWrapper>
     </>
   );
 }
@@ -67,7 +81,7 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'relative flex h-full min-h-66.5 flex-col justify-between overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
+        'relative flex h-full min-h-66.5 flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
         '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className

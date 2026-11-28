@@ -5,7 +5,7 @@ type SnippetProps = HTMLAttributes<HTMLDivElement>;
 
 export const Snippet = ({ children, className, ...rest }: SnippetProps) => (
   <div
-    className={mergeClasses('mb-4 flex flex-col overflow-clip rounded-3xl last:mb-0', className)}
+    className={mergeClasses('mb-5 flex flex-col overflow-clip rounded-lg last:mb-0', className)}
     {...rest}>
     {children}
   </div>

@@ -88,6 +88,10 @@ export default function App({ Component, pageProps }: AppProps) {
         text {
           font-family: ${regularFont.style.fontFamily}, sans-serif;
         }
+        body {
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
         code,
         pre,
         table.diff {

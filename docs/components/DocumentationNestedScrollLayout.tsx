@@ -1,6 +1,5 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { ChevronLeftIcon } from '@expo/styleguide-icons/outline/ChevronLeftIcon';
-import { ChevronRightIcon } from '@expo/styleguide-icons/outline/ChevronRightIcon';
+import { LayoutLeftIcon } from '@expo/styleguide-icons/outline/LayoutLeftIcon';
 import {
   cloneElement,
   type PropsWithChildren,
@@ -13,8 +12,10 @@ import {
 } from 'react';
 
 import { ScrollContainer, type ScrollContainerHandle } from '~/components/ScrollContainer';
+import { ThemeSelector } from '~/ui/components/Header/ThemeSelector';
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
+import { SidebarTop } from '~/ui/components/Sidebar/SidebarTop';
 import { TableOfContentsProps } from '~/ui/components/TableOfContents';
 import * as Tooltip from '~/ui/components/Tooltip';
 
@@ -113,56 +114,52 @@ export default function DocumentationNestedScrollLayout({
   return (
     <div
       data-nested-scroll-layout
-      className="mx-auto flex h-(--nested-scroll-layout-height) w-full flex-col overflow-hidden">
-      <div className="max-lg:sticky">{header}</div>
+      className="mx-auto flex h-(--nested-scroll-layout-height) w-full flex-col overflow-hidden lg:bg-subtle">
+      <div className="lg:hidden max-lg:sticky">{header}</div>
       <div
         className={mergeClasses(
           'mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between',
+          'lg:h-(--nested-scroll-layout-height) lg:px-4 lg:pt-1 lg:pb-4',
           'lg:[reading-flow:grid-rows] lg:grid lg:grid-rows-1',
-          isMounted
-            ? 'lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]'
-            : 'lg:grid-cols-[17.5rem_minmax(0,1fr)]',
-          !isMounted && !hideTOC && 'xl:grid-cols-[17.5rem_minmax(0,1fr)_17.5rem]'
+          isMounted ? 'lg:grid-cols-[auto_minmax(0,1fr)]' : 'lg:grid-cols-[15.625rem_minmax(0,1fr)]'
         )}>
         <div
           className={mergeClasses(
-            'relative flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
-            'lg:col-start-2 lg:row-start-1',
-            'max-lg:overflow-auto',
+            'flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
+            'lg:relative lg:col-start-2 lg:row-start-1 lg:h-[calc(var(--nested-scroll-layout-height)-1.25rem)] lg:rounded-lg lg:bg-default lg:shadow-sm lg:after:pointer-events-none lg:after:absolute lg:after:inset-0 lg:after:rounded-[inherit] lg:after:border-[0.5px] lg:after:border-(--expo-theme-border-secondary)',
             isMobileMenuVisible && 'hidden'
           )}>
-          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
-            <div
-              className={mergeClasses(
-                'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
-                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
-              )}>
-              {children}
-            </div>
-          </ScrollContainer>
-        </div>
-        {!hideTOC && (
-          <div
-            className={mergeClasses(
-              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
-              'xl:col-start-3 xl:row-start-1 max-xl:hidden'
-            )}>
-            <ScrollContainer ref={sidebarRightRef}>
-              {cloneElement(sidebarRight, {
-                selfRef: sidebarRightRef,
-                contentRef,
-              })}
+          <div className="relative flex h-full min-w-0 flex-1 overflow-hidden max-lg:overflow-auto">
+            <ScrollContainer
+              ref={contentRef}
+              scrollHandler={scrollHandler}
+              className="scrollbar-none [&::-webkit-scrollbar]:hidden">
+              <div
+                className={mergeClasses(
+                  'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
+                  !hideTOC && 'xl:mr-20 xl:ml-auto xl:max-w-168',
+                  isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
+                )}>
+                {children}
+              </div>
             </ScrollContainer>
           </div>
-        )}
+          {!hideTOC && (
+            <div className="flex h-full w-[calc((100%-60rem)/2+13rem)] shrink-0 flex-col overflow-hidden max-xl:hidden">
+              <ScrollContainer
+                ref={sidebarRightRef}
+                className="scrollbar-none [&::-webkit-scrollbar]:hidden">
+                {cloneElement(sidebarRight, {
+                  selfRef: sidebarRightRef,
+                  contentRef,
+                })}
+              </ScrollContainer>
+            </div>
+          )}
+        </div>
         <div className="relative h-full lg:col-start-1 lg:row-start-1 max-lg:hidden">
-          {onSidebarToggle ? (
-            <div
-              className={mergeClasses(
-                'absolute z-20 flex items-center justify-center transition-all duration-200 ease-out',
-                'bottom-6',
-                isSidebarCollapsed ? 'left-5 translate-x-0' : 'left-70 -translate-x-1/2'
-              )}>
+          {onSidebarToggle && isSidebarCollapsed ? (
+            <div className="absolute bottom-6 left-2 z-20 flex items-center justify-center">
               <Tooltip.Root delayDuration={300}>
                 <Tooltip.Trigger asChild>
                   <Button
@@ -172,23 +169,14 @@ export default function DocumentationNestedScrollLayout({
                     className={mergeClasses(
                       'inline-flex size-9 items-center justify-center rounded-full border p-0! transition-colors duration-150 ease-out',
                       'shadow-sm',
-                      isSidebarCollapsed
-                        ? 'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5'
-                        : 'border-default bg-default text-icon-secondary',
+                      'border-palette-gray5 bg-palette-gray4 text-icon-secondary dark:border-palette-gray6 dark:bg-palette-gray5',
                       'hover:bg-element focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:outline-none'
                     )}
-                    aria-label={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                    title={isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                    aria-pressed={!isSidebarCollapsed}
+                    aria-label="Show navigation"
+                    title="Show navigation"
+                    aria-pressed={false}
                     onClick={onSidebarToggle}>
-                    {isSidebarCollapsed ? (
-                      <ChevronRightIcon aria-hidden="true" className="icon-sm" />
-                    ) : (
-                      <ChevronLeftIcon aria-hidden="true" className="icon-sm" />
-                    )}
-                    <span className="sr-only">
-                      {isSidebarCollapsed ? 'Show navigation' : 'Hide navigation'}
-                    </span>
+                    <LayoutLeftIcon aria-hidden="true" className="icon-sm" />
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content sideOffset={8} className="max-w-65 text-center text-sm">
@@ -199,19 +187,31 @@ export default function DocumentationNestedScrollLayout({
           ) : null}
           <div
             className={mergeClasses(
-              'flex h-full max-w-70 flex-col overflow-hidden border-r border-r-default transition-[max-width,opacity,width] duration-200 ease-out will-change-[max-width,width,opacity]',
-              isSidebarCollapsed ? 'w-0 max-w-0 border-r-0 opacity-0' : 'w-70 max-w-70 opacity-100'
+              'flex h-full flex-col overflow-hidden transition-[max-width,opacity,width,margin] duration-200 ease-out will-change-[max-width,width,opacity,margin]',
+              isSidebarCollapsed
+                ? 'mr-0 w-0 max-w-0 opacity-0'
+                : 'mr-4 w-58.5 max-w-58.5 opacity-100'
             )}>
             {isSidebarCollapsed ? null : (
               <>
+                <SidebarTop
+                  subgroup={sidebarActiveGroup === 'archive' ? 'Archive' : undefined}
+                  onCollapse={onSidebarToggle}
+                />
                 <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
                 <ScrollContainer
                   ref={sidebarRef}
                   scrollPosition={sidebarScrollPosition}
-                  className="pt-1.5">
+                  className="scrollbar-none pt-1.5 [&::-webkit-scrollbar]:hidden">
                   {sidebar}
                   <SidebarFooter />
                 </ScrollContainer>
+                <div className="mt-px shrink-0">
+                  <ThemeSelector
+                    ariaLabel="Theme selector (sidebar)"
+                    inactiveIconClassName="text-palette-gray8 dark:text-icon-secondary"
+                  />
+                </div>
               </>
             )}
           </div>

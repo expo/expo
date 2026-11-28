@@ -101,9 +101,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
         'cursor-pointer decoration-0',
         'hocus:opacity-80',
         !isStyled &&
-          'font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline',
-        !isStyled &&
-          '[&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link',
+          '[text-decoration-skip-ink:none] [text-underline-position:from-font] text-inherit underline decoration-from-font [&_code]:underline',
         className
       )}
       {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
@@ -158,29 +156,19 @@ function getTextColorClassName(theme?: TextTheme) {
 export const H1 = createTextComponent(
   TextElement.H1,
   mergeClasses(
-    'text-[31px] leading-[1.29] font-bold tracking-[-0.022rem]',
+    'heading-3xl tracking-[-1px] text-default',
     'my-2 [&_code]:text-[90%]',
-    'max-md:text-[27px] max-md:leading-[1.3333]',
-    'max-sm:text-[23px] max-sm:leading-[1.3913]'
+    'max-md:text-[28px]',
+    'max-sm:text-[24px]'
   )
 );
 export const RawH2 = createTextComponent(
   TextElement.H2,
-  mergeClasses(
-    'text-[25px] leading-[1.4] font-bold tracking-[-0.021rem]',
-    'mt-8 mb-3.5 [&_code]:text-[90%]',
-    'max-md:text-[22px] max-md:leading-[1.409]',
-    'max-sm:text-[19px] max-sm:leading-[1.5263]'
-  )
+  mergeClasses('heading-xl text-default', 'mt-12 mb-5 [&_code]:text-[90%]')
 );
 export const RawH3 = createTextComponent(
   TextElement.H3,
-  mergeClasses(
-    'text-[20px] leading-normal font-semibold tracking-[-0.017rem]',
-    'mt-7 mb-3 [&_code]:text-[90%]',
-    'max-md:text-[18px] max-md:leading-[1.5555]',
-    'max-sm:text-[16px] max-sm:leading-relaxed'
-  )
+  mergeClasses('heading-base text-default', 'my-5 [&_code]:text-[90%]')
 );
 export const RawH4 = createTextComponent(
   TextElement.H4,
@@ -199,7 +187,7 @@ export const RawH5 = createTextComponent(
 
 export const P = createTextComponent(
   TextElement.P,
-  'font-normal text-base [&_strong]:wrap-break-word'
+  'text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word'
 );
 export const CODE = createTextComponent(
   TextElement.CODE,
@@ -210,7 +198,7 @@ export const CODE = createTextComponent(
 );
 export const LI = createTextComponent(
   TextElement.LI,
-  mergeClasses('text-base leading-relaxed font-normal', 'mb-2')
+  'text-sm leading-[1.4] font-medium text-secondary'
 );
 export const HEADLINE = createTextComponent(TextElement.P, 'font-medium text-base');
 export const LABEL = createTextComponent(
@@ -230,7 +218,7 @@ export const CAPTION = createTextComponent(
   TextElement.P,
   'font-normal text-[12px] leading-[1.6154]'
 );
-export const BOLD = createTextComponent(TextElement.SPAN, 'font-semibold');
+export const BOLD = createTextComponent(TextElement.SPAN, 'leading-[inherit] font-semibold');
 export const DEMI = createTextComponent(TextElement.SPAN, 'font-medium');
 export const UL = createTextComponent(
   TextElement.UL,

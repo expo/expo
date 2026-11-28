@@ -136,7 +136,7 @@ function StageDiagram({ stages }: { stages: Stage[] }) {
     .join('\n→ ');
   return (
     <div
-      className="@container my-5 rounded-3xl border border-default bg-default p-4"
+      className="@container my-5 rounded-lg border border-default bg-default p-4"
       data-md="diagram"
       data-md-alt={alt}>
       <div className="grid grid-cols-1 gap-3 @lg:grid-cols-2 @2xl:grid-cols-3 @5xl:flex @5xl:gap-2">

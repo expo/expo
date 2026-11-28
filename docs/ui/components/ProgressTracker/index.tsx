@@ -62,7 +62,7 @@ export function ProgressTracker({
 
   return (
     <>
-      <div className="mx-auto flex w-full flex-col gap-4 rounded-3xl border-2 border-palette-gray4 px-4 py-5">
+      <div className="mx-auto flex w-full flex-col gap-4 rounded-lg border-[0.5px] border-default px-4 py-5">
         <SuccessCheckmark
           size="sm"
           className={mergeClasses(
@@ -71,14 +71,14 @@ export function ProgressTracker({
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="flex items-center text-center heading-lg text-default">
+          <p className="flex items-center text-center heading-base text-default">
             <BookOpen02Icon
               aria-hidden="true"
               className="mr-2 size-6! text-icon-secondary max-md:hidden"
             />{' '}
             {chapterTitle ?? currentChapter.title}
           </p>
-          <p className="max-w-[60ch] pb-2 text-center leading-normal text-secondary">
+          <p className="max-w-[60ch] pb-2 text-center text-sm leading-[1.4] font-medium text-secondary">
             {summary ?? currentChapter.summary}
           </p>
         </div>

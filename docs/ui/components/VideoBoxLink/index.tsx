@@ -43,7 +43,7 @@ export function VideoBoxLink({
         openInNewTab
         href={`https://www.youtube.com/watch?v=${videoId}${time ? `&t=${time}` : ''}`}
         className={mergeClasses(
-          'group relative flex items-stretch overflow-hidden rounded-3xl border border-default bg-default shadow-xs transition',
+          'group relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
           'hocus:bg-subtle hocus:shadow-sm',
           'max-sm:flex-col',
           '[&+hr]:mt-6!',
@@ -71,9 +71,13 @@ export function VideoBoxLink({
           </div>
         </div>
         <div className="flex flex-col justify-center gap-1 px-4 py-2">
-          <LABEL className="flex items-center gap-1.5 leading-normal">{title}</LABEL>
+          <LABEL className="flex items-center gap-1.5 text-[16px] leading-[1.4] font-semibold tracking-normal">
+            {title}
+          </LABEL>
           {description && (
-            <CALLOUT theme="secondary" className="flex items-center gap-2">
+            <CALLOUT
+              theme="secondary"
+              className="flex items-center gap-2 leading-[1.4] font-medium tracking-normal">
               {description}
             </CALLOUT>
           )}

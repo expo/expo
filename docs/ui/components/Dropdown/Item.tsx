@@ -33,9 +33,9 @@ export function Item({
     <DropdownMenu.Item
       aria-disabled={disabled}
       className={mergeClasses(
-        'group relative z-40 flex cursor-pointer items-center justify-between rounded-lg px-2 py-1 transition-colors select-none',
-        'hover:outline-0 hocus:bg-hover',
-        disabled && 'cursor-default opacity-60 hocus:bg-default'
+        'group relative z-40 flex h-6.75 cursor-pointer items-center justify-between rounded-sm p-1.5 transition-colors select-none',
+        'hover:outline-0 data-highlighted:bg-element',
+        disabled && 'cursor-default opacity-60 data-highlighted:bg-default'
       )}
       onSelect={event => {
         // prevent default behavior of closing the menu without using pointer-events-none on the
@@ -55,18 +55,18 @@ export function Item({
         onSelect?.(event);
       }}
       {...rest}>
-      <div className="flex flex-1 flex-col gap-0.5">
+      <div className="flex flex-1 flex-col gap-1">
         <div
           className={mergeClasses(
             'flex items-center justify-between transition-colors',
             disabled && 'pointer-events-none'
           )}>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {Icon && (
               <Icon
                 aria-hidden="true"
                 className={mergeClasses(
-                  'icon-sm text-icon-default transition-colors',
+                  'icon-2xs text-icon-default transition-colors',
                   destructive
                     ? 'group-hocus:text-icon-danger group-data-[highlighted]:text-icon-danger'
                     : 'group-hocus:text-icon-secondary group-data-[highlighted]:text-icon-secondary'
@@ -76,10 +76,10 @@ export function Item({
             <CALLOUT
               theme={destructive ? 'danger' : 'default'}
               className={mergeClasses(
-                'transition-colors',
+                'text-xs leading-[1.6] font-medium tracking-normal transition-colors',
                 destructive
                   ? 'group-hocus:text-danger group-data-[highlighted]:text-danger'
-                  : 'group-hocus:text-secondary group-data-[highlighted]:text-secondary'
+                  : 'text-secondary'
               )}>
               {label}
             </CALLOUT>

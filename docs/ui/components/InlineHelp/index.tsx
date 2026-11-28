@@ -1,8 +1,8 @@
 import { mergeClasses } from '@expo/styleguide';
-import { AlertCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/AlertCircleDuotoneIcon';
-import { AlertTriangleDuotoneIcon } from '@expo/styleguide-icons/duotone/AlertTriangleDuotoneIcon';
-import { InfoCircleDuotoneIcon } from '@expo/styleguide-icons/duotone/InfoCircleDuotoneIcon';
-import { XSquareDuotoneIcon } from '@expo/styleguide-icons/duotone/XSquareDuotoneIcon';
+import { AlertCircleIcon } from '@expo/styleguide-icons/outline/AlertCircleIcon';
+import { AlertTriangleIcon } from '@expo/styleguide-icons/outline/AlertTriangleIcon';
+import { XCircleIcon } from '@expo/styleguide-icons/outline/XCircleIcon';
+import { InfoCircleSolidIcon } from '@expo/styleguide-icons/solid/InfoCircleSolidIcon';
 import {
   Children,
   cloneElement,
@@ -67,12 +67,11 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
   return (
     <blockquote
       className={mergeClasses(
-        'mb-4 flex gap-2.5 rounded-3xl border border-default bg-subtle py-3 pr-4 pl-3.5 shadow-xs',
-        size === 'sm' && 'gap-2 px-3 py-2.5',
+        'mb-5 flex gap-2 rounded-lg border-0.5 border-default p-[15.5px]',
+        size === 'sm' && 'p-3',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
-        '[&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4]',
-        'dark:[&_a]:text-link dark:[&_a:visited]:text-link',
+        '[&_a]:text-default [&_a]:underline [&_a:visited]:text-default [&_a_*]:text-inherit',
         getCalloutColor(finalType),
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:mb-0!',
@@ -83,16 +82,18 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
       <Icon
         aria-hidden="true"
         className={mergeClasses(
-          'mt-1 select-none',
-          size === 'sm' ? 'mt-0.75 icon-xs' : 'icon-sm',
+          'select-none',
+          size === 'sm' ? 'mt-0.5 icon-sm' : 'icon-md',
           getCalloutIconColor(finalType)
         )}
       />
       <div
         className={mergeClasses(
-          'w-full leading-normal text-default',
+          'w-full text-sm leading-[1.4] font-medium text-default',
+          '[&_:is(p,li)]:text-sm [&_:is(p,li)]:leading-[1.4] [&_:is(p,li)]:font-medium [&_:is(p,li)]:text-default',
+          '[&_:is(p,li)>span]:leading-[1.4]',
           'last:mb-0',
-          size === 'sm' && 'text-sm [&_code]:text-[90%] [&_p]:text-sm'
+          size === 'sm' && '[&_code]:text-[90%]'
         )}>
         {renderedChildren}
       </div>
@@ -104,62 +105,50 @@ function getCalloutColor(type: CalloutType) {
   switch (type) {
     case 'warning':
       return mergeClasses(
-        'border-warning bg-warning',
+        'border-palette-yellow6 bg-palette-yellow3/40',
         `[&_code]:border-palette-yellow5 [&_code]:bg-palette-yellow4`,
         `selection:bg-palette-yellow5 dark:selection:bg-palette-yellow6`,
         `dark:[&_code]:border-palette-yellow6 dark:[&_code]:bg-palette-yellow5`
       );
     case 'important':
       return mergeClasses(
-        'border-palette-purple7 bg-palette-purple3',
+        'border-palette-purple6 bg-palette-purple3/40',
         `[&_code]:border-palette-purple5 [&_code]:bg-palette-purple4`,
         `selection:bg-palette-purple5 dark:selection:bg-palette-purple6`,
         `dark:[&_code]:border-palette-purple6 dark:[&_code]:bg-palette-purple5`
       );
     case 'error':
       return mergeClasses(
-        'border-danger bg-danger',
+        'border-palette-red6 bg-palette-red3/40',
         `[&_code]:border-palette-red6 [&_code]:bg-palette-red5`,
         `selection:bg-palette-red5 dark:selection:bg-palette-red6`
       );
-    case 'info':
-      return mergeClasses(
-        'border-info bg-info',
-        `[&_code]:border-palette-blue5 [&_code]:bg-palette-blue4`,
-        `dark:selection:bg-palette-blue6`
-      );
-    case 'info-light':
-      return mergeClasses('bg-default');
     default:
-      return null;
+      return 'bg-[#FBFCFD] dark:bg-screen';
   }
 }
 
 function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => ReactElement {
   switch (type) {
     case 'warning':
-      return AlertTriangleDuotoneIcon;
+      return AlertTriangleIcon;
     case 'important':
-      return AlertCircleDuotoneIcon;
+      return AlertCircleIcon;
     case 'error':
-      return XSquareDuotoneIcon;
+      return XCircleIcon;
     default:
-      return InfoCircleDuotoneIcon;
+      return InfoCircleSolidIcon;
   }
 }
 
 function getCalloutIconColor(type: CalloutType) {
   switch (type) {
     case 'warning':
-      return 'text-warning';
+      return 'text-palette-yellow11';
     case 'important':
       return 'text-palette-purple11';
     case 'error':
-      return 'text-danger';
-    case 'info':
-      return 'text-info';
-    case 'info-light':
-      return 'text-icon-secondary';
+      return 'text-palette-red11';
     default:
       return 'text-icon-default';
   }

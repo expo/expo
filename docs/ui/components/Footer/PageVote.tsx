@@ -1,80 +1,52 @@
-import { Button, mergeClasses } from '@expo/styleguide';
-import { ThumbsDownDuotoneIcon } from '@expo/styleguide-icons/duotone/ThumbsDownDuotoneIcon';
-import { ThumbsUpDuotoneIcon } from '@expo/styleguide-icons/duotone/ThumbsUpDuotoneIcon';
-import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
-import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
+import { ButtonBase } from '@expo/styleguide';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
+import { XCloseIcon } from '@expo/styleguide-icons/outline/XCloseIcon';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 
 import { reportPageVote } from '~/providers/Analytics';
-import { CALLOUT } from '~/ui/components/Text';
+import { FOOTNOTE } from '~/ui/components/Text';
+
+const voteButtonClassName =
+  'flex items-center rounded-[24px] border-[0.5px] border-default p-[7.5px] text-icon-default hocus:bg-subtle';
 
 export const PageVote = () => {
   const intl = useIntl();
   const [userVoted, setUserVoted] = useState(false);
 
+  if (userVoted) {
+    return (
+      <FOOTNOTE theme="secondary" className="py-2">
+        {intl.formatMessage({ id: 'footerThankYouForVote' })}
+      </FOOTNOTE>
+    );
+  }
+
   return (
-    <div
-      className={mergeClasses(
-        'mb-4 flex min-h-8 items-center',
-        userVoted ? 'content-start' : 'content-center',
-        'max-md:mx-auto max-md:mb-8 max-md:justify-center'
-      )}>
-      {userVoted ? (
-        <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerThankYouForVote' })}</CALLOUT>
-      ) : (
-        <div className="flex flex-row items-center gap-2 max-md:flex-col">
-          <CALLOUT theme="secondary" weight="medium">
-            {intl.formatMessage({ id: 'footerWasHelpful' })}
-          </CALLOUT>
-          <div>
-            <Button
-              theme="secondary"
-              size="xs"
-              aria-label="Vote up"
-              className="group mx-1 min-w-10 text-center"
-              leftSlot={
-                <>
-                  <ThumbsUpIcon
-                    aria-hidden="true"
-                    className="icon-sm group-hover:hidden group-focus-visible:hidden"
-                  />
-                  <ThumbsUpDuotoneIcon
-                    aria-hidden="true"
-                    className="hidden icon-sm text-icon-success group-hover:flex group-focus-visible:flex"
-                  />
-                </>
-              }
-              onClick={() => {
-                reportPageVote({ status: true });
-                setUserVoted(true);
-              }}
-            />
-            <Button
-              theme="secondary"
-              size="xs"
-              aria-label="Vote down"
-              className="group mx-1 min-w-10 text-center"
-              leftSlot={
-                <>
-                  <ThumbsDownIcon
-                    aria-hidden="true"
-                    className="icon-sm group-hover:hidden group-focus-visible:hidden"
-                  />
-                  <ThumbsDownDuotoneIcon
-                    aria-hidden="true"
-                    className="hidden icon-sm text-icon-danger group-hover:flex group-focus-visible:flex"
-                  />
-                </>
-              }
-              onClick={() => {
-                reportPageVote({ status: false });
-                setUserVoted(true);
-              }}
-            />
-          </div>
-        </div>
-      )}
+    <div className="flex flex-col gap-1">
+      <p className="py-2 eyebrow text-[#80838d] dark:text-tertiary">
+        {intl.formatMessage({ id: 'footerWasHelpful' })}
+      </p>
+      <div className="flex items-center gap-1 rounded-[48px] py-1">
+        <ButtonBase
+          aria-label="Vote up"
+          className={voteButtonClassName}
+          onClick={() => {
+            reportPageVote({ status: true });
+            setUserVoted(true);
+          }}>
+          <CheckIcon aria-hidden="true" className="icon-xs" />
+        </ButtonBase>
+        <ButtonBase
+          aria-label="Vote down"
+          className={voteButtonClassName}
+          onClick={() => {
+            reportPageVote({ status: false });
+            setUserVoted(true);
+          }}>
+          <XCloseIcon aria-hidden="true" className="icon-xs" />
+        </ButtonBase>
+      </div>
     </div>
   );
 };

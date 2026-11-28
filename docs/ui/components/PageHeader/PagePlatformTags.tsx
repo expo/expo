@@ -9,8 +9,8 @@ type Props = {
 };
 
 const CLIENT_PLATFORM_LABELS: Record<string, string> = {
-  'expo-go': 'Included in Expo Go',
-  'expo-widgets': 'Available in Widgets',
+  'expo-go': 'included in Expo Go',
+  'expo-widgets': 'available in Widgets',
 };
 
 export function PagePlatformTags({ platforms, className }: Props) {
@@ -21,23 +21,18 @@ export function PagePlatformTags({ platforms, className }: Props) {
   const orderedPlatforms = [...standardPlatforms, ...runtimePlatformsOrdered];
 
   return (
-    <div className={mergeClasses('inline-flex flex-wrap gap-y-1.5', className)}>
+    <div className={mergeClasses('inline-flex flex-wrap gap-1', className)}>
       {orderedPlatforms.map(platform => {
         const text = platform.includes('*') ? platform.replace('*', ' (device only)') : platform;
         const platformLower = platform.toLowerCase();
         const clientLabel = CLIENT_PLATFORM_LABELS[platformLower];
 
         if (!clientLabel) {
-          return <PlatformTag key={text} platform={text} className="rounded-full px-2.5 py-1.5" />;
+          return <PlatformTag key={text} platform={text} className="mr-0" />;
         }
 
         return (
-          <PlatformTag
-            key={text}
-            platform={platformLower}
-            label={clientLabel}
-            className="rounded-full border-palette-gray4 bg-palette-gray3 px-2.5 py-1.5 text-palette-gray12 dark:border-palette-gray4 dark:bg-palette-gray4"
-          />
+          <PlatformTag key={text} platform={platformLower} label={clientLabel} className="mr-0" />
         );
       })}
     </div>

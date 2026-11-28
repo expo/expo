@@ -16,39 +16,41 @@ describe(InlineHelp, () => {
   it('renders inline help with default icon from info type', () => {
     render(<InlineHelp type="info">Hello</InlineHelp>);
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
-    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-info');
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-md text-icon-default');
   });
 
   it('renders inline help with default icon from warning type', () => {
     render(<InlineHelp type="warning">Hello</InlineHelp>);
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
-    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-warning');
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-md text-palette-yellow11');
   });
 
   it('renders inline help with default icon from error type', () => {
     render(<InlineHelp type="error">Hello</InlineHelp>);
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
-    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-sm text-danger');
+    expect(screen.getByRole('img', { hidden: true })).toHaveClass('icon-md text-palette-red11');
   });
 
   it('renders inline help with warning style from warning type', () => {
     render(<InlineHelp type="warning">Hello</InlineHelp>);
-    expect(screen.getByTestId('callout-container')).toHaveClass('bg-warning');
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-yellow3/40');
   });
 
   it('renders inline help with error style from error type', () => {
     render(<InlineHelp type="error">Hello</InlineHelp>);
-    expect(screen.getByTestId('callout-container')).toHaveClass('bg-danger');
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-red3/40');
   });
 
   it('renders inline help with important style from important type', () => {
     render(<InlineHelp type="important">Hello</InlineHelp>);
-    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-purple3');
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-purple3/40');
   });
 
   it('renders inline help with info style from info type', () => {
     render(<InlineHelp type="info">Hello</InlineHelp>);
-    expect(screen.getByTestId('callout-container')).toHaveClass('bg-info border-info');
+    expect(screen.getByTestId('callout-container')).toHaveClass(
+      'bg-[#FBFCFD] dark:bg-screen border-default'
+    );
   });
 
   it('renders from translated Markdown', () => {
@@ -62,7 +64,7 @@ describe(InlineHelp, () => {
       <ReactMarkdown components={{ blockquote: InlineHelp }}>{`> **warning** Hello`}</ReactMarkdown>
     );
     expect(screen.getByTestId('callout-container')).toBeInTheDocument();
-    expect(screen.getByTestId('callout-container')).toHaveClass('bg-warning');
+    expect(screen.getByTestId('callout-container')).toHaveClass('bg-palette-yellow3/40');
     expect(screen.getByRole('img', { hidden: true })).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });

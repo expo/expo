@@ -1,4 +1,3 @@
-import { mergeClasses } from '@expo/styleguide';
 import { useRouter } from 'next/compat/router';
 
 import { WithTestRequire } from '~/types/common';
@@ -50,8 +49,9 @@ export function PageHeader({
     packageName,
     path: router?.isReady ? currentPath : normalizePath(currentPath),
   });
-  const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
+  const showPageActions = packageName ? !hasDynamicData(currentPath) : showMarkdownActions;
   const isSdkPage = currentPath.includes('/sdk/');
+  const isSdkPackagePage = !!packageName && isSdkPage;
   const hasAskAIButton = showAskAIButton && !!onAskAIClick;
 
   const renderAskAIButton = () => {
@@ -66,10 +66,10 @@ export function PageHeader({
     return <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />;
   };
 
-  if (packageName && isSdkPage) {
-    return (
-      <>
-        <div className="mt-2 flex flex-col">
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2 xl:gap-4">
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
           <H1 className="my-0!">
             {iconUrl && (
               <img
@@ -82,115 +82,41 @@ export function PageHeader({
             {title}
           </H1>
           {description && (
-            <P theme="secondary" data-description="true" className="mt-2">
+            <P
+              theme="secondary"
+              weight="medium"
+              data-description="true"
+              className="text-sm leading-[1.4]">
               {description}
             </P>
           )}
-          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3" />}
-          {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-2" />}
         </div>
-        <div
-          className={mergeClasses(
-            'mt-4 flex flex-wrap items-center justify-between gap-3 pb-1',
-            'max-md:flex-col max-md:items-stretch max-md:gap-0 max-md:pb-0'
-          )}>
-          <div
-            className={mergeClasses(
-              'flex flex-wrap items-center gap-2',
-              'max-md:w-full max-md:items-center max-md:justify-between max-md:border-b max-md:border-default max-md:py-3'
-            )}>
-            <div className="flex flex-wrap items-center">{renderAskAIButton()}</div>
-            <div className="flex items-center gap-1.5">
-              <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-            </div>
-          </div>
-          <div
-            className={mergeClasses(
-              'flex flex-wrap items-center gap-3',
-              'max-md:w-full max-md:justify-between max-md:py-3'
-            )}>
-            <PagePackageVersion
-              packageName={packageName}
-              platforms={platforms}
-              testRequire={testRequire}
-              showMarkdownActions={showPackageMarkdown}
-              className="max-md:w-full max-md:justify-between"
-            />
-          </div>
+        <div className="flex shrink-0 items-center gap-1 empty:hidden xl:order-first xl:-mt-10.75 xl:self-end">
+          {!isSdkPackagePage && (
+            <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+          )}
+          {!isSdkPackagePage && askAIButtonVariant === 'config' && renderAskAIButton()}
+          {showPageActions && <MarkdownActionsDropdown isSplit={isSdkPackagePage} />}
+          {!isSdkPackagePage && askAIButtonVariant !== 'config' && renderAskAIButton()}
         </div>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <div
-        className={mergeClasses(
-          'mt-2 flex items-start justify-between gap-4',
-          'max-xl:flex-col max-xl:items-start'
-        )}>
-        <H1 className="my-0!">
-          {iconUrl && (
-            <img
-              src={iconUrl}
-              className="relative -top-0.5 float-left mr-3.5 size-10.5"
-              alt={`Expo ${title} icon`}
-            />
-          )}
-          {packageName && packageName.startsWith('expo-') && 'Expo '}
-          {title}
-        </H1>
-        <span className="-mt-0.5 flex items-center gap-1 max-xl:hidden">
-          <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-          {(showMarkdownActions || hasAskAIButton) && (
-            <span className="flex items-center gap-1">
-              {hasAskAIButton && askAIButtonVariant === 'config' && (
-                <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
-              )}
-              {showMarkdownActions && <MarkdownActionsDropdown />}
-              {hasAskAIButton && askAIButtonVariant !== 'config' && (
-                <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
-              )}
-            </span>
-          )}
-        </span>
       </div>
-      {description && (
-        <P theme="secondary" data-description="true">
-          {description}
-        </P>
-      )}
-      {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl:mt-2" />}
-      <span className="mt-3 mb-1 hidden items-center gap-1 max-xl:flex">
-        <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
-        {(showMarkdownActions || hasAskAIButton) && (
-          <span className="ml-1 flex items-center gap-1">
-            {hasAskAIButton && askAIButtonVariant === 'config' && (
-              <AskPageAIConfigTrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
-            )}
-            {showMarkdownActions && <MarkdownActionsDropdown />}
-            {hasAskAIButton && askAIButtonVariant !== 'config' && (
-              <AskPageAITrigger onClick={onAskAIClick} isActive={isAskAIVisible} />
-            )}
-          </span>
-        )}
-      </span>
-      <div
-        className={mergeClasses(
-          'mt-3 flex items-center justify-between',
-          'max-md:flex-col-reverse max-md:items-start max-md:gap-3',
-          'empty:hidden'
-        )}>
-        {platforms && <PagePlatformTags platforms={platforms} />}
-        {packageName && (
+      {platforms && <PagePlatformTags platforms={platforms} />}
+      {packageName && (
+        <div className="flex flex-wrap items-center gap-3 border-b-0.5 border-default py-2 empty:hidden">
+          {isSdkPackagePage && (
+            <>
+              {renderAskAIButton()}
+              <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
+            </>
+          )}
           <PagePackageVersion
             packageName={packageName}
             platforms={platforms}
             testRequire={testRequire}
-            showMarkdownActions={showPackageMarkdown}
           />
-        )}
-      </div>
-    </>
+        </div>
+      )}
+    </div>
   );
 }

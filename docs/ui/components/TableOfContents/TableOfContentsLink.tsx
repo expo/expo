@@ -3,7 +3,7 @@ import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/Brac
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { MONOSPACE, CALLOUT, FOOTNOTE } from '~/ui/components/Text';
+import { CAPTION, FOOTNOTE } from '~/ui/components/Text';
 import * as Tooltip from '~/ui/components/Tooltip';
 
 type SidebarLinkProps = {
@@ -17,12 +17,11 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
   ({ heading: { slug, level, title, type, tags }, isActive, shortenCode, onClick }, ref) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
 
-    // preset for monospace, tail ellipsis, and removing extra bits like details of function signatures
+    // preset for tail ellipsis, and removing extra bits like details of function signatures
     const isCode = type === HeadingType.INLINE_CODE;
-    // preset for monospace, tail ellipsis, don't touch the title otherwise
+    // preset for tail ellipsis, don't touch the title otherwise
     const isCodeOrFilePath = isCode || type === HeadingType.CODE_FILE_PATH;
 
-    const TitleElement = isCodeOrFilePath ? MONOSPACE : CALLOUT;
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
     const isDeprecated = tags && tags.length > 0 ? tags.find(tag => tag === 'deprecated') : null;
     const hasOverloads = tags && tags.length > 0 ? tags.find(tag => tag === 'overload') : null;
@@ -45,15 +44,16 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             href={'#' + slug}
             onClick={onClick}
             className={mergeClasses(
-              'mb-1 flex min-h-6 items-center justify-between truncate text-pretty!',
+              'flex min-w-0 items-center justify-between truncate py-1 pr-3 pl-2.75 text-pretty! last:grow not-last:pr-0',
+              level > BASE_HEADING_LEVEL && 'pt-0',
               convertToIndentClass(level - BASE_HEADING_LEVEL),
               'focus-visible:relative focus-visible:z-10'
             )}>
-            <TitleElement
+            <CAPTION
               className={mergeClasses(
-                'w-full text-default! hocus:text-link!',
-                isCodeOrFilePath && 'truncate text-xs!',
-                isActive && 'text-link!',
+                'w-full text-xs! leading-[1.6] font-medium text-secondary! hocus:text-default!',
+                isCodeOrFilePath && 'truncate',
+                isActive && 'text-default!',
                 isDeprecated && 'line-through opacity-70'
               )}>
               {displayTitle}
@@ -67,7 +67,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
                 </>
               )}
               {isDeprecated && <span className="sr-only">Deprecated section</span>}
-            </TitleElement>
+            </CAPTION>
           </a>
         </Tooltip.Trigger>
         <Tooltip.Content
@@ -122,15 +122,15 @@ function isOverflowing(el: HTMLElement) {
 function convertToIndentClass(spacing: number) {
   switch (spacing) {
     case 1:
-      return 'pl-3';
+      return 'pl-[23px]';
     case 2:
-      return 'pl-6';
+      return 'pl-[35px]';
     case 3:
-      return 'pl-9';
+      return 'pl-[47px]';
     case 4:
-      return 'pl-12';
+      return 'pl-[59px]';
     case 5:
-      return 'pl-15';
+      return 'pl-[71px]';
     default:
       return '';
   }

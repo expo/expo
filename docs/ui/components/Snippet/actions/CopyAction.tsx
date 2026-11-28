@@ -1,4 +1,4 @@
-import { ClipboardIcon } from '@expo/styleguide-icons/outline/ClipboardIcon';
+import { Copy02Icon } from '@expo/styleguide-icons/outline/Copy02Icon';
 import { useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -22,10 +22,10 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
 
   return (
     <SnippetAction
-      leftSlot={<ClipboardIcon aria-hidden="true" className="icon-sm text-icon-secondary" />}
+      leftSlot={<Copy02Icon aria-hidden="true" className="icon-xs text-button-quaternary-icon" />}
       onClick={onCopyClick}
       disabled={copyDone}
-      className="max-sm:gap-0 [&_p]:max-sm:hidden"
+      className="px-2.75 max-sm:gap-0 [&_p]:max-sm:hidden"
       aria-label="Copy content"
       {...rest}>
       {intl.formatMessage({ id: copyDone ? 'codeCopied' : 'codeCopy' })}

@@ -1,101 +1,70 @@
-import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
-import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
-import { File02Icon } from '@expo/styleguide-icons/outline/File02Icon';
-import { MessageTextSquare02Icon } from '@expo/styleguide-icons/outline/MessageTextSquare02Icon';
+import { mergeClasses } from '@expo/styleguide';
+import { File04Icon } from '@expo/styleguide-icons/outline/File04Icon';
+import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
+import { MessageCircle02Icon } from '@expo/styleguide-icons/outline/MessageCircle02Icon';
 import * as Dialog from '@radix-ui/react-dialog';
 import type { ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { A, CALLOUT, LI } from '../Text';
+import { A } from '../Text';
 import { FeedbackDialog } from './FeedbackDialog';
-import { githubUrl } from './utils';
 
-const LINK_CLASSES = 'inline-flex items-center mb-1 focus-visible:outline-offset-4';
-const ICON_CLASSES = 'flex items-center mr-2.5 text-icon-secondary shrink-0';
+export const FOOTER_ROW_CLASSES =
+  'flex items-center gap-1 text-sm leading-[1.4] font-medium text-secondary';
+export const FOOTER_ICON_CLASSES = 'icon-sm shrink-0 text-icon-default';
+const LINK_ROW_CLASSES = mergeClasses(
+  FOOTER_ROW_CLASSES,
+  'transition-colors focus-visible:outline-offset-4 hocus:text-default'
+);
+const INLINE_LINK_CLASSES = 'text-default focus-visible:outline-offset-4';
 
-export const IssuesLink = ({ title, repositoryUrl }: { title: string; repositoryUrl?: string }) => (
-  <LI>
-    <A
-      isStyled
-      openInNewTab
-      href={
-        repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
-      }
-      className={LINK_CLASSES}>
-      <GithubIcon aria-hidden="true" className={ICON_CLASSES} />
-      <CALLOUT theme="secondary">View open bug reports for {title}</CALLOUT>
-    </A>
-  </LI>
+export const BlogAndChangelogLink = () => (
+  <p className={FOOTER_ROW_CLASSES}>
+    <File04Icon aria-hidden="true" className={FOOTER_ICON_CLASSES} />
+    <span>
+      Read{' '}
+      <A isStyled href="https://expo.dev/blog" className={INLINE_LINK_CLASSES}>
+        blog
+      </A>{' '}
+      and{' '}
+      <A isStyled href="https://expo.dev/changelog" className={INLINE_LINK_CLASSES}>
+        changelog
+      </A>
+    </span>
+  </p>
 );
 
-export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: string }) => {
-  const intl = useIntl();
-  return isAPIPage ? (
-    <LI>
-      <A isStyled openInNewTab href="https://chat.expo.dev/" className={LINK_CLASSES}>
-        <DiscordIcon aria-hidden="true" className={ICON_CLASSES} />
-        <CALLOUT theme="secondary">Ask a question on the forums about {title}</CALLOUT>
-      </A>
-    </LI>
-  ) : (
-    <LI>
-      <A
-        isStyled
-        openInNewTab
-        href="https://chat.expo.dev/"
-        className={LINK_CLASSES}
-        shouldLeakReferrer>
-        <DiscordIcon aria-hidden="true" className={ICON_CLASSES} />
-        <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerAskOnForums' })}</CALLOUT>
-      </A>
-    </LI>
-  );
-};
-
-export const EditPageLink = ({ pathname }: { pathname: string }) => {
-  const intl = useIntl();
-  return (
-    <LI>
-      <A isStyled openInNewTab href={githubUrl(pathname)} className={LINK_CLASSES}>
-        <Edit05Icon aria-hidden="true" className={ICON_CLASSES} />
-        <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerEditPage' })}</CALLOUT>
-      </A>
-    </LI>
-  );
-};
-
-export const LlmsTxtLink = () => (
-  <LI className="flex items-center">
-    <File02Icon aria-hidden="true" className={ICON_CLASSES} />
-    <CALLOUT theme="secondary" tag="span">
+export const NewsletterLink = () => (
+  <p className={FOOTER_ROW_CLASSES}>
+    <Mail01Icon aria-hidden="true" className={FOOTER_ICON_CLASSES} />
+    <span>
       <FormattedMessage
-        id="footerLlmsView"
+        id="footerNewsletterSignUp"
         values={{
-          llmsLink: (chunks: ReactNode) => (
-            <A openInNewTab href="/llms.txt" className="focus-visible:outline-offset-4">
+          newsletterLink: (chunks: ReactNode) => (
+            <A
+              isStyled
+              openInNewTab
+              href="https://expo.dev/mailing-list/signup"
+              className={INLINE_LINK_CLASSES}>
               {chunks}
             </A>
           ),
         }}
       />
-    </CALLOUT>
-  </LI>
+    </span>
+  </p>
 );
 
 export const ShareFeedbackLink = ({ pathname }: { pathname?: string }) => {
   const intl = useIntl();
   return (
-    <LI>
-      <Dialog.Root>
-        <Dialog.Trigger className="h-5.5 focus-visible:outline-offset-4">
-          <A isStyled className={LINK_CLASSES}>
-            <MessageTextSquare02Icon aria-hidden="true" className={ICON_CLASSES} />
-            <CALLOUT theme="secondary">{intl.formatMessage({ id: 'footerShareFeedback' })}</CALLOUT>
-          </A>
-        </Dialog.Trigger>
-        <FeedbackDialog pathname={pathname} />
-      </Dialog.Root>
-    </LI>
+    <Dialog.Root>
+      <Dialog.Trigger className={mergeClasses(LINK_ROW_CLASSES, 'cursor-pointer')}>
+        <MessageCircle02Icon aria-hidden="true" className={FOOTER_ICON_CLASSES} />
+        {intl.formatMessage({ id: 'footerShareFeedback' })}
+      </Dialog.Trigger>
+      <FeedbackDialog pathname={pathname} />
+    </Dialog.Root>
   );
 };

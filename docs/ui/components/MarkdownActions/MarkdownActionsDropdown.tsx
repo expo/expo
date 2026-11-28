@@ -1,10 +1,12 @@
-import { Button } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
+import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
-import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
+import { Copy03Icon } from '@expo/styleguide-icons/outline/Copy03Icon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 
+import { useCopy } from '~/common/useCopy';
 import {
   ClaudeCodeLogoIcon,
   ClaudeLogoIcon,
@@ -14,14 +16,20 @@ import {
 } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
-import { FOOTNOTE } from '~/ui/components/Text';
 
 import { getMarkdownFilePath } from './paths';
 
 const getPrompt = (url: string) =>
   encodeURIComponent(`Read this documentation page, so I can ask questions about it:\n\n${url}`);
 
-export function MarkdownActionsDropdown() {
+const PILL_BUTTON_CLASSES =
+  'flex items-center rounded-full focus-visible:ring-2 focus-visible:ring-link focus-visible:outline-none hocus:opacity-80';
+
+type Props = {
+  isSplit?: boolean;
+};
+
+export function MarkdownActionsDropdown({ isSplit = false }: Props) {
   const router = useRouter();
   const intl = useIntl();
 
@@ -29,6 +37,7 @@ export function MarkdownActionsDropdown() {
   const asPath = router?.asPath;
 
   const pagePath = asPath ?? pathname;
+  const { copiedIsVisible, onCopyAsync } = useCopy(() => window.location.href);
   const markdownViewUrl = useMemo(() => getMarkdownFilePath(pagePath), [pagePath]);
 
   const handleCopyMarkdown = useCallback(async () => {
@@ -107,7 +116,7 @@ export function MarkdownActionsDropdown() {
       <Dropdown.Item
         key="copy-markdown"
         label={intl.formatMessage({ id: 'copyMarkdown' })}
-        Icon={Copy04Icon}
+        Icon={Copy03Icon}
         onSelect={handleCopyMarkdown}
       />
     );
@@ -189,21 +198,40 @@ export function MarkdownActionsDropdown() {
     return null;
   }
 
-  const dropdownTrigger = (
-    <Button
-      theme="quaternary"
-      className="justify-center pr-2 pl-2.5"
-      aria-haspopup="menu"
-      aria-label={intl.formatMessage({ id: 'copyPageActions' })}>
-      <div className="flex flex-row items-center gap-1.5">
-        <Copy04Icon aria-hidden="true" className="icon-xs text-icon-secondary" />
-        <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
-          {intl.formatMessage({ id: 'copyPage' })}
-        </FOOTNOTE>
-        <ChevronDownIcon aria-hidden="true" className="icon-xs text-icon-secondary" />
-      </div>
-    </Button>
+  return (
+    <div
+      className={mergeClasses(
+        'flex shrink-0 items-center rounded-[30px] outline-(--expo-theme-border-default) outline-[0.5px] outline-offset-[-0.5px]',
+        isSplit ? 'h-6.75 gap-1.5 pr-2 pl-3' : 'gap-1 px-3 py-1'
+      )}>
+      <button
+        type="button"
+        onClick={onCopyAsync}
+        className={mergeClasses(PILL_BUTTON_CLASSES, isSplit ? 'gap-1.5' : 'gap-1')}>
+        {copiedIsVisible ? (
+          <CheckIcon aria-hidden="true" className="icon-2xs text-icon-success" />
+        ) : (
+          <Copy03Icon aria-hidden="true" className="icon-2xs text-icon-default" />
+        )}
+        <span className="text-xs leading-[1.6] font-medium whitespace-nowrap text-secondary">
+          {intl.formatMessage({ id: 'copyLink', defaultMessage: 'Copy link' })}
+        </span>
+      </button>
+      {isSplit && <span aria-hidden="true" className="h-full border-l-0.5 border-default" />}
+      <Dropdown.Dropdown
+        alignOffset={isSplit ? -8 : -12}
+        sideOffset={14.5}
+        trigger={
+          <button
+            type="button"
+            className={PILL_BUTTON_CLASSES}
+            aria-haspopup="menu"
+            aria-label={intl.formatMessage({ id: 'copyPageActions' })}>
+            <ChevronDownIcon aria-hidden="true" className="icon-2xs text-icon-default" />
+          </button>
+        }>
+        {dropdownItems}
+      </Dropdown.Dropdown>
+    </div>
   );
-
-  return <Dropdown.Dropdown trigger={dropdownTrigger}>{dropdownItems}</Dropdown.Dropdown>;
 }

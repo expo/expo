@@ -6,7 +6,7 @@ exports[`APICommentTextBlock basic comment 1`] = `
     class="px-4 [table_&]:mb-0! [table_&]:px-0"
   >
     <p
-      class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+      class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       This is the basic comment.
@@ -29,7 +29,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
         data-text="true"
       >
         <div
-          class="mr-2 inline-flex min-h-5.25 items-center gap-1 rounded-full border px-1.75 py-0.5 select-none last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0 bg-palette-green3 text-palette-green12 border-palette-green4"
+          class="mr-2 inline-flex min-h-6 items-center gap-1 rounded-xl bg-element px-2.5 text-secondary select-none [&_svg]:size-3.5 [&_svg]:text-icon-default [&_svg]:opacity-100 last:mr-0 [table_&]:mt-0 [table_&]:px-1.5 [table_&]:py-0.5 [h3_&]:last-of-type:mr-0 [h4_&]:last-of-type:mr-0"
           data-md="platform-badge"
         >
           <svg
@@ -50,7 +50,7 @@ exports[`APICommentTextBlock comment with example 1`] = `
             </g>
           </svg>
           <span
-            class="text-xs! leading-none! font-normal whitespace-nowrap"
+            class="text-xs! leading-[normal]! font-normal whitespace-nowrap"
           >
             Android
           </span>
@@ -58,12 +58,12 @@ exports[`APICommentTextBlock comment with example 1`] = `
       </span>
     </div>
     <p
-      class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
+      class="text-sm leading-[1.4] font-medium text-secondary [&_strong]:wrap-break-word mb-2.5 [table_&]:last:mb-0"
       data-text="true"
     >
       Gets the referrer URL of the installed app with the 
       <a
-        class="cursor-pointer decoration-0 hocus:opacity-80 font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+        class="cursor-pointer hocus:opacity-80 [text-decoration-skip-ink:none] [text-underline-position:from-font] text-inherit underline decoration-from-font [&_code]:underline"
         href="https://developer.android.com/google/play/installreferrer"
         rel="noopener noreferrer"
         target="_blank"
@@ -109,61 +109,71 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
         </span>
       </p>
       <div
-        class="code-block-wrapper my-4 overflow-clip rounded-3xl border border-secondary bg-subtle [p+&]:mt-0"
+        class="code-block-wrapper relative my-5 overflow-clip rounded-lg bg-subtle after:pointer-events-none after:absolute after:inset-0 after:content-[''] after:rounded-lg after:border after:border-default [p+&]:mt-0"
       >
         <pre
-          class="relative overflow-x-auto whitespace-pre [scrollbar-color:var(--slate-5)_transparent] scrollbar-thin"
+          class="code-lines [scrollbar-color:var(--slate-5)_transparent] relative scrollbar-thin overflow-x-auto whitespace-pre"
           data-md-lang="ts"
           data-text="true"
         >
-          <div
-            class="w-fit p-4"
+          <code
+            class="block py-4 text-[13px] leading-[19.6px] text-default w-max min-w-full"
           >
-            <code
-              class="text-xs text-default"
+            <span
+              class="code-line"
             >
               <span
-                class="token keyword"
+                class="code-line-content"
               >
-                await
-              </span>
-               Application
-              <span
-                class="token punctuation"
-              >
-                .
-              </span>
-              <span
-                class="token function"
-              >
-                getInstallReferrerAsync
-              </span>
-              <span
-                class="token punctuation"
-              >
-                (
-              </span>
-              <span
-                class="token punctuation"
-              >
-                )
-              </span>
-              <span
-                class="token punctuation"
-              >
-                ;
-              </span>
-              
+                <span
+                  class="token keyword"
+                >
+                  await
+                </span>
+                 Application
+                <span
+                  class="token punctuation"
+                >
+                  .
+                </span>
+                <span
+                  class="token function"
+                >
+                  getInstallReferrerAsync
+                </span>
+                <span
+                  class="token punctuation"
+                >
+                  (
+                </span>
+                <span
+                  class="token punctuation"
+                >
+                  )
+                </span>
+                <span
+                  class="token punctuation"
+                >
+                  ;
+                </span>
+                
 
-              <span
-                class="token comment"
-              >
-                // "utm_source=google-play&utm_medium=organic"
               </span>
-              
-
-            </code>
-          </div>
+            </span>
+            <span
+              class="code-line"
+            >
+              <span
+                class="code-line-content"
+              >
+                <span
+                  class="token comment"
+                >
+                  // "utm_source=google-play&utm_medium=organic"
+                </span>
+              </span>
+            </span>
+          </code>
         </pre>
       </div>
     </div>

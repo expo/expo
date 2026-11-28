@@ -1,140 +1,62 @@
-import { mergeClasses } from '@expo/styleguide';
 import { BlueskyIcon } from '@expo/styleguide-icons/custom/BlueskyIcon';
 import { DiscordIcon } from '@expo/styleguide-icons/custom/DiscordIcon';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { LinkedinIcon } from '@expo/styleguide-icons/custom/LinkedinIcon';
 import { RedditIcon } from '@expo/styleguide-icons/custom/RedditIcon';
 import { XLogoIcon } from '@expo/styleguide-icons/custom/XLogoIcon';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { Lightbulb02Icon } from '@expo/styleguide-icons/outline/Lightbulb02Icon';
 import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
-import { type ReactNode } from 'react';
+import { type ComponentType, type HTMLAttributes } from 'react';
 
-import { Header } from '~/ui/components/Home/components';
-import { P, A, CALLOUT } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
 
-export function JoinTheCommunity() {
-  return (
-    <>
-      <Header
-        title="Join the community"
-        description="See the source code, connect with others, and get connected."
-      />
-      <div
-        className={mergeClasses(
-          'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
-          'rounded-3xl border border-default p-3 shadow-xs',
-          'max-xl:grid-cols-1',
-          'max-lg:grid-cols-2',
-          'max-md:grid-cols-1'
-        )}>
-        <CommunityGridCell
-          title="Discord and forums"
-          description="Join our Discord to chat, ask questions or attend events."
-          link="https://chat.expo.dev"
-          icon={<DiscordIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-          iconClassName="bg-[#3131E8]"
-          shouldLeakReferrer
-        />
-        <CommunityGridCell
-          title="GitHub"
-          description="View SDK and docs code, submit a PR, or report an issue."
-          link="https://github.com/expo/expo"
-          iconClassName="bg-palette-gray11 dark:bg-palette-gray7"
-          icon={<GithubIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-        />
-        <CommunityGridCell
-          title="YouTube"
-          description="Follow our channel to explore tutorials and other content."
-          link="https://www.youtube.com/channel/UCx_YiR733cfqVPRsQ1n8Fag"
-          iconClassName="bg-[#FF0033]"
-          icon={<YoutubeIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-        />
-        <CommunityGridCell
-          title="LinkedIn"
-          description="Follow Expo on LinkedIn for news and updates."
-          link="https://www.linkedin.com/company/expo-dev/"
-          iconClassName="bg-[#0B66C2]"
-          icon={<LinkedinIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-        />
-        <CommunityGridCell
-          title="Bluesky"
-          description="Follow Expo on Bluesky for news and updates."
-          link="https://bsky.app/profile/expo.dev"
-          icon={<BlueskyIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-          iconClassName="bg-[#1083fe]"
-        />
-        <CommunityGridCell
-          title="X"
-          description="Follow Expo on X for news and updates."
-          link="https://x.com/expo"
-          icon={<XLogoIcon aria-hidden="true" className="size-7! text-palette-white" />}
-          iconClassName="bg-[#000000]"
-        />
-        <CommunityGridCell
-          title="Reddit"
-          description="Get the latest on r/expo."
-          link="https://www.reddit.com/r/expo"
-          icon={<RedditIcon aria-hidden="true" className="icon-xl text-palette-white" />}
-          iconClassName="bg-[#FC471E]"
-        />
-        <CommunityGridCell
-          title="Canny"
-          description="Give us a feedback or request a feature."
-          link="https://expo.canny.io/"
-          icon={<Lightbulb02Icon aria-hidden="true" className="icon-xl text-palette-white" />}
-          iconClassName="bg-[#525df9]"
-        />
-      </div>
-    </>
-  );
-}
-
-type CommunityGridCellProps = {
-  icon?: ReactNode;
-  title?: string;
-  link?: string;
-  className?: string;
-  description?: string;
-  iconClassName?: string;
+type CommunityLink = {
+  title: string;
+  href: string;
+  Icon: ComponentType<HTMLAttributes<SVGSVGElement>>;
   shouldLeakReferrer?: boolean;
 };
 
-function CommunityGridCell({
-  icon,
-  title,
-  link,
-  description,
-  className,
-  iconClassName,
-  shouldLeakReferrer,
-}: CommunityGridCellProps) {
+const COMMUNITY_LINKS: CommunityLink[] = [
+  {
+    title: 'Discord and forums',
+    href: 'https://chat.expo.dev',
+    Icon: DiscordIcon,
+    shouldLeakReferrer: true,
+  },
+  {
+    title: 'YouTube',
+    href: 'https://www.youtube.com/channel/UCx_YiR733cfqVPRsQ1n8Fag',
+    Icon: YoutubeIcon,
+  },
+  { title: 'LinkedIn', href: 'https://www.linkedin.com/company/expo-dev/', Icon: LinkedinIcon },
+  { title: 'X', href: 'https://x.com/expo', Icon: XLogoIcon },
+  { title: 'Reddit', href: 'https://www.reddit.com/r/expo', Icon: RedditIcon },
+  { title: 'Bluesky', href: 'https://bsky.app/profile/expo.dev', Icon: BlueskyIcon },
+  { title: 'GitHub', href: 'https://github.com/expo/expo', Icon: GithubIcon },
+  { title: 'Canny', href: 'https://expo.canny.io/', Icon: Lightbulb02Icon },
+];
+
+export function JoinTheCommunity() {
   return (
-    <A
-      href={link}
-      className={mergeClasses(
-        'relative flex min-h-7.5 items-center justify-between gap-3 overflow-hidden rounded-lg bg-default p-2 pr-3 transition',
-        'hocus:bg-element hocus:opacity-100',
-        className
-      )}
-      shouldLeakReferrer={shouldLeakReferrer}
-      isStyled>
-      <div
-        className={mergeClasses(
-          'inline-flex size-12 shrink-0 items-center justify-center rounded-lg',
-          iconClassName
-        )}>
-        {icon}
+    <div className="flex flex-col items-center gap-4 py-24">
+      <p className="text-center text-base leading-[1.4] font-medium text-secondary">
+        Join the community
+      </p>
+      <div className="flex flex-wrap justify-center gap-3 rounded-[48px] bg-default p-2">
+        {COMMUNITY_LINKS.map(({ title, href, Icon, shouldLeakReferrer }) => (
+          <A
+            key={title}
+            href={href}
+            isStyled
+            aria-label={title}
+            title={title}
+            shouldLeakReferrer={shouldLeakReferrer}
+            className="flex items-center rounded-3xl p-2 hocus:bg-element">
+            <Icon aria-hidden="true" className="icon-lg text-icon-default" />
+          </A>
+        ))}
       </div>
-      <div className="flex grow flex-col gap-0.5">
-        <P weight="medium" className="leading-snug">
-          {title}
-        </P>
-        <CALLOUT theme="secondary" className="leading-snug">
-          {description}
-        </CALLOUT>
-      </div>
-      <ArrowUpRightIcon aria-hidden="true" className="shrink-0 self-center text-icon-tertiary" />
-    </A>
+    </div>
   );
 }

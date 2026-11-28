@@ -10,7 +10,7 @@ export const SidebarSection = ({ route, ...rest }: SidebarNodeProps) => {
 
   return (
     <SidebarCollapsible key={`section-${route.name}`} info={route}>
-      <div className="mb-2">
+      <div className="mb-2 flex flex-col gap-0.5">
         {route.children.map(child =>
           child.type === 'page' ? (
             <SidebarLink key={`${route.name}-${child.name}`} info={child}>
