@@ -53,20 +53,46 @@ concurrency:
   cancel_in_progress: true
 
 jobs:
+  detect_platform:
+    name: Detect platform changes
+    runs_on: linux-medium
+    image: latest
+    outputs:
+      should_run_ios: ${{ steps.detect.outputs.should_run_ios }}
+      should_run_android: ${{ steps.detect.outputs.should_run_android }}
+    steps:
+      - uses: eas/checkout
+      - id: detect
+        outputs: [should_run_ios, should_run_android]
+        run: |
+          bash scripts/detect-platform-change.sh \
+            "${{ github.event_name }}" \
+            "${{ github.event.repository.full_name }}" \
+            "${{ github.event.pull_request.number }}" \
+            '^(apps/expo-workflow-testing/\.eas/workflows/updates-e2e-dev-client\.yml|packages/(expo-asset|expo-manifests|expo-updates-interface|expo-updates|expo-dev-client|expo-dev-menu|expo-dev-launcher)/|templates/expo-template-bare-minimum/)'
+
   ios:
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_ios == 'true' }}
     runs_on: macos-large
     image: latest
+    env:
+      EAS_USE_CACHE: '1'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E disabled project
+      - uses: eas/restore_build_cache
+        with:
+          platform: ios
+      - name: Set up Updates E2E dev client project
         id: setup
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: '4747'
+          UPDATES_E2E_PLATFORM: ios
         run: |
           pnpm --silent ts-node ./packages/expo-updates/e2e/setup/create-dev-client-eas-project.ts
           ls -la ../updates-e2e
@@ -81,6 +107,9 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:ios:debug:build
+      - uses: eas/save_build_cache
+        with:
+          platform: ios
       - uses: eas/start_ios_simulator
         with:
           device_identifier: iPhone 17
@@ -102,19 +131,25 @@ jobs:
           fi
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-dev-client.yml ios debug
   android:
+    needs: [detect_platform]
+    if: ${{ needs.detect_platform.outputs.should_run_android == 'true' }}
     runs_on: linux-large-nested-virtualization
     image: latest
+    env:
+      ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
+      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Set up Updates E2E disabled project
+      - name: Set up Updates E2E dev client project
         id: setup
         working_directory: ../..
         env:
           UPDATES_HOST: localhost
           UPDATES_PORT: '4747'
+          UPDATES_E2E_PLATFORM: android
         run: |
           pnpm --silent ts-node ./packages/expo-updates/e2e/setup/create-dev-client-eas-project.ts
           ls -la ../updates-e2e
@@ -123,15 +158,15 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run generate-test-update-bundles android test-update-1
-      - uses: eas/start_android_emulator
-        with:
-          device_name: pixel_9
-          system_image_package: system-images;android-34;default;x86_64
       - name: Build E2E test app (debug)
         id: builddebug
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:debug:build
+      - uses: eas/start_android_emulator
+        with:
+          device_name: pixel_9
+          system_image_package: system-images;android-34;default;x86_64
       - name: Start packager
         id: startpackager
         working_directory: ../../../updates-e2e
