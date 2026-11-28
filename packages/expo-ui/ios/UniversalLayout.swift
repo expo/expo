@@ -20,6 +20,15 @@ internal struct UniversalLayoutDimensionsKey: LayoutValueKey {
   static let defaultValue = UniversalLayoutDimensions()
 }
 
+internal func universalLayoutDimensions(from modifiers: [DecodedModifier]?) -> UniversalLayoutDimensions {
+  for case .modifier(let modifier) in (modifiers ?? []).reversed() {
+    if let universalLayout = modifier as? UniversalLayoutModifier {
+      return universalLayout.dimensions
+    }
+  }
+  return UniversalLayoutDimensions()
+}
+
 internal func universalLayoutDimensions(from modifiers: ModifierArray?) -> UniversalLayoutDimensions {
   guard let values = modifiers?.last(where: { $0["$type"] as? String == "universalLayout" }) else {
     return UniversalLayoutDimensions()
@@ -59,14 +68,17 @@ internal struct UniversalLayoutModifier: ViewModifier, Record {
   @Field var heightPoints: CGFloat?
   @Field var heightFraction: CGFloat?
 
-  @ViewBuilder
-  func body(content: Content) -> some View {
-    let dimensions = UniversalLayoutDimensions(
+  var dimensions: UniversalLayoutDimensions {
+    UniversalLayoutDimensions(
       widthPoints: finite(widthPoints),
       widthFraction: finite(widthFraction),
       heightPoints: finite(heightPoints),
       heightFraction: finite(heightFraction)
     )
+  }
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
     if dimensions.hasFraction {
       ResolvedUniversalLayout(dimensions: dimensions, content: content)
     } else {
