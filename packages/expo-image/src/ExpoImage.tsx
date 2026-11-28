@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireNativeView, requireOptionalNative } from 'expo';
 import React from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { StyleSheet, Platform, processColor } from 'react-native';
@@ -9,8 +9,33 @@ import type {
   ImageNativeProps,
   ImageProgressEventData,
 } from './Image.types';
+import { isImageRef } from './utils';
 
 const NativeExpoImage = requireNativeView('ExpoImage');
+
+/**
+ * The current native view reads an image ref by its shared object ID. The new view gets the ref object.
+ */
+function toSharedObjectId(source: ImageNativeProps['source']) {
+  // @ts-expect-error
+  return isImageRef(source) ? source.__expo_shared_object_id__ : source;
+}
+
+let nativeImageView: React.ComponentType<any> | null | undefined;
+
+/**
+ * Returns the new image view, which only iOS has for now, or `null` when the platform doesn't have it.
+ */
+function getNativeImageView(): React.ComponentType<any> | null {
+  if (nativeImageView === undefined) {
+    nativeImageView =
+      Platform.OS === 'ios'
+        ? (requireOptionalNative<{ ImageView?: React.ComponentType<any> }>('expo-image')
+            ?.ImageView ?? null)
+        : null;
+  }
+  return nativeImageView;
+}
 
 function withDeprecatedNativeEvent<NativeEvent>(
   event: NativeSyntheticEvent<NativeEvent>
@@ -57,8 +82,24 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
   };
 
   render() {
-    const { style, accessibilityLabel, alt, ...props } = this.props;
+    const { style, accessibilityLabel, alt, experimental_useV2View, ...props } = this.props;
     const resolvedStyle = StyleSheet.flatten(style);
+    const V2NativeImageView = experimental_useV2View ? getNativeImageView() : null;
+
+    if (V2NativeImageView) {
+      return (
+        <V2NativeImageView
+          {...props}
+          accessibilityLabel={accessibilityLabel ?? alt}
+          style={resolvedStyle}
+          onLoadStart={this.onLoadStart}
+          onLoad={this.onLoad}
+          onProgress={this.onProgress}
+          onError={this.onError}
+          ref={props.nativeViewRef}
+        />
+      );
+    }
 
     // Shadows behave different on iOS, Android & Web.
     // Android uses the `elevation` prop, whereas iOS
@@ -102,6 +143,8 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
         {...resolvedStyle}
         accessibilityLabel={accessibilityLabel ?? alt}
         style={resolvedStyle}
+        source={toSharedObjectId(props.source)}
+        placeholder={toSharedObjectId(props.placeholder)}
         onLoadStart={this.onLoadStart}
         onLoad={this.onLoad}
         onProgress={this.onProgress}
