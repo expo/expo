@@ -191,14 +191,14 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     self.currentPickingContext = nil
   }
 
-  func didPickMultipleMedia(selection: [PHPickerResult]) {
+  func didPickMultipleMedia(selection: [PHPickerResult], dismissPicker: @escaping (@escaping () -> Void) -> Void) {
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
       log.error("Picking operation context has been lost.")
-      return
+      return dismissPicker({})
     }
     guard let fileSystem = self.appContext?.fileSystem else {
-      return promise.reject(FileSystemModuleNotFoundException())
+      return dismissPicker { promise.reject(FileSystemModuleNotFoundException()) }
     }
 
     let mediaHandler = MediaHandler(fileSystem: fileSystem,
@@ -207,12 +207,14 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // Clean up the currently stored picking context
     self.currentPickingContext = nil
 
+    // Load (and, for iCloud-only photos, download) while the picker is still on screen, then
+    // dismiss it and settle the promise once it is gone.
     Task {
       do {
         let assets = try await mediaHandler.handleMultipleMedia(selection)
-        promise.resolve(ImagePickerResponse(assets: assets, canceled: false))
+        dismissPicker { promise.resolve(ImagePickerResponse(assets: assets, canceled: false)) }
       } catch {
-        promise.reject(error)
+        dismissPicker { promise.reject(error) }
       }
     }
   }
