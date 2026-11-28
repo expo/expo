@@ -26,6 +26,7 @@ class FormDelegate: OnContactPickingResultHandler {
   private var presentingViewController: UIViewController?
   private var contactPickerDelegate: ContactPickerControllerDelegate?
   private var contactPickingPromise: Promise?
+  private var onContactPicked: ((CNContact) throws -> Void)?
   private var contactManipulationPromise: Promise?
 
   func editWithForm(for contact: ContactNext, options: EditFormOptions?, promise: Promise) throws {
@@ -87,6 +88,12 @@ class FormDelegate: OnContactPickingResultHandler {
   }
 
   func presentPicker(promise: Promise) throws {
+    try presentPicker(promise: promise) { [contactFactory] contact in
+      promise.resolve(contactFactory.create(id: contact.identifier))
+    }
+  }
+
+  func presentPicker(promise: Promise, onContactPicked: @escaping (CNContact) throws -> Void) throws {
     if contactPickingPromise != nil {
       throw ContactPickingInProgressException()
     }
@@ -102,6 +109,7 @@ class FormDelegate: OnContactPickingResultHandler {
 
     contactPickerDelegate = pickerDelegate
     contactPickingPromise = promise
+    self.onContactPicked = onContactPicked
   }
 
   private func applyCancelButton(to controller: inout ContactsViewController, showsCancelButton: Bool?, cancelButtonTitle: String?) {
@@ -164,14 +172,18 @@ class FormDelegate: OnContactPickingResultHandler {
   internal func didPickContact(contact: CNContact) throws {
     defer {
       contactPickingPromise = nil
+      onContactPicked = nil
     }
-    contactPickingPromise?.resolve(
-      contactFactory.create(id: contact.identifier)
-    )
+    do {
+      try onContactPicked?(contact)
+    } catch {
+      contactPickingPromise?.reject(error)
+    }
   }
 
   internal func didCancelPickingContact() {
     contactPickingPromise?.resolve(NSNull())
     contactPickingPromise = nil
+    onContactPicked = nil
   }
 }
