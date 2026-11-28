@@ -148,8 +148,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NetworkModule::class.java to null,
     ScreenCaptureModule::class.java to null,
     ScreenOrientationModule::class.java to null,
-    // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
-    // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java to null,
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,

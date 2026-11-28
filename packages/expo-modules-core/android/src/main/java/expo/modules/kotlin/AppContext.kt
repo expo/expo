@@ -217,6 +217,13 @@ class AppContext(
     get() = appDirectories.cacheDirectory
 
   /**
+   * The Android context for app storage, like shared preferences. In Expo Go, it is scoped to the
+   * running experience.
+   */
+  val storageContext: Context
+    get() = appDirectories.storageContext
+
+  /**
    * Provides access to the permissions manager from the legacy module registry
    */
   val permissions: Permissions?

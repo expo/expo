@@ -3,7 +3,7 @@ package expo.modules.securestore
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
-import expo.modules.kotlin.types.Enumerable
+import io.github.expo.modules.v2.Enumerable
 import org.json.JSONObject
 
 enum class AuthenticationMethod(val value: String) : Enumerable {

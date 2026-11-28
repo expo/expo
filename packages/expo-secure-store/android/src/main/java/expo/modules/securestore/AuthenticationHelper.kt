@@ -8,15 +8,13 @@ import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.ActivityProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.crypto.Cipher
 
 class AuthenticationHelper(
   private val context: Context,
-  private val moduleRegistry: ModuleRegistry
+  private val getCurrentActivity: () -> Activity?
 ) {
   private var isAuthenticating = false
 
@@ -101,11 +99,6 @@ class AuthenticationHelper(
         throw AuthenticationException("Biometric authentication status is unknown")
       }
     }
-  }
-
-  private fun getCurrentActivity(): Activity? {
-    val activityProvider: ActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-    return activityProvider.currentActivity
   }
 
   companion object {

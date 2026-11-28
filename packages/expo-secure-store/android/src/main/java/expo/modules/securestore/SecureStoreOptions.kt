@@ -1,18 +1,16 @@
 package expo.modules.securestore
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 import java.io.Serializable
 
-@OptimizedRecord
+@Record
 class SecureStoreOptions(
   // Prompt can't be an empty string
-  @Field var authenticationPrompt: String = " ",
-  @Field var keychainService: String = SecureStoreModule.DEFAULT_KEYSTORE_ALIAS,
-  @Field var requireAuthentication: AuthenticationMethod = AuthenticationMethod.NONE,
-  @Field var requireConfirmation: Boolean = true
-) : Record, Serializable
+  var authenticationPrompt: String = " ",
+  var keychainService: String = SecureStoreModule.DEFAULT_KEYSTORE_ALIAS,
+  var requireAuthentication: AuthenticationMethod = AuthenticationMethod.NONE,
+  var requireConfirmation: Boolean = true
+) : Serializable
 
 internal data class AuthenticationPromptOptions(
   val authenticationPrompt: String,
