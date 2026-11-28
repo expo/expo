@@ -32,7 +32,6 @@ function getExpoDependencyChunks({
   includeSplashScreen: boolean;
 }) {
   return [
-    ['@expo/config-plugins'], // NOTE(@kitten): Added for detox which is missing a dependency for this
     ['expo', 'expo-asset', '@expo/inline-modules'],
     ['expo-manifests'],
     ['expo-constants'],
@@ -182,31 +181,33 @@ async function copyCommonFixturesToProject(
   // -Werror,-Wnon-modular-include-in-framework-module in pods that import React
   // as a framework module. Allow non-modular includes across the pods project.
   const nonModularPodfilePath = path.resolve(projectRoot, 'ios', 'Podfile');
-  const nonModularPodfileText = await readFile(nonModularPodfilePath, { encoding: 'utf-8' });
-  const postInstallAnchor = 'post_install do |installer|';
-  if (!nonModularPodfileText.includes(postInstallAnchor)) {
-    throw new Error(`Could not find a post_install block to patch in ${nonModularPodfilePath}`);
-  }
-  await fs.writeFile(
-    nonModularPodfilePath,
-    nonModularPodfileText.replace(
-      postInstallAnchor,
-      [
+  if (existsSync(nonModularPodfilePath)) {
+    const nonModularPodfileText = await readFile(nonModularPodfilePath, { encoding: 'utf-8' });
+    const postInstallAnchor = 'post_install do |installer|';
+    if (!nonModularPodfileText.includes(postInstallAnchor)) {
+      throw new Error(`Could not find a post_install block to patch in ${nonModularPodfilePath}`);
+    }
+    await fs.writeFile(
+      nonModularPodfilePath,
+      nonModularPodfileText.replace(
         postInstallAnchor,
-        '    allow_non_modular = lambda do |target|',
-        '      target.build_configurations.each do |config|',
-        "        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'",
-        '      end',
-        '    end',
-        '    installer.pods_project.targets.each { |target| allow_non_modular.call(target) }',
-        '    installer.aggregate_targets.map(&:user_project).uniq.each do |project|',
-        '      project.targets.each { |target| allow_non_modular.call(target) }',
-        '      project.save',
-        '    end',
-      ].join('\n')
-    ),
-    { encoding: 'utf-8' }
-  );
+        [
+          postInstallAnchor,
+          '    allow_non_modular = lambda do |target|',
+          '      target.build_configurations.each do |config|',
+          "        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'",
+          '      end',
+          '    end',
+          '    installer.pods_project.targets.each { |target| allow_non_modular.call(target) }',
+          '    installer.aggregate_targets.map(&:user_project).uniq.each do |project|',
+          '      project.targets.each { |target| allow_non_modular.call(target) }',
+          '      project.save',
+          '    end',
+        ].join('\n')
+      ),
+      { encoding: 'utf-8' }
+    );
+  }
 
   // Modify specific files for TV
   if (isTV) {
@@ -327,7 +328,6 @@ async function preparePackageJson(
   // NOTE(@kitten): Fixture dependencies (fixtures/project_files/*); This is really hard to maintain, please replace this harness setup
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^11.0.0',
         '@types/express': '^5.0.3',
         '@expo/spawn-async': '^1.7.2',
         '@expo/xcpretty': '^4.4.1',
@@ -480,16 +480,7 @@ function transformAppJsonForE2E(
   runtimeVersion: string,
   isTV: boolean
 ) {
-  const plugins: any[] = [
-    'expo-updates',
-    [
-      '@config-plugins/detox',
-      {
-        skipProguard: true,
-        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
-      },
-    ],
-  ];
+  const plugins: any[] = ['expo-updates'];
   if (isTV) {
     plugins.push([
       '@react-native-tvos/config-tv',
@@ -647,16 +638,7 @@ export function transformAppJsonForUpdatesDisabledE2E(
   projectName: string,
   runtimeVersion: string
 ) {
-  const plugins: any[] = [
-    'expo-updates',
-    [
-      '@config-plugins/detox',
-      {
-        skipProguard: true,
-        subdomains: Array.from(new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST])),
-      },
-    ],
-  ];
+  const plugins: any[] = ['expo-updates'];
   return {
     ...appJson,
     expo: {
@@ -722,6 +704,48 @@ async function configureUpdatesSigningAsync(projectRoot: string) {
   console.timeEnd('generate and configure code signing');
 }
 
+async function configureAndroidCleartextTrafficAsync(projectRoot: string) {
+  const domains = Array.from(
+    new Set(['10.0.2.2', 'localhost', process.env.UPDATES_HOST].filter(Boolean))
+  );
+  const xmlDir = path.join(projectRoot, 'android', 'app', 'src', 'main', 'res', 'xml');
+  await fs.mkdir(xmlDir, { recursive: true });
+  const networkSecurityConfig = [
+    '<?xml version="1.0" encoding="utf-8"?>',
+    '<network-security-config>',
+    '  <domain-config cleartextTrafficPermitted="true">',
+    ...domains.map((domain) => `    <domain includeSubdomains="true">${domain}</domain>`),
+    '  </domain-config>',
+    '</network-security-config>',
+    '',
+  ].join('\n');
+  await fs.writeFile(
+    path.join(xmlDir, 'network_security_config.xml'),
+    networkSecurityConfig,
+    'utf-8'
+  );
+
+  const manifestPath = path.join(
+    projectRoot,
+    'android',
+    'app',
+    'src',
+    'main',
+    'AndroidManifest.xml'
+  );
+  const manifest = await fs.readFile(manifestPath, 'utf-8');
+  if (!manifest.includes('android:networkSecurityConfig')) {
+    await fs.writeFile(
+      manifestPath,
+      manifest.replace(
+        '<application ',
+        '<application android:networkSecurityConfig="@xml/network_security_config" '
+      ),
+      'utf-8'
+    );
+  }
+}
+
 export async function initAsync(
   projectRoot: string,
   {
@@ -736,6 +760,7 @@ export async function initAsync(
     includeDevClient = false,
     useCustomInit = false,
     maxUpdatesToKeep,
+    platform = process.env.UPDATES_E2E_PLATFORM as 'ios' | 'android' | undefined,
   }: {
     repoRoot: string;
     runtimeVersion: string;
@@ -753,6 +778,7 @@ export async function initAsync(
     includeDevClient?: boolean;
     useCustomInit?: boolean;
     maxUpdatesToKeep?: number;
+    platform?: 'ios' | 'android';
   }
 ) {
   console.log('Creating expo app');
@@ -836,6 +862,9 @@ export async function initAsync(
   });
 
   const prebuildArgs = ['prebuild', '--no-install', '--template', localTemplatePathName];
+  if (platform) {
+    prebuildArgs.push('--platform', platform);
+  }
   await spawnAsync(localCliBin, prebuildArgs, {
     env: {
       ...process.env,
@@ -849,26 +878,29 @@ export async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
-  // Restore expo dependencies after prebuild
+  // Restore expo dependency link if prebuild rewrote package.json; node_modules is already linked.
   const packageJsonPath = path.resolve(projectRoot, 'package.json');
-  let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
-  const packageJson = JSON.parse(packageJsonString);
-  packageJson.dependencies.expo = expoResolutions.expo;
-  packageJsonString = JSON.stringify(packageJson, null, 2);
-  await fs.rm(packageJsonPath);
-  await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
-  await spawnAsync('pnpm', ['install'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
+  if (packageJson.dependencies.expo !== expoResolutions.expo) {
+    packageJson.dependencies.expo = expoResolutions.expo;
+    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2), 'utf-8');
+  }
 
-  // enable proguard on Android, and custom init if needed
-  if (!isTV) {
-    await fs.appendFile(
-      path.join(projectRoot, 'android', 'gradle.properties'),
-      `\nandroid.enableMinifyInReleaseBuilds=true${useCustomInit ? '\nEX_UPDATES_CUSTOM_INIT=true' : ''}`,
-      'utf-8'
-    );
+  const hasAndroid = existsSync(path.join(projectRoot, 'android'));
+  const hasIos = existsSync(path.join(projectRoot, 'ios'));
+
+  if (!isTV && hasAndroid) {
+    if (configureE2E) {
+      await configureAndroidCleartextTrafficAsync(projectRoot);
+    }
+
+    if (useCustomInit) {
+      await fs.appendFile(
+        path.join(projectRoot, 'android', 'gradle.properties'),
+        '\nEX_UPDATES_CUSTOM_INIT=true',
+        'utf-8'
+      );
+    }
 
     // Append additional Proguard rule
     await fs.appendFile(
@@ -888,8 +920,7 @@ export async function initAsync(
     );
   }
 
-  // Add custom init to iOS Podfile.properties.json if needed
-  if (useCustomInit) {
+  if (useCustomInit && hasIos) {
     const podfilePropertiesJsonPath = path.join(projectRoot, 'ios', 'Podfile.properties.json');
     const podfilePropertiesJsonString = await fs.readFile(podfilePropertiesJsonPath, {
       encoding: 'utf-8',
@@ -909,47 +940,54 @@ export async function initAsync(
     'fixtures',
     'custom_init'
   );
-  // If custom init, copy native source files
   if (useCustomInit) {
     const filesToCopyForCustomInit = [
-      {
-        sourcePath: path.join(customInitSourcesDirectory, 'AppDelegate.swift'),
-        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
-      },
-      {
-        sourcePath: path.join(customInitSourcesDirectory, 'SceneDelegate.swift'),
-        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'SceneDelegate.swift'),
-      },
-      {
-        sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),
-        destPath: path.join(
-          projectRoot,
-          'android',
-          'app',
-          'src',
-          'main',
-          'java',
-          'dev',
-          'expo',
-          'updatese2e',
-          'MainApplication.kt'
-        ),
-      },
-      {
-        sourcePath: path.join(customInitSourcesDirectory, 'MainActivity.kt'),
-        destPath: path.join(
-          projectRoot,
-          'android',
-          'app',
-          'src',
-          'main',
-          'java',
-          'dev',
-          'expo',
-          'updatese2e',
-          'MainActivity.kt'
-        ),
-      },
+      ...(hasIos
+        ? [
+            {
+              sourcePath: path.join(customInitSourcesDirectory, 'AppDelegate.swift'),
+              destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
+            },
+            {
+              sourcePath: path.join(customInitSourcesDirectory, 'SceneDelegate.swift'),
+              destPath: path.join(projectRoot, 'ios', 'updatese2e', 'SceneDelegate.swift'),
+            },
+          ]
+        : []),
+      ...(hasAndroid
+        ? [
+            {
+              sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),
+              destPath: path.join(
+                projectRoot,
+                'android',
+                'app',
+                'src',
+                'main',
+                'java',
+                'dev',
+                'expo',
+                'updatese2e',
+                'MainApplication.kt'
+              ),
+            },
+            {
+              sourcePath: path.join(customInitSourcesDirectory, 'MainActivity.kt'),
+              destPath: path.join(
+                projectRoot,
+                'android',
+                'app',
+                'src',
+                'main',
+                'java',
+                'dev',
+                'expo',
+                'updatese2e',
+                'MainActivity.kt'
+              ),
+            },
+          ]
+        : []),
     ];
     for (const fileToCopy of filesToCopyForCustomInit) {
       await fs.copyFile(fileToCopy.sourcePath, fileToCopy.destPath);
