@@ -253,6 +253,25 @@ export async function loader() {
 
 Use `public` only for data that can be shared between users. For personalized data, use `private` or `no-store` as appropriate. See [Caching and revalidation](#caching-and-revalidation) for how these headers affect navigation and static exports.
 
+In SDK 59 and later, use `json()` from `expo-server` to preserve the response body's type in `useLoaderData<typeof loader>()`:
+
+```tsx src/app/profile.tsx
+import { useLoaderData } from 'expo-router';
+import { json } from 'expo-server';
+import { Text } from 'react-native';
+
+export function loader() {
+  return json({ name: 'Ada' }, { headers: { 'Cache-Control': 'private, max-age=60' } });
+}
+
+export default function Profile() {
+  const data = useLoaderData<typeof loader>();
+  return <Text>{data.name}</Text>;
+}
+```
+
+Pass JSON values to `json()`. Convert values such as `Date` to strings before passing them to the helper. The helper preserves types through `createStaticLoader()` and `createServerLoader()` too.
+
 ## Runtime API
 
 Data loaders have full access to the [Runtime API](/router/web/api-routes/#runtime-api) from [`expo-server`](/versions/latest/sdk/server/). This includes utilities for setting response headers, throwing HTTP errors, and running background tasks:
