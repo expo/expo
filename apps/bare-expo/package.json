@@ -53,6 +53,7 @@
     "expo-network-addons": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",
+    "expo-observe-interface": "workspace:*",
     "expo-router": "workspace:*",
     "expo-secure-store": "workspace:*",
     "expo-splash-screen": "workspace:*",

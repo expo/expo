@@ -29,6 +29,7 @@ on:
       - packages/expo-modules-jsi/**/*.swift
       - packages/expo-network/**/*.swift
       - packages/expo-observe/**/*.swift
+      - packages/expo-observe-interface/**/*.swift
       - packages/expo-router/**/*.swift
       - packages/expo-sms/**/*.swift
       - packages/expo-splash-screen/**/*.swift
@@ -116,6 +117,7 @@ jobs:
             packages/expo-modules-jsi
             packages/expo-network
             packages/expo-observe
+            packages/expo-observe-interface
             packages/expo-router
             packages/expo-sms
             packages/expo-splash-screen

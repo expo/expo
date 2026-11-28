@@ -289,6 +289,9 @@ importers:
       expo-observe:
         specifier: workspace:*
         version: link:../../packages/expo-observe
+      expo-observe-interface:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe-interface
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
@@ -5660,6 +5663,18 @@ importers:
       react-native-worklets:
         specifier: 0.14.0
         version: 0.14.0(@babel/core@7.29.7)(react-native@0.89.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+
+  packages/expo-observe-interface:
+    devDependencies:
+      '@expo/internal-scripts':
+        specifier: workspace:*
+        version: link:../@expo/internal-scripts
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      expo:
+        specifier: workspace:*
+        version: link:../expo
 
   packages/expo-print:
     dependencies:

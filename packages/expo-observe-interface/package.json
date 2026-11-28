@@ -1,0 +1,63 @@
+{
+  "name": "expo-observe-interface",
+  "version": "58.0.0",
+  "description": "Interface for libraries that report to EAS Observe without a dependency on expo-observe.",
+  "keywords": [
+    "EAS",
+    "expo",
+    "expo-observe",
+    "expo-observe-interface",
+    "observability",
+    "observe",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/eas/observe/integrations/third-party/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-observe-interface"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
+    "expo": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "jest": {
+    "preset": "@expo/internal-scripts"
+  }
+}
