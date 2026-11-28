@@ -140,6 +140,14 @@ describe(getDefaultConfig, () => {
     );
   });
 
+  it('does not add dotenv suffixes to discovery', () => {
+    expect(
+      getDefaultConfig(projectRoot).watcher?.additionalExts?.filter((ext) =>
+        ['env', 'local', 'development'].includes(ext)
+      )
+    ).toEqual([]);
+  });
+
   it('loads default configuration for apps', () => {
     expect(getDefaultConfig(projectRoot).resolver?.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
