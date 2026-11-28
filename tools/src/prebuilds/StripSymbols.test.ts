@@ -110,22 +110,6 @@ describe('stripReleaseSymbolsAsync', () => {
     ]);
   });
 
-  it('re-signs only the binary of a signed versioned framework with files in its root', async () => {
-    const binary = await addSliceAsync('ios-arm64_x86_64-maccatalyst', {
-      signed: true,
-      versioned: true,
-    });
-
-    await stripReleaseSymbolsAsync(
-      xcframeworkPath,
-      PRODUCT,
-      ['ios-arm64_x86_64-maccatalyst'],
-      'Release'
-    );
-
-    assert.deepEqual(signCalls(await readCallsAsync()), [`codesign --force --sign - ${binary}`]);
-  });
-
   it('does not sign an unsigned framework', async () => {
     await addSliceAsync('ios-arm64');
 

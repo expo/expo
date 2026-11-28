@@ -33,10 +33,6 @@ export async function stripReleaseSymbolsAsync(
 /**
  * Strips local symbols from a framework's binary. A framework that was signed is re-signed
  * ad hoc so its seal stays valid.
- *
- * A versioned framework with files in its root cannot be sealed: codesign rejects it with
- * "unsealed contents present in the root directory". Its bundle seal was already invalid
- * before the strip, so only the binary is re-signed.
  */
 async function stripLocalSymbolsAsync(frameworkPath: string, binaryName: string): Promise<void> {
   const binaryPath = await fs.realpath(path.join(frameworkPath, binaryName));
@@ -55,16 +51,15 @@ async function stripLocalSymbolsAsync(frameworkPath: string, binaryName: string)
   }
 
   if (wasSigned) {
-    const signPath = (await hasUnsealableRootAsync(frameworkPath)) ? binaryPath : frameworkPath;
-    logger.verbose(`🔏 Re-signing ad hoc: ${signPath}`);
+    logger.verbose(`🔏 Re-signing ad hoc: ${frameworkPath}`);
     try {
-      await spawnAsync('codesign', ['--force', '--sign', '-', signPath]);
+      await spawnAsync('codesign', ['--force', '--sign', '-', frameworkPath]);
     } catch (error) {
       const stderr = (error as Partial<spawnAsync.SpawnResult>).stderr?.trim();
       throw new Error(
-        `Failed to re-sign ${signPath} ad hoc after stripping its symbols: ${stderr || String(error)}\n` +
+        `Failed to re-sign ${frameworkPath} ad hoc after stripping its symbols: ${stderr || String(error)}\n` +
           `The strip changed the binary, so its old signature is no longer valid. Run ` +
-          `\`codesign --verify --strict ${signPath}\` to see what codesign rejects, then run the build again.`
+          `\`codesign --verify --strict ${frameworkPath}\` to see what codesign rejects, then run the build again.`
       );
     }
   }
@@ -77,19 +72,4 @@ async function isSignedAsync(frameworkPath: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-async function hasUnsealableRootAsync(frameworkPath: string): Promise<boolean> {
-  if (!(await fs.pathExists(path.join(frameworkPath, 'Versions')))) {
-    return false;
-  }
-  for (const entry of await fs.readdir(frameworkPath)) {
-    if (
-      entry !== 'Versions' &&
-      !(await fs.lstat(path.join(frameworkPath, entry))).isSymbolicLink()
-    ) {
-      return true;
-    }
-  }
-  return false;
 }
