@@ -6,6 +6,7 @@ const interactiveTargetTypes = [
   'OutlinedButton',
   'ElevatedButton',
   'TextButton',
+  'ToggleView',
 ];
 
 export function decorateInteractiveTargets(node: unknown) {

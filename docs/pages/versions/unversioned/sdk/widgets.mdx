@@ -473,6 +473,12 @@ const CounterWidget = (props: CounterProps) => {
 export default createWidget('CounterWidget', CounterWidget, { count: 0 });
 ```
 
+On iOS, a `Toggle` works the same way. Its `onIsOnChange` callback receives the new value. The value that the callback returns becomes the widget's new props. The widget draws it with [`Toggle(isOn:intent:)`](<https://developer.apple.com/documentation/swiftui/toggle/init(ison:intent:label:)>). It has the system's default look for a toggle in a widget. iOS does not render the `switch` toggle style in a widget.
+
+```tsx
+<Toggle label="Enabled" isOn={props.enabled} onIsOnChange={isOn => ({ enabled: isOn })} />
+```
+
 To also keep your running app in sync with widget interactions, give the control a `target` identifier (as above) and listen for taps with `addUserInteractionListener`. The listener receives the widget's `name` as `source` and the control's `target`. Unlike `onPress`, it only fires while the app process is alive, so use it to mirror interactions into app state, not as the widget's update mechanism.
 
 ```tsx App.tsx

@@ -105,4 +105,19 @@ describe('jsx-runtime-stub', () => {
     expect(firstPress).not.toHaveBeenCalled();
     expect(secondPress).toHaveBeenCalledTimes(1);
   });
+
+  it('passes the new value to a toggle when handling presses', () => {
+    const onIsOnChange = jest.fn(({ nativeEvent }) => ({ enabled: nativeEvent.isOn }));
+
+    globalThis.__expoWidgetLayout = () =>
+      jsx('View', { children: jsx('ToggleView', { label: 'Enabled', isOn: false, onIsOnChange }) });
+
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+    const target = tree.props.children.props.target;
+
+    const result = globalThis.__expoWidgetHandlePress({}, { timestamp: 1, target });
+
+    expect(result).toEqual({ enabled: true });
+    expect(onIsOnChange).toHaveBeenCalledWith({ nativeEvent: { isOn: true } });
+  });
 });
