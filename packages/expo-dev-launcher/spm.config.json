@@ -4,7 +4,6 @@
     {
       "name": "EXDevLauncher",
       "podName": "expo-dev-launcher",
-      "releaseFlavor": "stub",
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
