@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import Darwin
 import ExpoModulesJSI
 import Testing
 
@@ -253,6 +254,35 @@ struct JavaScriptErrorTests {
     ).getArray()
     #expect(result[0].getString() == "outer boom")
     #expect(result[1].getString() == "ERR_OUTER")
+  }
+
+  @Test
+  func `catching JS errors in Swift does not leak CppError allocations`() throws {
+    let thrower = try runtime.eval("const e = new Error('boom'); (() => { throw e; })").getFunction()
+
+    for _ in 0..<100 {
+      _ = try? thrower.call()
+    }
+    runtime.collectGarbage()
+
+    var before = malloc_statistics_t()
+    malloc_zone_statistics(malloc_default_zone(), &before)
+
+    let iterations = 10_000
+    for _ in 0..<iterations {
+      _ = try? thrower.call()
+    }
+    runtime.collectGarbage()
+
+    var after = malloc_statistics_t()
+    malloc_zone_statistics(malloc_default_zone(), &after)
+
+    let leakedBlocks = after.blocks_in_use > before.blocks_in_use ? after.blocks_in_use - before.blocks_in_use : 0
+    let leakedBytes = after.size_in_use > before.size_in_use ? after.size_in_use - before.size_in_use : 0
+    #expect(
+      leakedBlocks < iterations / 4,
+      "Leaked \(leakedBlocks) blocks (\(leakedBytes) bytes) across \(iterations) caught JS errors"
+    )
   }
 }
 
