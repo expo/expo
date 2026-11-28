@@ -53,7 +53,7 @@ export default [
     name: 'ascApiKeyIssuerId',
     type: 'string',
     description: [
-      'The Issuer ID of your [App Store Connect API Key](https://expo.fyi/creating-asc-api-key). The value can include environment variables, such as `$ASC_API_KEY_ISSUER_ID`, which EAS CLI replaces with values from the environment where it runs.',
+      'The Issuer ID of your [App Store Connect API Key](https://expo.fyi/creating-asc-api-key). The value can include environment variables, such as `$ASC_API_KEY_ISSUER_ID`, which EAS CLI replaces with values from the environment where it runs. Omit this field for an [individual key](/submit/ios/#choose-an-api-key-type).',
     ],
   },
   {

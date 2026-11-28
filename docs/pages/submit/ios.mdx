@@ -107,7 +107,7 @@ See [Automate submissions](/build/automate-submissions/) for details.
 
 ## Automate with Expo Workflows
 
-[Expo Workflows](/eas/workflows/introduction/) runs the same submit step on Expo infrastructure, triggered by a git push or run manually from the CLI. First, configure an App Store Connect API Key so workflows can authenticate with Apple non-interactively:
+[Expo Workflows](/eas/workflows/introduction/) runs the same submit step on Expo infrastructure, triggered by a git push or run manually from the CLI. First, configure an App Store Connect API key so workflows can authenticate with Apple non-interactively:
 
 <Terminal cmd={['$ eas credentials --platform ios']} />
 
@@ -116,9 +116,11 @@ See [Automate submissions](/build/automate-submissions/) for details.
 3. Select **App Store Connect: Manage your API Key**.
 4. Select **Set up your project to use an API Key for Expo Submit**.
 
+If you cannot create a team key, you can use an individual key. See [Choose an API key type](#choose-an-api-key-type).
+
 <Collapsible summary="Prefer to bring your own credentials?">
 
-**App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) and set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+**App Store Connect API key:** Create your own [API key](https://expo.fyi/creating-asc-api-key) and set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**. For an individual key, see [Choose an API key type](#choose-an-api-key-type).
 
 **App-specific password:** Provide your [app-specific password](https://expo.fyi/apple-app-specific-password) via the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and set your Apple ID with the `appleId` field in **eas.json**.
 
@@ -155,6 +157,22 @@ This builds an iOS app on every push to `main` and submits it to TestFlight. The
 
 See the [workflow examples guide](/eas/workflows/examples/introduction/) for more patterns.
 
+## Choose an API key type
+
+App Store Connect has two types of API keys: team keys and individual keys. When EAS CLI generates a key for you, it creates a team key.
+
+An individual key belongs to one App Store Connect user and has the access and roles of that user. Use an individual key only when you cannot create a team key. Only an **Account Holder** or **Admin** can create a team key. A user with the **Generate Individual API Keys** permission can create an individual key. See [App Store Connect API](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api/) in App Store Connect Help.
+
+> **info** Individual keys require EAS CLI 24.13.0 or later.
+
+An individual key works only with Expo Submit and Expo Metadata. An individual key cannot manage certificates, provisioning profiles, or devices. You also cannot use it for the [App Store Connect connection](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) of your project.
+
+In Expo Workflows, a `submit` or `testflight` job that uses an individual key needs an image for SDK 56 or later. When the job does not set [`image`](/eas/workflows/syntax/#jobsjob_idimage) and the workflow does not set [`defaults.image`](/eas/workflows/syntax/#defaultsimage), Expo Workflows selects the image from the project's SDK version. Images for SDK 55 and earlier have a fastlane version that does not support individual keys. If your project uses SDK 55 or earlier, set `image` on the job or `defaults.image` on the workflow to `sdk-56` or a later SDK image.
+
+To use an individual key, upload your own **.p8** file. When `eas credentials` asks for the key type, select **Individual key (submissions only)**. In the Expo dashboard, select **Individual key** under **Key type** when you upload the key.
+
+With your own credentials, set `ascApiKeyPath` and `ascApiKeyId` in **eas.json**.
+
 ## Use other CI/CD services
 
 You can run `eas submit` from any CI/CD service, such as GitHub Actions, GitLab CI, and others:
@@ -163,7 +181,7 @@ You can run `eas submit` from any CI/CD service, such as GitHub Actions, GitLab 
 
 This requires a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to authenticate with your Expo account. Set the `EXPO_TOKEN` environment variable in your CI service so `eas submit` can run non-interactively.
 
-With `--non-interactive`, `eas submit` and `eas build --auto-submit` cannot prompt you for an App Store Connect API Key. Unless you bring your own credentials, they use the key assigned to your app. If your app has no key, they fail with the following error:
+With `--non-interactive`, `eas submit` and `eas build --auto-submit` cannot prompt you for an App Store Connect API key. Unless you bring your own credentials, they use the key assigned to your app. If your app has no key, they fail with the following error:
 
 ```text
 App Store Connect API Keys cannot be set up in --non-interactive mode.
