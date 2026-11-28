@@ -1010,7 +1010,7 @@ public class AudioModule: Module {
   }
 
   private var isSessionInUse: Bool {
-    // iOS pauses a player that is still loading if the session turns off.
+    // Also check for .isWaitingToPlay so that players that are loading don't get paused
     if registry.allPlayables.contains(where: { $0.isPlaying || $0.isWaitingToPlay }) {
       return true
     }
