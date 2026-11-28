@@ -34,9 +34,9 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  s.exclude_files = 'Tests/'
+  s.exclude_files = 'EXManifestsTests/'
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'Tests/*.{h,m,swift}'
+    test_spec.source_files = 'EXManifestsTests/*.{h,m,swift}'
   end
 end

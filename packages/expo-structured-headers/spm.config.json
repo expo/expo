@@ -12,14 +12,10 @@
         {
           "type": "objc",
           "name": "EXStructuredHeaders",
-          "path": "ios",
           "dependencies": [],
           "linkedFrameworks": [
             "Foundation",
             "UIKit"
-          ],
-          "exclude": [
-            "Tests/**"
           ]
         }
       ]
