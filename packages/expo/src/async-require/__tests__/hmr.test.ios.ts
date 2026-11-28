@@ -2,6 +2,7 @@ import HMRClient from '../hmr';
 import { reload } from '../hmrUtils';
 
 const listeners: Record<string, ((...args: any[]) => void)[]> = {};
+const mockSend = jest.fn();
 
 function emit(event: string, ...args: any[]) {
   const handlers = listeners[event];
@@ -21,13 +22,18 @@ jest.mock('../hmrUtils', () => ({
   showLoading: jest.fn(),
 }));
 
+jest.mock('../../utils/getDevServer', () => ({
+  __esModule: true,
+  default: () => ({ url: 'http://localhost:8081/' }),
+}));
+
 jest.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
   __esModule: true,
   default: class {
     on(event: string, handler: (...args: any[]) => void) {
       (listeners[event] ??= []).push(handler);
     }
-    send = jest.fn();
+    send = mockSend;
     enable = jest.fn();
     disable = jest.fn();
     close = jest.fn();
@@ -36,9 +42,24 @@ jest.mock('@expo/metro/metro-runtime/modules/HMRClient', () => ({
   },
 }));
 
-it('reloads through the platform reload helper when an async bundle is registered after Metro disconnected', () => {
+beforeAll(() => {
   HMRClient.setup('ios', 'index.bundle', 'localhost', 8081, true, 'http');
+});
 
+it('does not register an async bundle that another server serves', () => {
+  mockSend.mockClear();
+
+  HMRClient.registerBundle('http://localhost:8082/Remote.bundle?platform=ios');
+  HMRClient.registerBundle('http://localhost:8081/AsyncScreen.bundle?platform=ios');
+
+  expect(mockSend).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(mockSend.mock.calls[0][0])).toEqual({
+    type: 'register-entrypoints',
+    entryPoints: ['http://localhost:8081/AsyncScreen.bundle?platform=ios'],
+  });
+});
+
+it('reloads through the platform reload helper when an async bundle is registered after Metro disconnected', () => {
   // Metro's socket closes, which sets `hmrUnavailableReason`.
   emit('close', { code: 1006, reason: 'connection failed' });
 
