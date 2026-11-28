@@ -581,4 +581,37 @@ describe('ExperimentalStack — unsupported option warning', () => {
       warnSpy.mockRestore();
     }
   });
+
+  it('does not warn for internal hidden option injected by ExperimentalStack.Protected', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      await renderRouter(
+        {
+          a: () => null,
+          b: () => null,
+          _layout: () => (
+            <ExperimentalStack>
+              <ExperimentalStack.Protected guard>
+                <ExperimentalStack.Screen name="a" />
+              </ExperimentalStack.Protected>
+              <ExperimentalStack.Protected guard={false}>
+                <ExperimentalStack.Screen name="b" />
+              </ExperimentalStack.Protected>
+            </ExperimentalStack>
+          ),
+        },
+        { initialUrl: '/a' }
+      );
+
+      const matched = warnSpy.mock.calls.find(
+        (call) =>
+          typeof call[0] === 'string' &&
+          call[0].includes('ExperimentalStack: ignoring unsupported screenOption')
+      );
+      expect(matched).toBeUndefined();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
 });
