@@ -13,8 +13,17 @@ public struct Button: ExpoSwiftUI.View {
   public var body: some View {
     if let label = props.label {
       if let systemImage = props.systemImage {
-        SwiftUI.Button(label, systemImage: systemImage, role: props.role?.toNativeRole()) {
-          props.onButtonPress()
+        if isSystemSymbol(systemImage) {
+          SwiftUI.Button(label, systemImage: systemImage, role: props.role?.toNativeRole()) {
+            props.onButtonPress()
+          }
+        } else {
+          // Not an SF Symbol, so a custom symbol or an image in the app's asset catalog.
+          SwiftUI.Button(role: props.role?.toNativeRole()) {
+            props.onButtonPress()
+          } label: {
+            Label(label, image: systemImage)
+          }
         }
       } else {
         SwiftUI.Button(label, role: props.role?.toNativeRole()) {
@@ -24,6 +33,14 @@ public struct Button: ExpoSwiftUI.View {
     } else {
       labelLessButton
     }
+  }
+
+  private func isSystemSymbol(_ name: String) -> Bool {
+    #if os(macOS)
+    return NSImage(systemSymbolName: name, accessibilityDescription: nil) != nil
+    #else
+    return UIImage(systemName: name) != nil
+    #endif
   }
 
   @ViewBuilder
