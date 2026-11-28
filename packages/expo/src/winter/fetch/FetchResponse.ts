@@ -334,7 +334,9 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             // runs, so the guard must not go stale if cancelStreaming throws.
             this.bodyStreamClosed = true;
             body.consumed = true;
-            this.cancelStreaming(String(reason));
+            // The native response can already be released here (seen on Android). Nothing else
+            // observes this promise, so a rejection would be unhandled.
+            Promise.resolve(this.cancelStreaming(String(reason))).catch(() => {});
           },
         },
         {
