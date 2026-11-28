@@ -27,10 +27,9 @@
     "build",
     "internal",
     "vendor",
+    "_ctx",
     "_ctx-html.js",
-    "_ctx-platform.js",
     "_ctx-shared.js",
-    "_ctx.*",
     "_error.js",
     "app.plugin.js",
     "babel.js",
@@ -259,8 +258,8 @@
     "./_ctx-html": "./_ctx-html.js",
     "./_ctx-shared": "./_ctx-shared.js",
     "./_ctx": {
-      "types": "./_ctx.d.ts",
-      "default": "./_ctx-platform.js"
+      "types": "./_ctx/index.d.ts",
+      "default": "./_ctx/index.js"
     },
     "./_error.js": "./_error.js",
     "./_error": "./_error.js",
