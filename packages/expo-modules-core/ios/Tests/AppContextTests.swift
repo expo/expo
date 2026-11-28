@@ -53,6 +53,11 @@ struct AppContextTests {
     #expect(weakAppContext != nil)
   }
 
+  @Test
+  func `preparing the runtime does not give it a side table`() throws {
+    #expect(try !hasSideTable(runtime))
+  }
+
   // MARK: - moduleProviderClassNames
 
   @Test
@@ -525,4 +530,12 @@ private final class ObjectIdentifiers: @unchecked Sendable {
     let identifier = object.map(ObjectIdentifier.init)
     lock.withLock { _ = identifiers.insert(identifier) }
   }
+}
+
+/// Whether the object has a side table, which a `weak` reference to it creates and which stays for the rest of its
+/// life. Every retain and release of an object with a side table takes the slow path. Reads an ABI detail of 64-bit
+/// platforms: the top two bits of the reference count word, `UseSlowRC` and `SideTableMark`, are both set.
+private func hasSideTable(_ object: AnyObject) -> Bool {
+  let referenceCountBits = Unmanaged.passUnretained(object).toOpaque().load(fromByteOffset: 8, as: UInt64.self)
+  return referenceCountBits >> 62 == 0b11
 }
