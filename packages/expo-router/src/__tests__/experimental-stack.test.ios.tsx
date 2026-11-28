@@ -6,7 +6,7 @@ import type { TabSelectedEvent, TabsHostProps, TabsScreenProps } from 'react-nat
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
 import { NativeTabs } from '../native-tabs';
-import { usePreventRemove } from '../react-navigation/native';
+import { DarkTheme, ThemeProvider, usePreventRemove } from '../react-navigation/native';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { renderRouter } from '../testing-library';
 
@@ -580,5 +580,28 @@ describe('ExperimentalStack — unsupported option warning', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+});
+
+describe('ExperimentalStack — theme background', () => {
+  it('uses the active navigation theme background color for container and scene', async () => {
+    await renderRouter(
+      {
+        a: () => <Text testID="a">A</Text>,
+        _layout: () => (
+          <ThemeProvider value={DarkTheme}>
+            <ExperimentalStack />
+          </ThemeProvider>
+        ),
+      },
+      { initialUrl: '/a' }
+    );
+
+    expect(screen.getByTestId('StackV5.Host').parent).toHaveStyle({
+      backgroundColor: DarkTheme.colors.background,
+    });
+    expect(screen.getByTestId('StackV5.Screen').children[0]).toHaveStyle({
+      backgroundColor: DarkTheme.colors.background,
+    });
   });
 });
