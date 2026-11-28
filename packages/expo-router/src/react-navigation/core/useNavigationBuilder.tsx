@@ -268,7 +268,10 @@ export function useNavigationBuilder<
     ...rest
   } = options;
 
-  const routeConfigs = getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children);
+  const routeConfigs = React.useMemo(
+    () => getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(children),
+    [children]
+  );
 
   const router = useLazyValue<Router<State, any>>(() => {
     if (
@@ -295,33 +298,37 @@ export function useNavigationBuilder<
     return original;
   });
 
-  const screens = routeConfigs.reduce<
-    Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>
-  >((acc, config) => {
-    if (config.props.name in acc) {
+  const { screens, routeNames, routeGetIdList } = React.useMemo(() => {
+    const screens = routeConfigs.reduce<
+      Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>
+    >((acc, config) => {
+      if (config.props.name in acc) {
+        throw new Error(
+          `A navigator cannot contain multiple 'Screen' components with the same name (found duplicate screen named '${config.props.name}')`
+        );
+      }
+
+      acc[config.props.name] = config;
+      return acc;
+    }, {});
+
+    const routeNames = routeConfigs.map((config) => config.props.name);
+    const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
+      (acc, curr) =>
+        Object.assign(acc, {
+          [curr]: screens[curr]!.props.getId,
+        }),
+      {}
+    );
+
+    if (!routeNames.length) {
       throw new Error(
-        `A navigator cannot contain multiple 'Screen' components with the same name (found duplicate screen named '${config.props.name}')`
+        "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
       );
     }
 
-    acc[config.props.name] = config;
-    return acc;
-  }, {});
-
-  const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
-    (acc, curr) =>
-      Object.assign(acc, {
-        [curr]: screens[curr]!.props.getId,
-      }),
-    {}
-  );
-
-  if (!routeNames.length) {
-    throw new Error(
-      "Couldn't find any screens for the navigator. Have you defined any screens as its children?"
-    );
-  }
+    return { screens, routeNames, routeGetIdList };
+  }, [routeConfigs]);
 
   // Track screen-list changes without recalculating state when only the array identity changes.
   const routeNamesKey = routeNames.join('\0');

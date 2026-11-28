@@ -60,7 +60,9 @@ const hasAnimation = (options: BottomTabNavigationOptions) => {
 
 const renderTabBarDefault = (props: BottomTabBarProps) => <BottomTabBar {...props} />;
 
-export function BottomTabView(props: Props) {
+export const BottomTabView = React.memo(BottomTabViewImpl);
+
+function BottomTabViewImpl(props: Props) {
   const {
     tabBar = renderTabBarDefault,
     state,
