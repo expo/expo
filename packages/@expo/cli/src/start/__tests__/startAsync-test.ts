@@ -58,3 +58,17 @@ it.each(['expo', 'ngrok', null])(
     }
   }
 );
+
+it.each([false, true])('preserves env reload policy for webOnly=%s', async (webOnly) => {
+  const [commonOptions, startOptions] = await _getMultiBundlerStartOptions(
+    '/',
+    { web: true } as any,
+    { ...NATIVE_METRO_WEB_WEBPACK },
+    { webOnly }
+  );
+
+  expect(commonOptions.reloadEnvironment).toBe(!webOnly);
+  for (const { options } of startOptions) {
+    expect(options?.reloadEnvironment).toBe(!webOnly);
+  }
+});

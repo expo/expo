@@ -68,6 +68,8 @@ export interface BundlerStartOptions {
   https?: boolean;
   /** Should start the dev servers in development mode (minify). */
   mode?: 'development' | 'production';
+  /** Reload CLI environment values when dotenv files change. */
+  reloadEnvironment?: boolean;
   /** Is dev client enabled. */
   devClient?: boolean;
   /** Should run dev servers with clean caches. */
@@ -220,10 +222,6 @@ export abstract class BundlerDevServer {
   }
 
   public abstract startTypeScriptServices(): Promise<void>;
-
-  public async watchEnvironmentVariables(): Promise<void> {
-    // noop -- We've only implemented this functionality in Metro.
-  }
 
   /**
    * Creates a mock server representation that can be used to estimate URLs for a server started in another process.

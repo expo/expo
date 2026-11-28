@@ -1,7 +1,6 @@
 import { events } from '2g';
 import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
-import { getEnvFiles } from '@expo/env';
 import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@expo/metro-config';
 import { loadUserConfig } from '@expo/metro-config';
 import type { Reporter } from '@expo/metro/metro';
@@ -39,7 +38,7 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
-import { injectMetroFileMapWatcher } from './watch/injectMetroFileMapWatcher';
+import { setupEnvironmentWatcher } from './watch/setupEnvironmentWatcher';
 import {
   patchGetDeltaForCacheVary,
   patchTransformFileForCacheVary,
@@ -378,6 +377,8 @@ export async function loadMetroConfigAsync(
 
 interface InstantiateMetroConfigOptions extends LoadMetroConfigOptions {
   host?: string;
+  mode?: 'development' | 'production';
+  reloadEnvironment?: boolean;
 }
 
 /** The most generic possible setup for Metro bundler. */
@@ -521,9 +522,11 @@ export async function instantiateMetroAsync(
     );
   });
 
-  injectMetroFileMapWatcher({ metro, server }, metroConfig, {
-    files: getEnvFiles({ silent: true }).map((name) => path.join(projectRoot, name)),
+  setupEnvironmentWatcher({ metro, server }, metroConfig, {
+    projectRoot,
+    mode: options.mode ?? 'development',
     watch,
+    reloadEnvironment: options.reloadEnvironment,
   });
 
   doneInstantiate('instantiate', {

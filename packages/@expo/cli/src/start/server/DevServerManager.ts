@@ -233,10 +233,6 @@ export class DevServerManager {
     }
   }
 
-  async watchEnvironmentVariables() {
-    await this.devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
-  }
-
   /** Stop all development servers. */
   async stopAsync(): Promise<void> {
     this.updateServerMetadata(false);

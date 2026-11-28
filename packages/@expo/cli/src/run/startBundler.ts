@@ -29,6 +29,7 @@ export async function startBundlerAsync(
     devClient: true,
     minify: false,
     mode,
+    reloadEnvironment: !headless,
 
     location: {
       scheme,
@@ -62,7 +63,6 @@ export async function startBundlerAsync(
   }
 
   if (!options.headless) {
-    await devServerManager.watchEnvironmentVariables();
     await devServerManager.bootstrapTypeScriptAsync();
   }
 

@@ -5,7 +5,6 @@ import { ImmutableRequest } from 'expo-server/private';
 import { fs, vol } from 'memfs';
 
 import type { ExportAssetMap } from '../../../../export/saveAssets';
-import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
@@ -13,15 +12,10 @@ import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { HAS_LOGGED_SYMBOL, IS_METRO_BUNDLE_ERROR_SYMBOL } from '../metroErrorInterface';
 import { warnInvalidWebOutput } from '../router';
-import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
 jest.mock('../waitForMetroToObserveTypeScriptFile', () => ({
   observeAnyFileChanges: jest.fn(),
-  observeFileChanges: jest.fn(),
-}));
-jest.mock('../../../../utils/nodeEnv', () => ({
-  getEnvFiles: jest.fn(() => []),
-  reloadEnvFiles: jest.fn(),
 }));
 jest.mock('../router', () => {
   return {
@@ -487,22 +481,14 @@ describe('startAsync', () => {
   });
 });
 
-describe('watchEnvironmentVariables', () => {
-  it('keeps the Metro mode when env files reload', async () => {
-    const devServer = new MetroBundlerDevServer(
-      '/',
-      getPlatformBundlers('/', { web: { bundler: 'metro' } })
-    );
-    devServer['instance'] = { server: {} } as any;
-    devServer['metro'] = {} as any;
-    devServer['instanceMetroOptions'] = { mode: 'production' };
+it('passes the mode and env reload policy to Metro setup', async () => {
+  const devServer = await getStartedDevServer({ mode: 'production', reloadEnvironment: true });
 
-    await devServer.watchEnvironmentVariables();
-
-    expect(getEnvFiles).toHaveBeenCalledWith('/', 'production');
-    jest.mocked(observeFileChanges).mock.calls[0]![2]();
-    expect(reloadEnvFiles).toHaveBeenCalledWith('/', 'production');
-  });
+  expect(instantiateMetroAsync).toHaveBeenLastCalledWith(
+    devServer,
+    expect.objectContaining({ mode: 'production', reloadEnvironment: true }),
+    expect.anything()
+  );
 });
 
 describe('watchConfig', () => {

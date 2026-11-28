@@ -8,7 +8,6 @@ jest.mock('../../start/server/DevServerManager', () => {
     startAsync: jest.fn(),
     getDefaultDevServer: jest.fn(),
     bootstrapTypeScriptAsync: jest.fn(),
-    watchEnvironmentVariables: jest.fn(),
   }));
 
   // @ts-expect-error
@@ -65,6 +64,7 @@ describe(startBundlerAsync, () => {
           location: {},
           minify: false,
           mode: 'production',
+          reloadEnvironment: false,
           port: 3000,
         },
         type: 'metro',
@@ -88,6 +88,7 @@ describe(startBundlerAsync, () => {
           location: {},
           minify: false,
           mode: 'development',
+          reloadEnvironment: true,
           port: 3000,
         },
         type: 'metro',
