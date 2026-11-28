@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.RectF
+import android.graphics.drawable.Animatable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -33,6 +34,20 @@ class ExpoImageView(
     }
 
   var isPlaceholder: Boolean = false
+
+  internal var sharedAnimationTick = false
+
+  override fun invalidateDrawable(dr: Drawable) {
+    if (sharedAnimationTick && dr === drawable && (dr as? Animatable)?.isRunning == true) {
+      SharedAnimationTick.request(this)
+      return
+    }
+    super.invalidateDrawable(dr)
+  }
+
+  internal fun onSharedAnimationTick() {
+    drawable?.let { super.invalidateDrawable(it) }
+  }
 
   internal fun recycleViewIfBindingMatches(
     target: ImageViewWrapperTarget?,
