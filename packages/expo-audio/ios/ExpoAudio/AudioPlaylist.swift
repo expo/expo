@@ -58,6 +58,10 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
     ref.timeControlStatus == .playing
   }
 
+  var isWaitingToPlay: Bool {
+    ref.timeControlStatus == .waitingToPlayAtSpecifiedRate && ref.reasonForWaitingToPlay != .noItemToPlay
+  }
+
   var isLive: Bool {
     ref.currentItem?.duration.isIndefinite ?? false
   }

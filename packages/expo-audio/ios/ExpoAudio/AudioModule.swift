@@ -1010,7 +1010,8 @@ public class AudioModule: Module {
   }
 
   private var isSessionInUse: Bool {
-    if registry.allPlayables.contains(where: { $0.isPlaying }) {
+    // Also check for .isWaitingToPlay so that players that are loading don't get paused
+    if registry.allPlayables.contains(where: { $0.isPlaying || $0.isWaitingToPlay }) {
       return true
     }
     #if os(iOS)
