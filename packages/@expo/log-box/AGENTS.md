@@ -27,8 +27,9 @@ src/
 │   ├── devServerEndpoints.ts    # Dev server communication
 │   └── parseErrorStack.ts       # Stack trace parsing
 ├── LogBox.ts                # Main API (install, middleware)
-├── index.tsx                # Web entry point
-├── index.native.tsx         # Native entry point (no-op)
+├── index.tsx                # Entry point, re-exports `./setupLogBox`
+├── setupLogBox.tsx          # Web setup
+├── setupLogBox.native.tsx   # Native setup (no-op)
 ├── logbox-dom-polyfill.tsx  # DOM wrapper component
 ├── logbox-rn-polyfill.tsx   # React Native Modal wrapper
 └── logbox-web-polyfill.tsx  # Static build error display
@@ -38,13 +39,13 @@ src/
 
 ### 1. Installation & Entry Points
 
-**Web (`src/index.tsx`):**
+**Web (`src/setupLogBox.tsx`):**
 
 - Auto-installs in development mode when `EXPO_OS === 'web'`
 - Renders ErrorToast into a Shadow DOM to isolate styles
 - `LogBox.install()` patches `console.error` to capture errors
 
-**Native (`src/index.native.tsx`):**
+**Native (`src/setupLogBox.native.tsx`):**
 
 - No-op - native platforms use React Native's built-in LogBox
 - The `logbox-rn-polyfill.tsx` provides native Modal presentation when needed
@@ -167,12 +168,12 @@ All styles use CSS Modules (`.module.css`) with CSS custom properties:
 
 ## Platform Differences
 
-| Feature       | Web             | Native                     |
-| ------------- | --------------- | -------------------------- |
-| Entry point   | `index.tsx`     | `index.native.tsx` (no-op) |
-| Rendering     | Shadow DOM      | React Native Modal         |
-| Styling       | CSS Modules     | React Native StyleSheet    |
-| Error capture | Patched console | RN's built-in LogBox       |
+| Feature       | Web               | Native                           |
+| ------------- | ----------------- | -------------------------------- |
+| Setup         | `setupLogBox.tsx` | `setupLogBox.native.tsx` (no-op) |
+| Rendering     | Shadow DOM        | React Native Modal               |
+| Styling       | CSS Modules       | React Native StyleSheet          |
+| Error capture | Patched console   | RN's built-in LogBox             |
 
 ## Recent Migration (RN → DOM)
 
