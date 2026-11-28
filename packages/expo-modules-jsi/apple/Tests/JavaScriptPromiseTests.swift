@@ -779,4 +779,196 @@ struct JavaScriptPromiseTests {
     }
     #expect(isCollected)
   }
+
+  @Test
+  func `awaiting a thenable that fulfills with zero arguments returns undefined`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let thenable = try runtime.eval("({ then(resolve) { resolve(); } })").getObject()
+      let promise = try JavaScriptPromise(runtime, thenable)
+      let result = try await promise.await()
+      #expect(result.isUndefined() == true)
+    }
+  }
+
+  @Test
+  func `awaiting a thenable that rejects with zero arguments throws`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let thenable = try runtime.eval("({ then(_, reject) { reject(); } })").getObject()
+      let promise = try JavaScriptPromise(runtime, thenable)
+      await #expect(throws: JavaScriptError.self) {
+        _ = try await promise.await()
+      }
+    }
+  }
+
+  @Test
+  func `awaiting a pending promise concurrently delivers the value to all callers`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let thenInstalled = DispatchSemaphore(value: 0)
+    let thenCallCount = ThreadCounter()
+    let (promise, resolveFn) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      try runtime.eval(
+        """
+        globalThis.pendingObj = { value: 42 };
+        globalThis.rawPromise = new Promise((resolve) => {
+          globalThis.resolvePending = () => resolve(globalThis.pendingObj);
+        });
+        """
+      )
+      let rawPromise = try runtime.global().getPropertyAsObject("rawPromise")
+      let originalThen = try rawPromise.getPropertyAsFunction("then").ref()
+      let wrappedThen = runtime.createFunction("then") { this, arguments in
+        thenCallCount.increment()
+        defer { thenInstalled.signal() }
+        let fn = originalThen.withUnwrappedValue { $0.asValue().getFunction() }!
+        return try fn.call(this: this.getObject(), arguments: arguments)
+      }
+      rawPromise.setProperty("then", value: wrappedThen.asValue())
+      let promise = try JavaScriptPromise(runtime, rawPromise)
+      let resolveFn = try runtime.global().getPropertyAsFunction("resolvePending").ref()
+      return (UncheckedSendable(value: promise), resolveFn)
+    }
+
+    let first = Task {
+      try await promise.value.await().ref()
+    }
+    let second = Task {
+      try await promise.value.await().ref()
+    }
+
+    // Wait until `then` has been installed and both tasks have had a chance to queue their `await`.
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      DispatchQueue.global().async {
+        thenInstalled.wait()
+        continuation.resume()
+      }
+    }
+    try await testRuntime.scheduler.runIsolated {
+      _ = try resolveFn.take().call()
+    }
+
+    let firstRef = try await first.value
+    let secondRef = try await second.value
+    try await testRuntime.scheduler.runIsolated {
+      let firstVal: JavaScriptValue = try firstRef.take()
+      let secondVal: JavaScriptValue = try secondRef.take()
+      #expect(firstVal.getObject().getProperty("value").getInt() == 42)
+      #expect(secondVal.getObject().getProperty("value").getInt() == 42)
+      let isSameObject = firstVal.isEqual(to: secondVal)
+      #expect(isSameObject)
+    }
+    #expect(thenCallCount.value == 1)
+  }
+
+  @Test
+  func `awaiting a pending promise concurrently propagates rejection to all callers`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(testRuntime.runtime))
+    }
+
+    struct ConcurrentRejectionError: Error {}
+
+    let first = Task {
+      try await promise.value.await().ref()
+    }
+    let second = Task {
+      try await promise.value.await().ref()
+    }
+
+    // Give both tasks a turn on the JS thread before rejecting.
+    await testRuntime.scheduler.run {}
+    await testRuntime.scheduler.run {}
+    promise.value.reject(ConcurrentRejectionError())
+
+    await #expect(throws: Error.self) {
+      _ = try await first.value
+    }
+    await #expect(throws: Error.self) {
+      _ = try await second.value
+    }
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `tearing down the runtime while awaiting a pending promise throws RuntimeLostError`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let thenInstalled = DispatchSemaphore(value: 0)
+    let promise = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime!
+      let thenable = runtime.createObject()
+      let then = runtime.createFunction("then") { _, _ in
+        thenInstalled.signal()
+        return .undefined()
+      }
+      thenable.setProperty("then", value: then.asValue())
+      return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
+    }
+
+    let awaiting = Task {
+      try await promise.value.await().ref()
+    }
+
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      DispatchQueue.global().async {
+        thenInstalled.wait()
+        continuation.resume()
+      }
+    }
+    await testRuntime.tearDown()
+
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await awaiting.value
+    }
+  }
+
+  @Test
+  func `resolve with JavaScriptValue releases value on teardown if task is dropped`() async throws {
+    let testRuntime = await ReleasableTestRuntime(dispatch: holdPromiseSchedulerTask)
+    defer {
+      heldPromiseSchedulerTasks.removeAll()
+    }
+    let (promise, isCollected) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime!
+      let promise = try JavaScriptPromise(runtime)
+      let weakObject: JavaScriptWeakObject
+      do {
+        let object = runtime.createObject()
+        weakObject = object.createWeak()
+        // Queued on the holding dispatch, so the settle closure stays alive without running.
+        promise.resolve(object.asValue())
+      }
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakObject.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return (UncheckedSendable(value: promise), isCollected())
+    }
+    #expect(isCollected)
+    await testRuntime.tearDown()
+    // Dropping the held closure after the runtime is gone must not touch a freed runtime.
+    heldPromiseSchedulerTasks.removeAll()
+    withExtendedLifetime(promise) {}
+  }
 }
+
+private final class ThreadCounter: @unchecked Sendable {
+  private let lock = NSLock()
+  private var count = 0
+
+  var value: Int {
+    lock.withLock { count }
+  }
+
+  func increment() {
+    lock.withLock { count += 1 }
+  }
+}
+
+nonisolated(unsafe) private var heldPromiseSchedulerTasks: [() -> Void] = []
+
+private let holdPromiseSchedulerTask:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, callback in
+    heldPromiseSchedulerTasks.append(callback)
+  }
