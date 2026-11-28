@@ -1,0 +1,14 @@
+appId: dev.expo.updatese2e
+---
+- runFlow:
+    file: basic_startAndStop.yml
+- runFlow:
+    file: basic_reload.yml
+- runFlow:
+    file: reload_update.yml
+- runFlow:
+    file: basic_runUpdate.yml
+- runFlow:
+    file: jsapi_runUpdate.yml
+- runFlow:
+    file: jsapi_stateMachine.yml
