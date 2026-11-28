@@ -96,18 +96,21 @@ describe(getSwiftPMMarkerPath, () => {
 });
 
 describe(isSwiftPMEnabled, () => {
-  const configWithExperiments = (experiments: object) =>
-    ({ name: 'App', slug: 'app', experiments }) as ExpoConfig;
+  const config = (extra: object) => ({ name: 'App', slug: 'app', ...extra }) as ExpoConfig;
 
-  it(`returns true when experiments.swiftPackageManager is true`, () => {
-    expect(isSwiftPMEnabled(configWithExperiments({ swiftPackageManager: true }))).toBe(true);
+  it(`returns true when ios.useCocoaPods is not set`, () => {
+    expect(isSwiftPMEnabled(config({}))).toBe(true);
+    expect(isSwiftPMEnabled(config({ ios: { bundleIdentifier: 'com.app' } }))).toBe(true);
   });
 
-  it(`returns false when experiments.swiftPackageManager is not exactly true`, () => {
-    expect(isSwiftPMEnabled({ name: 'App', slug: 'app' })).toBe(false);
-    expect(isSwiftPMEnabled(configWithExperiments({}))).toBe(false);
-    expect(isSwiftPMEnabled(configWithExperiments({ swiftPackageManager: false }))).toBe(false);
-    expect(isSwiftPMEnabled(configWithExperiments({ swiftPackageManager: 'true' }))).toBe(false);
+  it(`ignores the removed experiments.swiftPackageManager setting`, () => {
+    expect(isSwiftPMEnabled(config({ experiments: { swiftPackageManager: false } }))).toBe(true);
+  });
+
+  it(`returns false only when ios.useCocoaPods is exactly true`, () => {
+    expect(isSwiftPMEnabled(config({ ios: { useCocoaPods: true } }))).toBe(false);
+    expect(isSwiftPMEnabled(config({ ios: { useCocoaPods: false } }))).toBe(true);
+    expect(isSwiftPMEnabled(config({ ios: { useCocoaPods: 'true' } }))).toBe(true);
   });
 });
 
@@ -122,8 +125,9 @@ describe(assertNoSwiftPMMarker, () => {
     expect(() => assertNoSwiftPMMarker(projectRoot)).toThrow(
       expect.objectContaining({
         name: 'CommandError',
+        code: 'COCOAPODS_CONFIG_SWIFTPM_PROJECT',
         message:
-          'The iOS project uses Swift Package Manager (ios/App.xcodeproj/.spm-injected.json exists), but experiments.swiftPackageManager is not enabled in the app config. To keep Swift Package Manager, add "experiments": { "swiftPackageManager": true } to the app config. To switch back to CocoaPods, run `npx expo prebuild --clean` to regenerate the iOS project.',
+          'The iOS project uses Swift Package Manager (ios/App.xcodeproj/.spm-injected.json exists), but the app config sets "ios": { "useCocoaPods": true }. To keep Swift Package Manager, remove ios.useCocoaPods from the app config. To switch to CocoaPods, run `npx expo prebuild --clean` to regenerate the iOS project.',
       })
     );
   });
@@ -156,7 +160,8 @@ describe(setupSwiftPMAsync, () => {
     const result = setupSwiftPMAsync(projectRoot, { install: true });
     await expect(result).rejects.toMatchObject({ name: 'CommandError' });
     await expect(result).rejects.toThrow(/React Native 0\.88 or later/);
-    await expect(result).rejects.toThrow(/experiments\.swiftPackageManager/);
+    await expect(result).rejects.toThrow(/"ios": \{ "useCocoaPods": true \}/);
+    await expect(result).rejects.not.toThrow(/experiments\.swiftPackageManager/);
     await expect(result).rejects.not.toThrow(/--swiftpm/);
     expect(spawnAsync).not.toHaveBeenCalled();
   });

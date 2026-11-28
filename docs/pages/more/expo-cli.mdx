@@ -474,6 +474,24 @@ This command will be disabled if your project is configured to use `metro` for b
 
 Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/continuous-native-generation/).
 
+### iOS dependency manager
+
+Prebuild sets up the iOS project with Swift Package Manager by default. Swift Package Manager requires React Native 0.88 or later. If your project uses an older React Native version, prebuild uses CocoaPods and shows a warning.
+
+To keep CocoaPods, set `ios.useCocoaPods` to `true` in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "useCocoaPods": true
+    }
+  }
+}
+```
+
+Prebuild does not convert an existing **ios** directory to the other dependency manager. If CocoaPods is installed in the **ios** directory (**Podfile.lock** or **Pods** exists) and `ios.useCocoaPods` is not set, prebuild stops with an error. When you change `ios.useCocoaPods` in a project that already has an **ios** directory, run `npx expo prebuild --clean` to regenerate the iOS project with the other dependency manager.
+
 ## Lint
 
 <Terminal cmd={['$ npx expo lint']} />

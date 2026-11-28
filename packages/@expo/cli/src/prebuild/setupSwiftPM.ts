@@ -45,24 +45,72 @@ export function getSwiftPMMarkerPath(projectRoot: string): string | null {
   );
 }
 
-/** Returns whether the app config opts iOS into Swift Package Manager (preview). */
+/**
+ * Returns whether the app config allows Swift Package Manager for iOS: it does unless
+ * `ios.useCocoaPods` is `true`.
+ */
 export function isSwiftPMEnabled(exp: ExpoConfig): boolean {
-  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema yet.
-  const experiments: (ExpoConfig['experiments'] & { swiftPackageManager?: unknown }) | undefined =
-    exp.experiments;
-  return experiments?.swiftPackageManager === true;
+  // `ios.useCocoaPods` is not in the generated ExpoConfig schema yet.
+  const ios: (ExpoConfig['ios'] & { useCocoaPods?: unknown }) | undefined = exp.ios;
+  return ios?.useCocoaPods !== true;
 }
 
 /**
- * Throws when the iOS project uses Swift Package Manager although the app config does not enable
- * it, so CocoaPods never runs against a Swift Package Manager project.
+ * Returns whether prebuild sets up iOS with Swift Package Manager. Falls back to CocoaPods with a
+ * warning when the project's React Native cannot set up Swift Package Manager and the iOS project
+ * does not use it yet.
+ */
+export function shouldUseSwiftPM(projectRoot: string, exp: ExpoConfig): boolean {
+  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema.
+  const experiments: (ExpoConfig['experiments'] & { swiftPackageManager?: unknown }) | undefined =
+    exp.experiments;
+  const swiftPMEnabled = isSwiftPMEnabled(exp);
+  if (experiments?.swiftPackageManager !== undefined) {
+    Log.warn(
+      swiftPMEnabled
+        ? 'The app config sets experiments.swiftPackageManager, which was removed and has no effect. Swift Package Manager is the default for iOS. Remove experiments.swiftPackageManager from the app config. To use CocoaPods, add "ios": { "useCocoaPods": true } to the app config.'
+        : 'The app config sets experiments.swiftPackageManager, which was removed. Remove experiments.swiftPackageManager from the app config. ios.useCocoaPods keeps this project on CocoaPods.'
+    );
+  }
+  if (!swiftPMEnabled) {
+    return false;
+  }
+  if (getSwiftPMMarkerPath(projectRoot) || resolveSetupAppleSpmScript(projectRoot)) {
+    return true;
+  }
+  Log.warn(
+    'Could not set up Swift Package Manager for iOS because the installed react-native does not include scripts/setup-apple-spm.js, so prebuild uses CocoaPods. Swift Package Manager requires React Native 0.88 or later. If package.json already requires it, install dependencies and run prebuild again. To keep CocoaPods without this warning, add "ios": { "useCocoaPods": true } to the app config.'
+  );
+  return false;
+}
+
+/**
+ * Throws when CocoaPods is installed in the iOS project and it has no Swift Package Manager marker,
+ * so prebuild never converts an installed CocoaPods project without `--clean`. A Podfile alone, as
+ * in a fresh template, is converted: `create-expo` relies on that.
+ */
+export function assertNoCocoaPodsProject(projectRoot: string): void {
+  const iosDir = path.join(projectRoot, 'ios');
+  const hasCocoaPodsInstalled =
+    fs.existsSync(path.join(iosDir, 'Podfile.lock')) || fs.existsSync(path.join(iosDir, 'Pods'));
+  if (hasCocoaPodsInstalled && !getSwiftPMMarkerPath(projectRoot)) {
+    throw new CommandError(
+      'SWIFTPM_DEFAULT_COCOAPODS_PROJECT',
+      'Prebuild stopped because CocoaPods is installed in the iOS project (ios/Podfile.lock or ios/Pods exists), and prebuild sets up iOS with Swift Package Manager unless the app config sets ios.useCocoaPods. Prebuild does not convert an installed CocoaPods project in place. To switch to Swift Package Manager, run `npx expo prebuild --clean` to regenerate the iOS project. To keep CocoaPods, add "ios": { "useCocoaPods": true } to the app config.'
+    );
+  }
+}
+
+/**
+ * Throws when the iOS project uses Swift Package Manager although the app config opts into
+ * CocoaPods, so CocoaPods never runs against a Swift Package Manager project.
  */
 export function assertNoSwiftPMMarker(projectRoot: string): void {
   const marker = getSwiftPMMarkerPath(projectRoot);
   if (marker) {
     throw new CommandError(
-      'SWIFTPM_NOT_ENABLED',
-      `The iOS project uses Swift Package Manager (${path.relative(projectRoot, marker)} exists), but experiments.swiftPackageManager is not enabled in the app config. To keep Swift Package Manager, add "experiments": { "swiftPackageManager": true } to the app config. To switch back to CocoaPods, run \`npx expo prebuild --clean\` to regenerate the iOS project.`
+      'COCOAPODS_CONFIG_SWIFTPM_PROJECT',
+      `The iOS project uses Swift Package Manager (${path.relative(projectRoot, marker)} exists), but the app config sets "ios": { "useCocoaPods": true }. To keep Swift Package Manager, remove ios.useCocoaPods from the app config. To switch to CocoaPods, run \`npx expo prebuild --clean\` to regenerate the iOS project.`
     );
   }
 }
@@ -103,7 +151,7 @@ export async function setupSwiftPMAsync(
   if (!script) {
     throw new CommandError(
       'SWIFTPM_UNSUPPORTED',
-      `Could not set up Swift Package Manager for iOS because this project's React Native version does not include react-native/scripts/setup-apple-spm.js. Swift Package Manager requires React Native 0.88 or later. Upgrade react-native, or remove experiments.swiftPackageManager from the app config and run \`npx expo prebuild --clean\` to use CocoaPods.`
+      `Could not set up Swift Package Manager for iOS because this project's React Native version does not include react-native/scripts/setup-apple-spm.js. Swift Package Manager requires React Native 0.88 or later. Upgrade react-native, or add "ios": { "useCocoaPods": true } to the app config and run \`npx expo prebuild --clean\` to use CocoaPods.`
     );
   }
 

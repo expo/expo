@@ -5,7 +5,6 @@ import path from 'path';
 import prompts from 'prompts';
 
 import {
-  assertSwiftPMSupportedAsync,
   getTemplateFilesToRenameAsync,
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
@@ -124,8 +123,8 @@ export async function promptExamplesAsync() {
 export async function downloadAndExtractExampleAsync(
   root: string,
   name: string,
-  { swiftpm }: { swiftpm?: boolean } = {}
-): Promise<void> {
+  { cocoapods }: { cocoapods?: boolean } = {}
+): Promise<{ useCocoaPods: boolean }> {
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
@@ -147,10 +146,6 @@ export async function downloadAndExtractExampleAsync(
     filter: (entryName) => entryName.startsWith(prefix),
   });
 
-  if (swiftpm) {
-    await assertSwiftPMSupportedAsync(root, 'example');
-  }
-
   const monorepoConfig = await consumeMonorepoConfigAsync(root);
 
   const files = await getTemplateFilesToRenameAsync({
@@ -162,8 +157,9 @@ export async function downloadAndExtractExampleAsync(
     files,
     name: projectName,
   });
-  await sanitizeTemplateAsync(root, { swiftpm });
+  const result = await sanitizeTemplateAsync(root, { cocoapods });
   await sanitizeScriptsAsync(root);
+  return result;
 }
 
 function exampleHasNativeCode(root: string): boolean {

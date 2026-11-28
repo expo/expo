@@ -10,7 +10,6 @@ import { glob } from 'tinyglobby';
 
 import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
-import { SwiftPMUnsupportedError } from './error';
 import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
 import { formatRunCommand } from './resolvePackageManager';
@@ -127,8 +126,8 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage, swiftpm }: { npmPackage?: string | null; swiftpm?: boolean }
-): Promise<string> {
+  { npmPackage, cocoapods }: { npmPackage?: string | null; cocoapods?: boolean }
+): Promise<{ useCocoaPods: boolean }> {
   const projectName = path.basename(projectRoot);
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
@@ -145,10 +144,6 @@ export async function extractAndPrepareTemplateAppAsync(
       expName: projectName,
       disableCache: type === 'file',
     });
-  }
-
-  if (swiftpm) {
-    await assertSwiftPMSupportedAsync(projectRoot, 'template');
   }
 
   const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
@@ -168,9 +163,7 @@ export async function extractAndPrepareTemplateAppAsync(
     throw error;
   }
 
-  await sanitizeTemplateAsync(projectRoot, { swiftpm });
-
-  return projectRoot;
+  return await sanitizeTemplateAsync(projectRoot, { cocoapods });
 }
 
 // Keep in sync with packages/@expo/config-plugins/src/utils/XML.ts.
@@ -420,36 +413,30 @@ function templateHasNativeCode(root: string): boolean {
 }
 
 /**
- * Throw a `SwiftPMUnsupportedError` when the extracted project depends on a React Native version
- * older than 0.88. Versions that cannot be read here are left for `expo prebuild` to reject.
+ * Returns `false` when the project depends on a React Native version older than 0.88, which cannot
+ * set up Swift Package Manager. Versions that cannot be read here are left for `expo prebuild`.
  */
-export async function assertSwiftPMSupportedAsync(
-  projectRoot: string,
-  source: 'template' | 'example'
-): Promise<void> {
-  const packageJsonPath = path.join(projectRoot, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return;
-  }
+async function isSwiftPMSupportedAsync(projectRoot: string): Promise<boolean> {
   const { dependencies } = await JsonFile.readAsync<{ dependencies?: Record<string, string> }>(
-    packageJsonPath
+    path.join(projectRoot, 'package.json')
   );
-  const reactNativeVersion = dependencies?.['react-native'];
-  const [, major, minor] = reactNativeVersion?.match(/(\d+)\.(\d+)/) ?? [];
+  const [, major, minor] = dependencies?.['react-native']?.match(/(\d+)\.(\d+)/) ?? [];
   // Nightlies are versioned `0.0.0-<date>-<sha>`, so a minor of 0 is not an old release.
-  if (reactNativeVersion && Number(major) === 0 && Number(minor) >= 1 && Number(minor) < 88) {
-    const projectDir = path.relative(process.cwd(), projectRoot) || path.basename(projectRoot);
-    throw new SwiftPMUnsupportedError(source, reactNativeVersion, projectDir);
-  }
+  return !(Number(major) === 0 && Number(minor) >= 1 && Number(minor) < 88);
 }
 
+// `ios.useCocoaPods` is not in the generated ExpoConfig schema yet.
+type AppConfig = ExpoConfig & { ios?: ExpoConfig['ios'] & { useCocoaPods?: boolean } };
+
 /**
- * Sanitize a template (or example) with expected `package.json` properties and files.
+ * Sanitize a template (or example) with expected `package.json` properties and files. Sets
+ * `ios.useCocoaPods` with `cocoapods`, or when the React Native version cannot use Swift Package
+ * Manager, and returns whether the project uses CocoaPods.
  */
 export async function sanitizeTemplateAsync(
   projectRoot: string,
-  { swiftpm = false }: { swiftpm?: boolean } = {}
-) {
+  { cocoapods = false }: { cocoapods?: boolean } = {}
+): Promise<{ useCocoaPods: boolean }> {
   const projectName = path.basename(projectRoot);
 
   debug(`Sanitizing template or example app (projectName: ${projectName})`);
@@ -473,17 +460,17 @@ export async function sanitizeTemplateAsync(
     }
   }
 
-  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema yet.
-  const defaultConfig: ExpoConfig & { experiments?: { swiftPackageManager?: boolean } } = {
+  const forceCocoaPods = cocoapods || !(await isSwiftPMSupportedAsync(projectRoot));
+  const defaultConfig: AppConfig = {
     name: projectName,
     slug: projectName,
-    ...(swiftpm && { experiments: { swiftPackageManager: true } }),
+    ...(forceCocoaPods && { ios: { useCocoaPods: true } }),
   };
 
   const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
     default: {},
   });
-  const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
+  const appContent = (await appFile.readAsync()) as AppConfig | Record<'expo', AppConfig>;
   const appJson = deepMerge(
     appContent,
     'expo' in appContent ? { expo: defaultConfig } : defaultConfig
@@ -540,6 +527,9 @@ export async function sanitizeTemplateAsync(
   }
 
   await packageFile.writeAsync(packageJson);
+
+  const { ios } = 'expo' in appJson ? appJson.expo : appJson;
+  return { useCocoaPods: ios?.useCocoaPods === true };
 }
 
 export function validateName(name?: string): string | true {

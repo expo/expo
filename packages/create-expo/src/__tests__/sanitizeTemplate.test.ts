@@ -50,7 +50,7 @@ describe(sanitizeTemplateAsync, () => {
   });
 });
 
-describe('sanitizeTemplateAsync with swiftpm', () => {
+describe('sanitizeTemplateAsync with cocoapods', () => {
   const readAppJson = () => JSON.parse(String(vol.readFileSync('/project/app.json')));
 
   const createProject = (appJson: object) =>
@@ -59,59 +59,49 @@ describe('sanitizeTemplateAsync with swiftpm', () => {
       '/project/app.json': JSON.stringify(appJson),
     });
 
-  it('enables experiments.swiftPackageManager in a flat app.json', async () => {
+  it('sets ios.useCocoaPods in a flat app.json', async () => {
     createProject({ name: 'project' });
 
-    await sanitizeTemplateAsync('/project', { swiftpm: true });
+    await expect(sanitizeTemplateAsync('/project', { cocoapods: true })).resolves.toEqual({
+      useCocoaPods: true,
+    });
 
     expect(readAppJson()).toEqual({
       name: 'project',
       slug: 'project',
-      experiments: { swiftPackageManager: true },
+      ios: { useCocoaPods: true },
     });
   });
 
-  it('enables experiments.swiftPackageManager under the expo key', async () => {
-    createProject({ expo: { name: 'project' } });
+  it('sets ios.useCocoaPods under the expo key and keeps the other iOS fields', async () => {
+    createProject({
+      expo: { name: 'project', ios: { supportsTablet: true, bundleIdentifier: 'com.project' } },
+    });
 
-    await sanitizeTemplateAsync('/project', { swiftpm: true });
+    await sanitizeTemplateAsync('/project', { cocoapods: true });
 
     expect(readAppJson()).toEqual({
       expo: {
         name: 'project',
         slug: 'project',
-        experiments: { swiftPackageManager: true },
+        ios: { supportsTablet: true, bundleIdentifier: 'com.project', useCocoaPods: true },
       },
     });
   });
 
-  it('keeps existing experiments', async () => {
-    createProject({ expo: { experiments: { typedRoutes: true, reactCompiler: true } } });
+  it('writes no Swift Package Manager setting without cocoapods', async () => {
+    createProject({ expo: { ios: { supportsTablet: true } } });
 
-    await sanitizeTemplateAsync('/project', { swiftpm: true });
-
-    expect(readAppJson().expo.experiments).toEqual({
-      typedRoutes: true,
-      reactCompiler: true,
-      swiftPackageManager: true,
-    });
-  });
-
-  it('leaves app.json without the setting when swiftpm is off', async () => {
-    createProject({ expo: { experiments: { typedRoutes: true } } });
-
-    await sanitizeTemplateAsync('/project', { swiftpm: false });
+    await expect(sanitizeTemplateAsync('/project')).resolves.toEqual({ useCocoaPods: false });
 
     expect(readAppJson()).toEqual({
-      expo: { name: 'project', slug: 'project', experiments: { typedRoutes: true } },
+      expo: { name: 'project', slug: 'project', ios: { supportsTablet: true } },
     });
   });
 
-  it('leaves a flat app.json without the setting when no options are passed', async () => {
-    createProject({ name: 'project' });
+  it('keeps ios.useCocoaPods when the template already sets it', async () => {
+    createProject({ expo: { ios: { useCocoaPods: true } } });
 
-    await sanitizeTemplateAsync('/project');
-
-    expect(readAppJson()).toEqual({ name: 'project', slug: 'project' });
+    await expect(sanitizeTemplateAsync('/project')).resolves.toEqual({ useCocoaPods: true });
   });
 });

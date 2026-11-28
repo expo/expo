@@ -21,7 +21,12 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
-import { assertNoSwiftPMMarker, isSwiftPMEnabled, setupSwiftPMAsync } from './setupSwiftPM';
+import {
+  assertNoCocoaPodsProject,
+  assertNoSwiftPMMarker,
+  setupSwiftPMAsync,
+  shouldUseSwiftPM,
+} from './setupSwiftPM';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 
 export type PrebuildResults = {
@@ -111,9 +116,11 @@ export async function prebuildAsync(
   // Assert if no platforms are left over after filtering.
   assertPlatforms(options.platforms);
 
-  const useSwiftPM = options.platforms.includes('ios') && isSwiftPMEnabled(initialExp);
-  if (options.platforms.includes('ios') && !useSwiftPM) {
-    // Runs after `--clean`, which already removed the marker with the ios directory.
+  const useSwiftPM = options.platforms.includes('ios') && shouldUseSwiftPM(projectRoot, initialExp);
+  // Runs after `--clean`, which already removed the ios directory.
+  if (useSwiftPM) {
+    assertNoCocoaPodsProject(projectRoot);
+  } else if (options.platforms.includes('ios')) {
     assertNoSwiftPMMarker(projectRoot);
   }
 

@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
+import Module from 'module';
 
 import { Log } from '../../log';
 import { clearNativeFolder, getExistingNativePlatformsAsync } from '../clearNativeFolder';
@@ -75,31 +76,37 @@ it('keeps NODE_ENV when called internally', async () => {
 describe('Swift Package Manager', () => {
   const projectRoot = '/app';
   const marker = `${projectRoot}/ios/App.xcodeproj/.spm-injected.json`;
+  const reactNativeDir = `${projectRoot}/node_modules/react-native`;
+  const setupScript = `${reactNativeDir}/scripts/setup-apple-spm.js`;
 
-  const mockSwiftPMSetting = (swiftPackageManager: boolean) =>
-    jest
-      .mocked(getConfig)
-      .mockReturnValue({ exp: { experiments: { swiftPackageManager } } } as unknown as ReturnType<
-        typeof getConfig
-      >);
+  const mockAppConfig = (exp: object) =>
+    jest.mocked(getConfig).mockReturnValue({ exp } as unknown as ReturnType<typeof getConfig>);
+
+  const warnings = () => jest.mocked(Log.warn).mock.calls.map((args) => args.join(' '));
+
+  let createRequire: jest.SpyInstance;
 
   beforeEach(() => {
-    mockSwiftPMSetting(false);
+    mockAppConfig({});
+    createRequire = jest.spyOn(Module, 'createRequire').mockReturnValue({
+      resolve: (id: string) => {
+        if (id === 'react-native/package.json') return `${reactNativeDir}/package.json`;
+        throw new Error(`Cannot find module '${id}'`);
+      },
+    } as unknown as NodeJS.Require);
     vol.fromJSON({
       [`${projectRoot}/package.json`]: '{}',
       [`${projectRoot}/ios/App.xcodeproj/project.pbxproj`]: '',
+      [setupScript]: '',
     });
   });
 
   afterEach(() => {
+    createRequire.mockRestore();
     vol.reset();
   });
 
-  describe('when experiments.swiftPackageManager is enabled', () => {
-    beforeEach(() => {
-      mockSwiftPMSetting(true);
-    });
-
+  describe('when ios.useCocoaPods is not set', () => {
     it(`sets up Swift Package Manager after config sync instead of installing CocoaPods`, async () => {
       await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
 
@@ -108,9 +115,10 @@ describe('Swift Package Manager', () => {
       expect(jest.mocked(configureProjectAsync).mock.invocationCallOrder[0]).toBeLessThan(
         jest.mocked(setupSwiftPMAsync).mock.invocationCallOrder[0]!
       );
+      expect(Log.warn).not.toHaveBeenCalled();
     });
 
-    it(`uses the setting when called with the ensureNativeProject options`, async () => {
+    it(`uses Swift Package Manager when there is no ios directory yet`, async () => {
       vol.rmSync(`${projectRoot}/ios`, { recursive: true, force: true });
 
       await prebuildAsync(projectRoot, { install: true, platforms: ['ios'] });
@@ -135,7 +143,39 @@ describe('Swift Package Manager', () => {
       expect(Log.log).not.toHaveBeenCalledWith(expect.stringContaining('.spm-injected.json'));
     });
 
-    it(`reads the setting before --clean deletes the ios directory`, async () => {
+    it.each([
+      ['Podfile.lock', () => vol.writeFileSync(`${projectRoot}/ios/Podfile.lock`, '')],
+      ['Pods', () => vol.mkdirSync(`${projectRoot}/ios/Pods`)],
+    ])(
+      `stops before changing an iOS project where CocoaPods is installed (%s)`,
+      async (_, install) => {
+        vol.writeFileSync(`${projectRoot}/ios/Podfile`, '');
+        install();
+
+        const result = prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+        await expect(result).rejects.toMatchObject({
+          name: 'CommandError',
+          code: 'SWIFTPM_DEFAULT_COCOAPODS_PROJECT',
+          message:
+            'Prebuild stopped because CocoaPods is installed in the iOS project (ios/Podfile.lock or ios/Pods exists), and prebuild sets up iOS with Swift Package Manager unless the app config sets ios.useCocoaPods. Prebuild does not convert an installed CocoaPods project in place. To switch to Swift Package Manager, run `npx expo prebuild --clean` to regenerate the iOS project. To keep CocoaPods, add "ios": { "useCocoaPods": true } to the app config.',
+        });
+        expect(configureProjectAsync).not.toHaveBeenCalled();
+        expect(setupSwiftPMAsync).not.toHaveBeenCalled();
+        expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+      }
+    );
+
+    it(`converts an iOS project with a Podfile where CocoaPods was never installed`, async () => {
+      vol.writeFileSync(`${projectRoot}/ios/Podfile`, '');
+
+      await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+      expect(setupSwiftPMAsync).toHaveBeenCalledWith(projectRoot, { install: true });
+      expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+    });
+
+    it(`sets up Swift Package Manager again after --clean deletes a Swift Package Manager project`, async () => {
       vol.writeFileSync(marker, '{}');
       jest.mocked(getExistingNativePlatformsAsync).mockResolvedValueOnce(['ios']);
       jest.mocked(clearNativeFolder).mockImplementationOnce(async () => {
@@ -176,14 +216,73 @@ describe('Swift Package Manager', () => {
         prebuildAsync(projectRoot, { platforms: ['ios'], install: true })
       ).rejects.toThrow('setup failed');
     });
+
+    describe('when React Native does not ship setup-apple-spm.js', () => {
+      beforeEach(() => {
+        vol.unlinkSync(setupScript);
+      });
+
+      it(`falls back to CocoaPods and warns how to fix or silence it`, async () => {
+        await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+        expect(setupSwiftPMAsync).not.toHaveBeenCalled();
+        expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot);
+        expect(warnings()).toEqual([
+          'Could not set up Swift Package Manager for iOS because the installed react-native does not include scripts/setup-apple-spm.js, so prebuild uses CocoaPods. Swift Package Manager requires React Native 0.88 or later. If package.json already requires it, install dependencies and run prebuild again. To keep CocoaPods without this warning, add "ios": { "useCocoaPods": true } to the app config.',
+        ]);
+      });
+
+      it(`keeps Swift Package Manager when the iOS project already uses it`, async () => {
+        vol.writeFileSync(marker, '{}');
+
+        await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+        expect(setupSwiftPMAsync).toHaveBeenCalledWith(projectRoot, { install: true });
+        expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+      });
+    });
   });
 
-  describe('when experiments.swiftPackageManager is not enabled', () => {
+  describe('when experiments.swiftPackageManager is set', () => {
+    it.each([true, false])(
+      `warns once that the setting was removed and still uses Swift Package Manager (%s)`,
+      async (swiftPackageManager) => {
+        mockAppConfig({ experiments: { swiftPackageManager } });
+
+        await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+        expect(setupSwiftPMAsync).toHaveBeenCalledWith(projectRoot, { install: true });
+        expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+        expect(warnings()).toEqual([
+          'The app config sets experiments.swiftPackageManager, which was removed and has no effect. Swift Package Manager is the default for iOS. Remove experiments.swiftPackageManager from the app config. To use CocoaPods, add "ios": { "useCocoaPods": true } to the app config.',
+        ]);
+      }
+    );
+
+    it(`does not change ios.useCocoaPods or ask to add it again`, async () => {
+      mockAppConfig({ experiments: { swiftPackageManager: true }, ios: { useCocoaPods: true } });
+
+      await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
+
+      expect(setupSwiftPMAsync).not.toHaveBeenCalled();
+      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot);
+      expect(warnings()).toEqual([
+        'The app config sets experiments.swiftPackageManager, which was removed. Remove experiments.swiftPackageManager from the app config. ios.useCocoaPods keeps this project on CocoaPods.',
+      ]);
+    });
+  });
+
+  describe('when ios.useCocoaPods is true', () => {
+    beforeEach(() => {
+      mockAppConfig({ ios: { useCocoaPods: true } });
+    });
+
     it(`installs CocoaPods when the project has no marker`, async () => {
       await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
 
       expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot);
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
+      expect(Log.warn).not.toHaveBeenCalled();
     });
 
     it(`throws before generating the project when the existing iOS project uses Swift Package Manager`, async () => {
@@ -193,6 +292,7 @@ describe('Swift Package Manager', () => {
 
       await expect(result).rejects.toMatchObject({ name: 'CommandError' });
       await expect(result).rejects.toThrow(/ios\/App\.xcodeproj\/\.spm-injected\.json/);
+      await expect(result).rejects.toThrow(/ios\.useCocoaPods/);
       await expect(result).rejects.toThrow(/npx expo prebuild --clean/);
       expect(configureProjectAsync).not.toHaveBeenCalled();
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
