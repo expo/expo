@@ -3,34 +3,59 @@
  */
 const serverBaseUrl = 'http://localhost:' + MAESTRO_UPDATES_SERVER_PORT;
 
+function requestOrThrow(url) {
+  const response = http.get(url);
+  const failed =
+    !response ||
+    response.ok === false ||
+    (typeof response.status === 'number' && (response.status < 200 || response.status >= 300));
+  if (failed) {
+    const status = response ? response.status : 'no-response';
+    const body = response && response.body ? response.body : '';
+    throw new Error(`Updates test server request failed (${status}) for ${url}: ${body}`);
+  }
+  return response;
+}
+
 function serveManifest(name, platform, channel) {
   var requestString = `${serverBaseUrl}/serve-manifest?name=${name}&platform=${platform}`;
   if (channel) {
     requestString += `&channel=${encodeURIComponent(channel)}`;
   }
-  const response = http.get(requestString);
+  const response = requestOrThrow(requestString);
   return response.body;
 }
 
 function lastRequestHeaders() {
-  var requestString = `${serverBaseUrl}/last-request-headers`;
-  const response = http.get(requestString);
+  const response = requestOrThrow(`${serverBaseUrl}/last-request-headers`);
+  return JSON.parse(response.body);
+}
+
+function waitForUpdateRequest(timeoutMs, consume) {
+  const params = [];
+  if (timeoutMs) {
+    params.push(`timeout=${timeoutMs}`);
+  }
+  if (consume === false) {
+    params.push('consume=false');
+  }
+  const query = params.length > 0 ? `?${params.join('&')}` : '';
+  const response = requestOrThrow(`${serverBaseUrl}/wait-for-update-request${query}`);
   return JSON.parse(response.body);
 }
 
 function lastAssetRequestHeaders() {
-  var requestString = `${serverBaseUrl}/last-asset-request-headers`;
-  const response = http.get(requestString);
+  const response = requestOrThrow(`${serverBaseUrl}/last-asset-request-headers`);
   return JSON.parse(response.body);
 }
 
 function stopUpdatesServer() {
-  http.get(`${serverBaseUrl}/stop-server`);
+  requestOrThrow(`${serverBaseUrl}/stop-server`);
 }
 
 function restartUpdatesServer(artificialDelay, serveOverriddenUrl) {
   const delay = artificialDelay || 0;
-  var url = `${serverBaseUrl}/restart-server`;
+  var url = `${serverBaseUrl}/reset`;
   const queryParams = [];
   if (delay > 0) {
     queryParams.push(`ms=${delay}`);
@@ -41,32 +66,56 @@ function restartUpdatesServer(artificialDelay, serveOverriddenUrl) {
   if (queryParams.length > 0) {
     url = `${url}?${queryParams.join('&')}`;
   }
-  http.get(url);
-  // Wait 0.5 second to allow server restart to complete
-  http.get(`${serverBaseUrl}/delay?ms=500`);
+  requestOrThrow(url);
 }
 
 function installClient(platform, configuration) {
-  http.get(`${serverBaseUrl}/install-client?platform=${platform}&configuration=${configuration}`);
+  requestOrThrow(
+    `${serverBaseUrl}/install-client?platform=${platform}&configuration=${configuration}`
+  );
 }
 
 function uninstallClient(platform) {
-  http.get(`${serverBaseUrl}/uninstall-client?platform=${platform}`);
+  requestOrThrow(`${serverBaseUrl}/uninstall-client?platform=${platform}`);
 }
 
 function delay(ms) {
-  http.get(`${serverBaseUrl}/delay?ms=${ms}`);
+  requestOrThrow(`${serverBaseUrl}/delay?ms=${ms}`);
 }
 
 function staticFileCount() {
-  var requestString = `${serverBaseUrl}/static-file-count`;
-  const response = http.get(requestString);
+  const response = requestOrThrow(`${serverBaseUrl}/static-file-count`);
+  return JSON.parse(response.body).count;
+}
+
+function waitForStaticFiles(count, timeoutMs) {
+  const params = [];
+  if (count !== undefined) {
+    params.push(`count=${count}`);
+  }
+  if (timeoutMs) {
+    params.push(`timeout=${timeoutMs}`);
+  }
+  const query = params.length > 0 ? `?${params.join('&')}` : '';
+  const response = requestOrThrow(`${serverBaseUrl}/wait-for-static-files${query}`);
   return JSON.parse(response.body).count;
 }
 
 function logEntries() {
-  var requestString = `${serverBaseUrl}/log-entries`;
-  const response = http.get(requestString);
+  const response = requestOrThrow(`${serverBaseUrl}/log-entries`);
+  return JSON.parse(response.body);
+}
+
+function waitForLogEntries(timeoutMs, consume) {
+  const params = [];
+  if (timeoutMs) {
+    params.push(`timeout=${timeoutMs}`);
+  }
+  if (consume === false) {
+    params.push('consume=false');
+  }
+  const query = params.length > 0 ? `?${params.join('&')}` : '';
+  const response = requestOrThrow(`${serverBaseUrl}/wait-for-log-entries${query}`);
   return JSON.parse(response.body);
 }
 
@@ -81,11 +130,14 @@ output.api = {
   installClient: installClient,
   uninstallClient: uninstallClient,
   lastRequestHeaders: lastRequestHeaders,
+  waitForUpdateRequest: waitForUpdateRequest,
   lastAssetRequestHeaders: lastAssetRequestHeaders,
   logEntries: logEntries,
+  waitForLogEntries: waitForLogEntries,
   logEntriesWithLevelAndCode: logEntriesWithLevelAndCode,
   restartUpdatesServer: restartUpdatesServer,
   serveManifest: serveManifest,
   staticFileCount: staticFileCount,
+  waitForStaticFiles: waitForStaticFiles,
   stopUpdatesServer: stopUpdatesServer,
 };
