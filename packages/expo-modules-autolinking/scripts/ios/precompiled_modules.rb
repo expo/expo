@@ -919,9 +919,10 @@ module Expo
             FileUtils.cp(src, dst) if File.exist?(src) && !File.exist?(dst)
           end
 
-          # Write initial .last_build_configuration if missing
+          # Not for release: the first Release build must run the switch script,
+          # which strips LC_ATOM_INFO.
           last_config_file = File.join(artifacts_dir, '.last_build_configuration')
-          File.write(last_config_file, build_flavor) unless File.exist?(last_config_file)
+          File.write(last_config_file, build_flavor) unless build_flavor == 'release' || File.exist?(last_config_file)
 
           # Self-healing: extract xcframework if missing (CocoaPods cache issue)
           xcframework_dir = File.join(pod_dir, "#{product_name}.xcframework")
