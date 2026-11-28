@@ -18,6 +18,7 @@ const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activi
 const FULL_ACCURACY_USAGE = 'Allow $(PRODUCT_NAME) to access your precise location';
 
 export const FULL_ACCURACY_PURPOSE_KEY = 'ExpoLocationFullAccuracy';
+const MOTION_ACTIVITY_ENABLED_KEY = 'ExpoLocation_motionActivityEnabled';
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
@@ -185,8 +186,12 @@ export type Props = {
    * A string to set the `NSMotionUsageDescription` permission message shown when
    * `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.
    * Set to `false` to disable the motion activity feature: the key is removed from `Info.plist`,
-   * the CoreMotion features are excluded from the iOS build, motion permission methods resolve
-   * with a denied response, and calling motion activity APIs throws an exception.
+   * and the app does not include the `ExpoLocationMotionActivity` pod or SwiftPM product, so
+   * expo-location does not link CoreMotion. Other packages, such as expo-sensors, can still link it.
+   * Motion permission methods resolve with a denied response, and the motion activity methods
+   * throw an exception. `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync`
+   * still work, so you can stop a saved background task. Run `npx expo prebuild` after you change
+   * this option.
    * @default "Allow $(PRODUCT_NAME) to detect your current motion activity"
    * @platform ios
    */
@@ -275,6 +280,11 @@ const withLocation: ConfigPlugin<Props | void> = (
     } else {
       delete config.modResults['expo.location.motionActivityEnabled'];
     }
+    return config;
+  });
+
+  config = withInfoPlist(config, (config) => {
+    config.modResults[MOTION_ACTIVITY_ENABLED_KEY] = motionUsagePermission !== false;
     return config;
   });
 

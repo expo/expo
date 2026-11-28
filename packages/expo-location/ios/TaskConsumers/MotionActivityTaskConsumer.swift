@@ -1,13 +1,13 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#if !EXPO_LOCATION_DISABLE_MOTION
-import CoreMotion
 import ExpoModulesCore
 
+// EXTaskService saves registered tasks under this class's runtime name and deletes saved tasks
+// whose class it cannot find, so the class stays in ExpoLocation under its original name.
 final class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
   // Weak: `EXTask` holds this consumer strongly.
   weak var task: EXTaskInterface?
-  private var streamTask: Task<Void, Never>?
+  private var watch: MotionActivityWatch?
 
   func taskType() -> String {
     return "motionActivity"
@@ -15,26 +15,22 @@ final class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
 
   func didRegisterTask(_ task: EXTaskInterface) {
     self.task = task
-    streamTask = Task { @MainActor [weak task] in
-      let streamer = MotionActivityStreamer()
-      defer { streamer.stopStreaming() }
-      do {
-        for try await activity in try streamer.streamMotionActivity() {
-          task?.execute(withData: ["activity": activity.toMotionActivityDict()], withError: nil)
-        }
-      } catch {
-        task?.execute(withData: nil, withError: error as NSError)
-      }
+    guard let provider = MotionActivityRegistry.provider else {
+      task.execute(withData: nil, withError: Exceptions.MotionActivityCompanionMissing())
+      return
     }
+    watch = provider.watchActivity(
+      onActivity: { [weak task] activity in
+        task?.execute(withData: ["activity": activity], withError: nil)
+      },
+      onUnauthorized: { [weak task] in
+        task?.execute(withData: nil, withError: Exceptions.MotionActivityUnauthorized())
+      }
+    )
   }
 
   func didUnregister() {
-    streamTask?.cancel()
-    streamTask = nil
-  }
-
-  deinit {
-    streamTask?.cancel()
+    watch?.stop()
+    watch = nil
   }
 }
-#endif

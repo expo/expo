@@ -81,6 +81,25 @@ describe('withLocation iOS motion configuration', () => {
     });
     expect(infoPlist.NSMotionUsageDescription).toBeUndefined();
   });
+
+  it('writes ExpoLocation_motionActivityEnabled to Info.plist as false only when motionUsagePermission is false', async () => {
+    const disabled: ExportedConfig = withLocation(fakeConfig(), { motionUsagePermission: false });
+    expect(
+      (await evalIosModAsync(disabled, disabled.mods?.ios?.infoPlist, {}))
+        .ExpoLocation_motionActivityEnabled
+    ).toBe(false);
+
+    const enabled: ExportedConfig = withLocation(fakeConfig(), {
+      motionUsagePermission: 'Allow motion',
+    });
+    expect(
+      (
+        await evalIosModAsync(enabled, enabled.mods?.ios?.infoPlist, {
+          ExpoLocation_motionActivityEnabled: false,
+        })
+      ).ExpoLocation_motionActivityEnabled
+    ).toBe(true);
+  });
 });
 
 describe('withLocation iOS full accuracy message', () => {

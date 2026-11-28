@@ -1,7 +1,8 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["LocationModule", "LocationModuleNext"]
+    "modules": ["LocationModule", "LocationModuleNext"],
+    "podspecPath": ["ios/ExpoLocation.podspec"]
   },
   "android": {
     "modules": [

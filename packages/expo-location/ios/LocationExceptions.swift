@@ -77,10 +77,12 @@ extension Exceptions {
     }
   }
 
-  internal final class MotionActivityDisabled: Exception {
+  internal final class MotionActivityCompanionMissing: Exception {
     override var reason: String {
-      "Motion activity was disabled by setting 'motionUsagePermission' to false in the config plugin. " +
-      "Remove the option and run 'npx expo prebuild' again to enable it"
+      "Motion activity is not available because the app does not include ExpoLocationMotionActivity " +
+        "(a CocoaPods pod or SwiftPM product). It is left out when 'motionUsagePermission' is false " +
+        "in the expo-location config plugin, or when the app was not rebuilt after it was added. " +
+        "Keep 'motionUsagePermission' enabled in the expo-location config plugin, then run 'npx expo prebuild' and rebuild the app"
     }
   }
 

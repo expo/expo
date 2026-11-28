@@ -10,7 +10,11 @@ let package = Package(
     .iOS("16.4")
   ],
   products: [
-    .library(name: "ExpoLocation", targets: ["ExpoLocation", "ExpoLocationObjC"])
+    .library(name: "ExpoLocation", targets: ["ExpoLocation", "ExpoLocationObjC"]),
+    .library(
+      name: "ExpoLocationMotionActivity",
+      targets: ["ExpoLocationMotionActivity", "ExpoLocationMotionActivityObjC"]
+    )
   ],
   dependencies: [
     .package(path: "../ExpoModulesCoreHeaders")
@@ -23,7 +27,13 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
       path: "ios",
-      exclude: ["ExpoLocation.podspec", "ExpoLocationObjC", "Tests"]
+      exclude: [
+        "ExpoLocation.podspec",
+        "ExpoLocationMotionActivity.podspec",
+        "ExpoLocationObjC",
+        "Tests",
+        "motion-activity"
+      ]
     ),
     .target(
       name: "ExpoLocationObjC",
@@ -31,6 +41,18 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
       path: "ios/ExpoLocationObjC",
+      publicHeadersPath: "include"
+    ),
+    .target(
+      name: "ExpoLocationMotionActivity",
+      dependencies: ["ExpoLocation"],
+      path: "ios/motion-activity/ExpoLocationMotionActivity"
+    ),
+    .target(
+      name: "ExpoLocationMotionActivityObjC",
+      dependencies: ["ExpoLocationMotionActivity"],
+      path: "ios/motion-activity/ExpoLocationMotionActivityObjC",
+      // Holds no public headers: the target only registers the provider from +load.
       publicHeadersPath: "include"
     )
   ],
