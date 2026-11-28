@@ -45,7 +45,7 @@
     "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "@xmldom/xmldom": "^0.8.8",
+    "@xmldom/xmldom": "^0.8.15",
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
