@@ -12,7 +12,8 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
   private var subscription: UpdatesStateChangeSubscription?
 
   public func updatesStateDidChange(_ event: [String : Any]) {
-    if (hasListener) {
+    let shouldEmit = methodQueue.sync { hasListener }
+    if shouldEmit {
       sendEvent(e2eEventName, event)
     }
   }
@@ -34,11 +35,11 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
     }
 
     OnStartObserving(e2eEventName) {
-      hasListener = true
+      methodQueue.sync { hasListener = true }
     }
 
     OnStopObserving(e2eEventName) {
-      hasListener = false
+      methodQueue.sync { hasListener = false }
     }
 
     OnDestroy {

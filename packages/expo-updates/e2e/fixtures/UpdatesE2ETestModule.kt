@@ -14,9 +14,11 @@ import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlin.math.floor
 
 class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
+  @Volatile
   private var hasListener: Boolean = false
   private var updatesController: UpdatesInterface? = null
   private var subscription: UpdatesStateChangeSubscription? = null
+  private val assetsFolderLock = Any()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdatesE2ETest")
@@ -65,8 +67,10 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
 
     AsyncFunction("clearInternalAssetsFolderAsync") { promise: Promise ->
       try {
-        val assetsFolder = UpdatesController.instance.updatesDirectory
-        assetsFolder!!.deleteRecursively()
+        synchronized(assetsFolderLock) {
+          val assetsFolder = UpdatesController.instance.updatesDirectory
+          assetsFolder!!.deleteRecursively()
+        }
         promise.resolve(null)
       } catch (e: Throwable) {
         promise.reject("ERR_E2E_TEST", null, e)
@@ -85,14 +89,16 @@ class UpdatesE2ETestModule : Module(), UpdatesStateChangeListener {
 
     AsyncFunction("readInternalAssetsFolderAsync") { promise: Promise ->
       try {
-        val assetsFolder = UpdatesController.instance.updatesDirectory
-        if (!assetsFolder!!.exists()) {
-          promise.resolve(0)
-        } else {
-          val count = assetsFolder.walk()
-            .count() - 1 // subtract one for the folder itself, which is included in walk()
-          promise.resolve(count)
+        val count = synchronized(assetsFolderLock) {
+          val assetsFolder = UpdatesController.instance.updatesDirectory
+          if (!assetsFolder!!.exists()) {
+            0
+          } else {
+            assetsFolder.walk()
+              .count() - 1 // subtract one for the folder itself, which is included in walk()
+          }
         }
+        promise.resolve(count)
       } catch (e: Throwable) {
         promise.reject("ERR_E2E_TEST", null, e)
       }

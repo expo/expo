@@ -319,7 +319,7 @@ async function preparePackageJson(
         'tvos:build':
           'set -o pipefail && xcodebuild -workspace ios/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath ios/build | pnpm excpretty',
         'start:dev-client':
-          'CI=false pnpm expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
+          'CI=false pnpm expo start --private-key-path ./keys/private-key.pem > /tmp/dev-client-packager.log 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
       }
     : extraScriptsAssetExclusion;

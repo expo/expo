@@ -96,8 +96,18 @@ jobs:
         id: testdebug
         working_directory: ../../../updates-e2e
         run: |
-          # start packager
           pnpm run start:dev-client
+          for _ in $(seq 1 150); do
+            if curl -sf http://localhost:8081/status | grep -q packager-status:running; then
+              break
+            fi
+            sleep 0.2
+          done
+          if ! curl -sf http://localhost:8081/status | grep -q packager-status:running; then
+            echo "Metro packager failed to start. Logs:"
+            cat /tmp/dev-client-packager.log || true
+            exit 1
+          fi
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-dev-client.yml ios debug
   android:
     runs_on: linux-large-nested-virtualization
@@ -135,6 +145,17 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run start:dev-client
+          for _ in $(seq 1 150); do
+            if curl -sf http://localhost:8081/status | grep -q packager-status:running; then
+              break
+            fi
+            sleep 0.2
+          done
+          if ! curl -sf http://localhost:8081/status | grep -q packager-status:running; then
+            echo "Metro packager failed to start. Logs:"
+            cat /tmp/dev-client-packager.log || true
+            exit 1
+          fi
       - name: Run Maestro test (debug) (load update through dev client)
         id: testdebug1
         working_directory: ../../../updates-e2e
