@@ -424,6 +424,7 @@ class ExpoCropImageActivity :
     if (cropImageOptions.noOutputImage) {
       setResultOK()
     } else {
+      ensureCropOutputDirectoryExists(intent.getStringExtra(ImagePickerConstants.CROP_OUTPUT_FILE_PATH_EXTRA))
       cropImageView?.croppedImageAsync(
         saveCompressFormat = cropImageOptions.outputCompressFormat,
         saveCompressQuality = cropImageOptions.outputCompressQuality,

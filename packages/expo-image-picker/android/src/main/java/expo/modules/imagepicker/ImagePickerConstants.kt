@@ -8,6 +8,11 @@ object ImagePickerConstants {
   const val CACHE_DIR_NAME = "ImagePicker"
 
   /**
+   * Intent extra that carries the absolute path of the crop output file to [expo.modules.imagepicker.ExpoCropImageActivity].
+   */
+  const val CROP_OUTPUT_FILE_PATH_EXTRA = "expo.modules.imagepicker.CROP_OUTPUT_FILE_PATH"
+
+  /**
    * Expose List<Pair<Type, Exif>> as [Iterable] for easier access.
    */
   val EXIF_TAGS = object : Iterable<Pair<String, String>> {
