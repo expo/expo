@@ -85,6 +85,14 @@ describe('async', () => {
     );
   });
 
+  it(`includes the file name in async JSON parsing errors`, async () => {
+    vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json') });
+
+    await expect(JsonFile.readAsync(testFilename)).rejects.toMatchObject({
+      fileName: testFilename,
+    });
+  });
+
   it(`has useful error messages for JSON5 parsing errors`, async () => {
     vol.fromJSON({ [testFilename]: loadFixture('syntax-error.json5') });
 
