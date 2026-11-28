@@ -45,6 +45,9 @@ AudioModule.AudioPlayer.prototype.setPlaybackRate = function (
 
 // Audio recording prototypes should not be shimmed on tvOS, where they do not exist
 if (!Platform.isTV || Platform.OS !== 'ios') {
+  if (Platform.OS === 'ios') {
+    AudioModule.AudioRecorder.prototype.setNotificationOptions = function () {};
+  }
   const prepareToRecordAsync = AudioModule.AudioRecorder.prototype.prepareToRecordAsync;
   AudioModule.AudioRecorder.prototype.prepareToRecordAsync = function (options?: RecordingOptions) {
     const processedOptions = options ? createRecordingOptions(options) : undefined;
