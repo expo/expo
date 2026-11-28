@@ -151,7 +151,7 @@ it('transforms manifest layout and drops test targets', async () => {
     ['Main', 'ObjC']
   );
   assert.equal(targets[0].path, 'Main');
-  assert.deepEqual(targets[0].sources, ['src', 'Fixture+Exports.swift']);
+  assert.deepEqual(targets[0].sources, ['src/Main.swift', 'Fixture+Exports.swift']);
   assert.deepEqual(targets[0].exclude, ['src/Tests']);
   assert.deepEqual(targets[0].resources, [{ path: 'src/PrivacyInfo.xcprivacy', rule: 'copy' }]);
   assert.equal(targets[1].publicHeadersPath, 'src/headers');
@@ -232,6 +232,30 @@ it('accepts a manifest target that spm.config.json does not list', async () => {
   const input = fixture(undefined, { 'ios/Main.m': '// source' });
   input.product.targets = [];
   assert.equal((await resolve(input.root, input.product))[0].type, 'objc');
+});
+
+it('lists source files instead of the source directory when a resource lies inside it', async () => {
+  const input = fixture(
+    '.target(name: "Main", path: "ios", exclude: ["Skipped"], resources: [.copy("PrivacyInfo.xcprivacy"), .process("Assets")])',
+    {
+      'ios/Zeta.swift': 'public let zeta = 1',
+      'ios/Nested/Alpha.swift': 'public let alpha = 1',
+      'ios/Skipped/Gone.swift': 'public let gone = 1',
+      'ios/Assets/Bundled.swift': 'public let bundled = 1',
+      'ios/PrivacyInfo.xcprivacy': '<plist/>',
+    }
+  );
+  const [target] = await resolve(input.root, input.product);
+  assert.deepEqual(target.sources, [
+    'src/Nested/Alpha.swift',
+    'src/Zeta.swift',
+    'Fixture+Exports.swift',
+  ]);
+  assert.deepEqual(target.exclude, ['src/Skipped']);
+  assert.deepEqual(target.resources, [
+    { path: 'src/PrivacyInfo.xcprivacy', rule: 'copy' },
+    { path: 'src/Assets', rule: 'process' },
+  ]);
 });
 
 it('applies explicit sources and excludes before inferring language', async () => {
@@ -1151,6 +1175,47 @@ it(
       fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8'),
       sourceBefore
     );
+  }
+);
+
+it(
+  'compiles a target that keeps a resource in its source directory',
+  { skip: process.platform !== 'darwin' && 'links Foundation, which needs an Apple platform' },
+  async () => {
+    const input = fixture(
+      '.target(name: "Main", path: "ios", resources: [.copy("PrivacyInfo.xcprivacy")])',
+      {
+        'ios/Value.swift': 'public func fixtureDate() -> Date { Date() }',
+        'ios/PrivacyInfo.xcprivacy': '<plist/>',
+      }
+    );
+    await SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product);
+    await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
+    const generated = SPMGenerator.getGeneratedProductFilesPath(input.pkg, input.product);
+    const described = execFileSync(
+      'swift',
+      [
+        'package',
+        '--disable-sandbox',
+        '--package-path',
+        generated,
+        '--cache-path',
+        path.join(input.root, 'cache'),
+        '--config-path',
+        path.join(input.root, 'config'),
+        '--security-path',
+        path.join(input.root, 'security'),
+        '--scratch-path',
+        path.join(input.root, 'swift-build'),
+        'describe',
+      ],
+      {
+        encoding: 'utf8',
+        env: { ...process.env, CLANG_MODULE_CACHE_PATH: path.join(input.root, 'clang-cache') },
+      }
+    );
+    assert.match(described, /Value.swift/);
+    assert.match(described, /PrivacyInfo.xcprivacy/);
   }
 );
 
