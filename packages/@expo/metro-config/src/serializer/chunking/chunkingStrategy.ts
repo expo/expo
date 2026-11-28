@@ -72,7 +72,9 @@ export function createChunkCollector(
   { graph, options, preModules: runtimePremodules }: ChunkingContext,
   strategy: ChunkingImplementation,
   chunks: Set<Chunk>,
-  shouldTraverseDependency: (dependency: ResolvedDependency) => boolean
+  shouldTraverseDependency: (dependency: ResolvedDependency) => boolean,
+  /** Keep the modules that a chunk imports asynchronously in that chunk. */
+  inlineAsyncImports: boolean = false
 ) {
   const chunksByEntryPath = new Map<string, Chunk>();
   return function collectChunk(
@@ -103,7 +105,8 @@ export function createChunkCollector(
     chunks.add(entryChunk);
 
     function includeModule(entryModule: Module<MixedOutput>) {
-      const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
+      const splitChunks =
+        !inlineAsyncImports && entryChunk.options.serializerOptions?.splitChunks !== false;
       for (const dependency of entryModule.dependencies.values()) {
         const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
         const isWorker = asyncType === 'worker';

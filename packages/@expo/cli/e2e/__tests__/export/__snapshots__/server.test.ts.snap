@@ -659,6 +659,18 @@ exports[`server-output express requests exported files has expected routes manif
           "/_expo/static/js/web/entry-[hash].js",
         ],
       },
+      "file": "./workers/async-imports.tsx",
+      "namedRegex": "^/workers/async\\-imports(?:/)?$",
+      "page": "/workers/async-imports",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
       "file": "./api/checks/get-spread.tsx",
       "namedRegex": "^/api/checks/get\\-spread(?:/)?$",
       "page": "/api/checks/get-spread",
@@ -1527,6 +1539,18 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./api/checks/post-json.tsx",
       "namedRegex": "^/api/checks/post\\-json(?:/)?$",
       "page": "/api/checks/post-json",
+      "routeKeys": {},
+    },
+    {
+      "assets": {
+        "css": [],
+        "js": [
+          "/_expo/static/js/web/entry-[hash].js",
+        ],
+      },
+      "file": "./workers/async-imports.tsx",
+      "namedRegex": "^/workers/async\\-imports(?:/)?$",
+      "page": "/workers/async-imports",
       "routeKeys": {},
     },
     {
