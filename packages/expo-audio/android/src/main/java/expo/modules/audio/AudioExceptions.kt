@@ -62,3 +62,5 @@ internal class AudioStreamInitializationException(message: String) :
   CodedException(message)
 
 internal class AudioStreamFileException(message: String) : CodedException(message)
+
+internal class InvalidRecordingNotificationButtonsException(message: String) : CodedException(message)
