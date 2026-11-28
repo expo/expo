@@ -11,6 +11,7 @@ struct VideoSessionState: Equatable {
   var isMuted = false
   var audioMixingMode: AudioMixingMode = .auto
   var showNowPlayingNotification = false
+  var manageAudioSession = true
   var hasItem = false
   var hasPlayed = false
   var isPausedForTakeover = false
@@ -44,7 +45,12 @@ struct VideoSessionState: Equatable {
   // A paused player must not keep the session active. The module activates the session of a live use again
   // when the app returns to the foreground, which would stop the audio of other apps.
   var wantsUse: Bool {
-    return isPlaying && hasItem
+    return manageAudioSession && isPlaying && hasItem
+  }
+
+  // A player that does not manage the audio session must not change the session through the other players.
+  var asksOtherPlayersNotToMix: Bool {
+    return wantsNowPlaying && manageAudioSession
   }
 
   var mixing: MixingRequirement {

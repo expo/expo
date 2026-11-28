@@ -16,6 +16,7 @@ final class VideoMediaSessionClient: MediaSessionObserver, VideoPlayerObserverDe
     var state = VideoSessionState()
     var use: SessionUse?
     var appliedRequirements: SessionRequirements?
+    var reportedConflicts: [VideoSessionConflict] = []
     var claim: NowPlayingClaim?
     var assetMetadata: VideoAssetMetadata?
     var assetMetadataItem: ObjectIdentifier?
@@ -55,19 +56,39 @@ final class VideoMediaSessionClient: MediaSessionObserver, VideoPlayerObserverDe
   }
 
   func update(_ change: (inout VideoSessionState) -> Void) {
-    let wantsNowPlaying = storage.withLock { storage -> Bool? in
+    let result = storage.withLock { storage -> (asksOtherPlayersNotToMix: Bool, warnings: [String])? in
       guard !storage.isInvalidated else {
         return nil
       }
       change(&storage.state)
       storage.state.anotherPlayerWantsNowPlaying = VideoManager.shared.anotherPlayerWantsNowPlaying(than: self)
       reconcile(&storage)
-      return storage.state.wantsNowPlaying
+      return (storage.state.asksOtherPlayersNotToMix, newWarnings(&storage))
+    }
+    guard let result else {
+      return
     }
     // The other players reconcile here, and each of them locks its own storage. Do not call this while `storage` is locked.
-    if let wantsNowPlaying {
-      VideoManager.shared.setWantsNowPlaying(wantsNowPlaying, for: self)
+    VideoManager.shared.setWantsNowPlaying(result.asksOtherPlayersNotToMix, for: self)
+
+    for warning in result.warnings {
+      player?.appContext?.jsLogger.warn(warning)
     }
+  }
+
+  // Call this while `storage` is locked. A call after `invalidate()` would add the released player to `VideoManager` again.
+  private func newWarnings(_ storage: inout Storage) -> [String] {
+    let conflicts = sessionConflicts(
+      state: storage.state,
+      policyMode: MediaSessionManager.shared.policy.interruptionMode
+    )
+    var warnings = conflicts.filter { !storage.reportedConflicts.contains($0) }.map(\.message)
+    storage.reportedConflicts = conflicts
+
+    if VideoManager.shared.updateSessionManagement(storage.state, for: self) {
+      warnings.append(sessionManagementMixWarning)
+    }
+    return warnings
   }
 
   func refresh() {
@@ -77,6 +98,7 @@ final class VideoMediaSessionClient: MediaSessionObserver, VideoPlayerObserverDe
   func invalidate() {
     let (registration, timeJumpedObserver) = storage.withLock { storage -> (ObserverRegistration?, NSObjectProtocol?) in
       storage.isInvalidated = true
+      VideoManager.shared.removeSessionManagement(for: self)
       withdrawClaim(&storage)
       storage.use?.end()
       storage.use = nil

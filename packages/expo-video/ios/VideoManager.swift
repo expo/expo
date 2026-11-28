@@ -14,6 +14,7 @@ class VideoManager {
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private let videoPlayers = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
   private let clientsWantingNowPlaying = Mutex(Set<ObjectIdentifier>())
+  private let sessionManagementMix = Mutex(SessionManagementMix<ObjectIdentifier>())
 
   var hasRegisteredPlayers: Bool {
     return !videoPlayers.allObjects.isEmpty
@@ -79,6 +80,18 @@ class VideoManager {
     for player in videoPlayers.allObjects where player.mediaSession !== client {
       player.mediaSession?.refresh()
     }
+  }
+
+  /**
+   * Records the state of the player of a client.
+   * Returns `true` when the caller must warn that players with different `manageAudioSession` values are in use.
+   */
+  func updateSessionManagement(_ state: VideoSessionState, for client: VideoMediaSessionClient) -> Bool {
+    return sessionManagementMix.withLock { $0.shouldWarn(afterUpdating: ObjectIdentifier(client), to: state) }
+  }
+
+  func removeSessionManagement(for client: VideoMediaSessionClient) {
+    sessionManagementMix.withLock { $0.remove(ObjectIdentifier(client)) }
   }
 
   func isAnotherPlayerPlaying(than client: VideoMediaSessionClient) -> Bool {

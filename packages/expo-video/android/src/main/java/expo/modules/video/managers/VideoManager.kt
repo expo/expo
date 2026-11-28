@@ -9,6 +9,9 @@ import expo.modules.video.VideoCache
 import expo.modules.video.VideoView
 import expo.modules.video.VideoViewNotFoundException
 import expo.modules.video.listeners.VideoManagerListener
+import expo.modules.video.mediasession.SessionManagementMix
+import expo.modules.video.mediasession.VideoMediaSessionClient
+import expo.modules.video.mediasession.VideoSessionState
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.utils.weakMutableHashSetOf
 import java.lang.ref.WeakReference
@@ -28,6 +31,8 @@ object VideoManager {
   private var videoPlayersToVideoViews = mutableMapOf<VideoPlayer, MutableList<VideoView>>()
 
   private var playersRequestingKeepAwake = weakMutableHashSetOf<VideoPlayer>()
+
+  private val sessionManagementMix = SessionManagementMix<VideoMediaSessionClient>()
 
   lateinit var cache: VideoCache
 
@@ -85,6 +90,22 @@ object VideoManager {
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews.remove(videoPlayer)
+  }
+
+  /**
+   * Records the state of the player of a client.
+   * Returns `true` when the caller must warn that players with different `manageAudioSession` values are in use.
+   */
+  internal fun updateSessionManagement(client: VideoMediaSessionClient, state: VideoSessionState): Boolean {
+    return synchronized(sessionManagementMix) {
+      sessionManagementMix.shouldWarnAfterUpdating(client, state)
+    }
+  }
+
+  internal fun removeSessionManagement(client: VideoMediaSessionClient) {
+    synchronized(sessionManagementMix) {
+      sessionManagementMix.remove(client)
+    }
   }
 
   fun registerFullscreenPlayerActivity(id: String, fullscreenActivity: FullscreenPlayerActivity) {

@@ -107,6 +107,74 @@ class VideoSessionStateTest {
     assertFalse(wanted.copy(isAttachedToView = false).wantsNowPlaying)
   }
 
+  // Manual audio session
+
+  @Test
+  fun `a player that does not manage the audio session wants no use`() {
+    val state = VideoSessionState(isPlaying = true, manageAudioSession = false)
+
+    assertFalse(state.wantsUse)
+    assertEquals(
+      SessionUseAction.End,
+      sessionUseAction(isUseLive = true, isUseStale = false, applied = state.requirements, state = state)
+    )
+  }
+
+  @Test
+  fun `an audio mixing mode conflicts with a manual session`() {
+    val manual = VideoSessionState(manageAudioSession = false, audioMixingMode = AudioMixingMode.DO_NOT_MIX)
+
+    assertEquals(listOf(VideoSessionConflict.AUDIO_MIXING_MODE_IGNORED), sessionConflicts(manual))
+    assertEquals(emptyList<VideoSessionConflict>(), sessionConflicts(manual.copy(audioMixingMode = AudioMixingMode.AUTO)))
+    assertEquals(emptyList<VideoSessionConflict>(), sessionConflicts(manual.copy(manageAudioSession = true)))
+  }
+
+  @Test
+  fun `reports one time when a manual player and a managed player are in use together`() {
+    val mix = SessionManagementMix<Int>()
+    val manual = VideoSessionState(manageAudioSession = false)
+    val managedInUse = VideoSessionState(isPlaying = true)
+
+    assertFalse(mix.shouldWarnAfterUpdating(1, manual))
+    assertFalse(mix.shouldWarnAfterUpdating(2, VideoSessionState()))
+    assertTrue(mix.shouldWarnAfterUpdating(2, managedInUse))
+    assertFalse(mix.shouldWarnAfterUpdating(2, managedInUse))
+  }
+
+  @Test
+  fun `does not report again when the managed player pauses and plays`() {
+    val mix = SessionManagementMix<Int>()
+    val managedInUse = VideoSessionState(isPlaying = true)
+
+    mix.shouldWarnAfterUpdating(1, VideoSessionState(manageAudioSession = false))
+    mix.shouldWarnAfterUpdating(2, managedInUse)
+
+    assertFalse(mix.shouldWarnAfterUpdating(2, managedInUse.copy(isPlaying = false)))
+    assertFalse(mix.shouldWarnAfterUpdating(2, managedInUse))
+  }
+
+  @Test
+  fun `reports again after all the manual players are released`() {
+    val mix = SessionManagementMix<Int>()
+    val manual = VideoSessionState(manageAudioSession = false)
+
+    mix.shouldWarnAfterUpdating(1, manual)
+    mix.shouldWarnAfterUpdating(2, VideoSessionState(isPlaying = true))
+
+    mix.remove(1)
+
+    assertTrue(mix.shouldWarnAfterUpdating(3, manual))
+  }
+
+  @Test
+  fun `a managed player that wants the Now Playing notification counts as in use`() {
+    val mix = SessionManagementMix<Int>()
+    val managedOwner = VideoSessionState(showNowPlayingNotification = true, hasSource = true, isAttachedToView = true)
+
+    assertFalse(mix.shouldWarnAfterUpdating(1, managedOwner))
+    assertTrue(mix.shouldWarnAfterUpdating(2, VideoSessionState(manageAudioSession = false)))
+  }
+
   // Takeover
 
   @Test

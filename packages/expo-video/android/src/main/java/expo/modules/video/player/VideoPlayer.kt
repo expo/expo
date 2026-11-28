@@ -124,6 +124,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       field = value
       mediaSessionClient.update { it.copy(showNowPlayingNotification = value) }
     }
+  var manageAudioSession = true
+    set(value) {
+      field = value
+      mediaSessionClient.update { it.copy(manageAudioSession = value) }
+    }
   var duration = 0f
   var isLive = false
 

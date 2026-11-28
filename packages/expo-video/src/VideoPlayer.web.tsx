@@ -94,6 +94,7 @@ export default class VideoPlayerWeb
   _timeUpdateLoop: ReturnType<typeof setTimeout> | null = null;
   _timeUpdateEventInterval: number = 0;
   audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
+  manageAudioSession: boolean = true; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
   staysActiveInBackground: boolean = false; // Not supported on web. Dummy to match the interface.
   showNowPlayingNotification: boolean = false; // Not supported on web. Dummy to match the interface.
