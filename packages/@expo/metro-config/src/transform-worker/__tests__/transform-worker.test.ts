@@ -1,3 +1,8 @@
+import { loadEnvFiles } from '@expo/env';
+import { vol } from 'memfs';
+import { runInNewContext } from 'node:vm';
+
+import { getEnvVarDevString } from '../../serializer/environmentVariableSerializerPlugin';
 import * as upstreamTransformer from '../metro-transform-worker';
 import type { JsTransformOptions } from '../metro-transform-worker';
 import { transform } from '../transform-worker';
@@ -485,4 +490,59 @@ describe('Expo Router server files (+html, +api)', () => {
       ).toMatch('KEEP');
     });
   });
+});
+
+it('uses pre-load overrides while dotenv values hot reload or disappear', async () => {
+  const originalEnv = process.env;
+  process.env = { NODE_ENV: 'development', EXPO_PUBLIC_OVERRIDE: 'shell', EXPO_PUBLIC_EMPTY: '' };
+  try {
+    vol.fromJSON({
+      '/app/.env': 'EXPO_PUBLIC_VALUE=initial\nEXPO_PUBLIC_OVERRIDE=file\nEXPO_PUBLIC_EMPTY=file',
+    });
+    loadEnvFiles(['/app/.env']);
+    const inheritedEnv = { ...process.env };
+    const source = await doTransformForInput('/app/node_modules/expo/virtual/env.js', '', {
+      dev: true,
+    });
+    const runtimeProcess = { env: {} as Record<PropertyKey, unknown> };
+    runInNewContext(getEnvVarDevString(), { process: runtimeProcess });
+    expect(runtimeProcess.env.EXPO_PUBLIC_VALUE).toBe('initial');
+    expect(runtimeProcess.env[Symbol.for('expo.env.overrides')]).toEqual(
+      expect.arrayContaining(['EXPO_PUBLIC_OVERRIDE', 'EXPO_PUBLIC_EMPTY'])
+    );
+    expect(runtimeProcess.env[Symbol.for('expo.env.overrides')]).toHaveLength(2);
+    const files: Record<string, { default: Record<string, string> }> = {
+      '.env': {
+        default: {
+          EXPO_PUBLIC_VALUE: 'initial',
+          EXPO_PUBLIC_OVERRIDE: 'file',
+          EXPO_PUBLIC_EMPTY: 'file',
+        },
+      },
+    };
+    const context = Object.assign((file: string) => files[file], {
+      keys: () => Object.keys(files),
+    });
+    const readEnv = () =>
+      runInNewContext(source.replace('export const env =', 'const env =') + '\nenv;', {
+        process: runtimeProcess,
+        require: { context: () => context },
+      });
+    expect(readEnv()).toEqual({
+      EXPO_PUBLIC_VALUE: 'initial',
+      EXPO_PUBLIC_OVERRIDE: 'shell',
+      EXPO_PUBLIC_EMPTY: '',
+    });
+    files['.env']!.default.EXPO_PUBLIC_VALUE = 'edited';
+    expect(readEnv().EXPO_PUBLIC_VALUE).toBe('edited');
+    delete files['.env']!.default.EXPO_PUBLIC_VALUE;
+    expect(readEnv().EXPO_PUBLIC_VALUE).toBeUndefined();
+    runtimeProcess.env = {};
+    runInNewContext(getEnvVarDevString(inheritedEnv), { process: runtimeProcess });
+    expect(readEnv()).toEqual({ EXPO_PUBLIC_OVERRIDE: 'shell', EXPO_PUBLIC_EMPTY: '' });
+    expect(Object.getOwnPropertySymbols({ ...runtimeProcess.env })).toEqual([]);
+  } finally {
+    process.env = originalEnv;
+    vol.reset();
+  }
 });

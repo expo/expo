@@ -207,16 +207,24 @@ async function transformImpl(
       const posixPath = toPosixPath(relativePath);
 
       // This virtual module uses a context module to conditionally observe and load all of the possible .env files in development.
-      // We then merge them in the expected order.
+      // We merge the files in priority order, then apply pre-load environment overrides.
       // This module still depends on the `process.env` polyfill in the serializer to include EXPO_PUBLIC_ variables that are
       // defined in the script or bash, essentially all places where HMR is not possible.
       // Finally, we export with `env` to align with the babel plugin that transforms static process.env usage to the virtual module.
       // The .env regex depends `watcher.additionalExts` being set correctly (`'env', 'local', 'development'`) so that .env files aren't resolved as platform extensions.
       const contents = `const dotEnvModules = require.context(${JSON.stringify(posixPath)},false,/^\\.\\/\\.env/);
 
-    export const env = !dotEnvModules.keys().length ? process.env : { ...process.env, ...['.env', '.env.development', '.env.local', '.env.development.local'].reduce((acc, file) => {
-      return { ...acc, ...(dotEnvModules(file)?.default ?? {}) };
-    }, {}) };`;
+    let values = process.env;
+    if (dotEnvModules.keys().length) {
+      values = {};
+      for (const file of ['.env', '.env.development', '.env.local', '.env.development.local']) {
+        Object.assign(values, dotEnvModules(file)?.default);
+      }
+      for (const key of process.env[Symbol.for('expo.env.overrides')] ?? []) {
+        values[key] = process.env[key];
+      }
+    }
+    export const env = values;`;
       return worker.transform(config, projectRoot, filename, Buffer.from(contents), options);
     } else {
       // Add a fallback in production for sanity and better errors if something goes wrong or the user manually imports the virtual module somehow.

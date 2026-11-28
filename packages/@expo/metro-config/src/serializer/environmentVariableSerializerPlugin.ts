@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getOriginalEnv } from '@expo/env';
 import type {
   ReadOnlyGraph,
   MixedOutput,
@@ -21,7 +22,7 @@ export function getTransformEnvironment(url: string): string | null {
 }
 
 function getAllExpoPublicEnvVars(
-  inputEnv: NodeJS.ProcessEnv = process.env
+  inputEnv: Record<string, string | undefined> = process.env
 ): Record<string, string> {
   // Create an object containing all environment variables that start with EXPO_PUBLIC_
   const env: Record<string, string> = {};
@@ -119,7 +120,6 @@ export function environmentVariableSerializerPlugin(
 
 export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
   // Set the process.env object to the current environment variables object
-  // ensuring they aren't iterable, settable, or enumerable.
   const str =
     `process.env=Object.defineProperties(process.env, {` +
     Object.keys(getAllExpoPublicEnvVars(env))
@@ -128,7 +128,11 @@ export function getEnvVarDevString(env: NodeJS.ProcessEnv = process.env) {
       )
       .join(',') +
     '});';
-  const code = '/* HMR env vars from Expo CLI (dev-only) */ ' + str;
+  const overrideKeys = Object.keys(getAllExpoPublicEnvVars(getOriginalEnv(env)));
+  const code =
+    '/* HMR env vars from Expo CLI (dev-only) */ ' +
+    str +
+    `Object.defineProperty(process.env, Symbol.for("expo.env.overrides"), { configurable: true, value: ${JSON.stringify(overrideKeys)} });`;
 
   const lineCount = countLines(code);
   if (lineCount !== 1) {
