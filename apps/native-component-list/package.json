@@ -100,6 +100,7 @@
     "expo-screen-capture": "workspace:*",
     "expo-screen-orientation": "workspace:*",
     "expo-secure-store": "workspace:*",
+    "expo-selectable-text": "workspace:*",
     "expo-sensors": "workspace:*",
     "expo-sharing": "workspace:*",
     "expo-sms": "workspace:*",
