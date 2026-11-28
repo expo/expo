@@ -8,11 +8,12 @@ import { mutateFile, openPageAndEagerlyLoadJS, raceOrFail } from '../../utils/hm
 import { pageCollectErrors } from '../page';
 
 const projectRoot = getServerTesterRoot();
-const indexFile = path.join(projectRoot, 'app/loaders/index.tsx');
-const postsFile = path.join(projectRoot, 'app/loaders/posts/[postId].tsx');
-const noLoaderFile = path.join(projectRoot, 'app/loaders/no-loader.tsx');
+// Other test files run at the same time, so these tests edit routes that no other test file uses.
+const indexFile = path.join(projectRoot, 'app/hmr/index.tsx');
+const postsFile = path.join(projectRoot, 'app/hmr/posts/[postId].tsx');
+const noLoaderFile = path.join(projectRoot, 'app/hmr/no-loader.tsx');
 
-const ORIGINAL_LOADER_VALUE = 'root-index';
+const ORIGINAL_LOADER_VALUE = 'hmr-index';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -42,7 +43,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     console.timeEnd('expo start');
 
     console.time('Eagerly bundled JS');
-    await expoStart.fetchBundleAsync('/loaders').then((response) => response.text());
+    await expoStart.fetchBundleAsync('/hmr').then((response) => response.text());
     console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async ({ page }) => {
@@ -58,7 +59,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/loaders', expoStart.url.href).toString(),
+      new URL('/hmr', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -74,7 +75,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
 
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
-      if (request.url().includes('/_expo/loaders/loaders/')) {
+      if (request.url().includes('/_expo/loaders/hmr/')) {
         loaderRequests.push(request.url());
       }
     });
@@ -92,7 +93,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     expect(messages.commands).not.toContain('reload');
     const marker = await page.evaluate(() => (window as any).__e2eMarker);
     expect(marker).toBe('still-here');
-    expect(loaderRequests.some((url) => url.includes('/_expo/loaders/loaders/index'))).toBe(true);
+    expect(loaderRequests.some((url) => url.includes('/_expo/loaders/hmr/index'))).toBe(true);
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(nextValue);
 
     expect(pageErrors.all).toEqual([]);
@@ -105,7 +106,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/loaders', expoStart.url.href).toString(),
+      new URL('/hmr', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -140,7 +141,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/loaders', expoStart.url.href).toString(),
+      new URL('/hmr', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
@@ -159,7 +160,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
 
     const secondValue = `${ORIGINAL_LOADER_VALUE}-B-${Date.now()}`;
     await mutateFile(indexFile, (contents) =>
-      contents.replace(/root-index(?:-[\w\d]+)*/g, secondValue)
+      contents.replace(/hmr-index(?:-[\w\d]+)*/g, secondValue)
     );
     await Promise.all([waitForLoaderInvalidate(messages.socket!), waitForFashRefresh()]);
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(secondValue);
@@ -175,15 +176,15 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/loaders', expoStart.url.href).toString(),
+      new URL('/hmr', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
     await waitForHydration(page);
 
-    await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
+    await page.getByRole('link', { name: '/hmr/posts/hmr-post-1', exact: true }).click();
     await page.waitForSelector('[data-testid="loader-result"]', { timeout: 30_000 });
-    await expect(page.locator('[data-testid="loader-result"]')).toContainText('static-post-1');
+    await expect(page.locator('[data-testid="loader-result"]')).toContainText('hmr-post-1');
 
     const marker = `dynamic-marker-${Date.now()}`;
     await mutateFile(postsFile, (contents) => {
@@ -218,15 +219,15 @@ test.describe('server-loader HMR in streaming SSR', () => {
     const { waitForFashRefresh } = await openPageAndEagerlyLoadJS(
       expoStart,
       page,
-      new URL('/loaders/no-loader', expoStart.url.href).toString(),
+      new URL('/hmr/no-loader', expoStart.url.href).toString(),
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
     await waitForHydration(page);
 
-    const editedTitle = `No loader edited-${Date.now()}`;
+    const editedTitle = `HMR no loader edited-${Date.now()}`;
     await mutateFile(noLoaderFile, (contents) =>
-      contents.replace('title="No loader"', `title="${editedTitle}"`)
+      contents.replace('title="HMR no loader"', `title="${editedTitle}"`)
     );
 
     await waitForFashRefresh();
@@ -242,7 +243,7 @@ const resetIndexLoader = () =>
   mutateFile(indexFile, (contents) =>
     // `*` instead of `?` so the reset strips multi-segment suffixes like `-state-<timestamp>`
     // and `-A-<timestamp>`, not just the single-segment `-<timestamp>` form.
-    contents.replace(/root-index(?:-[\w\d]+)*/g, ORIGINAL_LOADER_VALUE)
+    contents.replace(/hmr-index(?:-[\w\d]+)*/g, ORIGINAL_LOADER_VALUE)
   );
 
 const resetPostsLoader = () =>
@@ -250,7 +251,7 @@ const resetPostsLoader = () =>
 
 const resetNoLoaderFile = () =>
   mutateFile(noLoaderFile, (contents) =>
-    contents.replace(/title="No loader(?: edited-[\w\d]+)?"/g, 'title="No loader"')
+    contents.replace(/title="HMR no loader(?: edited-[\w\d]+)?"/g, 'title="HMR no loader"')
   );
 
 // Route bundles load during hydration. Metro sends HMR updates only for bundles that loaded before the edit.

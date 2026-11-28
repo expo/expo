@@ -191,38 +191,26 @@ export function createBackgroundServer({
 }
 
 /**
- * Find a random available port through Node's own `net.createServer`.
- * This highly increases the randomness compared to `freeport-async`,
- * and avoids overlapping ports in parallel tests.
+ * Find a random available port, and confirm it through Node's own `net.createServer`.
+ * The port is below the range that the OS gives to outgoing connections.
+ * A port from that range can go to a browser or `fetch` connection before the server binds it.
  */
 export async function findFreePortAsync() {
-  // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/withResolvers
-  let resolve: (value: number) => void;
-  let reject: (reason: any) => void;
-  const promise = new Promise<number>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  const server = createServer();
-  server.once('error', reject!);
-  server.listen(0, () => {
-    const address = server.address();
-    const url = typeof address === 'string' ? new URL(address) : address;
-    server.close(() => {
-      if (!url) {
-        reject(new Error('Could not find the address of a temporary server'));
-      } else {
-        resolve(Number(url.port));
-      }
-    });
-  });
-
-  try {
-    return await promise;
-  } finally {
-    server.off('error', reject!);
+  for (let attempt = 0; attempt < 50; attempt++) {
+    const port = 20_000 + Math.floor(Math.random() * 12_000);
+    if (await isPortFreeAsync(port)) {
+      return port;
+    }
   }
+  throw new Error('Could not find an available port between 20000 and 32000');
+}
+
+function isPortFreeAsync(port: number) {
+  return new Promise<boolean>((resolve) => {
+    const server = createServer();
+    server.once('error', () => resolve(false));
+    server.listen(port, () => server.close(() => resolve(true)));
+  });
 }
 
 /** Create a managed background server running `npx serve` */

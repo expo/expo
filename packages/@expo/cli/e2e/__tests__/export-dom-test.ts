@@ -7,7 +7,12 @@ import { globSync } from 'tinyglobby';
 
 import { toPosixPath } from '../../src/utils/filePath';
 import { executeExpoAsync } from '../utils/expo';
-import { projectRoot, setupTestProjectWithOptionsAsync, findProjectFiles } from './utils';
+import {
+  projectRoot,
+  setupTestProjectWithOptionsAsync,
+  findProjectFiles,
+  getTemporaryPath,
+} from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -241,6 +246,8 @@ describe('Export DOM Components', () => {
     const appPath = path.join(projectRoot, 'App.js');
     const originalApp = await fs.readFile(appPath, 'utf8');
     const outputDir = path.join(projectRoot, `dist-overlap-${platform}`);
+    // `--clear` deletes the Metro cache. Other test files use the default cache at the same time.
+    const metroCacheDir = getTemporaryPath();
     try {
       // Keep the probe observable so Hermes packs it next to the HTML placeholder.
       await fs.appendFile(
@@ -254,6 +261,7 @@ describe('Export DOM Components', () => {
           env: {
             NODE_ENV: 'production',
             TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+            EXPO_METRO_CACHE_OUTPUT_DIR: metroCacheDir,
           },
         }
       );
@@ -273,6 +281,7 @@ describe('Export DOM Components', () => {
       expect(bytecode.includes(Buffer.from('dom-overlap-control'))).toBe(true);
     } finally {
       await fs.writeFile(appPath, originalApp);
+      await fs.rm(metroCacheDir, { recursive: true, force: true });
     }
   });
 });

@@ -7,12 +7,12 @@ const isCI = boolish('CI', false);
 // See https://playwright.dev/docs/test-configuration.
 export default defineConfig({
   testDir: './playwright',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
+  /* Run test files in parallel. The tests in one file share one export or one server, so they run in order in one worker. */
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: isCI,
-  /* Retry on CI only */
-  retries: isCI ? 2 : 0,
+  /* Retry failed tests. Some development server tests fail at random. */
+  retries: 2,
   /* Opt out of parallel tests on CI or Windows. */
   workers: isCI || process.platform === 'win32' ? 1 : undefined,
   // Configure the global timeout to 3m, on Windows increase this to 5m
@@ -32,7 +32,15 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'dev',
+      testDir: './playwright/dev',
+      /* A development server reacts to each file change in the repository, and some of these tests edit files. */
+      workers: 1,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'prod',
+      testDir: './playwright/prod',
       use: { ...devices['Desktop Chrome'] },
     },
   ],

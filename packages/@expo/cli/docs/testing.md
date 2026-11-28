@@ -354,6 +354,21 @@ pnpm test:playwright dev/fast-refresh.test.ts
 pnpx playwright test --ui
 ```
 
+## Parallel Runs
+
+On a local machine, `pnpm test:e2e` and `pnpm test:playwright` run test files in parallel. CI uses one worker. Run one of the two commands at a time.
+
+Playwright runs the tests of one file in order in one worker. Export the app or start the server one time in `beforeAll`.
+
+Playwright has two projects. The `dev` project runs the files in `e2e/playwright/dev` with one worker, because a development server reacts to each file change in the repository. The `prod` project runs the files in `e2e/playwright/prod` in parallel.
+
+A test file must not depend on state that a different test file can change:
+
+- Use an output directory name that no other test file uses. For `prepareServers()`, pass a `uniqueOutputKey`.
+- Let `createBackgroundServer()` select the port. Do not use a fixed port.
+- A test file that edits source files uses routes that no other test file opens. Examples are `apps/server-tester/app/hmr` and `apps/router-e2e/__e2e__/fast-refresh`. Restore the source files in `afterEach`.
+- `--clear` deletes the Metro cache that all test files share. If a test needs `--clear`, set `EXPO_METRO_CACHE_OUTPUT_DIR` to a temporary directory for that command.
+
 ## Router E2E (`apps/router-e2e`)
 
 Integration tests for Expo Router features. Test fixtures live in `apps/router-e2e/__e2e__/`.

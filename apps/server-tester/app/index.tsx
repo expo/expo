@@ -56,6 +56,13 @@ export default function HomeRoute() {
           <RouteLink href="/errors/loader" />
         </RouteLinks>
       </Section>
+      <Section title="HMR">
+        <RouteLinks>
+          <RouteLink href="/hmr" />
+          <RouteLink href="/hmr/no-loader" />
+          <RouteLink href="/hmr/posts/hmr-post-1" />
+        </RouteLinks>
+      </Section>
       <Section title="Headers">
         <RouteLinks>
           <RouteLink href="/headers" />

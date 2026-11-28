@@ -96,11 +96,11 @@ describe('exports static with granular bundle splitting', () => {
       [
         '__expo-metro-runtime',
         'entry',
-        // The root layout and the `rendering`, `loaders` and `loaders/groups/(group)` layouts.
-        ...Array(4).fill('_layout'),
+        // The root layout and the `rendering`, `hmr`, `loaders` and `loaders/groups/(group)` layouts.
+        ...Array(5).fill('_layout'),
         '\\+not-found',
-        // Every index route: `/`, `headers`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware`, `redirects` and `routing/(alpha)`.
-        ...Array(8).fill('index'),
+        // Every index route: `/`, `headers`, `hmr`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware`, `redirects` and `routing/(alpha)`.
+        ...Array(9).fill('index'),
         // api
         'get-dynamic',
         'get-methods',
@@ -114,6 +114,9 @@ describe('exports static with granular bundle splitting', () => {
         'throw-on-load',
         // headers
         'blog',
+        // hmr
+        'no-loader',
+        '\\[postId\\]',
         // loaders
         'env',
         'error',
