@@ -71,3 +71,4 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "undefined"}
     label: Assert availableUpdateID is undefined
+- stopApp

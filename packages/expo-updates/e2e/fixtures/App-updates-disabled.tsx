@@ -2,7 +2,15 @@ import { Inter_900Black } from '@expo-google-fonts/inter';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  SafeAreaView,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 require('./includedAssets/test.png');
 // eslint-disable-next-line no-unused-expressions
@@ -51,19 +59,16 @@ export default function App() {
 
   const handleReload = async () => {
     setIsReloading(true);
-    // this is done after a timeout so that the button press finishes for detox
-    setTimeout(async () => {
-      try {
-        await Updates.reloadAsync();
-        setIsReloading(false);
-      } catch (e) {
-        console.warn(e);
-      }
-    }, 2000);
+    try {
+      await Updates.reloadAsync();
+      setIsReloading(false);
+    } catch (e) {
+      console.warn(e);
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TestValue testID="updateString" value="test" />
       <TestValue testID="updateID" value={`${Updates.updateId}`} />
       <TestValue testID="runtimeVersion" value={`${currentlyRunning.runtimeVersion}`} />
@@ -83,15 +88,15 @@ export default function App() {
       </View>
 
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 100,
-    marginBottom: 100,
+    paddingTop: Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 0) : 0,
+    paddingBottom: 24,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',

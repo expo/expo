@@ -17,20 +17,22 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - copyTextFrom:
-    label: Copy text from ('isembeddedlaunch')
-    id: isembeddedlaunch
+    label: Copy text from isEmbeddedLaunch
+    id: isEmbeddedLaunch
 - assertTrue:
     condition: ${maestro.copiedText == "true"}
     label: Assert isEmbeddedLaunch is true
 - copyTextFrom:
-    label: Copy text from ('updateid')
-    id: updateid
+    label: Copy text from updateID
+    id: updateID
 - assertTrue:
     condition: ${maestro.copiedText != output.downloadedUpdateId}
     label: Assert downloaded update is not running yet
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:
@@ -68,6 +70,11 @@ onFlowStart:
 - tapOn:
     label: Tap on extra params button
     id: setExtraParams
+- extendedWaitUntil:
+    visible:
+      id: extraParamsString
+      text: ".*testparam.*"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from extra params string
     id: extraParamsString
@@ -85,9 +92,11 @@ onFlowStart:
 - tapOn:
     label: Tap on check for update button
     id: checkForUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: availableUpdateID
+      text: ${output.downloadedUpdateId}
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from availableUpdateID
     id: availableUpdateID
@@ -97,9 +106,11 @@ onFlowStart:
 - tapOn:
     label: Tap on download update button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.downloadedManifest.id
+      text: ${output.downloadedUpdateId}
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:
@@ -108,3 +119,4 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == output.downloadedUpdateId}
     label: Assert downloaded update ID is now the running update
+- stopApp

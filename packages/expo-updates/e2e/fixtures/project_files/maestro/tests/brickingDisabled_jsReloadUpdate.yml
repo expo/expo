@@ -13,35 +13,35 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
-- copyTextFrom:
-    label: Copy text from update string
-    id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test"}
-    label: Assert update string is from embedded bundle
+- extendedWaitUntil:
+    visible:
+      id: updateString
+      text: "test"
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - tapOn:
     label: Tap on button to change updates URL
     id: setUpdateURLAndRequestHeadersOverride
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    notVisible:
+      id: activity
+    timeout: 15000
 - tapOn:
     label: Tap on download update button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - tapOn: "reload"
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
-- copyTextFrom:
-    label: Copy text from update string
-    id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test-update-1"}
-    label: Assert update string is from downloaded bundle
+- extendedWaitUntil:
+    visible:
+      id: updateString
+      text: "test-update-1"
+    timeout: 30000
 - stopApp

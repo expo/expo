@@ -4,6 +4,14 @@ onFlowStart:
       file: beforeEach.yml
 ---
 - launchApp
+- evalScript:
+    script: ${output.api.waitForUpdateRequest(15000)}
+    label: Wait for initial startup update request
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -27,8 +35,12 @@ onFlowStart:
     label: Tap on check for update button
     id: checkForUpdate
 - evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+    script: ${output.api.waitForUpdateRequest(15000)}
+    label: Wait for checkForUpdate request on default channel
+- extendedWaitUntil:
+    notVisible:
+      id: activity
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from availableUpdateID
     id: availableUpdateID
@@ -38,12 +50,18 @@ onFlowStart:
 - tapOn:
     label: Tap on toggleUpdateRequestHeadersOverride button
     id: toggleUpdateRequestHeadersOverride
+- extendedWaitUntil:
+    notVisible:
+      id: activity
+    timeout: 15000
 - tapOn:
     label: Tap on check for update button
     id: checkForUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: availableUpdateID
+      text: ${output.downloadedUpdateId}
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from availableUpdateID
     id: availableUpdateID
@@ -53,13 +71,17 @@ onFlowStart:
 - tapOn:
     label: Tap on download update button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(1500)}
-    label: Delay for 1.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.downloadedManifest.id
+      text: ${output.downloadedUpdateId}
+    timeout: 30000
 - tapOn: "reload"
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: updateID
+      text: ${output.downloadedUpdateId}
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update channel
     id: channel
@@ -75,6 +97,9 @@ onFlowStart:
 
 # Send update to default channel and verify new update from default channel
 - evalScript:
+    script: ${output.api.restartUpdatesServer()}
+    label: Reset updates server before default channel check
+- evalScript:
     script: ${output.downloadedUpdateId = output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM, 'default')}
     label: Send new update to default channel
     env:
@@ -83,8 +108,12 @@ onFlowStart:
     label: Tap on check for update button
     id: checkForUpdate
 - evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+    script: ${output.api.waitForUpdateRequest(15000)}
+    label: Wait for checkForUpdate request on preview channel
+- extendedWaitUntil:
+    notVisible:
+      id: activity
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from availableUpdateID
     id: availableUpdateID
@@ -94,12 +123,18 @@ onFlowStart:
 - tapOn:
     label: Tap on toggleUpdateRequestHeadersOverride button to reset channel
     id: toggleUpdateRequestHeadersOverride
+- extendedWaitUntil:
+    notVisible:
+      id: activity
+    timeout: 15000
 - tapOn:
     label: Tap on check for update button
     id: checkForUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: availableUpdateID
+      text: ${output.downloadedUpdateId}
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from availableUpdateID
     id: availableUpdateID
@@ -109,13 +144,17 @@ onFlowStart:
 - tapOn:
     label: Tap on download update button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(1500)}
-    label: Delay for 1.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.downloadedManifest.id
+      text: ${output.downloadedUpdateId}
+    timeout: 30000
 - tapOn: "reload"
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: updateID
+      text: ${output.downloadedUpdateId}
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update channel
     id: channel
@@ -128,3 +167,4 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == output.downloadedUpdateId}
     label: Assert update string is from downloaded bundle
+- stopApp

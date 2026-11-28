@@ -58,7 +58,7 @@ function useNativeInterfaceState() {
       manifest: event.manifest,
       runtimeVersion,
       embeddedUpdateId,
-      launchedUpdateId: ExpoUpdatesE2ETestModule.getLaunchedUpdateId(),
+      launchedUpdateId: ExpoUpdatesE2ETestModule.getLaunchedUpdateId()?.toLowerCase(),
       downloadTimeMs: ExpoUpdatesE2ETestModule.getDownloadTimeMs(),
     });
   }, []);
@@ -250,15 +250,12 @@ export default function App() {
 
   const handleReload = async () => {
     setIsReloading(true);
-    // this is done after a timeout so that the button press finishes for detox
-    setTimeout(async () => {
-      try {
-        await Updates.reloadAsync();
-        setIsReloading(false);
-      } catch (e) {
-        console.warn(e);
-      }
-    }, 2000);
+    try {
+      await Updates.reloadAsync();
+      setIsReloading(false);
+    } catch (e) {
+      console.warn(e);
+    }
   };
 
   const handleCheckForUpdate = runBlockAsync(async () => {

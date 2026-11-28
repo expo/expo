@@ -1,6 +1,7 @@
 appId: dev.expo.updatese2e
 ---
 # This must run at the beginning of each test
+- stopApp
 - runScript:
     file: ./maestroUpdatesApi.js
     label: Run updates API script

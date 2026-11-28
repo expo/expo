@@ -12,8 +12,13 @@ onFlowStart:
 # never runs the embedded bundle.
 - launchApp
 - evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.api.waitForUpdateRequest(15000)}
+    label: Wait for initial startup update check
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from update string
     id: updateString
@@ -28,17 +33,15 @@ onFlowStart:
 - tapOn:
     label: Tap on download update button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(5000)}
-    label: Delay for 5 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - tapOn: "reload"
-- evalScript:
-    script: ${output.api.delay(5000)}
-    label: Delay for 5 seconds
-- copyTextFrom:
-    label: Copy text from update string
-    id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test-update-1"}
-    label: Assert update string is from downloaded bundle
+- extendedWaitUntil:
+    visible:
+      id: updateString
+      text: "test-update-1"
+    timeout: 30000
 - stopApp

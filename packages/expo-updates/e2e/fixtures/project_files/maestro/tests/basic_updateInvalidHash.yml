@@ -17,8 +17,13 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.api.waitForStaticFiles(1, 30000)}
+    label: Wait for bundle download attempt
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:

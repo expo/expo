@@ -14,8 +14,13 @@ onFlowStart:
     label: Copy text from update string
     id: updateString
 - evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.api.waitForStaticFiles(4, 30000)}
+    label: Wait for all 4 static files to be requested
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - assertTrue:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
@@ -34,11 +39,8 @@ onFlowStart:
     label: Tap on read log entries
     id: readLogEntries
 - evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
-- evalScript:
-    script: ${output.logs = output.api.logEntries()}
-    label: Read log entries uploaded to server
+    script: ${output.logs = output.api.waitForLogEntries(15000)}
+    label: Wait for log entries uploaded to server
 - assertTrue:
     condition: ${output.logs.length > 0}
     label: Assert that logs were uploaded

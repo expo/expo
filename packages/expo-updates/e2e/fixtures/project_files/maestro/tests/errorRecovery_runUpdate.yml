@@ -11,17 +11,13 @@ onFlowStart:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
 - evalScript:
-    script: ${output.api.delay(10000)}
-    label: Delay for 10 seconds
-- copyTextFrom:
-    label: Copy text from update string
-    id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test"}
-    label: Assert update string is from embedded bundle
-- assertTrue:
-    condition:  ${output.headers1 = output.api.lastRequestHeaders()}
-    label: Save the headers from the last request
+    script: ${output.headers1 = output.api.waitForUpdateRequest(20000)}
+    label: Wait for headers from first request
+- extendedWaitUntil:
+    visible:
+      id: updateString
+      text: "test"
+    timeout: 30000
 - assertTrue:
     condition: ${output.headers1['expo-recent-failed-update-ids'] == undefined}
     label: Assert there are no recent failed update ids in the headers
@@ -39,25 +35,26 @@ onFlowStart:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
 - evalScript:
-    script: ${output.api.delay(10000)}
-    label: Delay for 10 seconds
-- assertTrue:
-    condition:  ${output.headers2 = output.api.lastRequestHeaders()}
-    label: Save the headers from the last request
+    script: ${output.headers2 = output.api.waitForUpdateRequest(20000)}
+    label: Wait for headers from second request
+- evalScript:
+    script: ${output.api.waitForStaticFiles(1, 20000)}
+    label: Wait for crashing update bundle download
 - assertTrue:
     condition: ${output.headers2['expo-recent-failed-update-ids'] == undefined}
     label: Assert there are no recent failed update ids in the headers
 - assertTrue:
     condition: ${output.headers2['expo-current-update-id'] == output.headers2['expo-embedded-update-id']}
     label: Assert the current update id is the embedded update id
+# Allow the crashing update to execute, throw, and record its failed launch in SQLite before stopping.
+- evalScript:
+    script: ${output.api.delay(5000)}
+    label: Wait for crashing update failure to be recorded
 - stopApp
 - launchApp
 - evalScript:
-    script: ${output.api.delay(10000)}
-    label: Delay for 10 seconds
-- assertTrue:
-    condition:  ${output.headers3 = output.api.lastRequestHeaders()}
-    label: Save the headers from the last request
+    script: ${output.headers3 = output.api.waitForUpdateRequest(20000)}
+    label: Wait for headers from third request
 - assertTrue:
     condition: ${output.headers3['expo-recent-failed-update-ids'].includes(output.failedUpdateId)}
     label: Assert the recent failed update ids contains the failed update id
