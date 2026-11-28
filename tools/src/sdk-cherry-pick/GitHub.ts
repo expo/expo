@@ -1,5 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 
+import { spawnErrorOutput } from '../Utils';
+
 /** A pull request below the backported one in its GitHub stack. */
 export type StackEntry = {
   number: number;
@@ -22,6 +24,7 @@ export type GitHub = {
 type PullRequestView = {
   state: string;
   mergeCommit: { oid: string };
+  baseRefName: string;
   author: { login: string };
 };
 
@@ -66,11 +69,23 @@ const STACK_QUERY = `query($owner: String!, $name: String!, $number: Int!) {
 
 /** Calls GitHub with the `gh` CLI, which reads the token from GH_TOKEN. */
 export function ghCli(repo: string): GitHub & {
-  viewPullRequestAsync(prNumber: number): Promise<{ mergeSha: string; author: string }>;
+  viewPullRequestAsync(
+    prNumber: number
+  ): Promise<{ mergeSha: string; baseBranch: string; author: string }>;
 } {
-  const gh = async (...args: string[]) =>
-    (await spawnAsync('gh', [...args, '--repo', repo])).stdout.trim();
-  const ghApi = async (...args: string[]) => (await spawnAsync('gh', ['api', ...args])).stdout;
+  const run = async (args: string[]) => {
+    try {
+      return (await spawnAsync('gh', args)).stdout;
+    } catch (error) {
+      const output = spawnErrorOutput(error);
+      if (error instanceof Error && output) {
+        error.message += `\n${output}`;
+      }
+      throw error;
+    }
+  };
+  const gh = async (...args: string[]) => (await run([...args, '--repo', repo])).trim();
+  const ghApi = (...args: string[]) => run(['api', ...args]);
 
   const readStackBelowAsync = async (prNumber: number): Promise<StackEntry[]> => {
     const [owner, name] = repo.split('/');
@@ -123,13 +138,14 @@ export function ghCli(repo: string): GitHub & {
     },
     async viewPullRequestAsync(prNumber) {
       const view: PullRequestView = JSON.parse(
-        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,author')
+        await gh('pr', 'view', String(prNumber), '--json', 'state,mergeCommit,baseRefName,author')
       );
       if (view.state !== 'MERGED') {
         throw new Error(`#${prNumber} is not merged, so there is nothing to backport.`);
       }
       return {
         mergeSha: view.mergeCommit.oid,
+        baseBranch: view.baseRefName,
         author: view.author.login,
       };
     },

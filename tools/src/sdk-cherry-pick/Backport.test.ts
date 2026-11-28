@@ -91,6 +91,8 @@ type Run = {
   log: string;
 };
 
+const STACK_BASE = 'lower-branch';
+
 async function backport(
   prNumber: number,
   sdkVersion: number,
@@ -137,6 +139,7 @@ async function backport(
       sdkVersion,
       mergeSha,
       author: 'octocat',
+      baseBranch: 'main',
       dryRun: false,
       github,
       log: (message) => {
@@ -400,14 +403,14 @@ exec "${REAL_GIT}" "$@"
       { number: 48, labels: ['sdk-56'], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
     ];
 
-    const refused = await backport(49, 56, upperSha, { stackBelow });
+    const refused = await backport(49, 56, upperSha, { stackBelow, baseBranch: STACK_BASE });
     assert.ok(refused.error);
     assert.equal(remoteBranch('sdk-56'), before);
     assert.equal(refused.comments.length, 1);
     assert.match(refused.comments[0], /^#49 [^\n]*#48 is not on `sdk-56`/);
 
     assert.equal((await backport(48, 56, lowerSha)).error, undefined);
-    const accepted = await backport(49, 56, upperSha, { stackBelow });
+    const accepted = await backport(49, 56, upperSha, { stackBelow, baseBranch: STACK_BASE });
     assert.equal(accepted.error, undefined);
     const tip = remoteBranch('sdk-56')!;
     assert.equal(git(origin, 'log', '-1', '--format=%s', tip), 'Add an upper change (#49)');
@@ -421,6 +424,7 @@ exec "${REAL_GIT}" "$@"
     const upperSha = commitOnMain({ 'stack-4.txt': 'four\n' }, 'Add an upper change (#51)');
 
     const run = await backport(51, 57, upperSha, {
+      baseBranch: STACK_BASE,
       stackBelow: [
         { number: 50, labels: ['sdk-90'], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
       ],
@@ -439,6 +443,7 @@ exec "${REAL_GIT}" "$@"
     assert.equal((await backport(52, 58, lowerSha)).error, undefined);
 
     const run = await backport(53, 58, upperSha, {
+      baseBranch: STACK_BASE,
       stackBelow: [
         { number: 52, labels: [], mergeSha: lowerSha, mergedAt: '2000-01-01T00:00:00Z' },
       ],
@@ -453,6 +458,7 @@ exec "${REAL_GIT}" "$@"
     const upperSha = commitOnMain({ 'stack-7.txt': 'seven\n' }, 'Add an upper change (#55)');
 
     const run = await backport(55, 59, upperSha, {
+      baseBranch: STACK_BASE,
       stackBelow: [{ number: 54, labels: ['sdk-59'] }],
     });
     assert.ok(run.error);
@@ -466,11 +472,24 @@ exec "${REAL_GIT}" "$@"
     const before = createTargetBranch('sdk-85', 'sdk-90');
     const sha = commitOnMain({ 'stack-8.txt': 'eight\n' }, 'Add a change (#56)');
 
-    const run = await backport(56, 85, sha, { stackBelow: new Error('GraphQL failed') });
+    const run = await backport(56, 85, sha, {
+      baseBranch: STACK_BASE,
+      stackBelow: new Error('GraphQL failed'),
+    });
     assert.ok(run.error);
     assert.equal(remoteBranch('sdk-85'), before);
     assert.equal(run.comments.length, 1);
     assert.match(run.comments[0], /^#56 The backport to `sdk-85` failed\./);
+    assertNoTemporaryWorktree();
+  });
+
+  it('does not read the stack of a pull request whose base branch is main', async () => {
+    createTargetBranch('sdk-86', 'sdk-90');
+    const sha = commitOnMain({ 'stack-10.txt': 'ten\n' }, 'Add a change (#58)');
+
+    const run = await backport(58, 86, sha, { stackBelow: new Error('GraphQL failed') });
+    assert.equal(run.error, undefined);
+    assert.equal(git(origin, 'log', '-1', '--format=%s', 'sdk-86'), 'Add a change (#58)');
     assertNoTemporaryWorktree();
   });
 
