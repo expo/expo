@@ -1268,10 +1268,12 @@ internal struct TextSelection: ViewModifier, Record {
 
 internal struct LineSpacing: ViewModifier, Record {
   @Field var value: CGFloat?
+  @Field var textStyle: FontTextStyle?
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   func body(content: Content) -> some View {
     if let value {
-      content.lineSpacing(value)
+      content.lineSpacing(textStyle?.scaled(value, for: dynamicTypeSize) ?? value)
     } else {
       content
     }
@@ -1677,7 +1679,8 @@ public class ViewModifierRegistry {
     _ type: String,
     to text: Text,
     appContext: AppContext,
-    params: [String: Any]
+    params: [String: Any],
+    dynamicTypeSize: DynamicTypeSize
   ) -> Text {
     switch type {
     case "bold":
@@ -1688,7 +1691,7 @@ public class ViewModifierRegistry {
       return text.monospacedDigit()
     case "font":
       guard let modifier = try? FontModifier(from: params, appContext: appContext) else { return text }
-      return text.font(modifier.resolveFont())
+      return text.font(modifier.resolveFont(for: dynamicTypeSize))
     case "foregroundColor":
       guard let modifier = try? ForegroundColorModifier(from: params, appContext: appContext),
             let color = modifier.color else { return text }

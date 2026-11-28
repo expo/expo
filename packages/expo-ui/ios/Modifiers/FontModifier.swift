@@ -87,6 +87,33 @@ internal enum FontTextStyle: String, Enumerable {
     case .caption2: .caption2
     }
   }
+
+  func scaled(_ value: CGFloat, for dynamicTypeSize: DynamicTypeSize) -> CGFloat {
+#if os(macOS)
+    return value
+#else
+    let traits = UITraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
+    return UIFontMetrics(forTextStyle: toUIKit()).scaledValue(for: value, compatibleWith: traits)
+#endif
+  }
+
+#if !os(macOS)
+  private func toUIKit() -> UIFont.TextStyle {
+    switch self {
+    case .largeTitle: .largeTitle
+    case .title: .title1
+    case .title2: .title2
+    case .title3: .title3
+    case .headline: .headline
+    case .subheadline: .subheadline
+    case .body: .body
+    case .callout: .callout
+    case .footnote: .footnote
+    case .caption: .caption1
+    case .caption2: .caption2
+    }
+  }
+#endif
 }
 
 internal struct FontModifier: ViewModifier, Record {
@@ -97,16 +124,17 @@ internal struct FontModifier: ViewModifier, Record {
   @Field var textStyle: FontTextStyle?
   @Field var smallCaps: Bool = false
   @Field var leading: FontLeading?
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
   func body(content: Content) -> some View {
-    content.font(resolveFont())
+    content.font(resolveFont(for: dynamicTypeSize))
   }
 
   // Shared so the Text-concatenation path (`applyTextModifier`) resolves the
   // same `Font` as the view path, instead of a fixed-size `Font.custom` that
   // drops `relativeTo` (Dynamic Type) and `weight`.
-  func resolveFont() -> Font {
-    var font = resolveBaseFont()
+  func resolveFont(for dynamicTypeSize: DynamicTypeSize) -> Font {
+    var font = resolveBaseFont(for: dynamicTypeSize)
     if smallCaps {
       font = font.smallCaps()
     }
@@ -116,7 +144,7 @@ internal struct FontModifier: ViewModifier, Record {
     return font
   }
 
-  private func resolveBaseFont() -> Font {
+  private func resolveBaseFont(for dynamicTypeSize: DynamicTypeSize) -> Font {
     if let family = family {
       let baseSize = size ?? 17
       var font: Font = if let textStyle = textStyle {
@@ -131,6 +159,13 @@ internal struct FontModifier: ViewModifier, Record {
     }
 
     if let textStyle = textStyle {
+      if let size = size {
+        return .system(
+          size: textStyle.scaled(size, for: dynamicTypeSize),
+          weight: weight?.toSwiftUI() ?? .regular,
+          design: design?.toSwiftUI() ?? .default
+        )
+      }
       var font = Font.system(textStyle.toSwiftUI(), design: design?.toSwiftUI() ?? .default)
       if let weight = weight {
         font = font.weight(weight.toSwiftUI())

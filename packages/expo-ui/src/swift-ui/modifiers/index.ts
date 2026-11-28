@@ -1327,9 +1327,11 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
 /**
  * The distance in points between the bottom of one line fragment and the top of the next.
  * @param value - The amount of space between the bottom of one line and the top of the next line in points. This value is always nonnegative. Otherwise, the default value will be used.
+ * @param params - Pass `textStyle` to scale the spacing with the user's Dynamic Type setting, relative to that text style.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/linespacing(_:)).
  */
-export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
+export const lineSpacing = (value: number, params?: { textStyle?: FontTextStyle }) =>
+  createModifier('lineSpacing', { value, ...params });
 /**
  * Sets the total line height for text in this view.
  * @param value - The line height in points.
@@ -1407,15 +1409,33 @@ export const listSectionMargins = (params?: {
 }) => createModifier('listSectionMargins', params);
 
 /**
+ * A SwiftUI text style. Mirrors SwiftUI's `Font.TextStyle`.
+ */
+export type FontTextStyle =
+  | 'largeTitle'
+  | 'title'
+  | 'title2'
+  | 'title3'
+  | 'headline'
+  | 'subheadline'
+  | 'body'
+  | 'callout'
+  | 'footnote'
+  | 'caption'
+  | 'caption2';
+/**
  * Sets the font properties of a view.
  *
  * Pass `textStyle` to scale with the user's Dynamic Type setting. Combine
- * it with `family` to scale a custom font.
+ * it with `size` to scale a system or custom font from that size.
  *
  * @example
  * ```tsx
  * // Scales with Dynamic Type
  * <Text modifiers={[font({ textStyle: 'largeTitle', weight: 'bold' })]}>Hello</Text>
+ *
+ * // System font at 16 points that scales relative to the body text style
+ * <Text modifiers={[font({ textStyle: 'body', size: 16 })]}>Hi</Text>
  *
  * // Custom font that scales relative to the body text style
  * <Text modifiers={[font({ textStyle: 'body', family: 'Helvetica', size: 18 })]}>Hi</Text>
@@ -1429,7 +1449,7 @@ export const font = (params: {
   /** Custom font family name. */
   family?: string;
   /**
-   * Font size in points. Ignored when only `textStyle` is set.
+   * Font size in points. With `textStyle`, the size scales relative to that text style.
    *
    * @default 17
    */
@@ -1451,18 +1471,7 @@ export const font = (params: {
    * SwiftUI text style. When set, the resulting font scales with the user's
    * Dynamic Type setting.
    */
-  textStyle?:
-    | 'largeTitle'
-    | 'title'
-    | 'title2'
-    | 'title3'
-    | 'headline'
-    | 'subheadline'
-    | 'body'
-    | 'callout'
-    | 'footnote'
-    | 'caption'
-    | 'caption2';
+  textStyle?: FontTextStyle;
   /**
    * Draws both lowercase and uppercase letters as small capitals.
    * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).

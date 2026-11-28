@@ -33,7 +33,7 @@ internal extension View {
 }
 
 internal extension Text {
-  func applyTextModifiers(_ modifiers: ModifierArray?, appContext: AppContext?) -> Text {
+  func applyTextModifiers(_ modifiers: ModifierArray?, appContext: AppContext?, dynamicTypeSize: DynamicTypeSize) -> Text {
     guard let modifiers, let appContext else { return self }
 
     return modifiers.reduce(self) { currentText, modifierConfig in
@@ -45,7 +45,8 @@ internal extension Text {
         type,
         to: currentText,
         appContext: appContext,
-        params: modifierConfig
+        params: modifierConfig,
+        dynamicTypeSize: dynamicTypeSize
       )
     }
   }

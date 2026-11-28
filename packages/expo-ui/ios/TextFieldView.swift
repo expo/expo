@@ -32,6 +32,7 @@ class TextFieldManager: ObservableObject {
 struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   @ObservedObject var props: TextFieldProps
   @ObservedObject var textManager: TextFieldManager = TextFieldManager()
+  @Environment(\.dynamicTypeSize) private var dynamicTypeSize
   @FocusState private var isFocused: Bool
 
   init(props: TextFieldProps) {
@@ -77,7 +78,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   private var promptText: Text? {
     guard let slot = props.children?.slot("placeholder") else { return nil }
     return slot.props.children?
-      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .compactMap { ($0.childView as? TextView)?.buildText(dynamicTypeSize: dynamicTypeSize) }
       .first
   }
 
