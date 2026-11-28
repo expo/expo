@@ -5,6 +5,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import type { SPMPackageSource } from '../ExternalPackage';
 import type { BuildFlavor } from '../Prebuilder.types';
 import type { SPMProduct } from '../SPMConfig.types';
 import { createRequest, createContext } from './Context';
@@ -151,34 +152,44 @@ describe('verify shouldRun', () => {
 });
 
 // ---------------------------------------------------------------------------
-// releaseFlavor: "stub" — the Release flavor is made from Debug, not built
+// apple.debugOnly — the Release flavor is made from Debug, not built
 // ---------------------------------------------------------------------------
 
-describe('releaseFlavor "stub" gating', () => {
-  const product = (releaseFlavor?: 'stub'): SPMProduct => ({
+describe('debug-only package gating', () => {
+  const product: SPMProduct = {
     name: 'DevTool',
     podName: 'DevTool',
     platforms: ['iOS(.v15)'],
     targets: [],
-    releaseFlavor,
+  };
+
+  const pkg = (appleDebugOnly?: boolean): SPMPackageSource => ({
+    path: '/packages/dev-tool',
+    buildPath: '/packages/precompile/.build/dev-tool',
+    packageName: 'dev-tool',
+    packageVersion: '1.0.0',
+    getSwiftPMConfiguration: () => ({ products: [product] }),
+    appleDebugOnly,
   });
 
-  function unitCtx(unitProduct: SPMProduct, flavor: BuildFlavor) {
+  function unitCtx(unitPackage: SPMPackageSource, flavor: BuildFlavor) {
     const ctx = ctxWith({ clean: true });
-    ctx.currentProduct = unitProduct;
+    ctx.currentPackage = unitPackage;
+    ctx.currentProduct = product;
     ctx.currentFlavor = flavor;
     return ctx;
   }
 
-  it('skips clean, generate and build only for the Release flavor of a stub product', () => {
-    const units: [SPMProduct, BuildFlavor, boolean][] = [
-      [product('stub'), 'Release', false],
-      [product('stub'), 'Debug', true],
-      [product(), 'Release', true],
+  it('skips clean, generate and build only for the Release flavor of a debug-only package', () => {
+    const units: [SPMPackageSource, BuildFlavor, boolean][] = [
+      [pkg(true), 'Release', false],
+      [pkg(true), 'Debug', true],
+      [pkg(false), 'Release', true],
+      [pkg(), 'Release', true],
     ];
-    for (const [unitProduct, flavor, builds] of units) {
-      const ctx = unitCtx(unitProduct, flavor);
-      const label = `${unitProduct.releaseFlavor ?? 'default'} product, ${flavor}`;
+    for (const [unitPackage, flavor, builds] of units) {
+      const ctx = unitCtx(unitPackage, flavor);
+      const label = `appleDebugOnly ${unitPackage.appleDebugOnly}, ${flavor}`;
       assert.equal(cleanProductStep.shouldRun(ctx), builds, `clean:product for ${label}`);
       assert.equal(generateStep.shouldRun(ctx), builds, `generate for ${label}`);
       assert.equal(buildStep.shouldRun(ctx), builds, `build for ${label}`);

@@ -3,9 +3,10 @@ import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getExternalPackagesDir } from '../Directories';
-import { Package } from '../Packages';
+import { isAppleDebugOnly, Package } from '../Packages';
 import { getPackageBuildDir } from './MonorepoLayout';
 import { SPMConfig } from './SPMConfig.types';
+import { assertNoReleaseFlavorSetting } from './StubXCFramework';
 import { resolvePackagePath } from './resolvePackage';
 
 const SPMConfigFileName = 'spm.config.json';
@@ -51,6 +52,12 @@ export interface SPMPackageSource {
   outputVersionPrefix?: string;
 
   /**
+   * True when the package's expo-module.config.json sets `debugOnly` for Apple platforms. The
+   * Release flavor of each product is then an empty stub made from the Debug XCFramework.
+   */
+  appleDebugOnly?: boolean;
+
+  /**
    * Returns the SPM configuration for this package
    */
   getSwiftPMConfiguration(): SPMConfig;
@@ -93,6 +100,8 @@ export class ExternalPackage implements SPMPackageSource {
    */
   outputVersionPrefix?: string;
 
+  appleDebugOnly: boolean;
+
   /**
    * The parsed SPM configuration
    */
@@ -110,6 +119,7 @@ export class ExternalPackage implements SPMPackageSource {
     }
 
     this.spmConfig = require(spmConfigPath);
+    assertNoReleaseFlavorSetting(this.spmConfig, spmConfigPath);
 
     // Verify the package exists in node_modules
     if (!fs.existsSync(this.path)) {
@@ -118,6 +128,10 @@ export class ExternalPackage implements SPMPackageSource {
           `Expected at: ${this.path}. Please run pnpm install.`
       );
     }
+
+    const expoModuleConfigPath = path.join(this.path, 'expo-module.config.json');
+    this.appleDebugOnly =
+      fs.existsSync(expoModuleConfigPath) && isAppleDebugOnly(require(expoModuleConfigPath));
 
     // Read version from package.json in node_modules
     const packageJsonPath = path.join(this.path, 'package.json');

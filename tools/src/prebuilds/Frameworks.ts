@@ -172,7 +172,7 @@ export const Frameworks = {
   },
 
   /**
-   * Composes the Release XCFramework of a `"releaseFlavor": "stub"` product from its Debug
+   * Composes the Release XCFramework of a product of a debug-only package from its Debug
    * XCFramework, then signs and packs it like any Release XCFramework.
    */
   composeReleaseStubXCFrameworkAsync: async (
@@ -188,9 +188,9 @@ export const Frameworks = {
     );
     if (!(await fs.pathExists(debugXCFramework))) {
       throw new Error(
-        `Cannot compose the Release flavor of ${product.name}: its spm.config.json sets ` +
-          `"releaseFlavor": "stub", so the Release flavor is made from the Debug XCFramework, ` +
-          `and there is none at ${debugXCFramework}. Build the Debug flavor too: run the ` +
+        `Cannot compose the Release flavor of ${product.name}: its package is debug-only ` +
+          `(debugOnly in expo-module.config.json), so the Release flavor is made from the Debug ` +
+          `XCFramework, and there is none at ${debugXCFramework}. Build the Debug flavor too: run the ` +
           `prebuild without --flavor, or with --flavor Debug before --flavor Release.`
       );
     }
@@ -787,7 +787,7 @@ const createProductTarballAsync = async (
   // Include SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
   // Skip shared deps unless bundleSharedDeps is true (npm bundling mode)
   // A Release stub links nothing, so a dependency framework in its output folder is a leftover.
-  const spmPackages = isReleaseStub(product, buildType) ? undefined : product.spmPackages;
+  const spmPackages = isReleaseStub(pkg, buildType) ? undefined : product.spmPackages;
   if (spmPackages && spmPackages.length > 0) {
     for (const spmPkg of spmPackages) {
       const depName = spmPkg.productName;

@@ -1,5 +1,6 @@
 /**
- * Release stubs for debug-only products (`"releaseFlavor": "stub"` in spm.config.json).
+ * Release stubs for the products of debug-only packages (`apple.debugOnly` in
+ * expo-module.config.json).
  *
  * React Native's SwiftPM generator accepts a Debug/Release pair when both flavors have the same
  * `Headers/` and `Modules/module.modulemap` and a binary with an `LC_ID_DYLIB`. A stub keeps all of
@@ -13,8 +14,9 @@ import { cp } from 'node:fs/promises';
 import os from 'os';
 import path from 'path';
 
+import type { SPMPackageSource } from './ExternalPackage';
 import type { BuildFlavor } from './Prebuilder.types';
-import type { SPMProduct } from './SPMConfig.types';
+import type { SPMConfig } from './SPMConfig.types';
 
 type XCFrameworkLibrary = {
   LibraryIdentifier: string;
@@ -43,8 +45,24 @@ const SKIPPED_MODULE_FILE = /\.(abi\.json|swiftdoc|swiftsourceinfo)$/;
 /** The entries React Native compares between the flavors of a flavored framework pair. */
 const PAIRED_FRAMEWORK_ENTRIES = ['Headers', path.join('Modules', 'module.modulemap')];
 
-export function isReleaseStub(product: Pick<SPMProduct, 'releaseFlavor'>, flavor: BuildFlavor) {
-  return product.releaseFlavor === 'stub' && flavor === 'Release';
+export function isReleaseStub(pkg: Pick<SPMPackageSource, 'appleDebugOnly'>, flavor: BuildFlavor) {
+  return !!pkg.appleDebugOnly && flavor === 'Release';
+}
+
+/** Rejects the `releaseFlavor` product setting, which `debugOnly` replaced. */
+export function assertNoReleaseFlavorSetting(config: SPMConfig, configPath: string): void {
+  const products = config.products
+    .filter((product) => 'releaseFlavor' in product)
+    .map((product) => product.name);
+  if (products.length > 0) {
+    throw new Error(
+      `${configPath} sets "releaseFlavor" on ${products.join(', ')}, and spm.config.json no ` +
+        `longer has that setting. The Release stub now follows the package's ` +
+        `expo-module.config.json: a package with apple.debugOnly set to true gets an empty ` +
+        `Release flavor. Remove "releaseFlavor" from spm.config.json, and set apple.debugOnly ` +
+        `in expo-module.config.json if the package is debug-only.`
+    );
+  }
 }
 
 /**
@@ -69,8 +87,8 @@ export async function makeStubXCFrameworkAsync(
       throw new Error(
         `Cannot make a stub of ${sourceXCFramework}: slice ${library.LibraryIdentifier} is a ` +
           `versioned framework bundle (macOS or Mac Catalyst), and stubs support only flat ` +
-          `bundles (iOS, tvOS, visionOS). Remove that platform from the product, or drop ` +
-          `"releaseFlavor": "stub" from its spm.config.json.`
+          `bundles (iOS, tvOS, visionOS). Remove that platform from the product, or remove ` +
+          `apple.debugOnly from the package's expo-module.config.json.`
       );
     }
     return binaryPath;

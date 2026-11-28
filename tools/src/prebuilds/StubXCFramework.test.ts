@@ -6,6 +6,7 @@ import { after, before, describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
 
+import { Package } from '../Packages';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import type { BuildFlavor } from './Prebuilder.types';
@@ -264,13 +265,12 @@ describe('makeStubXCFrameworkAsync', () => {
   });
 });
 
-describe('releaseFlavor "stub" in the product pipeline', () => {
+describe('debug-only package in the product pipeline', () => {
   const product: SPMProduct = {
     name: NAME,
     podName: NAME,
     platforms: ['iOS(.v15)'],
     targets: [],
-    releaseFlavor: 'stub',
   };
 
   type UnitOptions = {
@@ -297,6 +297,7 @@ describe('releaseFlavor "stub" in the product pipeline', () => {
       packageName: 'fixture-package',
       packageVersion: '1.0.0',
       getSwiftPMConfiguration: () => ({ products: [unitProduct] }),
+      appleDebugOnly: true,
     };
     const ctx = createContext(
       createRequest([], {
@@ -376,7 +377,7 @@ describe('releaseFlavor "stub" in the product pipeline', () => {
     const { ctx } = await makeReleaseUnitAsync({ requestedFlavor: 'Release' });
     await assert.rejects(composeStep.run(ctx), (error: Error) => {
       assert.match(error.message, /Release flavor of Fixture/);
-      assert.match(error.message, /"releaseFlavor": "stub"/);
+      assert.match(error.message, /debugOnly in expo-module\.config\.json/);
       assert.match(error.message, /Debug XCFramework/);
       assert.match(error.message, /Build the Debug flavor/);
       return true;
@@ -447,5 +448,52 @@ describe('releaseFlavor "stub" in the product pipeline', () => {
       assert.ok(error.message.includes(header), error.message);
       return true;
     });
+  });
+});
+
+describe('Release stub setting of a monorepo package', () => {
+  async function makePackageAsync(files: Record<string, unknown>): Promise<Package> {
+    const root = await makeTempRootAsync();
+    for (const [name, contents] of Object.entries(files)) {
+      await fs.outputJson(path.join(root, name), contents);
+    }
+    return new Package(root, { name: 'fixture-package', version: '1.0.0', scripts: {} });
+  }
+
+  for (const [label, expoModuleConfig, debugOnly] of [
+    ['apple.debugOnly is true', { apple: { debugOnly: true } }, true],
+    ['apple.debugOnly is false', { apple: { debugOnly: false } }, false],
+    ['apple has no debugOnly', { apple: {} }, false],
+    ['only the legacy ios.debugOnly is true', { ios: { debugOnly: true } }, true],
+    ['apple is set, so ios.debugOnly is ignored', { apple: {}, ios: { debugOnly: true } }, false],
+  ] as const) {
+    it(`is debug-only exactly when autolinking says so: ${label}`, async () => {
+      const pkg = await makePackageAsync({ 'expo-module.config.json': expoModuleConfig });
+      assert.equal(pkg.appleDebugOnly, debugOnly);
+    });
+  }
+
+  it('is not debug-only without an expo-module.config.json', async () => {
+    assert.equal((await makePackageAsync({})).appleDebugOnly, false);
+  });
+
+  it('rejects an spm.config.json that still sets releaseFlavor', async () => {
+    const pkg = await makePackageAsync({
+      'spm.config.json': {
+        products: [
+          { name: NAME, podName: NAME, platforms: [], targets: [], releaseFlavor: 'stub' },
+        ],
+      },
+    });
+    assert.throws(
+      () => pkg.getSwiftPMConfiguration(),
+      (error: Error) => {
+        assert.ok(error.message.includes(path.join(pkg.path, 'spm.config.json')), error.message);
+        assert.match(error.message, new RegExp(`"releaseFlavor" on ${NAME}`));
+        assert.match(error.message, /apple\.debugOnly/);
+        assert.match(error.message, /Remove "releaseFlavor"/);
+        return true;
+      }
+    );
   });
 });

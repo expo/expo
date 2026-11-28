@@ -7,6 +7,7 @@ import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
 import * as Npm from './Npm';
 import { SPMConfig } from './prebuilds/SPMConfig.types';
+import { assertNoReleaseFlavorSetting } from './prebuilds/StubXCFramework';
 
 const ANDROID_DIR = Directories.getExpoGoAndroidDir();
 const IOS_DIR = Directories.getExpoGoIosDir();
@@ -75,11 +76,13 @@ export type ExpoModuleConfig = {
     subdirectory?: string;
     podName?: string;
     podspecPath?: string;
+    debugOnly?: boolean;
   };
   apple?: {
     subdirectory?: string;
     podName?: string;
     podspecPath?: string | string[];
+    debugOnly?: boolean;
   };
   android?: {
     subdirectory?: string;
@@ -230,6 +233,10 @@ export class Package {
 
   get appleSubdirectory(): string {
     return this.expoModuleConfig?.apple?.subdirectory ?? 'apple';
+  }
+
+  get appleDebugOnly(): boolean {
+    return isAppleDebugOnly(this.expoModuleConfig);
   }
 
   get androidSubdirectory(): string {
@@ -398,7 +405,9 @@ export class Package {
     if (!fs.pathExistsSync(swiftPMPackagePath)) {
       throw new Error(`No SwiftPM configuration found for package: ${this.packageName}`);
     }
-    return require(swiftPMPackagePath);
+    const config: SPMConfig = require(swiftPMPackagePath);
+    assertNoReleaseFlavorSetting(config, swiftPMPackagePath);
+    return config;
   }
 
   /**
@@ -452,6 +461,14 @@ export class Package {
     const podspecPath = path.join(this.path, this.podspecPath);
     return await readPodspecAsync(podspecPath);
   }
+}
+
+/**
+ * Mirrors `appleDebugOnly()` in expo-modules-autolinking, where an `apple` section replaces the
+ * legacy `ios` section entirely.
+ */
+export function isAppleDebugOnly(config: ExpoModuleConfig | null | undefined): boolean {
+  return (config?.apple ?? config?.ios)?.debugOnly ?? false;
 }
 
 /**

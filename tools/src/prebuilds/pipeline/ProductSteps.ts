@@ -43,8 +43,8 @@ function setStage(
   }
 }
 
-function isCurrentUnitReleaseStub({ currentProduct, currentFlavor }: PrebuildContext): boolean {
-  return !!currentProduct && !!currentFlavor && isReleaseStub(currentProduct, currentFlavor);
+function isCurrentUnitReleaseStub({ currentPackage, currentFlavor }: PrebuildContext): boolean {
+  return !!currentPackage && !!currentFlavor && isReleaseStub(currentPackage, currentFlavor);
 }
 
 /**
@@ -66,8 +66,8 @@ function assertDebugUnitComposed(ctx: PrebuildContext): void {
     ? 'failed in this run'
     : `was skipped in this run${debugUnit?.skipReason ? ` (${debugUnit.skipReason})` : ''}`;
   throw new Error(
-    `Cannot compose the Release flavor of ${name}: its spm.config.json sets ` +
-      `"releaseFlavor": "stub", so the Release flavor is made from this run's Debug XCFramework, ` +
+    `Cannot compose the Release flavor of ${name}: its package is debug-only (debugOnly in ` +
+      `expo-module.config.json), so the Release flavor is made from this run's Debug XCFramework, ` +
       `and the Debug flavor of ${name} ${outcome}. An older Debug XCFramework on disk is not ` +
       `used, because it may not match the current sources. Fix the Debug failure reported above, ` +
       `then run the prebuild again.`
@@ -229,7 +229,7 @@ export const composeStep: Step<PrebuildContext> = {
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
 
-    if (isReleaseStub(product, flavor)) {
+    if (isReleaseStub(pkg, flavor)) {
       assertDebugUnitComposed(ctx);
       await Frameworks.composeReleaseStubXCFrameworkAsync(pkg, product, ctx.request.signing);
     } else if (product.customBuild) {
@@ -270,7 +270,7 @@ export const verifyStep: Step<PrebuildContext> = {
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
 
-    if (isReleaseStub(product, flavor)) {
+    if (isReleaseStub(pkg, flavor)) {
       await verifyReleaseStubAsync(ctx);
       return;
     }
