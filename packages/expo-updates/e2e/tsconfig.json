@@ -1,6 +1,6 @@
 {
   "extends": "@expo/internal-scripts/tsconfig.node",
-  "include": ["./fixtures", "./setup"],
+  "include": ["./fixtures", "./setup", "./run-local.ts"],
   "compilerOptions": {
     "noEmit": true,
     "rootDir": "."

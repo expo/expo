@@ -1,6 +1,7 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXUpdates
 import EXUpdatesInterface
 
 let e2eEventName = "Expo.updatesE2EStateChangeEvent"

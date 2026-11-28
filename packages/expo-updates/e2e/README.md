@@ -1,6 +1,27 @@
-## E2E test setup
+## Fast local runner (recommended)
 
-These instructions are for the E2E (enabled) tests.
+With a single iOS simulator or Android emulator running, run from the Expo repo root:
+
+```bash
+# First run: creates $TMPDIR/expo-updates-e2e/enabled/updates-e2e, generates bundles for ios, builds debug, and runs Maestro
+./packages/expo-updates/e2e/run-local.ts --platform ios
+
+# Re-run a single flow in seconds (reuses Pods/DerivedData/Gradle/bundles, syncs fixtures in-place)
+./packages/expo-updates/e2e/run-local.ts --platform ios --flow basic_reload.yml --skip-build
+
+# Run another suite (startup, error-recovery, custom-init, fingerprint, disabled, bricking-measures-disabled, dev-client)
+./packages/expo-updates/e2e/run-local.ts --platform android --suite startup --config release
+
+# Full clean recreate, or one-shot run that deletes the project directory afterward
+./packages/expo-updates/e2e/run-local.ts --platform ios --clean
+./packages/expo-updates/e2e/run-local.ts --platform ios --cleanup
+```
+
+`run-local.ts` defaults all environment variables, uses prebuilt React Native frameworks on iOS (`pnpm ios:pod-install`), compiles only the connected emulator's ABI on Android, and keeps `packages/expo-updates` clean in git by installing `E2ETestModule` as a local module in the generated app.
+
+## Manual E2E test setup
+
+These instructions are for the E2E (enabled) tests if you want to run each step manually.
 
 - Create a script to set up the environment and remove any previous build, as in the example below.
 
@@ -33,8 +54,8 @@ mkdir $WORKING_DIR_ROOT
 - Execute this command to generate the bundles used by the test server:
 
 ```bash
-# it will generate android and iOS bundles.
-pnpm generate-test-update-bundles
+# Pass ios or android to generate bundles for one platform only.
+pnpm generate-test-update-bundles ios
 ```
 
 - To run iOS tests:
@@ -43,7 +64,7 @@ pnpm generate-test-update-bundles
   - Execute these commands:
 
 ```bash
-npx pod-install
+pnpm ios:pod-install
 pnpm maestro:ios:debug:build
 ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
 ```
