@@ -9,7 +9,7 @@
 # Env: GH_TOKEN, REPO, PR. Writes to $GITHUB_OUTPUT:
 #   autonomous=true|false       some changed file is in the scope
 #   only_autonomous=true|false  every changed file is in the scope, apart from changesets
-#                               that name only packages in the scope
+#                               that name only packages in the scope, and none is a REVIEW.md
 # It does not fail: if it cannot read the scope or the files, it writes false.
 set -euo pipefail
 
@@ -39,11 +39,19 @@ in_scope() {
   return 1
 }
 
+# Reviewers read a package's REVIEW.md as their rules.
+# A PR must not change the rules that decide it.
+changes_review_rules() {
+  [[ ${1##*/} == REVIEW.md ]]
+}
+
 if [ "${1:-}" = --self-test ]; then
   in_scope packages/patch-project/src/index.ts
   in_scope packages/expo/src/index.ts && exit 1
   in_scope packages/patch-project-extra/index.ts && exit 1
   in_scope packages/patch-project && exit 1
+  changes_review_rules packages/patch-project/REVIEW.md
+  changes_review_rules packages/patch-project/PREVIEW.md && exit 1
   echo "ai-review-scope self-test ok"
   exit 0
 fi
@@ -80,6 +88,10 @@ while IFS=$'\t' read -r kind file packages; do
     done
   elif in_scope "$file"; then
     [ "$kind" = old ] || autonomous=true
+    if changes_review_rules "$file"; then
+      echo "::notice::The PR changes a REVIEW.md, so expo-bot does not approve it or request changes. A maintainer must review the PR."
+      only_autonomous=false
+    fi
   else
     only_autonomous=false
   fi
