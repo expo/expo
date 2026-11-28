@@ -35,6 +35,9 @@
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*"
   },
+  "peerDependencies": {
+    "expo": "*"
+  },
   "jest": {
     "preset": "@expo/internal-scripts"
   }
