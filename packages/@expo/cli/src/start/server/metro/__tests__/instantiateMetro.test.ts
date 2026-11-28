@@ -1,5 +1,11 @@
 import { Log } from '../../../../log';
-import { event, isWatchEnabled, prewarmTransformPool } from '../instantiateMetro';
+import {
+  event,
+  isWatchEnabled,
+  LogRespectingTerminal,
+  prewarmTransformPool,
+} from '../instantiateMetro';
+import { createFakeTTYStream } from './fixtures/fakeTerminalStream';
 
 jest.mock('../../../../log');
 jest.mock('2g', () => {
@@ -128,5 +134,72 @@ describe(isWatchEnabled, () => {
     process.env.CI = 'true';
     expect(isWatchEnabled()).toBe(false);
     expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Metro is running in CI mode'));
+  });
+});
+
+describe(LogRespectingTerminal, () => {
+  const originalWrite = process.stderr.write;
+  const originalIsTTY = process.stdout.isTTY;
+  const originalConsole = { ...console };
+  let written: string[];
+
+  beforeEach(() => {
+    written = [];
+    process.stderr.write = ((chunk: string) => {
+      written.push(chunk);
+      return true;
+    }) as typeof process.stderr.write;
+    process.stdout.isTTY = true;
+  });
+
+  afterEach(() => {
+    process.stderr.write = originalWrite;
+    process.stdout.isTTY = originalIsTTY;
+    Object.assign(console, originalConsole);
+  });
+
+  async function settle(terminal: LogRespectingTerminal) {
+    for (let i = 0; i < 5; i++) {
+      await terminal.flush();
+      await new Promise((resolve) => setImmediate(resolve));
+    }
+  }
+
+  it('commits the live line before a whole line written to stderr in a TTY', async () => {
+    const { stream, lines } = createFakeTTYStream();
+    const terminal = new LogRespectingTerminal(stream);
+    const line = terminal.logLive(' LOG  Tapped send');
+    await settle(terminal);
+
+    process.stderr.write('inspector:console_session_closed\n');
+    await settle(terminal);
+
+    expect(line.update(' LOG   2  Tapped send')).toBe(false);
+    expect(written).toEqual(['inspector:console_session_closed\n']);
+    expect(lines()).toEqual([' LOG  Tapped send']);
+  });
+
+  it('commits a line logged live while a stderr line waits to be written', async () => {
+    const { stream, lines } = createFakeTTYStream();
+    const terminal = new LogRespectingTerminal(stream);
+
+    process.stderr.write('inspector:console_session_opened\n');
+    const line = terminal.logLive(' WARN  Shadow set');
+    await settle(terminal);
+
+    expect(line.update(' WARN   2  Shadow set')).toBe(false);
+    expect(written).toEqual(['inspector:console_session_opened\n']);
+    expect(lines()).toEqual([' WARN  Shadow set']);
+  });
+
+  it('writes a partial line to stderr as it is', () => {
+    const { stream } = createFakeTTYStream();
+    const terminal = new LogRespectingTerminal(stream);
+    const line = terminal.logLive(' LOG  Tapped send');
+
+    process.stderr.write('⠋ Loading');
+
+    expect(written).toEqual(['⠋ Loading']);
+    expect(line.update(' LOG   2  Tapped send')).toBe(true);
   });
 });

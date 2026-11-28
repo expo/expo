@@ -6,6 +6,7 @@ import {
   maybeSymbolicateAndFormatJSErrorStackLogAsync,
   parseErrorStringToObject,
 } from '../../serverLogLikeMetro';
+import { LiveLineTerminal } from '../LiveLineTerminal';
 import {
   extractCodeFrame,
   formatUsingNodeStandardLibraryError,
@@ -14,6 +15,7 @@ import {
   stripMetroInfo,
 } from '../MetroTerminalReporter';
 import type { BundleDetails } from '../TerminalReporter.types';
+import { createFakePipeStream, createFakeTTYStream } from './fixtures/fakeTerminalStream';
 import {
   LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_52,
   LOG_ERROR_TEXT_STRINGS_MUST_WRAPPED_SDK_54,
@@ -1048,5 +1050,100 @@ describe('EXPO_UNSTABLE_CDP_LOGS', () => {
     reporter._log({ type: 'client_log', level: 'log', data: ['hello'], mode: 'NOBRIDGE' } as any);
 
     expect(terminal.log).not.toHaveBeenCalled();
+  });
+});
+
+describe('repeated CDP logs', () => {
+  beforeEach(() => {
+    process.env.EXPO_UNSTABLE_CDP_LOGS = '1';
+  });
+
+  afterEach(() => {
+    delete process.env.EXPO_UNSTABLE_CDP_LOGS;
+  });
+
+  function createReporter(fake: { stream: NodeJS.WritableStream; lines(): string[] }) {
+    const terminal = new LiveLineTerminal(fake.stream as any);
+    const reporter = new MetroTerminalReporter('/', terminal);
+    return {
+      log(data: string, options: { level?: 'log' | 'warn' | 'error'; device?: string } = {}) {
+        reporter.logDeviceConsole({
+          level: options.level ?? 'log',
+          data: [data],
+          device: options.device,
+        });
+      },
+      async lines() {
+        await terminal.flush();
+        return fake.lines();
+      },
+    };
+  }
+
+  it('collapses consecutive repeats into one line with a count', async () => {
+    const reporter = createReporter(createFakeTTYStream());
+
+    reporter.log('Tapped send');
+    reporter.log('Tapped send');
+    reporter.log('Tapped send');
+
+    expect(await reporter.lines()).toEqual([' LOG   3  Tapped send']);
+  });
+
+  it('starts a new line when a different message is logged', async () => {
+    const reporter = createReporter(createFakeTTYStream());
+
+    reporter.log('Tapped send');
+    reporter.log('Tapped send');
+    reporter.log('Sent 3 pages');
+    reporter.log('Tapped send');
+
+    expect(await reporter.lines()).toEqual([
+      ' LOG   2  Tapped send',
+      ' LOG  Sent 3 pages',
+      ' LOG  Tapped send',
+    ]);
+  });
+
+  it('counts repeats per device and level', async () => {
+    const reporter = createReporter(createFakeTTYStream());
+
+    reporter.log('Polling inbox', { device: 'iPhone 18 Pro' });
+    reporter.log('Polling inbox', { device: 'iPhone 18 Pro' });
+    reporter.log('Polling inbox', { device: 'Pixel 10a' });
+    reporter.log('Polling inbox', { device: 'Pixel 10a', level: 'warn' });
+
+    expect(await reporter.lines()).toEqual([
+      'iPhone 18 Pro  LOG   2  Polling inbox',
+      'Pixel 10a  LOG  Polling inbox',
+      'Pixel 10a  WARN  Polling inbox',
+    ]);
+  });
+
+  it('prints a summary under the first call in a pipe', async () => {
+    const reporter = createReporter(createFakePipeStream());
+
+    reporter.log('Tapped send');
+    reporter.log('Tapped send');
+    reporter.log('Tapped send');
+    reporter.log('Sent 3 pages');
+
+    expect(await reporter.lines()).toEqual([
+      ' LOG  Tapped send',
+      '  ↳ repeated 2 more times',
+      ' LOG  Sent 3 pages',
+    ]);
+  });
+
+  it('prints each repeat of a log sent over the HMR socket', async () => {
+    const fake = createFakeTTYStream();
+    const terminal = new LiveLineTerminal(fake.stream);
+    const reporter = new MetroTerminalReporter('/', terminal);
+
+    reporter._log({ type: 'client_log', level: 'log', data: ['hello'], mode: 'web' } as any);
+    reporter._log({ type: 'client_log', level: 'log', data: ['hello'], mode: 'web' } as any);
+    await terminal.flush();
+
+    expect(fake.lines()).toEqual(['Web  LOG  hello', 'Web  LOG  hello']);
   });
 });
