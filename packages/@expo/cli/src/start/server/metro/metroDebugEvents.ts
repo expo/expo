@@ -6,6 +6,10 @@ declare module '2g' {
     'metro:ssr_hmr_registered': { url: string };
     'metro:ssr_hmr_unknown_message': { type: string };
     'metro:env_reload': Record<string, never>;
+    'metro:file_map_watcher_error': {
+      source: 'watcher' | 'listener';
+      error: SerializedError | string | null;
+    };
     'metro:rsc_route_added': { path: string };
     'metro:client_boundaries_evaluated': { count: number };
     'metro:client_boundaries_rebundle': { count: number };
