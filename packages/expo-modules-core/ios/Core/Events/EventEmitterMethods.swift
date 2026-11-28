@@ -13,11 +13,11 @@ internal enum EventEmitterMethods {
     on coreObject: borrowing JavaScriptObject,
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptFunction {
-    let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { [weak runtime] this, arguments in
+    let eventEmitterClass = try runtime.createClass(name: "EventEmitter") { [handle = runtime.handle] this, arguments in
       // The old event emitter wrapped the native module that its constructor got. A module is an event emitter now,
       // so the constructor returns an event emitter that it gets.
       if arguments.count > 0 && arguments[0].isObject() {
-        guard let runtime else {
+        guard let runtime = handle.runtime else {
           throw Exceptions.RuntimeLost()
         }
         if try isInstance(arguments.unownedValue(at: 0), ofConstructorOf: this.asObject(), in: runtime) {
