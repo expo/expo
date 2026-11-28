@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -18,8 +18,10 @@ export interface GlassEffectContainerProps extends CommonViewModifierProps {
 
 type NativeGlassEffectContainerProps = GlassEffectContainerProps;
 
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
 const GlassEffectContainerNativeView: React.ComponentType<NativeGlassEffectContainerProps> =
-  requireNativeView('ExpoUI', 'GlassEffectContainerView');
+  requireOptionalNative('@expo/ui')?.GlassEffectContainerView;
 
 export function GlassEffectContainer(props: GlassEffectContainerProps) {
   const eventProp = props.modifiers ? createViewModifierEventListener(props.modifiers) : undefined;

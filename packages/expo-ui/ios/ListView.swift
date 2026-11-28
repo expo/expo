@@ -3,27 +3,34 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class ListProps: UIBaseViewProps {
-  @Field var selection: [Either<String, Double>]?
-  var onSelectionChange = EventDispatcher()
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct ListProps {
+  var selection: [Either<String, Double>]?
+  var onSelectionChange: (ListSelectionChange) -> Void
 }
 
-struct ListView: ExpoSwiftUI.View {
-  @ObservedObject var props: ListProps
+@Record
+struct ListSelectionChange {
+  var selection: [Either<String, Double>] = []
+}
+
+@ExpoView<ListProps>
+public struct ListView: View {
   @State private var selection = Set<AnyHashable>()
   @State private var crossAxisSize: CGFloat = 0
 
-  var body: some View {
+  public var body: some View {
     list
       .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { crossAxisSize = $0 })
       .environment(\.containerCrossAxisSize, crossAxisSize)
+      .applyExpoUIViewProps(props.base, appContext: appContext)
   }
 
   @ViewBuilder
   private var list: some View {
     if props.selection != nil {
       List(selection: $selection) {
-        Children()
+        children
       }
       .onAppear {
         selection = Self.getHashableSetFromEither(props.selection)
@@ -36,7 +43,7 @@ struct ListView: ExpoSwiftUI.View {
       }
     } else {
       List {
-        Children()
+        children
       }
     }
   }
@@ -45,15 +52,15 @@ struct ListView: ExpoSwiftUI.View {
     let propsSelection = Self.getHashableSetFromEither(props.selection)
     if propsSelection == selection { return }
 
-    let selectionArray: [Any] = selection.compactMap { value in
+    let selectionArray: [Either<String, Double>] = selection.compactMap { value in
       if let stringValue = value as? String {
-        return stringValue
+        return Either(stringValue)
       } else if let doubleValue = value as? Double {
-        return doubleValue
+        return Either(doubleValue)
       }
       return nil
     }
-    props.onSelectionChange(["selection": selectionArray])
+    props.onSelectionChange(ListSelectionChange(selection: selectionArray))
   }
 
   private static func getHashableSetFromEither(_ array: [Either<String, Double>]?) -> Set<AnyHashable> {

@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 import { type ComponentType, type ReactNode } from 'react';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -16,10 +16,10 @@ export interface NavigationLinkProps extends CommonViewModifierProps {
   children: ReactNode;
 }
 
-const NavigationLinkNativeView: ComponentType<NavigationLinkProps> = requireNativeView(
-  'ExpoUI',
-  'NavigationLinkView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const NavigationLinkNativeView: ComponentType<NavigationLinkProps> =
+  requireOptionalNative('@expo/ui')?.NavigationLinkView;
 
 /**
  * A view that controls a navigation presentation. In a `List` it renders as a row with a

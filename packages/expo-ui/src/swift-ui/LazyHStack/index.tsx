@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireOptionalNative } from 'expo';
 import { type ReactElement } from 'react';
 
 import { createLazyStackForEach } from '../LazyStackForEach';
@@ -48,10 +48,10 @@ export interface LazyHStackProps extends CommonViewModifierProps {
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
 }
 
-const LazyHStackNativeView: React.ComponentType<LazyHStackProps> = requireNativeView(
-  'ExpoUI',
-  'LazyHStackView'
-);
+// Only iOS has native views in `expo.packages`. Android also loads this file
+// (through `@expo/ui/swift-ui`), and there `requireNative` would throw.
+const LazyHStackNativeView: React.ComponentType<LazyHStackProps> =
+  requireOptionalNative('@expo/ui')?.LazyHStackView;
 
 export function LazyHStack(props: LazyHStackProps) {
   const { modifiers, ...restProps } = props;

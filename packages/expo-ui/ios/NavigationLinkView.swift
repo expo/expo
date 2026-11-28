@@ -3,20 +3,17 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class NavigationLinkViewProps: UIBaseViewProps {
-  @Field var value: String = ""
+@ViewProps(extending: ExpoUIViewProps.self)
+public struct NavigationLinkViewProps {
+  var value: String = ""
 }
 
-internal struct NavigationLinkView: ExpoSwiftUI.View {
-  @ObservedObject var props: NavigationLinkViewProps
-
-  init(props: NavigationLinkViewProps) {
-    self.props = props
-  }
-
-  var body: some View {
+@ExpoView<NavigationLinkViewProps>
+public struct NavigationLinkView: View {
+  public var body: some View {
     NavigationLink(value: props.value) {
-      Children()
+      children
     }
+    .applyExpoUIViewProps(props.base, appContext: appContext)
   }
 }
