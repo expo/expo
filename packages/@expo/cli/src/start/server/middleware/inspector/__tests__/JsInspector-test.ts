@@ -1,11 +1,7 @@
 import nock from 'nock';
 
 import { pageIsSupported } from '../../../metro/debugging/pageIsSupported';
-import {
-  openJsInspector,
-  queryAllInspectorAppsAsync,
-  queryInspectorAppAsync,
-} from '../JsInspector';
+import { openJsInspector, queryAllInspectorAppsAsync } from '../JsInspector';
 import { METRO_INSPECTOR_RESPONSE_FIXTURE } from './fixtures/metroInspectorResponse';
 
 describe(openJsInspector, () => {
@@ -56,20 +52,6 @@ describe(queryAllInspectorAppsAsync, () => {
       expect(result[i]!.webSocketDebuggerUrl).toBe(entities[i]!.webSocketDebuggerUrl);
     }
 
-    expect(scope.isDone()).toBe(true);
-  });
-});
-
-describe(queryInspectorAppAsync, () => {
-  it('should return specific app entity for given appId', async () => {
-    const scope = nock('http://localhost:8081')
-      .get('/json/list')
-      .reply(200, METRO_INSPECTOR_RESPONSE_FIXTURE);
-
-    const appId = 'io.expo.test.devclient';
-    const result = await queryInspectorAppAsync('http://localhost:8081', appId);
-
-    expect(result?.appId).toBe(appId);
     expect(scope.isDone()).toBe(true);
   });
 });
