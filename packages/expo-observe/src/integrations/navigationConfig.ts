@@ -22,11 +22,13 @@ function prepareNavigationRouteParams(
   params: object | undefined
 ): NavigationRouteParams {
   const filteredKeys = getFilteredParamKeys(config);
+  // `'*'` filters every param, so any param on the route hides the URL.
+  const filterAll = filteredKeys?.has('*') ?? false;
   let urlHidden = false;
   const routeParams = Object.fromEntries(
     Object.entries(params ?? {})
       .filter(([key]) => {
-        const keep = !filteredKeys?.has(key);
+        const keep = !filterAll && !filteredKeys?.has(key);
         urlHidden ||= !keep;
         return keep;
       })
