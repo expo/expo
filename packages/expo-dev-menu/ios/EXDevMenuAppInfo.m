@@ -2,8 +2,10 @@
 #import <EXDevMenu/EXDevMenuAppInfo.h>
 #if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
 #import <EXDevMenu/EXDevMenu-Swift.h>
-#else
+#elif __has_include(<EXDevMenu-Swift.h>)
 #import <EXDevMenu-Swift.h>
+#else
+@import EXDevMenu;
 #endif
 
 @import EXManifests;

@@ -3,9 +3,16 @@
 import Foundation
 
 func getDevMenuBundle() -> Bundle? {
-  if let bundleURL = Bundle.main.url(forResource: "EXDevMenu", withExtension: "bundle"),
-     let bundle = Bundle(url: bundleURL) {
+  if let bundle = resourceBundle(named: "EXDevMenu", in: .main) {
     return bundle
   }
-  return .main
+  // A prebuilt framework holds the bundle inside itself, under the name SwiftPM gives it.
+  return resourceBundle(named: "expo-dev-menu_EXDevMenu", in: Bundle(for: DevMenuManager.self)) ?? .main
+}
+
+private func resourceBundle(named name: String, in container: Bundle) -> Bundle? {
+  guard let url = container.url(forResource: name, withExtension: "bundle") else {
+    return nil
+  }
+  return Bundle(url: url)
 }
