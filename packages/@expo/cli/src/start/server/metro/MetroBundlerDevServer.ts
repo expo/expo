@@ -529,6 +529,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       skipStaticParams: isExportingWithSSR,
     });
     const inflatedServerManifest = inflateManifest(serverManifest);
+    const loaderModules = new Map<string, Promise<any>>();
 
     return {
       serverManifest,
@@ -574,7 +575,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           return undefined;
         }
 
-        return this.executeServerDataLoaderAsync(location, resolvedLoaderRoute);
+        return this.executeServerDataLoaderAsync(
+          location,
+          resolvedLoaderRoute,
+          undefined,
+          loaderModules
+        );
       },
     };
   }
@@ -1943,7 +1949,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     location: URL,
     route: ResolvedLoaderRoute,
     // The `request` object is only available when using SSR
-    request?: ImmutableRequest
+    request?: ImmutableRequest,
+    // A static export passes one map for all pages, to evaluate each loader bundle once
+    loaderModules?: Map<string, Promise<any>>
   ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
 
@@ -1961,10 +1969,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
       modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
 
-      const routeModule = await this.ssrLoadModule<any>(modulePath, {
-        environment: 'node',
-        isLoaderBundle: true,
-      });
+      let routeModulePromise = loaderModules?.get(modulePath);
+      if (!routeModulePromise) {
+        routeModulePromise = this.ssrLoadModule<any>(modulePath, {
+          environment: 'node',
+          isLoaderBundle: true,
+        });
+        loaderModules?.set(modulePath, routeModulePromise);
+      }
+      const routeModule = await routeModulePromise;
 
       if (routeModule.loader) {
         const maybeResponse = await routeModule.loader(request, route.params);

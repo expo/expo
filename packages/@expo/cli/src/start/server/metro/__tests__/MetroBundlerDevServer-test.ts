@@ -387,6 +387,45 @@ describe('getStaticRenderFunctionAsync', () => {
       }
     );
   });
+
+  it('evaluates a loader bundle once for all pages of a route', async () => {
+    jest.mocked(getConfig).mockReturnValue({
+      pkg: {},
+      exp: {
+        name: 'test',
+        slug: 'test',
+        web: { output: 'static' },
+      },
+    } as unknown as ReturnType<typeof getConfig>);
+
+    const devServer = createDevServerForStaticPageTests();
+    const loader = jest.fn(async (_request: unknown, params: Record<string, string>) => params);
+    const ssrLoadModule = jest.fn(
+      async (_filePath: string, options?: { isLoaderBundle?: boolean }) =>
+        options?.isLoaderBundle
+          ? { loader }
+          : {
+              getManifest: async () => ({ screens: {} }),
+              getBuildTimeServerManifestAsync: async () => rawServerManifest,
+            }
+    );
+    devServer['ssrLoadModule'] = ssrLoadModule as unknown as (typeof devServer)['ssrLoadModule'];
+
+    const { executeLoaderAsync } = await devServer.getStaticRenderFunctionAsync();
+    const runtimeRoute = { contextKey: './posts/[postId].tsx' } as any;
+    const responses = await Promise.all([
+      executeLoaderAsync('/posts/1', runtimeRoute),
+      executeLoaderAsync('/posts/2', runtimeRoute),
+    ]);
+
+    await expect(Promise.all(responses.map((response) => response?.json()))).resolves.toEqual([
+      { postId: '1' },
+      { postId: '2' },
+    ]);
+    expect(ssrLoadModule.mock.calls.filter(([, options]) => options?.isLoaderBundle)).toHaveLength(
+      1
+    );
+  });
 });
 
 describe('startAsync', () => {
