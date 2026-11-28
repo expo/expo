@@ -83,6 +83,8 @@ These metadata items include:
 - `hasVideoLink`: To display a video link icon in the sidebar for the page that has a video tutorial link. Defaults to `false`.
 - `cliVersion`: The CLI version to display for pages that include the CLI badge. Currently, this field is used for EAS CLI reference page and is populated automatically by `pnpm eas-cli-sync`.
 
+The `isNew`, `isAlpha`, `isBeta`, and `isPreview` badges also work on sidebar sections. Pass them as options of `makeSection` in **constants/navigation.js**, for example `makeSection('Section name', [...], { isBeta: true })`.
+
 ### Edit Code
 
 The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [To run locally in development mode](#to-run-locally-in-development-mode) section, then open a separate terminal and run the TypeScript compiler in watch mode &mdash; it will watch your code changes and notify you about errors.

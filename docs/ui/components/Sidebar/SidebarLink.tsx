@@ -10,6 +10,8 @@ import { useEffect, useRef, type PropsWithChildren } from 'react';
 import { isRouteActive } from '~/common/routes';
 import { NavigationRoute } from '~/types/common';
 
+import { SidebarBadges } from './SidebarBadges';
+
 type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
   className?: string;
@@ -88,50 +90,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isDeprecated && isSelected && (
         <AlertTriangleSolidIcon className="ml-1.5 icon-xs text-icon-warning!" aria-hidden="true" />
       )}
-      {info.isNew && (
-        <div
-          className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
-            isSelected
-              ? 'border-palette-blue11 bg-palette-blue11 text-palette-white dark:text-palette-black'
-              : 'border-palette-blue10 bg-none text-palette-blue11 dark:border-palette-blue9 dark:text-palette-blue9'
-          )}>
-          NEW
-        </div>
-      )}
-      {info.isAlpha && (
-        <div
-          className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
-            isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
-          )}>
-          ALPHA
-        </div>
-      )}
-      {info.isBeta && (
-        <div
-          className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
-            isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
-          )}>
-          BETA
-        </div>
-      )}
-      {info.isPreview && (
-        <div
-          className={mergeClasses(
-            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
-            isSelected
-              ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
-              : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
-          )}>
-          PREVIEW
-        </div>
-      )}
+      <SidebarBadges info={info} isSelected={isSelected} />
       {isExternal && (
         <ArrowUpRightIcon
           aria-hidden="true"
