@@ -5,6 +5,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
+import type { BuildFlavor } from '../Prebuilder.types';
+import type { SPMProduct } from '../SPMConfig.types';
 import { createRequest, createContext } from './Context';
 import type { PrebuildCliOptions } from './Context';
 import { cleanPackageStep } from './PackageSteps';
@@ -145,6 +147,45 @@ describe('verify shouldRun', () => {
 
   it('returns false when skipVerify is true', () => {
     assert.equal(verifyStep.shouldRun(ctxWith({ skipVerify: true })), false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// releaseFlavor: "stub" — the Release flavor is made from Debug, not built
+// ---------------------------------------------------------------------------
+
+describe('releaseFlavor "stub" gating', () => {
+  const product = (releaseFlavor?: SPMProduct['releaseFlavor']): SPMProduct => ({
+    name: 'DevTool',
+    podName: 'DevTool',
+    platforms: ['iOS(.v15)'],
+    targets: [],
+    releaseFlavor,
+  });
+
+  function unitCtx(unitProduct: SPMProduct, flavor: BuildFlavor) {
+    const ctx = ctxWith({ clean: true });
+    ctx.currentProduct = unitProduct;
+    ctx.currentFlavor = flavor;
+    return ctx;
+  }
+
+  it('skips clean, generate and build only for the Release flavor of a stub product', () => {
+    const units: [SPMProduct, BuildFlavor, boolean][] = [
+      [product('stub'), 'Release', false],
+      [product('stub'), 'Debug', true],
+      [product(), 'Release', true],
+      [product('realAndStub'), 'Release', true],
+    ];
+    for (const [unitProduct, flavor, builds] of units) {
+      const ctx = unitCtx(unitProduct, flavor);
+      const label = `${unitProduct.releaseFlavor ?? 'default'} product, ${flavor}`;
+      assert.equal(cleanProductStep.shouldRun(ctx), builds, `clean:product for ${label}`);
+      assert.equal(generateStep.shouldRun(ctx), builds, `generate for ${label}`);
+      assert.equal(buildStep.shouldRun(ctx), builds, `build for ${label}`);
+      assert.equal(composeStep.shouldRun(ctx), true, `compose for ${label}`);
+      assert.equal(verifyStep.shouldRun(ctx), true, `verify for ${label}`);
+    }
   });
 });
 

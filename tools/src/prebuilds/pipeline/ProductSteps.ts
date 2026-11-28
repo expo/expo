@@ -17,6 +17,12 @@ import {
 } from '../HeadersXCFramework';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
+import {
+  addsReleaseStub,
+  findStubMismatchesAsync,
+  isReleaseStub,
+  releaseStubErrorPrefix,
+} from '../StubXCFramework';
 import { FrameworkVerifier } from '../Verifier';
 import type { PrebuildContext } from './Context';
 import type { Step, ProductStage } from './Types';
@@ -42,6 +48,58 @@ function setStage(
   }
 }
 
+function isCurrentUnitReleaseStub({ currentProduct, currentFlavor }: PrebuildContext): boolean {
+  return !!currentProduct && !!currentFlavor && isReleaseStub(currentProduct, currentFlavor);
+}
+
+/**
+ * When this run builds Debug, the stub must come from that build: a Debug XCFramework left on disk
+ * by an earlier run may not match this run's sources.
+ */
+function assertDebugUnitComposed(ctx: PrebuildContext): void {
+  if (!ctx.request.buildFlavors.includes('Debug')) {
+    return;
+  }
+  const { packageName } = ctx.currentPackage!;
+  const product = ctx.currentProduct!;
+  const { name } = product;
+  const debugUnit = ctx.statuses.find((s) => s.unitId === `${packageName}/${name}[Debug]`);
+  const failed = !!debugUnit && Object.values(debugUnit.stages).includes('failed');
+  if (!failed && debugUnit?.stages.compose === 'success' && !debugUnit.skipReason) {
+    return;
+  }
+  const outcome = failed
+    ? 'failed in this run'
+    : `was skipped in this run${debugUnit?.skipReason ? ` (${debugUnit.skipReason})` : ''}`;
+  throw new Error(
+    `${releaseStubErrorPrefix(product)} this run's Debug XCFramework, ` +
+      `and the Debug flavor of ${name} ${outcome}. An older Debug XCFramework on disk is not ` +
+      `used, because it may not match the current sources. Fix the Debug failure reported above, ` +
+      `then run the prebuild again.`
+  );
+}
+
+/** A stub has no code to check; it only has to pair with its Debug flavor. */
+async function verifyReleaseStubAsync(
+  ctx: PrebuildContext,
+  stubXCFramework: string
+): Promise<void> {
+  const { buildPath, outputVersionPrefix } = ctx.currentPackage!;
+  const { name } = ctx.currentProduct!;
+  const mismatches = await findStubMismatchesAsync(
+    Frameworks.getFrameworkPath(buildPath, name, 'Debug', outputVersionPrefix),
+    stubXCFramework
+  );
+  if (mismatches.length > 0) {
+    setStage(ctx, 'verify', 'failed');
+    throw new Error(
+      `The Release stub of ${name} does not pair with its Debug flavor: React Native requires ` +
+        `the same Headers/ and Modules/module.modulemap in both, and these differ or are ` +
+        `missing: ${mismatches.join(', ')}. Build both flavors in one run to remake the stub.`
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
 // clean:product
 // ---------------------------------------------------------------------------
@@ -52,7 +110,7 @@ export const cleanProductStep: Step<PrebuildContext> = {
   label: 'Clean product build artifacts',
   onError: 'skip-remaining',
 
-  shouldRun: (ctx) => ctx.request.clean,
+  shouldRun: (ctx) => ctx.request.clean && !isCurrentUnitReleaseStub(ctx),
 
   async run(ctx) {
     const pkg = ctx.currentPackage!;
@@ -74,7 +132,7 @@ export const generateStep: Step<PrebuildContext> = {
   label: 'Generate sources',
   onError: 'skip-remaining',
 
-  shouldRun: (ctx) => !ctx.request.skipGenerate,
+  shouldRun: (ctx) => !ctx.request.skipGenerate && !isCurrentUnitReleaseStub(ctx),
 
   async run(ctx) {
     const pkg = ctx.currentPackage!;
@@ -118,7 +176,7 @@ export const buildStep: Step<PrebuildContext> = {
   label: 'Build Swift package',
   onError: 'skip-remaining',
 
-  shouldRun: (ctx) => !ctx.request.skipBuild,
+  shouldRun: (ctx) => !ctx.request.skipBuild && !isCurrentUnitReleaseStub(ctx),
 
   async run(ctx) {
     const pkg = ctx.currentPackage!;
@@ -178,7 +236,10 @@ export const composeStep: Step<PrebuildContext> = {
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
 
-    if (product.customBuild) {
+    if (isReleaseStub(product, flavor)) {
+      assertDebugUnitComposed(ctx);
+      await Frameworks.composeReleaseStubXCFrameworkAsync(pkg, product, ctx.request.signing);
+    } else if (product.customBuild) {
       await composeCustomBuildAsync(pkg, product, flavor);
     } else {
       await Frameworks.composeXCFrameworkAsync(
@@ -189,6 +250,11 @@ export const composeStep: Step<PrebuildContext> = {
         ctx.request.signing,
         { bundleSharedDeps: ctx.request.bundleSharedDeps }
       );
+    }
+
+    if (addsReleaseStub(product, flavor)) {
+      assertDebugUnitComposed(ctx);
+      await Frameworks.composeReleaseStubXCFrameworkAsync(pkg, product, ctx.request.signing);
     }
 
     if (shouldWriteHeadersXCFramework(product, flavor, ctx.request.buildFlavors)) {
@@ -216,6 +282,17 @@ export const verifyStep: Step<PrebuildContext> = {
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
 
+    const { buildPath, outputVersionPrefix } = pkg;
+
+    if (isReleaseStub(product, flavor)) {
+      await verifyReleaseStubAsync(
+        ctx,
+        Frameworks.getFrameworkPath(buildPath, product.name, 'Release', outputVersionPrefix)
+      );
+      setStage(ctx, 'verify', 'success');
+      return;
+    }
+
     const verifyResults = await FrameworkVerifier.verifyXCFrameworkAsync(pkg, product, flavor);
 
     // Check if verification actually passed
@@ -233,6 +310,13 @@ export const verifyStep: Step<PrebuildContext> = {
       setStage(ctx, 'verify', 'warning');
     } else {
       setStage(ctx, 'verify', 'success');
+    }
+
+    if (addsReleaseStub(product, flavor)) {
+      await verifyReleaseStubAsync(
+        ctx,
+        Frameworks.getReleaseStubFrameworkPath(buildPath, product.name, outputVersionPrefix)
+      );
     }
   },
 };
