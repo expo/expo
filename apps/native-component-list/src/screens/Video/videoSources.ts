@@ -4,6 +4,7 @@ import {
   getAssetInfoAsync,
 } from 'expo-media-library/legacy';
 import { VideoSource } from 'expo-video';
+import { Platform } from 'react-native';
 const localVideoId: VideoSource = require('../../../assets/videos/ace.mp4') as number;
 const seekOptimizedVideoId: VideoSource =
   require('../../../assets/videos/tola_seek_optimized.mov') as number;
@@ -124,6 +125,13 @@ const forBiggerBlazesSource: VideoSource = {
   uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
 };
 
+// Android: played through the data source provider in bare-expo's expo-video-dash-support-module,
+// which reads `expo-video-https://` sources over HTTPS.
+const customSchemeSource: VideoSource = {
+  uri: 'expo-video-https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
+  useCaching: false,
+};
+
 // source: https://reference.dashif.org/dash.js/latest/samples/drm/widevine.html
 const androidDrmSource: VideoSource = {
   uri: 'https://expo-test-media.com/tos_widevine/manifest.mpd',
@@ -142,6 +150,7 @@ const videoLabels: string[] = [
   'Cute Doggo (local video)',
   'Null Source',
   'Audio Track',
+  ...(Platform.OS === 'android' ? ['Big Buck Bunny (custom scheme provider)'] : []),
 ];
 const videoSources: VideoSource[] = [
   bigBuckBunnySource,
@@ -152,6 +161,7 @@ const videoSources: VideoSource[] = [
   localVideoSource,
   nullSource,
   audioTrackSource,
+  ...(Platform.OS === 'android' ? [customSchemeSource] : []),
 ];
 
 export {
