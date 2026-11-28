@@ -171,7 +171,7 @@ On iOS, the device resolves frames in system libraries to symbol names. The dash
 
 #### About debug symbols
 
-When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
+When Xcode builds your app for release, it writes the debug information of each binary to a separate **.dSYM** bundle. There is one bundle for the app and one for each framework that Xcode compiles. A prebuilt framework, such as Hermes, has no bundle in the archive. Expo Observe provides the debug symbols of the Hermes builds that React Native publishes, so Hermes frames are symbolicated without an upload. If your app builds Hermes from source, or uses another prebuilt framework, download its dSYM from the framework's publisher and add it to the **.zip** file you upload. A binary and its dSYM share a UUID. Each native crash report lists the UUIDs of the binaries in its stack trace, and Expo Observe uses them to find the matching dSYM files.
 
 Every build produces new UUIDs, so upload the dSYM files of each build you release. Symbolication happens when you view a crash, so an upload also applies to earlier crashes.
 
@@ -237,13 +237,13 @@ Open a native crash in [**Observe** > **Errors**](https://expo.dev/accounts/[acc
 
 <Step label="2">
 
-Click **Upload debug symbols**. The dialog lists each binary that needs debug symbols with its UUID, and shows whether its debug symbols are **Uploaded** or **Missing**.
+Click **Upload debug symbols**. The dialog lists each binary that needs debug symbols with its UUID, and shows whether its debug symbols are **Uploaded**, **Provided by Expo**, or **Missing**. A binary marked **Provided by Expo** needs no upload.
 
 </Step>
 
 <Step label="3">
 
-Select the **.zip** file and click **Upload**. Expo Observe reads the dSYM files and stores their symbols. When processing finishes, the stack trace shows function names, files, and lines, and the **Symbolicated** tag appears next to it.
+Select the **.zip** file and click **Upload**. Expo Observe reads the dSYM files and stores their symbols. When processing finishes, the stack trace shows function names, files, and lines, and the **Symbolicated** tag appears next to it. Click the tag to see whether the debug symbols of each binary were uploaded or provided by Expo.
 
 </Step>
 
