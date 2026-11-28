@@ -256,7 +256,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     func setter(
       context: UnsafeMutableRawPointer,
       propertyName: UnsafePointer<facebook.jsi.PropNameID>,
-      valuePointer: UnsafeMutableRawPointer
+      valuePointer: UnsafePointer<facebook.jsi.Value>
     ) -> Bool {
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
         let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
@@ -268,7 +268,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
           // swallow assignments.
           FatalError.readOnlyHostObjectSetterInvoked()
         }
-        let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
+        let value = JavaScriptValue(runtime, copying: valuePointer.pointee)
 
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
@@ -518,8 +518,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return createHostFunction(nil, adaptingSyncFunction(function))
   }
 
-  /// Wraps a ``SyncFunctionClosure`` in a ``HostFunctionClosure``. `this` is moved out of the engine's
-  /// slot into the owning value that the closure receives, without a clone, and the returned value is
+  /// Wraps a ``SyncFunctionClosure`` in a ``HostFunctionClosure``. `this` is copied from the
+  /// engine's slot into the owning value that the closure receives, and the returned value is
   /// moved into the result slot.
   @JavaScriptActor
   private func adaptingSyncFunction(_ function: sending @escaping SyncFunctionClosure) -> HostFunctionClosure {
@@ -530,7 +530,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         result: borrowing JavaScriptValue.Slot,
         runtime: borrowing JavaScriptRuntime
       ) in
-      result.emplace(try function(this.takeValue(in: runtime), arguments))
+      result.emplace(try function(JavaScriptValue(runtime, copying: this.pointer.pointee), arguments))
     }
   }
 
@@ -884,6 +884,41 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   public func queueMicrotask(_ callback: borrowing JavaScriptFunction) {
     expo.queueMicrotask(pointee, callback.pointee)
+  }
+
+  /// Invokes `HostObject::set` directly with a caller-owned `const jsi::Value &`, for tests that
+  /// verify the setter does not move out of or mutate the caller's value.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func invokeHostObjectSetter(
+    on object: borrowing JavaScriptObject,
+    propertyName: String,
+    value: borrowing JavaScriptValue
+  ) throws {
+    try throwCppErrorUnlessSucceeded(
+      expo.invokeHostObjectSetter(
+        runtimePointee,
+        object.pointee,
+        propertyName.toJSIPropNameID(in: pointee),
+        value.pointee
+      )
+    )
+  }
+
+  /// Invokes a `jsi::HostFunctionType` directly with a caller-owned `const jsi::Value &` as `this`,
+  /// for tests that verify the trampoline does not move out of or mutate the caller's value.
+  @_spi(Internal)
+  @JavaScriptActor
+  public func invokeHostFunction(
+    _ function: borrowing JavaScriptFunction,
+    this: borrowing JavaScriptValue
+  ) throws -> JavaScriptValue {
+    return try capturingCppErrors {
+      return JavaScriptValue(
+        self,
+        expo.invokeHostFunctionWithThis(runtimePointee, function.pointee, this.pointee)
+      )
+    }
   }
 
   // MARK: - Garbage collection

@@ -342,6 +342,27 @@ inline void emplaceValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source)
 }
 
 /**
+ Copies a `jsi::Value` without going through the out-of-line `jsi::Value(IRuntime&, const Value&)`
+ constructor for primitive kinds (`number`, `bool`, `null`, `undefined`). Pointer kinds clone their
+ engine handle via `jsi::Value(runtime, source)`.
+ */
+inline jsi::Value copyValue(jsi::IRuntime &runtime, const jsi::Value &source) {
+  if (source.isNumber()) {
+    return jsi::Value(source.getNumber());
+  }
+  if (source.isBool()) {
+    return jsi::Value(source.getBool());
+  }
+  if (source.isNull()) {
+    return jsi::Value(nullptr);
+  }
+  if (source.isUndefined()) {
+    return jsi::Value();
+  }
+  return jsi::Value(runtime, source);
+}
+
+/**
  Creates a string value straight from UTF-8 bytes. The `jsi::String` returned by `createFromUtf8`
  is moved into the value, so the engine allocates one handle. Going through `jsi::Value(runtime,
  const jsi::String &)` from Swift instead clones the handle and then releases the original.
@@ -956,6 +977,26 @@ inline expo::NativeStateShared makeExpoNativeStateShared(expo::NativeState::Cont
  */
 inline expo::NativeStateWeak makeNativeStateWeak(const expo::NativeStateShared &shared) {
   return expo::NativeStateWeak(shared);
+}
+
+/**
+ Invokes `jsi::HostObject::set` directly with a caller-owned `const jsi::Value &`, for tests that
+ verify the setter does not move out of or mutate the caller's value.
+ */
+inline bool invokeHostObjectSetter(jsi::Runtime &runtime, const jsi::Object &object, const jsi::PropNameID &name, const jsi::Value &value) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    object.getHostObject(runtime)->set(runtime, name, value);
+  });
+}
+
+/**
+ Invokes a `jsi::HostFunctionType` directly with a caller-owned `const jsi::Value &` as `this`, for
+ tests that verify the trampoline does not move out of or mutate the caller's value.
+ */
+inline jsi::Value invokeHostFunctionWithThis(jsi::Runtime &runtime, const jsi::Function &function, const jsi::Value &thisValue) {
+  return expo::CppError::tryCatch(runtime, [&] {
+    return function.getHostFunction(runtime)(runtime, thisValue, nullptr, 0);
+  });
 }
 
 } // namespace expo

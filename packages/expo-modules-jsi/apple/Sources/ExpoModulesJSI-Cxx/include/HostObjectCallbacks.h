@@ -22,7 +22,7 @@ public:
   // Both return whether the Swift side stored an error in `CppError`'s thread-local slot, so the
   // caller reads that slot only when needed.
   using Getter = bool(Context, const facebook::jsi::PropNameID *_Nonnull name, facebook::jsi::Value *_Nonnull result);
-  using Setter = bool(Context, const facebook::jsi::PropNameID *_Nonnull name, void *_Nonnull value);
+  using Setter = bool(Context, const facebook::jsi::PropNameID *_Nonnull name, const facebook::jsi::Value *_Nonnull value);
   using PropertyNamesGetter = PropNameIds(Context);
   using Deallocator = void(Context);
 
@@ -59,7 +59,7 @@ public:
           "Pass a `set` closure to `createHostObject` to make this property writable."
       );
     }
-    return _setter(_context, &name, (void *)(&value));
+    return _setter(_context, &name, &value);
   }
 
   inline PropNameIds getPropertyNames() const {

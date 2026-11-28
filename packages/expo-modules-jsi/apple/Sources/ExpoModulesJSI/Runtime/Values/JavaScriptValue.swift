@@ -52,7 +52,7 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
   /// initializer above, cloning every freshly returned value instead of taking it over.
   internal init(_ runtime: borrowing JavaScriptRuntime, copying pointee: borrowing facebook.jsi.Value) {
     self.runtimeHandle = runtime.handle
-    self.pointee = facebook.jsi.Value(runtime.pointee, pointee)
+    self.pointee = expo.copyValue(runtime.pointee, pointee)
   }
 
   /// Creates a boolean JS value.

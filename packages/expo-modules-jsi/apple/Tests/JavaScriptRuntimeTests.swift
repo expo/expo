@@ -442,6 +442,41 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host object setter does not mutate caller-owned value`() throws {
+    var received: [String] = []
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined() },
+      set: { _, value in
+        received.append(try value.asString())
+      }
+    )
+
+    let value = JavaScriptValue(runtime, "hello")
+    try runtime.invokeHostObjectSetter(on: hostObject, propertyName: "greeting", value: value)
+    #expect(try value.asString() == "hello")
+
+    try runtime.invokeHostObjectSetter(on: hostObject, propertyName: "greeting", value: value)
+    #expect(try value.asString() == "hello")
+    #expect(received == ["hello", "hello"])
+  }
+
+  @Test
+  func `sync host function does not mutate caller-owned this value`() throws {
+    let fn = runtime.createFunction("readThis") { this, _ in
+      return this.copy()
+    }
+
+    let thisValue = JavaScriptValue(runtime, "receiver")
+    let first = try runtime.invokeHostFunction(fn, this: thisValue)
+    #expect(try first.asString() == "receiver")
+    #expect(try thisValue.asString() == "receiver")
+
+    let second = try runtime.invokeHostFunction(fn, this: thisValue)
+    #expect(try second.asString() == "receiver")
+    #expect(try thisValue.asString() == "receiver")
+  }
+
+  @Test
   func `host object property names`() throws {
     let hostObject = runtime.createHostObject(
       get: { name in
