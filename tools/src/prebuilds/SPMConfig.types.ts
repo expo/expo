@@ -265,10 +265,8 @@ export interface SPMProduct {
   sourceOnly?: boolean;
   /** When `"stub"`, the Release flavor is not built: it is an empty dynamic library made from the
    * Debug XCFramework, with the same headers, modules and install name. Use this for debug-only
-   * products, so Release apps contain none of their code.
-   * When `"realAndStub"`, the Release flavor is built as usual, and the same stub is also written
-   * to a third flavor folder, `release-stub`. */
-  releaseFlavor?: 'stub' | 'realAndStub';
+   * products, so Release apps contain none of their code. */
+  releaseFlavor?: 'stub';
   /** When set, this product's pod is registered as a companion pod and linked only when the
    * condition holds. Consumed by `precompiled_modules.rb`, not by the prebuild pipeline. */
   autolinkWhen?: AutolinkWhen;

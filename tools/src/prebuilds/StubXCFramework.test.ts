@@ -2,7 +2,7 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import assert from 'node:assert/strict';
-import { after, afterEach, before, describe, it, mock } from 'node:test';
+import { after, before, describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
 
@@ -11,7 +11,6 @@ import { Frameworks } from './Frameworks';
 import type { BuildFlavor } from './Prebuilder.types';
 import type { SPMProduct } from './SPMConfig.types';
 import { makeStubXCFrameworkAsync } from './StubXCFramework';
-import { FrameworkVerifier } from './Verifier';
 import { createContext, createRequest } from './pipeline/Context';
 import { composeStep, verifyStep } from './pipeline/ProductSteps';
 import type { UnitStatus } from './pipeline/Types';
@@ -328,10 +327,8 @@ describe('releaseFlavor "stub" in the product pipeline', () => {
     return { pkg, ctx };
   }
 
-  async function listTarballAsync(
-    pkg: SPMPackageSource,
-    tarball = Frameworks.getTarballPath(pkg.buildPath, NAME, 'Release')
-  ): Promise<string[]> {
+  async function listTarballAsync(pkg: SPMPackageSource): Promise<string[]> {
+    const tarball = Frameworks.getTarballPath(pkg.buildPath, NAME, 'Release');
     const { stdout } = await spawnAsync('tar', ['-tzf', tarball]);
     return stdout
       .split('\n')
@@ -450,103 +447,5 @@ describe('releaseFlavor "stub" in the product pipeline', () => {
       assert.ok(error.message.includes(header), error.message);
       return true;
     });
-  });
-
-  describe('"realAndStub": a real Release flavor plus a stub in release-stub', () => {
-    const realAndStub: SPMProduct = { ...product, releaseFlavor: 'realAndStub' };
-    const REAL_RELEASE_MARKER = 'real release';
-
-    afterEach(() => mock.restoreAll());
-
-    async function makeRealAndStubUnitAsync(options: Omit<UnitOptions, 'unitProduct'> = {}) {
-      const unit = await makeReleaseUnitAsync({ ...options, unitProduct: realAndStub });
-      const composeXCFramework = mock.method(Frameworks, 'composeXCFrameworkAsync', async () => {
-        await fs.outputFile(
-          path.join(Frameworks.getFrameworkPath(unit.pkg.buildPath, NAME, 'Release'), 'Info.plist'),
-          REAL_RELEASE_MARKER
-        );
-      });
-      const releaseStub = Frameworks.getReleaseStubFrameworkPath(unit.pkg.buildPath, NAME);
-      return { ...unit, composeXCFramework, releaseStub };
-    }
-
-    async function readRealReleaseAsync(pkg: SPMPackageSource): Promise<string> {
-      const release = Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Release');
-      return fs.readFile(path.join(release, 'Info.plist'), 'utf8');
-    }
-
-    it('composes the real Release flavor, then fails the stub with a next step when no Debug XCFramework exists', async () => {
-      const { pkg, ctx, composeXCFramework, releaseStub } = await makeRealAndStubUnitAsync({
-        requestedFlavor: 'Release',
-      });
-
-      await assert.rejects(composeStep.run(ctx), (error: Error) => {
-        assert.match(error.message, /Release stub of Fixture/);
-        assert.match(error.message, /"releaseFlavor": "realAndStub"/);
-        assert.match(error.message, /Debug XCFramework/);
-        assert.match(error.message, /Build the Debug flavor/);
-        return true;
-      });
-      assert.equal(composeXCFramework.mock.callCount(), 1);
-      assert.equal(await readRealReleaseAsync(pkg), REAL_RELEASE_MARKER);
-      assert.equal(await fs.pathExists(releaseStub), false);
-    });
-
-    it("does not stub an older Debug XCFramework when this run's Debug unit failed", async () => {
-      const { pkg, ctx, releaseStub } = await makeRealAndStubUnitAsync({
-        debugUnit: { stages: { ...composedDebugUnit.stages, compose: 'failed' } },
-      });
-      await fs.outputFile(
-        path.join(Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'), 'Info.plist'),
-        plist.build({ AvailableLibraries: [] })
-      );
-
-      await assert.rejects(composeStep.run(ctx), (error: Error) => {
-        assert.match(error.message, /Release stub of Fixture/);
-        assert.match(error.message, /"releaseFlavor": "realAndStub"/);
-        assert.match(error.message, /Debug flavor of Fixture failed in this run/);
-        return true;
-      });
-      assert.equal(await fs.pathExists(releaseStub), false);
-    });
-
-    it(
-      'writes, packs and verifies the stub in release-stub and leaves the real Release flavor alone',
-      appleToolsOnly,
-      async () => {
-        const { pkg, ctx, composeXCFramework, releaseStub } = await makeRealAndStubUnitAsync({
-          debugUnit: composedDebugUnit,
-        });
-        await buildDebugXCFrameworkAsync(Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'));
-
-        await composeStep.run(ctx);
-
-        assert.equal(composeXCFramework.mock.callCount(), 1);
-        assert.equal(await readRealReleaseAsync(pkg), REAL_RELEASE_MARKER);
-        const written = (await listFilesAsync(releaseStub)).map((file) =>
-          path.join(`${NAME}.xcframework`, file)
-        );
-        assert.ok(written.some((file) => file.endsWith('Modules/module.modulemap')));
-        assert.deepEqual(
-          await listTarballAsync(pkg, Frameworks.getReleaseStubTarballPath(pkg.buildPath, NAME)),
-          written
-        );
-
-        const verifyXCFramework = mock.method(
-          FrameworkVerifier,
-          'verifyXCFrameworkAsync',
-          async () => new Map()
-        );
-        await verifyStep.run(ctx);
-        assert.equal(verifyXCFramework.mock.callCount(), 1);
-
-        const header = path.join('ios-arm64', `${NAME}.framework`, 'Headers', `${NAME}.h`);
-        await fs.appendFile(path.join(releaseStub, header), '// drift\n');
-        await assert.rejects(verifyStep.run(ctx), (error: Error) => {
-          assert.ok(error.message.includes(header), error.message);
-          return true;
-        });
-      }
-    );
   });
 });

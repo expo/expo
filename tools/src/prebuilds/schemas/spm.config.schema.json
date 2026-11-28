@@ -221,8 +221,8 @@
                 },
                 "releaseFlavor": {
                     "type": "string",
-                    "enum": [ "stub", "realAndStub" ],
-                    "description": "When \"stub\", the Release flavor is not built. The prebuild makes it from the Debug XCFramework of the same run: the same Info.plists, Headers, PrivateHeaders and Modules, around an empty dynamic library with the real install name. Use this for debug-only products, so Release apps contain none of their code. When \"realAndStub\", the Release flavor is built as usual, and the prebuild also writes that stub to a third flavor folder, release-stub. In both cases the Debug flavor must be built too."
+                    "enum": [ "stub" ],
+                    "description": "When \"stub\", the Release flavor is not built. The prebuild makes it from the Debug XCFramework of the same run: the same Info.plists, Headers, PrivateHeaders and Modules, around an empty dynamic library with the real install name. Use this for debug-only products, so Release apps contain none of their code. The Debug flavor must be built too."
                 },
                 "autolinkWhen": {
                     "type": "object",

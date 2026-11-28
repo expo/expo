@@ -5,19 +5,15 @@ import type { SPMProduct } from './SPMConfig.types';
 import schema from './schemas/spm.config.schema.json';
 
 describe('spm.config.json product releaseFlavor', () => {
-  it('accepts only "stub" and "realAndStub" in the schema', () => {
-    assert.deepEqual(schema.definitions.product.properties.releaseFlavor.enum, [
-      'stub',
-      'realAndStub',
-    ]);
+  it('accepts only "stub" in the schema', () => {
+    assert.deepEqual(schema.definitions.product.properties.releaseFlavor.enum, ['stub']);
     assert.equal(schema.definitions.product.additionalProperties, false);
   });
 
-  it('accepts only "stub" and "realAndStub" in the type', () => {
-    const stub: SPMProduct['releaseFlavor'] = 'stub';
-    const realAndStub: SPMProduct['releaseFlavor'] = 'realAndStub';
-    // @ts-expect-error a release flavor other than "stub" or "realAndStub" is not configurable
+  it('accepts only "stub" in the type', () => {
+    const accepted: SPMProduct['releaseFlavor'] = 'stub';
+    // @ts-expect-error a release flavor other than "stub" is not configurable
     const rejected: SPMProduct['releaseFlavor'] = 'debug';
-    assert.deepEqual([stub, realAndStub, rejected], ['stub', 'realAndStub', 'debug']);
+    assert.deepEqual([accepted, rejected], ['stub', 'debug']);
   });
 });

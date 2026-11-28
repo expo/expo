@@ -1,6 +1,5 @@
 /**
- * Release stubs for debug-only products (`"releaseFlavor": "stub"` or `"realAndStub"` in
- * spm.config.json).
+ * Release stubs for debug-only products (`"releaseFlavor": "stub"` in spm.config.json).
  *
  * React Native's SwiftPM generator accepts a Debug/Release pair when both flavors have the same
  * `Headers/` and `Modules/module.modulemap` and a binary with an `LC_ID_DYLIB`. A stub keeps all of
@@ -48,20 +47,6 @@ export function isReleaseStub(product: Pick<SPMProduct, 'releaseFlavor'>, flavor
   return product.releaseFlavor === 'stub' && flavor === 'Release';
 }
 
-/** True for the Release unit of a `"realAndStub"` product, which writes a stub beside its build. */
-export function addsReleaseStub(product: Pick<SPMProduct, 'releaseFlavor'>, flavor: BuildFlavor) {
-  return product.releaseFlavor === 'realAndStub' && flavor === 'Release';
-}
-
-/** Starts an error about a Release stub of `product` that cannot be made from a Debug XCFramework. */
-export function releaseStubErrorPrefix(product: Pick<SPMProduct, 'name' | 'releaseFlavor'>) {
-  return product.releaseFlavor === 'realAndStub'
-    ? `Cannot compose the Release stub of ${product.name}: its spm.config.json sets ` +
-        `"releaseFlavor": "realAndStub", so the Release stub is made from`
-    : `Cannot compose the Release flavor of ${product.name}: its spm.config.json sets ` +
-        `"releaseFlavor": "stub", so the Release flavor is made from`;
-}
-
 /**
  * Writes a stub of `sourceXCFramework` to `outputXCFramework`, replacing whatever is there.
  * The stub has no resources, no dSYMs and no code, so its Info.plist names no `DebugSymbolsPath`.
@@ -85,7 +70,7 @@ export async function makeStubXCFrameworkAsync(
         `Cannot make a stub of ${sourceXCFramework}: slice ${library.LibraryIdentifier} is a ` +
           `versioned framework bundle (macOS or Mac Catalyst), and stubs support only flat ` +
           `bundles (iOS, tvOS, visionOS). Remove that platform from the product, or drop ` +
-          `"releaseFlavor" from its spm.config.json.`
+          `"releaseFlavor": "stub" from its spm.config.json.`
       );
     }
     return binaryPath;

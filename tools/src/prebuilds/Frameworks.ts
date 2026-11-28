@@ -30,7 +30,7 @@ import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
-import { makeStubXCFrameworkAsync, releaseStubErrorPrefix } from './StubXCFramework';
+import { isReleaseStub, makeStubXCFrameworkAsync } from './StubXCFramework';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -72,12 +72,6 @@ const PREBUILT_FLAVOR: Record<BuildFlavor, PrebuiltFlavor> = {
   Debug: 'debug',
   Release: 'release',
 };
-
-/**
- * Not a `PrebuiltFlavor`: autolinking does not resolve this folder, so its path stays local to
- * the prebuild tools.
- */
-const RELEASE_STUB_OUTPUT_DIR = path.join('release-stub', 'xcframeworks');
 
 export const Frameworks = {
   /**
@@ -178,40 +172,35 @@ export const Frameworks = {
   },
 
   /**
-   * Composes the Release stub of a product from its Debug XCFramework, then signs and packs it
-   * like any Release XCFramework. For `"releaseFlavor": "stub"` the stub is the Release
-   * XCFramework; for `"realAndStub"` it goes to the `release-stub` folder.
+   * Composes the Release XCFramework of a `"releaseFlavor": "stub"` product from its Debug
+   * XCFramework, then signs and packs it like any Release XCFramework.
    */
   composeReleaseStubXCFrameworkAsync: async (
     pkg: SPMPackageSource,
     product: SPMProduct,
     signing?: SigningOptions
   ): Promise<void> => {
-    const { buildPath, outputVersionPrefix } = pkg;
     const debugXCFramework = Frameworks.getFrameworkPath(
-      buildPath,
+      pkg.buildPath,
       product.name,
       'Debug',
-      outputVersionPrefix
+      pkg.outputVersionPrefix
     );
     if (!(await fs.pathExists(debugXCFramework))) {
       throw new Error(
-        `${releaseStubErrorPrefix(product)} the Debug XCFramework, ` +
+        `Cannot compose the Release flavor of ${product.name}: its spm.config.json sets ` +
+          `"releaseFlavor": "stub", so the Release flavor is made from the Debug XCFramework, ` +
           `and there is none at ${debugXCFramework}. Build the Debug flavor too: run the ` +
           `prebuild without --flavor, or with --flavor Debug before --flavor Release.`
       );
     }
 
-    const [xcframeworkOutputPath, tarballPath] =
-      product.releaseFlavor === 'realAndStub'
-        ? [
-            Frameworks.getReleaseStubFrameworkPath(buildPath, product.name, outputVersionPrefix),
-            Frameworks.getReleaseStubTarballPath(buildPath, product.name, outputVersionPrefix),
-          ]
-        : [
-            Frameworks.getFrameworkPath(buildPath, product.name, 'Release', outputVersionPrefix),
-            Frameworks.getTarballPath(buildPath, product.name, 'Release', outputVersionPrefix),
-          ];
+    const xcframeworkOutputPath = Frameworks.getFrameworkPath(
+      pkg.buildPath,
+      product.name,
+      'Release',
+      pkg.outputVersionPrefix
+    );
     await makeStubXCFrameworkAsync(debugXCFramework, xcframeworkOutputPath);
     logger.info(`✅ Made the Release stub of ${chalk.green(product.name)} from its Debug flavor`);
 
@@ -219,11 +208,8 @@ export const Frameworks = {
       await signXCFramework(xcframeworkOutputPath, signing.identity, signing.useTimestamp ?? true);
     }
 
-    // A stub links nothing, so a dependency framework in its output folder is a leftover.
     if (!usesPackageLocalBuildPath(pkg)) {
-      await writeTarballAsync(tarballPath, path.dirname(xcframeworkOutputPath), [
-        path.basename(xcframeworkOutputPath),
-      ]);
+      await createProductTarballAsync(pkg, product, 'Release');
     }
   },
 
@@ -264,36 +250,6 @@ export const Frameworks = {
     return path.join(
       getArtifactBase(buildPath, versionPrefix),
       getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
-    );
-  },
-
-  /**
-   * Returns the path of the Release stub that a `"releaseFlavor": "realAndStub"` product writes
-   * beside its real Release XCFramework:
-   * <buildPath>/output[/<versionPrefix>]/release-stub/xcframeworks/<Product>.xcframework
-   */
-  getReleaseStubFrameworkPath: (
-    buildPath: string,
-    productName: string,
-    versionPrefix?: string
-  ): string => {
-    return path.join(
-      getArtifactBase(buildPath, versionPrefix),
-      RELEASE_STUB_OUTPUT_DIR,
-      `${productName}.xcframework`
-    );
-  },
-
-  /** Returns the tarball path that belongs to `getReleaseStubFrameworkPath`. */
-  getReleaseStubTarballPath: (
-    buildPath: string,
-    productName: string,
-    versionPrefix?: string
-  ): string => {
-    return path.join(
-      getArtifactBase(buildPath, versionPrefix),
-      RELEASE_STUB_OUTPUT_DIR,
-      `${productName}.tar.gz`
     );
   },
 
@@ -830,7 +786,8 @@ const createProductTarballAsync = async (
 
   // Include SPM dependency xcframeworks (e.g., Lottie.xcframework for lottie-react-native)
   // Skip shared deps unless bundleSharedDeps is true (npm bundling mode)
-  const spmPackages = product.spmPackages;
+  // A Release stub links nothing, so a dependency framework in its output folder is a leftover.
+  const spmPackages = isReleaseStub(product, buildType) ? undefined : product.spmPackages;
   if (spmPackages && spmPackages.length > 0) {
     for (const spmPkg of spmPackages) {
       const depName = spmPkg.productName;
@@ -848,14 +805,6 @@ const createProductTarballAsync = async (
     `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 
-  await writeTarballAsync(tarballPath, outputDir, xcframeworkEntries);
-};
-
-const writeTarballAsync = async (
-  tarballPath: string,
-  outputDir: string,
-  xcframeworkEntries: string[]
-): Promise<void> => {
   // Create tarball: tar -czf <Product>.tar.gz -C <outputDir> <entries...>
   await spawnAsync('tar', ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries], {
     stdio: 'pipe',
