@@ -87,6 +87,34 @@ describe('DiskCacheManager', () => {
     expect(new Set([path1, path2, path3]).size).toBe(3);
   });
 
+  describe('default cache file prefix', () => {
+    const defaultCacheFileName = (): string => {
+      let cacheFilePath = '';
+      jest.isolateModules(() => {
+        const { DiskCacheManager: IsolatedDiskCacheManager } = require('../DiskCacheManager');
+        cacheFilePath = IsolatedDiskCacheManager.getCacheFilePath(
+          buildParameters,
+          null,
+          '/tmp/cache'
+        );
+      });
+      return path.basename(cacheFilePath);
+    };
+
+    afterEach(() => {
+      delete process.versions.bun;
+    });
+
+    test('names a separate cache file under Bun', () => {
+      process.versions.bun = '1.3.0';
+      expect(defaultCacheFileName()).toMatch(/^metro-file-map-bun-expo-/);
+    });
+
+    test('names the Node cache file otherwise', () => {
+      expect(defaultCacheFileName()).toMatch(/^metro-file-map-expo-/);
+    });
+  });
+
   test('creates different cache file paths for different projects', () => {
     const cm1 = new DiskCacheManager(
       { buildParameters },
