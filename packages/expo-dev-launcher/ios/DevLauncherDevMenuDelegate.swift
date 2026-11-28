@@ -17,10 +17,10 @@ public class DevLauncherDevMenuDelegate: NSObject, DevMenuHostDelegate {
   }
 
   public func devMenuSwitchToComponent(_ moduleName: String) -> Bool {
-    return controller?.delegate?.switchAppRegistryComponent(to: moduleName) ?? false
+    return controller?.switchAppRegistryComponent(to: moduleName) ?? false
   }
 
   public func devMenuCurrentComponentName() -> String? {
-    return controller?.delegate?.rootViewModuleName
+    return controller?.rootViewModuleName()
   }
 }

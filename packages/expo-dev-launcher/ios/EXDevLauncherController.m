@@ -12,14 +12,13 @@
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
 
-
-#import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
-
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
-#else
+#elif __has_include(<EXDevLauncher-Swift.h>)
 #import <EXDevLauncher-Swift.h>
+#else
+@import EXDevLauncher;
 #endif
 
 @import EXManifests;
@@ -77,7 +76,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
 
-    self.dependencyProvider = [RCTAppDependencyProvider new];
     self.devMenuDelegate = [[DevLauncherDevMenuDelegate alloc] initWithController:self];
     [[DevMenuManager shared] setDelegate:self.devMenuDelegate];
 
@@ -103,6 +101,21 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 - (void)clearRecentlyOpenedApps
 {
   return [_recentlyOpenedAppsRegistry clearRegistry];
+}
+
+- (NSArray<NSDictionary<NSString *, id> *> *)recentlyOpenedApps
+{
+  return [_recentlyOpenedAppsRegistry recentlyOpenedApps];
+}
+
+- (BOOL)switchAppRegistryComponentTo:(NSString *)moduleName
+{
+  return [self.delegate switchAppRegistryComponentTo:moduleName];
+}
+
+- (nullable NSString *)rootViewModuleName
+{
+  return self.delegate.rootViewModuleName;
 }
 
 #if !TARGET_OS_OSX

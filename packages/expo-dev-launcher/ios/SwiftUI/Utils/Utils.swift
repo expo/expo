@@ -66,12 +66,16 @@ extension View {
 }
 
 func getDevLauncherBundle() -> Bundle? {
-  if let bundleURL = Bundle.main.url(forResource: "EXDevLauncher", withExtension: "bundle") {
-    if let bundle = Bundle(url: bundleURL) {
-      return bundle
-    }
+  if let bundle = resourceBundle(named: "EXDevLauncher", in: .main) {
+    return bundle
   }
+  // A prebuilt framework holds the bundle inside itself, under the name SwiftPM gives it.
+  return resourceBundle(named: "expo-dev-launcher_EXDevLauncher", in: Bundle(for: EXDevLauncherUtils.self)) ?? .main
+}
 
-  // fallback to the main bundle
-  return .main
+private func resourceBundle(named name: String, in container: Bundle) -> Bundle? {
+  guard let url = container.url(forResource: name, withExtension: "bundle") else {
+    return nil
+  }
+  return Bundle(url: url)
 }
