@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import type { NavigatorDescriptor } from 'standard-navigation';
 
 import { StackV5 as ScreensStackV5 } from '../../optional-libraries/react-native-screens';
+import { useTheme } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
   ExperimentalStackNavigationOptions,
@@ -35,10 +36,11 @@ export function ExperimentalStackView({
   isPreloaded,
   isRemovalPrevented,
 }: Props) {
+  const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <ScreensStackV5.Host>
         {state.routes.map((route) => {
           const descriptor = descriptors[route.key]!;
@@ -53,6 +55,7 @@ export function ExperimentalStackView({
               routeName={route.name}
               descriptor={descriptor}
               options={options}
+              backgroundColor={colors.background}
               isPreloaded={routeIsPreloaded}
               preventNativeDismiss={routeIsRemovalPrevented}
               onWillAppear={() => {
@@ -119,6 +122,7 @@ type ScreenViewProps = {
   routeName: string;
   descriptor: NavigatorDescriptor<ExperimentalStackNavigationOptions>;
   options: ExperimentalStackNavigationOptions;
+  backgroundColor: string;
   isPreloaded: boolean;
   preventNativeDismiss: boolean;
   onWillAppear: () => void;
@@ -134,6 +138,7 @@ function ScreenView({
   routeName,
   descriptor,
   options,
+  backgroundColor,
   isPreloaded,
   preventNativeDismiss,
   ...lifecycle
@@ -154,7 +159,7 @@ function ScreenView({
       screenKey={routeKey}
       preventNativeDismiss={preventNativeDismiss}
       {...lifecycle}>
-      <View style={styles.scene}>{descriptor.render()}</View>
+      <View style={[styles.scene, { backgroundColor }]}>{descriptor.render()}</View>
       <ScreensStackV5.HeaderConfig {...headerConfigProps} />
     </ScreensStackV5.Screen>
   );
@@ -207,6 +212,5 @@ const styles = StyleSheet.create({
   },
   scene: {
     flex: 1,
-    backgroundColor: 'white',
   },
 });
