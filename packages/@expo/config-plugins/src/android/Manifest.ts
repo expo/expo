@@ -151,10 +151,10 @@ export type ManifestUsesPermission = {
   $: AndroidManifestAttributes;
 };
 
-type ManifestUsesFeature = {
+export type ManifestUsesFeature = {
   $: AndroidManifestAttributes & {
     'android:glEsVersion'?: string;
-    'android:required': StringBoolean;
+    'android:required'?: StringBoolean;
   };
 };
 

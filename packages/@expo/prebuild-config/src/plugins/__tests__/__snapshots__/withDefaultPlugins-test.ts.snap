@@ -79,6 +79,12 @@ exports[`built-in plugins compiles mods 1`] = `
     ],
     "softwareKeyboardLayoutMode": "pan",
     "userInterfaceStyle": "light",
+    "usesFeatures": [
+      {
+        "name": "android.hardware.wifi",
+        "required": false,
+      },
+    ],
     "versionCode": 6,
   },
   "backgroundColor": "orange",
@@ -755,6 +761,14 @@ exports[`built-in plugins introspects mods 1`] = `
                 ],
               },
             ],
+            "uses-feature": [
+              {
+                "$": {
+                  "android:name": "android.hardware.wifi",
+                  "android:required": "false",
+                },
+              },
+            ],
             "uses-permission": [
               {
                 "$": {
@@ -1062,6 +1076,12 @@ exports[`built-in plugins introspects mods 1`] = `
     ],
     "softwareKeyboardLayoutMode": "pan",
     "userInterfaceStyle": "light",
+    "usesFeatures": [
+      {
+        "name": "android.hardware.wifi",
+        "required": false,
+      },
+    ],
     "versionCode": 6,
   },
   "backgroundColor": "orange",
@@ -1425,6 +1445,14 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 ],
               },
             ],
+            "uses-feature": [
+              {
+                "$": {
+                  "android:name": "android.hardware.wifi",
+                  "android:required": "false",
+                },
+              },
+            ],
             "uses-permission": [
               {
                 "$": {
@@ -1703,6 +1731,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
     ],
     "softwareKeyboardLayoutMode": "pan",
     "userInterfaceStyle": "light",
+    "usesFeatures": [
+      {
+        "name": "android.hardware.wifi",
+        "required": false,
+      },
+    ],
     "versionCode": 6,
   },
   "backgroundColor": "orange",
