@@ -24,7 +24,7 @@ internal object MetricsConstants {
 
 @Database(
   entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class, Span::class],
-  version = 19,
+  version = 20,
   exportSchema = false
 )
 internal abstract class MetricsDatabase : RoomDatabase() {
@@ -123,7 +123,10 @@ internal data class Metric(
   val params: String? = null,
   // UCUM unit of `value`. `null` means seconds for the SDK's own metrics and no unit for a custom
   // metric.
-  val unit: String? = null
+  val unit: String? = null,
+  // Trace id and span id of the span that the metric is linked to, or `null` when it has no span.
+  val traceId: String? = null,
+  val spanId: String? = null
 )
 
 internal data class SessionWithMetrics(

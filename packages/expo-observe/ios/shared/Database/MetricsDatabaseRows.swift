@@ -142,6 +142,9 @@ struct MetricRow: Sendable {
   /// UCUM unit of `value`. `nil` means seconds for the SDK's own metrics and no unit for a custom
   /// metric.
   let unit: String?
+  /// Trace ID and span ID of the span that the metric is linked to, or `nil` when it has no span.
+  let traceId: String?
+  let spanId: String?
 
   init(
     id: Int64? = nil,
@@ -153,7 +156,9 @@ struct MetricRow: Sendable {
     routeName: String? = nil,
     updateId: String? = nil,
     params: String? = nil,
-    unit: String? = nil
+    unit: String? = nil,
+    traceId: String? = nil,
+    spanId: String? = nil
   ) {
     self.id = id
     self.sessionId = sessionId
@@ -165,6 +170,8 @@ struct MetricRow: Sendable {
     self.updateId = updateId
     self.params = params
     self.unit = unit
+    self.traceId = traceId
+    self.spanId = spanId
   }
 }
 
@@ -180,7 +187,9 @@ extension MetricRow {
       routeName: row.string(at: 6),
       updateId: row.string(at: 7),
       params: row.string(at: 8),
-      unit: row.string(at: 9)
+      unit: row.string(at: 9),
+      traceId: row.string(at: 10),
+      spanId: row.string(at: 11)
     )
   }
 }

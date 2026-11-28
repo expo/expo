@@ -64,15 +64,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       GlobalAttributes.set(attributes)
     }
 
-    Function("recordMetric") { (name: String, value: Double, options: RecordMetricOptions?) in
-      guard isConsentGranted(),
-        let metric = customMetric(name: name, value: value, unit: options?.unit, attributes: options?.attributes)
-      else {
+    Function("recordMetric") { (name: String, value: Double, options: RecordMetricOptions?, span: SpanObject?) in
+      guard isConsentGranted() else {
         return
       }
-      AppMetricsActor.isolated {
-        AppMetrics.mainSession.receiveMetric(metric)
-      }
+      recordCustomMetric(name: name, value: value, options: options, span: span?.handle.recorder)
     }
 
     Function("setNetworkTracesConfig") { (config: NetworkTracesConfigParam) in
@@ -228,7 +224,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       } else {
         onEnd = onEndOfValidSpan
       }
-      return SpanObject(SpanHandle(recorder: recorder, onEnd: onEnd))
+      return SpanObject(SpanHandle(recorder: recorder, onEnd: onEnd), isConsentGranted: isConsentGranted)
     }
 
     Function("recordSpan") { (name: String, options: RecordSpanOptions, parent: SpanObject?) in
@@ -377,6 +373,26 @@ internal struct SpanEndOptions: Record {
   /// Unix-epoch milliseconds overriding "now" as the span end.
   @Field
   var endTime: Double?
+}
+
+/// Records a custom metric against the main session, linked to `span` when it is set. Shared by
+/// `recordMetric` and `Span.recordMetric`, which check consent first.
+internal func recordCustomMetric(name: String, value: Double, options: RecordMetricOptions?, span: SpanRecorder?) {
+  guard
+    let metric = customMetric(
+      name: name,
+      value: value,
+      unit: options?.unit,
+      attributes: options?.attributes,
+      traceId: span?.traceId,
+      spanId: span?.spanId
+    )
+  else {
+    return
+  }
+  AppMetricsActor.isolated {
+    AppMetrics.mainSession.receiveMetric(metric)
+  }
 }
 
 internal struct RecordMetricOptions: Record {

@@ -103,6 +103,8 @@ export interface Metric {
   routeName?: string | null;
   params?: Record<string, unknown>;
   unit?: string | null;
+  traceId?: string | null;
+  spanId?: string | null;
 }
 
 export type MetricAttributes = {
@@ -634,6 +636,12 @@ export type RecordMetricOptions = {
    * attributes.
    */
   attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * The span that measured the value. Observe sends its trace ID and span ID with the value, so
+   * you can go from the value to the trace. The metric is saved at once, and it is sent even when
+   * the span is never ended.
+   */
+  span?: Span | null;
 };
 
 export interface ExpoAppMetricsModuleType {
@@ -667,10 +675,15 @@ export interface ExpoAppMetricsModuleType {
    */
   recordSpan(name: string, options: Omit<RecordSpanOptions, 'parent'>, parent?: Span): void;
   /**
-   * Native shape behind the `recordMetric` wrapper.
+   * Native shape behind the `recordMetric` wrapper, which folds `span` out of the options.
    * @hidden
    */
-  recordMetric(name: string, value: number, options?: RecordMetricOptions | null): void;
+  recordMetric(
+    name: string,
+    value: number,
+    options?: Omit<RecordMetricOptions, 'span'> | null,
+    span?: Span
+  ): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty

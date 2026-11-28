@@ -18,6 +18,22 @@ struct CustomMetricTests {
   }
 
   @Test
+  func `links the metric to a span`() throws {
+    let metric = try #require(
+      customMetric(
+        name: "checkout.items",
+        value: 3,
+        unit: nil,
+        attributes: nil,
+        traceId: "a3ce929d0e0e4736a3ce929d0e0e4736",
+        spanId: "00f067aa0ba902b7"
+      )
+    )
+    #expect(metric.traceId == "a3ce929d0e0e4736a3ce929d0e0e4736")
+    #expect(metric.spanId == "00f067aa0ba902b7")
+  }
+
+  @Test
   func `accepts a name of 255 characters`() {
     #expect(customMetric(name: String(repeating: "a", count: 255), value: 1, unit: nil, attributes: nil) != nil)
   }

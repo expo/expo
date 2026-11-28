@@ -73,7 +73,18 @@ internal data class OTAttribute(
 internal data class OTDataPoint(
   val timeUnixNano: Long,
   val asDouble: Double,
-  val attributes: List<OTAttribute>
+  val attributes: List<OTAttribute>,
+  // Omitted from the JSON when null, because kotlinx-serialization skips default values.
+  val exemplars: List<OTExemplar>? = null
+)
+
+/** Links a data point to the span that measured it. The ids are lowercase hex, as OTLP/JSON wants. */
+@Serializable
+internal data class OTExemplar(
+  val timeUnixNano: Long,
+  val asDouble: Double,
+  val traceId: String,
+  val spanId: String
 )
 
 @Serializable
@@ -313,15 +324,23 @@ internal fun EASMetric.toOTMetric(): OTMetric {
     "s"
   }
 
+  val timeUnixNano = timestampToDateNS(timestamp)
+  val exemplars = if (traceId != null && spanId != null) {
+    listOf(OTExemplar(timeUnixNano = timeUnixNano, asDouble = value, traceId = traceId, spanId = spanId))
+  } else {
+    null
+  }
+
   return OTMetric(
     unit = unit ?: defaultUnit,
     name = exportedMetricName(category, name),
     gauge = OTGauge(
       dataPoints = listOf(
         OTDataPoint(
-          timeUnixNano = timestampToDateNS(timestamp),
+          timeUnixNano = timeUnixNano,
           asDouble = value,
-          attributes = attributes
+          attributes = attributes,
+          exemplars = exemplars
         )
       )
     )

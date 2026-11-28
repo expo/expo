@@ -11,7 +11,8 @@ import type { RecordMetricOptions } from './types';
  * not start with the reserved `expo.` prefix. Otherwise the metric is not recorded.
  * @param value The measured value. It must be a finite number. Otherwise the metric is not
  * recorded.
- * @param options The unit of the value and optional attributes.
+ * @param options The unit of the value, optional attributes, and an optional span to link the
+ * value to.
  *
  * @example
  * ```ts
@@ -22,7 +23,8 @@ import type { RecordMetricOptions } from './types';
  */
 export function recordMetric(name: string, value: number, options?: RecordMetricOptions): void {
   try {
-    AppMetricsModule.recordMetric(name, value, options);
+    const { span, ...nativeOptions } = options ?? {};
+    AppMetricsModule.recordMetric(name, value, nativeOptions, span ?? undefined);
   } catch (error) {
     console.warn('[expo-observe] recordMetric could not record the metric:', error);
   }

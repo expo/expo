@@ -71,6 +71,7 @@ describe('startSpan', () => {
     expect(() => {
       span.setAttributes({ step: 1 });
       span.addEvent('cart-validated');
+      span.recordMetric('checkout.items', 3);
       span.end();
     }).not.toThrow();
     expect(warnSpy).toHaveBeenCalledTimes(1);

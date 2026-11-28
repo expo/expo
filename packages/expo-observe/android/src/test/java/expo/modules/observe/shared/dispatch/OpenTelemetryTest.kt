@@ -152,14 +152,37 @@ class OpenTelemetryTest {
     assertEquals("", makeCustomMetric(unit = null).toOTMetric().unit)
   }
 
-  private fun makeCustomMetric(unit: String?) =
+  @Test
+  fun `toOTMetric sends an exemplar with the span ids for a metric linked to a span`() {
+    val metric = makeCustomMetric(
+      unit = "ms",
+      traceId = "a3ce929d0e0e4736a3ce929d0e0e4736",
+      spanId = "00f067aa0ba902b7"
+    )
+    val dataPoint = metric.toOTMetric().gauge.dataPoints.single()
+    val exemplar = dataPoint.exemplars!!.single()
+    assertEquals("a3ce929d0e0e4736a3ce929d0e0e4736", exemplar.traceId)
+    assertEquals("00f067aa0ba902b7", exemplar.spanId)
+    assertEquals(120.0, exemplar.asDouble, 0.0)
+    assertEquals(dataPoint.timeUnixNano, exemplar.timeUnixNano)
+  }
+
+  @Test
+  fun `toOTMetric sends no exemplars key for a metric without a span`() {
+    val json = Json.encodeToString(OTMetric.serializer(), makeCustomMetric(unit = "ms").toOTMetric())
+    assertFalse(json.contains("exemplars"))
+  }
+
+  private fun makeCustomMetric(unit: String?, traceId: String? = null, spanId: String? = null) =
     EASMetric(
       sessionId = testSessionId,
       timestamp = "2026-01-01T00:00:00.000Z",
       category = MetricCategory.Custom.categoryName,
       name = "checkout.payment_time",
       value = 120.0,
-      unit = unit
+      unit = unit,
+      traceId = traceId,
+      spanId = spanId
     )
 
   @Test

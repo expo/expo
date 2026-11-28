@@ -44,6 +44,21 @@ class CustomMetricTest {
   }
 
   @Test
+  fun `links the metric to a span`() {
+    val metric = customMetric(
+      sessionId = "session",
+      name = "checkout.items",
+      value = 3.0,
+      unit = null,
+      attributes = null,
+      traceId = "a3ce929d0e0e4736a3ce929d0e0e4736",
+      spanId = "00f067aa0ba902b7"
+    )
+    assertEquals("a3ce929d0e0e4736a3ce929d0e0e4736", metric!!.traceId)
+    assertEquals("00f067aa0ba902b7", metric.spanId)
+  }
+
+  @Test
   fun `accepts a name of 255 characters`() {
     assertNotNull(metric(name = "a".repeat(255)))
   }

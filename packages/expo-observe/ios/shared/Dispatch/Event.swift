@@ -50,6 +50,9 @@ struct Event: Codable, Sendable {
     /// UCUM unit of `value`. `nil` means seconds for the SDK's own metrics and no unit for a
     /// custom metric.
     var unit: String? = nil
+    /// Trace ID and span ID of the span that the metric is linked to, or `nil` when it has no span.
+    var traceId: String? = nil
+    var spanId: String? = nil
   }
 
   struct Log: Codable, Sendable {
@@ -102,7 +105,9 @@ struct Event: Codable, Sendable {
           routeName: metric.routeName,
           updateId: metric.updateId,
           customParams: decodeCustomParams(metric.params),
-          unit: metric.unit
+          unit: metric.unit,
+          traceId: metric.traceId,
+          spanId: metric.spanId
         )
       },
       logs: logs.map { log in

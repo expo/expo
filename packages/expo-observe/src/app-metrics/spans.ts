@@ -14,6 +14,7 @@ class InertSpan extends SharedObject {
 
   setAttributes() {}
   addEvent() {}
+  recordMetric() {}
   end() {}
 }
 

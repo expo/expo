@@ -102,6 +102,15 @@ struct OTDataPoint: Codable, Sendable {
   let timeUnixNano: UInt64
   let asDouble: Double
   let attributes: [OTAttribute]
+  var exemplars: [OTExemplar]? = nil
+}
+
+/// Links a data point to the span that measured it. The ids are lowercase hex, as OTLP/JSON wants.
+struct OTExemplar: Codable, Sendable {
+  let timeUnixNano: UInt64
+  let asDouble: Double
+  let traceId: String
+  let spanId: String
 }
 
 struct OTGauge: Codable, Sendable {
@@ -272,15 +281,22 @@ extension Event.Metric {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
     }
 
+    let timeUnixNano = nsFromISODateString()
+    var exemplars: [OTExemplar]?
+    if let traceId, let spanId {
+      exemplars = [OTExemplar(timeUnixNano: timeUnixNano, asDouble: value, traceId: traceId, spanId: spanId)]
+    }
+
     return OTMetric(
       // The SDK's own metrics are in seconds. An empty unit means an unknown unit in OpenTelemetry.
       unit: unit ?? (category == Metric.Category.custom.rawValue ? "" : "s"),
       name: exportedMetricName(category: category, name: name),
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
-          timeUnixNano: nsFromISODateString(),
+          timeUnixNano: timeUnixNano,
           asDouble: self.value,
-          attributes: attributes
+          attributes: attributes,
+          exemplars: exemplars
         )
       ])
     )

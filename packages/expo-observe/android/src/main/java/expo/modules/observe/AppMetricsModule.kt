@@ -184,22 +184,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
-      Function("recordMetric") { name: String, value: Double, options: RecordMetricOptions? ->
-        if (!ObserveConsent.isGranted) {
-          return@Function
-        }
-        val metric = customMetric(
-          sessionId = mainSession.sessionId,
-          name = name,
-          value = value,
-          unit = options?.unit,
-          attributes = options?.attributes
-        ) ?: return@Function
-
-        scope.launch {
-          saveStartupMetrics()
-          mainSession.addMetrics(listOf(metric))
-        }
+      Function("recordMetric") { name: String, value: Double, options: RecordMetricOptions?, span: SpanObject? ->
+        recordCustomMetric(name, value, options, span?.handle?.recorder)
       }
 
       Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanObject? ->
@@ -252,6 +238,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         Function("setAttributes") { span: SpanObject, attributes: Map<String, Any?> ->
           span.handle.recorder.setAttributes(attributes)
+        }
+
+        Function("recordMetric") { span: SpanObject, name: String, value: Double, options: RecordMetricOptions? ->
+          recordCustomMetric(name, value, options, span.handle.recorder)
         }
 
         Function("addEvent") { span: SpanObject, name: String, options: SpanEventOptions? ->
@@ -614,6 +604,30 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
 
   private val saveStartupMetricsMutex = Mutex()
+
+  /**
+   * Records a custom metric against the main session, linked to `span` when it is set. Shared by
+   * `recordMetric` and `Span.recordMetric`.
+   */
+  private fun recordCustomMetric(name: String, value: Double, options: RecordMetricOptions?, span: SpanRecorder?) {
+    if (!ObserveConsent.isGranted) {
+      return
+    }
+    val metric = customMetric(
+      sessionId = mainSession.sessionId,
+      name = name,
+      value = value,
+      unit = options?.unit,
+      attributes = options?.attributes,
+      traceId = span?.traceId,
+      spanId = span?.spanId
+    ) ?: return
+
+    scope.launch {
+      saveStartupMetrics()
+      mainSession.addMetrics(listOf(metric))
+    }
+  }
 }
 
 @OptimizedRecord

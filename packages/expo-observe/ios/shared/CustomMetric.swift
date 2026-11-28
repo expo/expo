@@ -7,10 +7,17 @@ nonisolated(unsafe) private let metricNamePattern = /[A-Za-z][A-Za-z0-9_.\-\/]{0
 /// The longest unit that OpenTelemetry allows for an instrument.
 let maxMetricUnitLength = 63
 
-/// Builds the metric of a `recordMetric` call. Returns `nil` and warns when the name or the value
-/// is not valid, so the caller drops the metric. A unit that is not valid is dropped with a
-/// warning, and the metric is kept.
-func customMetric(name: String, value: Double, unit: String?, attributes: [String: Any]?) -> Metric? {
+/// Builds the metric of a `recordMetric` call, linked to the span with `traceId` and `spanId` when
+/// they are set. Returns `nil` and warns when the name or the value is not valid, so the caller
+/// drops the metric. A unit that is not valid is dropped with a warning, and the metric is kept.
+func customMetric(
+  name: String,
+  value: Double,
+  unit: String?,
+  attributes: [String: Any]?,
+  traceId: String? = nil,
+  spanId: String? = nil
+) -> Metric? {
   let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
   guard !trimmedName.hasPrefix(reservedEventNamePrefix) else {
     logger.warn(
@@ -35,7 +42,9 @@ func customMetric(name: String, value: Double, unit: String?, attributes: [Strin
     name: trimmedName,
     value: value,
     params: sanitizeLogEventAttributes(attributes, source: "recordMetric").attributes,
-    unit: validatedMetricUnit(unit, metricName: trimmedName)
+    unit: validatedMetricUnit(unit, metricName: trimmedName),
+    traceId: traceId,
+    spanId: spanId
   )
 }
 

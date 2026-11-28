@@ -1,6 +1,11 @@
 import type { SharedObject } from 'expo';
 
-import type { LogAttributeValue, SpanEndOptions, SpanEventOptions } from './types';
+import type {
+  LogAttributeValue,
+  RecordMetricOptions,
+  SpanEndOptions,
+  SpanEventOptions,
+} from './types';
 
 /**
  * Represents an operation that you measure. `startSpan` returns a span, and `withSpan` passes one
@@ -52,6 +57,22 @@ export declare class Span extends SharedObject {
    * ```
    */
   addEvent(name: string, options?: SpanEventOptions): void;
+  /**
+   * Records one value of a custom metric that is linked to this span. It is the same as
+   * `recordMetric` with this span as the `span` option. The metric is saved at once, and it is
+   * sent even when the span is never ended. It also works after `end()`.
+   *
+   * @param name A short, stable name for the metric, for example, `'checkout.items'`. The same
+   * rules as for `recordMetric` apply.
+   * @param value The measured value, as a finite number
+   * @param options The unit of the value and optional attributes
+   *
+   * @example
+   * ```ts
+   * span.recordMetric('checkout.items', 3, { unit: '{item}' });
+   * ```
+   */
+  recordMetric(name: string, value: number, options?: Omit<RecordMetricOptions, 'span'>): void;
   /**
    * Ends the span and saves it. Observe sends the span with the next dispatch. Only the first call
    * has an effect. Later calls log a warning and do nothing.
