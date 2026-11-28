@@ -45,9 +45,14 @@ export abstract class ExpoMiddleware {
         // 5xx = Server Error HTTP code
         res.statusCode = 500;
         if (typeof error === 'object' && error !== null) {
+          if (!res.headersSent) {
+            res.setHeader('Content-Type', 'application/json');
+          }
           res.end(
             JSON.stringify({
               error: error.toString(),
+              name: typeof error.name === 'string' ? error.name : undefined,
+              code: typeof error.code === 'string' ? error.code : undefined,
             })
           );
         } else {
