@@ -62,5 +62,6 @@ internal data class PrintOptions(
   val orientation: String? = null,
   val textZoom: Int? = null,
   val base64: Boolean = false,
-  val preferredPaperSize: PaperSize? = null
+  val preferredPaperSize: PaperSize? = null,
+  val fileName: String? = null
 )
