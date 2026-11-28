@@ -1681,21 +1681,14 @@ describe('a debug-only module', () => {
     expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
   });
 
-  it('fails the sync without a prebuilt pair, before it emits any source package', () => {
-    const { thrown, outDir } = sync({});
+  it.each([
+    ['with ExpoModulesCore precompiled', {}],
+    ['when ExpoModulesCore is not precompiled', { coreAvailable: false }],
+    ['though it has a checked-in manifest', { manifest: true }],
+  ])('fails the sync without a prebuilt pair %s, before any source package', (_, options) => {
+    const { thrown, outDir } = sync(options);
     expect(thrown?.message).toBe(noPairError(''));
     expect(emitPureSwiftSourcePackage).not.toHaveBeenCalled();
-    expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source'))).toBe(false);
-  });
-
-  it('fails the sync without a prebuilt pair when ExpoModulesCore is not precompiled', () => {
-    const { thrown } = sync({ coreAvailable: false });
-    expect(thrown?.message).toBe(noPairError(''));
-  });
-
-  it('fails the sync without a prebuilt pair though it has a checked-in manifest', () => {
-    const { thrown, outDir } = sync({ manifest: true });
-    expect(thrown?.message).toBe(noPairError(''));
     expect(runDumpPackage).not.toHaveBeenCalled();
     expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source'))).toBe(false);
   });
