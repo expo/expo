@@ -74,6 +74,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
   const webView = resolveWebView(useExpoDOMWebView);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
+  const isDOMReadyRef = React.useRef(false);
   const source = { uri: overrideUri ?? `${getBaseURL()}/${filePath}` };
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
@@ -110,6 +111,10 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
 
   // When the `marshalProps` change, emit them to the webview.
   React.useEffect(() => {
+    // Skip until `$$dom_ready`; earlier injects are dropped and reject on Android first commit.
+    if (!isDOMReadyRef.current) {
+      return;
+    }
     emit({ type: '$$props', data: smartActions });
   }, [emit, smartActions]);
 
@@ -179,6 +184,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       }
 
       if (type === DOM_READY) {
+        isDOMReadyRef.current = true;
         // Re-send the props the DOM side missed while the WebView was loading.
         emit({ type: '$$props', data: smartActions });
         return;
