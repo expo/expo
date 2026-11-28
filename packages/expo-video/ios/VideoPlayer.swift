@@ -1,13 +1,13 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import AVFoundation
-import MediaPlayer
 import ExpoModulesCore
 
 internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObserverDelegate {
   let videoSourceLoader = VideoSourceLoader()
   lazy var contentKeyManager = ContentKeyManager()
   var observer: VideoPlayerObserver?
+  private(set) var mediaSession: VideoMediaSessionClient?
   lazy var subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(owner: self)
   private var dangerousPropertiesStore = DangerousPropertiesStore()
   lazy var audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(owner: self)
@@ -19,7 +19,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   var audioMixingMode: AudioMixingMode = .auto {
     didSet {
       if oldValue != audioMixingMode {
-        VideoManager.shared.setAppropriateAudioSessionOrWarn()
+        mediaSession?.update { $0.audioMixingMode = audioMixingMode }
       }
     }
   }
@@ -61,13 +61,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
-  var staysActiveInBackground = false {
-    didSet {
-      if staysActiveInBackground {
-        VideoManager.shared.setAppropriateAudioSessionOrWarn()
-      }
-    }
-  }
+  var staysActiveInBackground = false
 
   var preservesPitch = true {
     didSet {
@@ -92,20 +86,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         safeEmit(event: "mutedChange", payload: payload)
       }
       ref.isMuted = isMuted
-      VideoManager.shared.setAppropriateAudioSessionOrWarn()
     }
   }
 
   var showNowPlayingNotification = false {
     didSet {
-      // The audio session needs to be appropriate before displaying the notfication
-      VideoManager.shared.setAppropriateAudioSessionOrWarn()
-
-      if showNowPlayingNotification {
-        NowPlayingManager.shared.registerPlayer(self)
-      } else {
-        NowPlayingManager.shared.unregisterPlayer(self)
-      }
+      mediaSession?.update { $0.showNowPlayingNotification = showNowPlayingNotification }
     }
   }
 
@@ -187,6 +173,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     super.init(ref)
     observer = VideoPlayerObserver(owner: self, videoSourceLoader: videoSourceLoader)
     observer?.registerDelegate(delegate: self)
+    let mediaSession = VideoMediaSessionClient(player: self)
+    observer?.registerDelegate(delegate: mediaSession)
+    self.mediaSession = mediaSession
     VideoManager.shared.register(videoPlayer: self)
 
     // Disable automatic subtitle selection
@@ -368,9 +357,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     observer?.notifyPlayerDeinit(player: self)
+    mediaSession?.invalidate()
     observer?.cleanup()
     observer = nil
-    NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
 
     videoSourceLoader.close()
@@ -418,8 +407,6 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     let payload = IsPlayingEventPayload(isPlaying: newIsPlaying, oldIsPlaying: oldIsPlaying)
     safeEmit(event: "playingChange", payload: payload)
     isPlaying = newIsPlaying
-
-    VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {

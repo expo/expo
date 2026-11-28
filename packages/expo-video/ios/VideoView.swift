@@ -32,8 +32,6 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
 
   var allowPictureInPicture: Bool = false {
     didSet {
-      // PiP requires `.playback` audio session category in `.moviePlayback` mode
-      VideoManager.shared.setAppropriateAudioSessionOrWarn()
       playerViewController.allowsPictureInPicturePlayback = allowPictureInPicture
     }
   }

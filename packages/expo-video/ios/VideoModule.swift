@@ -342,6 +342,7 @@ public final class VideoModule: Module {
       }
 
       Function("pause") { player in
+        player.mediaSession?.onPauseRequested()
         player.ref.pause()
       }
 

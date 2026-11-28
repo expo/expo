@@ -32,4 +32,9 @@ interface VideoPlayerListener {
   fun onVideoSourceLoaded(player: VideoPlayer, videoSource: VideoSource?, duration: Double?, availableVideoTracks: List<VideoTrack>, availableSubtitleTracks: List<SubtitleTrack>, availableAudioTracks: List<AudioTrack>) {}
   fun onTargetViewChanged(player: VideoPlayer, newTargetView: VideoView?, oldTargetView: VideoView?) {}
   fun onRenderedFirstFrame(player: VideoPlayer) {}
+
+  /**
+   * Playback is requested while the player plays or buffers to play. `onIsPlayingChanged` reports `false` while the player buffers.
+   */
+  fun onPlaybackRequestedChanged(player: VideoPlayer, isPlaybackRequested: Boolean, oldIsPlaybackRequested: Boolean?) {}
 }

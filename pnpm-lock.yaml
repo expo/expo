@@ -6530,6 +6530,9 @@ importers:
 
   packages/expo-video:
     dependencies:
+      expo-media-session:
+        specifier: workspace:~
+        version: link:../expo-media-session
       react:
         specifier: '*'
         version: 19.3.0

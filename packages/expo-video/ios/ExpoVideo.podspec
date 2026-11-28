@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ExpoMediaSession'
 
   s.source_files = "**/*.{h,m,swift}"
   s.exclude_files = 'Tests'

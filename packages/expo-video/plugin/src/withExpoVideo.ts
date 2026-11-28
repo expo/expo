@@ -1,9 +1,12 @@
+import { withMediaSession } from 'expo-media-session/app.plugin';
 import {
   AndroidConfig,
   type ConfigPlugin,
   withInfoPlist,
   withAndroidManifest,
 } from 'expo/config-plugins';
+
+const LEGACY_PLAYBACK_SERVICE = 'expo.modules.video.playbackService.ExpoVideoPlaybackService';
 
 export type WithExpoVideoOptions = {
   /** Whether to enable background playback support. */
@@ -46,53 +49,20 @@ const withExpoVideo: ConfigPlugin<WithExpoVideoOptions> = (
       }
     }
 
-    // Handle background playback configuration
-    if (supportsBackgroundPlayback) {
-      // Add required permissions for foreground service
-      AndroidConfig.Permissions.ensurePermissions(config.modResults, [
-        'android.permission.FOREGROUND_SERVICE',
-        'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
-      ]);
-
-      // Add the foreground service to the manifest
-      const application = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
-
-      // Check if the service already exists
-      const existingService = application.service?.find(
-        (service: any) =>
-          service.$?.['android:name'] ===
-          'expo.modules.video.playbackService.ExpoVideoPlaybackService'
+    // An earlier prebuild can leave the entry of the playback service that `expo-video` no longer has.
+    const application = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+    if (application.service) {
+      application.service = application.service.filter(
+        (service) => service.$['android:name'] !== LEGACY_PLAYBACK_SERVICE
       );
-
-      if (!existingService) {
-        // Add the service if it doesn't exist
-        if (!application.service) {
-          application.service = [];
-        }
-
-        application.service.push({
-          $: {
-            'android:name': 'expo.modules.video.playbackService.ExpoVideoPlaybackService',
-            'android:exported': 'false',
-            'android:foregroundServiceType': 'mediaPlayback',
-          },
-          'intent-filter': [
-            {
-              action: [
-                {
-                  $: {
-                    'android:name': 'androidx.media3.session.MediaSessionService',
-                  },
-                },
-              ],
-            },
-          ],
-        });
-      }
     }
 
     return config;
   });
+
+  if (supportsBackgroundPlayback) {
+    config = withMediaSession(config, { supportsBackgroundPlayback: true });
+  }
   return config;
 };
 

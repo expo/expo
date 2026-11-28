@@ -148,6 +148,10 @@ sealed class PlayerEvent {
     override val emitToJS = false
   }
 
+  data class PlaybackRequestedChanged(val isPlaybackRequested: Boolean, val oldIsPlaybackRequested: Boolean?) : PlayerEvent() {
+    override val emitToJS = false
+  }
+
   fun emit(player: VideoPlayer, listeners: List<VideoPlayerListener>) {
     when (this) {
       is StatusChanged -> listeners.forEach { it.onStatusChanged(player, status, oldStatus, error) }
@@ -165,6 +169,7 @@ sealed class PlayerEvent {
       is RenderedFirstFrame -> listeners.forEach { it.onRenderedFirstFrame(player) }
       is VideoSourceLoaded -> listeners.forEach { it.onVideoSourceLoaded(player, videoSource, duration, availableVideoTracks, availableSubtitleTracks, availableAudioTracks) }
       is TargetViewChanged -> listeners.forEach { it.onTargetViewChanged(player, newTargetView, oldTargetView) }
+      is PlaybackRequestedChanged -> listeners.forEach { it.onPlaybackRequestedChanged(player, isPlaybackRequested, oldIsPlaybackRequested) }
       // JS-only events - SubtitleTrackChanged - In the native events the TracksChanged can be used instead
       else -> Unit
     }

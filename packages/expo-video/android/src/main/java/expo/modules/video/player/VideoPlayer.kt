@@ -22,11 +22,11 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.mediasession.MediaSessionManager
 import expo.modules.video.IntervalUpdateClock
 import expo.modules.video.IntervalUpdateEmitter
 import expo.modules.video.VideoView
@@ -35,10 +35,8 @@ import expo.modules.video.delegates.IgnoreSameSet
 import expo.modules.video.enums.AudioMixingMode
 import expo.modules.video.enums.PlayerStatus
 import expo.modules.video.enums.PlayerStatus.*
-import expo.modules.video.getPlaybackServiceErrorMessage
 import expo.modules.video.listeners.VideoPlayerListener
-import expo.modules.video.playbackService.ExpoVideoPlaybackService
-import expo.modules.video.playbackService.PlaybackServiceConnection
+import expo.modules.video.mediasession.VideoMediaSessionClient
 import expo.modules.video.records.BufferOptions
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.ScrubbingModeOptions
@@ -48,7 +46,6 @@ import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoSize
 import expo.modules.video.records.VideoTrack
 import expo.modules.video.utils.MutableWeakReference
-import expo.modules.video.utils.buildBasicMediaSession
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -93,13 +90,17 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
   internal val firstFrameEventGenerator: FirstFrameEventGenerator
-  val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
-  var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
+  internal val mediaSessionClient = VideoMediaSessionClient(this, appContext, MediaSessionManager.get(context))
 
   var playing by IgnoreSameSet(false) { new, old ->
     sendEvent(PlayerEvent.IsPlayingChanged(new, old))
   }
+
+  var isPlaybackRequested by IgnoreSameSet(false) { new, old ->
+    sendEvent(PlayerEvent.PlaybackRequestedChanged(new, old))
+  }
+    private set
 
   var uncommittedSource: VideoSource? = source
   private var commitedSource by IgnoreSameSet<VideoSource?>(null) { new, old ->
@@ -111,12 +112,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var status: PlayerStatus = IDLE
   var requiresLinearPlayback = false
   var staysActiveInBackground = false
-    set(value) {
-      field = value
-      if (value) {
-        startPlaybackService()
-      }
-    }
   var preservesPitch = false
     set(preservesPitch) {
       field = preservesPitch
@@ -127,9 +122,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var showNowPlayingNotification = false
     set(value) {
       field = value
-      appContext?.mainQueue?.launch {
-        serviceSetShowNotification(value)
-      }
+      mediaSessionClient.update { it.copy(showNowPlayingNotification = value) }
     }
   var duration = 0f
   var isLive = false
@@ -269,6 +262,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       this@VideoPlayer.playing = isPlaying
     }
 
+    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+      isPlaybackRequested = isPlaybackRequestedFor(playWhenReady, player.playbackState)
+    }
+
     override fun onTracksChanged(tracks: Tracks) {
       val oldSubtitleTracks = ArrayList(subtitles.availableSubtitleTracks)
       val oldAudioTracks = ArrayList(audioTracks.availableAudioTracks)
@@ -340,6 +337,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
 
     override fun onPlaybackStateChanged(@Player.State playbackState: Int) {
+      isPlaybackRequested = isPlaybackRequestedFor(player.playWhenReady, playbackState)
       if (playbackState == Player.STATE_IDLE && player.playerError != null) {
         return
       }
@@ -383,12 +381,14 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   init {
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
+    addListener(mediaSessionClient)
     VideoManager.registerVideoPlayer(this)
     firstFrameEventGenerator = createFirstFrameEventGenerator()
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
       subtitles.setSubtitlesEnabled(false)
     }
+    mediaSessionClient.start()
   }
 
   @kotlin.OptIn(DelicateCoroutinesApi::class)
@@ -397,16 +397,11 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     keepScreenOnWhilePlaying = false
 
     intervalUpdateClock.interval = 0L
+    mediaSessionClient.close()
 
     synchronized(listeners) {
       listeners.clear()
     }
-
-    if (serviceConnection.isConnected) {
-      appContext?.reactContext?.unbindService(serviceConnection)
-    }
-    serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(player)
-    mediaSession.release()
 
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
@@ -517,29 +512,6 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     isLive = false
   }
 
-  private fun startPlaybackService(): Boolean {
-    if (serviceConnection.playbackServiceBinder?.service != null) {
-      // PlaybackService already running.
-      return true
-    }
-    val appContext = appContext ?: throw Exceptions.AppContextLost()
-    val serviceStarted = ExpoVideoPlaybackService.startService(appContext, context, serviceConnection)
-
-    if (!serviceStarted) {
-      appContext.jsLogger?.error(
-        getPlaybackServiceErrorMessage("Expo-video has failed to bind with the playback service binder")
-      )
-    }
-    return serviceStarted
-  }
-
-  private fun serviceSetShowNotification(showNotification: Boolean) {
-    if (showNotification) {
-      startPlaybackService()
-    }
-    serviceConnection.playbackServiceBinder?.service?.setShowNotification(showNotification, this.player)
-  }
-
   fun addListener(videoPlayerListener: VideoPlayerListener) {
     synchronized(listeners) {
       if (listeners.all { it.get() != videoPlayerListener }) {
@@ -603,6 +575,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }
     return mediaMetadataRetriever
   }
+}
+
+internal fun isPlaybackRequestedFor(playWhenReady: Boolean, @Player.State playbackState: Int): Boolean {
+  return playWhenReady && playbackState != Player.STATE_IDLE && playbackState != Player.STATE_ENDED
 }
 
 // Extension functions

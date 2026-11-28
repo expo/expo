@@ -10,7 +10,8 @@
         "ReactNativeDependencies",
         "React",
         "Hermes",
-        "expo-modules-core/ExpoModulesCore"
+        "expo-modules-core/ExpoModulesCore",
+        "expo-media-session/ExpoMediaSession"
       ],
       "swiftLanguageVersions": ["5"],
       "targets": [
@@ -21,7 +22,8 @@
             "Hermes",
             "React",
             "ReactNativeDependencies",
-            "expo-modules-core/ExpoModulesCore"
+            "expo-modules-core/ExpoModulesCore",
+            "expo-media-session/ExpoMediaSession"
           ],
           "linkedFrameworks": ["Foundation", "UIKit", "AVFoundation", "AVKit", "MediaPlayer"]
         }

@@ -29,7 +29,6 @@ object VideoManager {
 
   private var playersRequestingKeepAwake = weakMutableHashSetOf<VideoPlayer>()
 
-  private lateinit var audioFocusManager: AudioFocusManager
   lateinit var cache: VideoCache
 
   private var listeners = mutableListOf<WeakReference<VideoManagerListener>>()
@@ -38,9 +37,6 @@ object VideoManager {
     val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
     this.pictureInPicture = PictureInPictureManager(appContext)
-    if (!this::audioFocusManager.isInitialized) {
-      audioFocusManager = AudioFocusManager(appContext)
-    }
     if (!this::cache.isInitialized) {
       cache = VideoCache(context)
     } else if (this.appContext.get()?.reactContext != appContext.reactContext) {
@@ -85,12 +81,10 @@ object VideoManager {
 
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
-    audioFocusManager.registerPlayer(videoPlayer)
   }
 
   fun unregisterVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews.remove(videoPlayer)
-    audioFocusManager.unregisterPlayer(videoPlayer)
   }
 
   fun registerFullscreenPlayerActivity(id: String, fullscreenActivity: FullscreenPlayerActivity) {
@@ -115,16 +109,15 @@ object VideoManager {
     }
 
     if (videoPlayersToVideoViews[videoPlayer]?.size == 1) {
-      videoPlayer.serviceConnection.playbackServiceBinder?.service?.registerPlayer(videoPlayer)
+      videoPlayer.mediaSessionClient.update { it.copy(isAttachedToView = true) }
     }
   }
 
   fun onVideoPlayerDetachedFromView(videoPlayer: VideoPlayer, videoView: VideoView) {
     videoPlayersToVideoViews[videoPlayer]?.remove(videoView)
 
-    // Unregister disconnected VideoPlayers from the playback service
     if (videoPlayersToVideoViews[videoPlayer] == null || videoPlayersToVideoViews[videoPlayer]?.size == 0) {
-      videoPlayer.serviceConnection.playbackServiceBinder?.service?.unregisterPlayer(videoPlayer.player)
+      videoPlayer.mediaSessionClient.update { it.copy(isAttachedToView = false) }
     }
   }
 
