@@ -1566,9 +1566,7 @@ async function buildPackageSwiftContext(
   // external deps from sibling products this target depends on. The Swift compiler
   // needs sibling's transitive deps to resolve imports in their .swiftinterface.
   const spmConfig = pkg.getSwiftPMConfiguration();
-  const siblingDeps = checkedInTargets
-    ? [...new Set(checkedInTargets.flatMap((target) => target.siblingProducts ?? []))]
-    : findSiblingProductDependencies(product, spmConfig.products);
+  const siblingDeps = findSiblingProductDependencies(product, spmConfig.products);
   assertUniqueTargetNames(product.name, {
     frameworkTargets: product.targets
       .filter((target) => target.type === 'framework')
@@ -1829,7 +1827,9 @@ async function buildPackageSwiftContext(
         const declaredDependencies = target.dependencies.filter(
           (dependency): dependency is string => typeof dependency === 'string'
         );
-        const withSiblingTransitives = target.siblingProducts?.length
+        const withSiblingTransitives = declaredDependencies.some((dependency) =>
+          siblingDeps.includes(dependency)
+        )
           ? [...declaredDependencies, ...transitiveExternalDeps]
           : declaredDependencies;
         return {

@@ -161,15 +161,24 @@ function compiles(target, file) {
 describe('the motion-activity companion of the real expo-location', () => {
   const MOTION_PRODUCT = 'ExpoLocationMotionActivity';
 
-  it('is gated by the Podfile property the location config plugin writes', () => {
-    const config = JSON.parse(
-      fs.readFileSync(path.join(REPO_ROOT, 'packages', 'expo-location', 'spm.config.json'), 'utf8')
-    );
-    const product = config.products.find(({ name }) => name === MOTION_PRODUCT);
-    expect(product?.autolinkWhen).toEqual({
-      podfileProperty: 'expo.location.motionActivityEnabled',
-      disabledValue: 'false',
-    });
+  // The loader finds the registration by name, so a rename on one side silently disables motion.
+  it('loads the registration class by the name the companion exports to Objective-C', () => {
+    const companion = path.join(REPO_ROOT, 'packages', 'expo-location', 'ios', 'motion-activity');
+    const read = (file) => fs.readFileSync(path.join(companion, file), 'utf8');
+    const registration = read('ExpoLocationMotionActivity/MotionActivityRegistration.swift');
+    const loader = read('ExpoLocationMotionActivityObjC/EXLocationMotionActivityLoader.m');
+
+    const exported = {
+      className: registration.match(/@objc\((\w+)\)\s*public final class/)?.[1],
+      selector: registration.match(/@objc\s+public static func (\w+)\(\)/)?.[1],
+    };
+    const lookedUp = {
+      className: loader.match(/NSClassFromString\(@"(\w+)"\)/)?.[1],
+      selector: loader.match(/NSSelectorFromString\(@"(\w+)"\)/)?.[1],
+    };
+    expect(exported.className).toBeDefined();
+    expect(exported.selector).toBeDefined();
+    expect(lookedUp).toEqual(exported);
   });
 
   // The plugin withholds a gated product by not depending on it, so ExpoLocation links

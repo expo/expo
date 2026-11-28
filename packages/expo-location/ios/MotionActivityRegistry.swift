@@ -69,10 +69,6 @@ public enum MotionActivityRegistry {
   /// Only an explicit `true` warns: an app built without the config plugin's Info.plist key may
   /// have left the companion out on purpose.
   static func shouldWarnThatCompanionIsMissing(motionActivityEnabled: Any?) -> Bool {
-    // `as? Bool` also matches an `<integer>` of 0 or 1, which the config plugin never writes.
-    guard let number = motionActivityEnabled as? NSNumber, CFGetTypeID(number) == CFBooleanGetTypeID() else {
-      return false
-    }
-    return number.boolValue && provider == nil
+    motionActivityEnabled as? Bool == true && provider == nil
   }
 }

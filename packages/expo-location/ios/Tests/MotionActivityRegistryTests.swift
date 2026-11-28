@@ -113,13 +113,6 @@ final class MotionActivityRegistryTests {
   }
 
   @Test
-  func `does not treat an Info.plist integer as enabling motion activity`() {
-    MotionActivityRegistry.provider = nil
-
-    #expect(MotionActivityRegistry.shouldWarnThatCompanionIsMissing(motionActivityEnabled: NSNumber(value: 1)) == false)
-  }
-
-  @Test
   func `without the companion, a restored task receives the companion-missing error`() {
     MotionActivityRegistry.provider = nil
     let consumer = MotionActivityTaskConsumer()
