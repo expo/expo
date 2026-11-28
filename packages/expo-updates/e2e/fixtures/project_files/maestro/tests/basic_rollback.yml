@@ -17,11 +17,13 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - evalScript:
-    script: ${output.firstRequestHeaders = output.api.lastRequestHeaders()}
-    label: Save headers from first request
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.firstRequestHeaders = output.api.waitForUpdateRequest(15000)}
+    label: Wait for headers from first request
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:
@@ -31,8 +33,8 @@ onFlowStart:
     condition: ${maestro.copiedText == "test-update-3"}
     label: Assert update string is from downloaded bundle
 - evalScript:
-    script: ${output.secondRequestHeaders = output.api.lastRequestHeaders()}
-    label: Save headers from second request
+    script: ${output.secondRequestHeaders = output.api.waitForUpdateRequest(15000)}
+    label: Wait for headers from second request
 - stopApp
 - evalScript:
     script:  ${output.api.restartUpdatesServer()}
@@ -50,11 +52,13 @@ onFlowStart:
     condition: ${maestro.copiedText == "test-update-3"}
     label: Assert update string is from downloaded bundle
 - evalScript:
-    script: ${output.thirdRequestHeaders = output.api.lastRequestHeaders()}
-    label: Save headers from third request
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.thirdRequestHeaders = output.api.waitForUpdateRequest(15000)}
+    label: Wait for headers from third request
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:
@@ -64,8 +68,8 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - evalScript:
-    script: ${output.fourthRequestHeaders = output.api.lastRequestHeaders()}
-    label: Save headers from fourth request
+    script: ${output.fourthRequestHeaders = output.api.waitForUpdateRequest(15000)}
+    label: Wait for headers from fourth request
 - assertTrue:
     condition: ${output.firstRequestHeaders['expo-embedded-update-id'] == output.firstRequestHeaders['expo-current-update-id']}
     label: Assert first request headers have matching embedded and current update ids
@@ -87,4 +91,5 @@ onFlowStart:
 - assertTrue:
     condition: ${output.fourthRequestHeaders['expo-current-update-id'] == output.firstRequestHeaders['expo-embedded-update-id']}
     label: Assert fourth request headers has original embedded ID as current ID
+- stopApp
 

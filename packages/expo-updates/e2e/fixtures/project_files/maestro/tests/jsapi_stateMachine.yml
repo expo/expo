@@ -62,15 +62,14 @@ onFlowStart:
     label: Setup updates server to serve a basic update
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
 - tapOn:
     label: Tap on check for update button
     id: checkForUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: nativeInterfaceState.type
+      text: "checkCompleteWithUpdate"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from isUpdatePending
     id: state.isUpdatePending
@@ -105,9 +104,11 @@ onFlowStart:
 - tapOn:
     label: Tap on downloadUpdate button
     id: downloadUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: nativeInterfaceState.type
+      text: "downloadCompleteWithUpdate"
+    timeout: 30000
 - copyTextFrom:
     label: Copy text from isUpdatePending
     id: state.isUpdatePending
@@ -145,8 +146,8 @@ onFlowStart:
     condition: ${maestro.copiedText != "null"}
     label: Assert download time is not null
 - copyTextFrom:
-    label: Copy text from nativeInterface availableUpdateID
-    id: nativeInterfaceState.availableUpdateID
+    label: Copy text from nativeInterface availableUpdateId
+    id: nativeInterfaceState.availableUpdateId
 - assertTrue:
     condition: ${maestro.copiedText == output.downloadedUpdateId}
     label: Assert downloaded update ID shows in native interface state
@@ -213,15 +214,14 @@ onFlowStart:
     label: Setup updates server to serve a rollback
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
 - tapOn:
     label: Tap on check for update button
     id: checkForUpdate
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: nativeInterfaceState.type
+      text: "checkCompleteWithRollback"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from isUpdatePending
     id: state.isUpdatePending
@@ -258,3 +258,4 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "checkCompleteWithRollback"}
     label: Assert state is "checkCompleteWithRollback"
+- stopApp

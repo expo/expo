@@ -50,12 +50,9 @@ onFlowStart:
 - tapOn:
     label: Tap on callJSAPI
     id: callJSAPI
-- evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
-- copyTextFrom:
-    label: Copy text from lastJSAPIErrorMessage
-    id: lastJSAPIErrorMessage
-- assertTrue:
-    condition: ${maestro.copiedText == "true"}
-    label: Assert lastJSAPIErrorMessage is true
+- extendedWaitUntil:
+    visible:
+      id: lastJSAPIErrorMessage
+      text: "true"
+    timeout: 15000
+- stopApp

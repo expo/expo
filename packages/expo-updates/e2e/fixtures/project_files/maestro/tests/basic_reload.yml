@@ -11,16 +11,23 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
-- tapOn: "reload"
-- evalScript:
-    script: ${output.api.delay(2000)}
-    label: Delay for 2 seconds
 - copyTextFrom:
-    label: Copy text from update string
-    id: updateString
-- assertTrue:
-    condition: ${maestro.copiedText == "test"}
-    label: Assert update string is from embedded bundle
+    label: Copy initial start time
+    id: startTime
+- evalScript:
+    script: ${output.initialStartTime = maestro.copiedText}
+    label: Save initial start time
+- tapOn: "reload"
+- extendedWaitUntil:
+    notVisible:
+      id: startTime
+      text: ${output.initialStartTime}
+    timeout: 30000
+- extendedWaitUntil:
+    visible:
+      id: updateString
+      text: "test"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:

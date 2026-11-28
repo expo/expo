@@ -16,9 +16,11 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - assertTrue:
     condition:  ${output.api.staticFileCount() == 4}
     label: Assert that exactly 4 static files were requested

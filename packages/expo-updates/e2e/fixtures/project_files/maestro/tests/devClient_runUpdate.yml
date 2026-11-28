@@ -58,3 +58,4 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "test-update-1"}
     label: Assert update string is from update bundle
+- stopApp

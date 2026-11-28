@@ -17,14 +17,19 @@ onFlowStart:
     condition: ${maestro.copiedText == "test"}
     label: Assert update string is from embedded bundle
 - evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+    script: ${output.api.waitForUpdateRequest(15000)}
+    label: Wait for startup update request
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - tapOn:
     label: Tap on read log entries
     id: readLogEntries
 - evalScript:
-    script: ${output.api.delay(500)}
-    label: Delay for 0.5 seconds
+    script: ${output.api.waitForLogEntries(15000, false)}
+    label: Wait for log entries upload to complete
 - evalScript:
     script: ${output.assetErrors = output.api.logEntriesWithLevelAndCode('error', 'AssetsFailedToLoad')}
     label: Read AssetsFailedToLoad errors uploaded to server

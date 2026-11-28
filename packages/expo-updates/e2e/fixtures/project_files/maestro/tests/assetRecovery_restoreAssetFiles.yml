@@ -21,9 +21,11 @@ onFlowStart:
     env:
       MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
 - launchApp
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isUpdatePending
+      text: "true"
+    timeout: 30000
 - stopApp
 - launchApp
 - copyTextFrom:
@@ -35,9 +37,11 @@ onFlowStart:
 - tapOn:
     label: Read asset files
     id: readAssetFiles
-- evalScript:
-    scripts: ${output.api.delay(500)}
-    label: Wait for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: numAssetFiles
+      text: "[1-9][0-9]*"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from asset files counter
     id: numAssetFiles
@@ -47,9 +51,11 @@ onFlowStart:
 - tapOn:
     label: Clear asset files
     id: clearAssetFiles
-- evalScript:
-    scripts: ${output.api.delay(500)}
-    label: Wait for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: numAssetFiles
+      text: "0"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from asset files counter
     id: numAssetFiles
@@ -64,18 +70,23 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "test-update-2"}
     label: Assert update string is from downloaded update
-- evalScript:
-    script: ${output.api.delay(3000)}
-    label: Delay for 3 seconds
+- extendedWaitUntil:
+    visible:
+      id: state.isStartupProcedureRunning
+      text: "false"
+    timeout: 30000
 - tapOn:
     label: Read asset files
     id: readAssetFiles
-- evalScript:
-    scripts: ${output.api.delay(500)}
-    label: Wait for 0.5 seconds
+- extendedWaitUntil:
+    visible:
+      id: numAssetFiles
+      text: "[1-9][0-9]*"
+    timeout: 15000
 - copyTextFrom:
     label: Copy text from asset files counter
     id: numAssetFiles
 - assertTrue:
     condition: ${parseInt(maestro.copiedText, 10) > 2}
     label: Assert that there are more than 2 asset files
+- stopApp
